@@ -1,0 +1,2130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Hubble, JWST, Euclid et Gaia en 3D : pièces cliquables, vue éclatée, comparaison à l'échelle, instruments et archives.">
+<title>Observatoires en orbite</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap">
+<style>[hidden]{display:none!important}</style>
+<style>
+/* Layout: the 3D stage is the page; a header of observatory tabs above, a reading panel docked right (below on phones). */
+:root{
+  --void:#06090F; --ink:#0B111B; --panel:#0C131F; --raise:#121B2B;
+  --hair:rgba(160,185,225,0.13); --hair-2:rgba(160,185,225,0.26);
+  --brass:#D4A461; --brass-soft:rgba(212,164,97,0.14); --cyan:#93D2DC;
+  --text:#EAF0F8; --body:#C3CCDD; --muted:#93A0BA; --muted-2:#66738E;
+  --ok:#8FD69A; --warn:#E0A05A; --bad:#F08A7A;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-ui:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-data:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --gl:max(16px, env(safe-area-inset-left, 0px)); --gr:max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body{ height:100%; }
+body{ margin:0; background:var(--void); color:var(--text); font-family:var(--f-ui); font-size:14px; overflow:hidden; }
+button{ font-family:inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+
+#app{ height:100%; display:flex; flex-direction:column; min-height:0; }
+
+/* ---------- header ---------- */
+#top{ flex:none; display:flex; align-items:center; gap:18px; padding-block:10px; padding-left:var(--gl); padding-right:var(--gr);
+  border-bottom:1px solid var(--hair); background:var(--ink); }
+.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
+.brand svg{ width:22px; height:22px; flex:none; }
+.brand h1{ font-family:var(--f-display); font-weight:500; font-size:17px; margin:0; white-space:nowrap; }
+#tabs{ display:flex; gap:4px; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
+#tabs::-webkit-scrollbar{ display:none; }
+.tab{ flex:none; border:1px solid transparent; background:transparent; color:var(--muted); cursor:pointer; padding:6px 12px; border-radius:4px; font-size:13.5px; font-weight:500; display:flex; align-items:baseline; gap:7px; }
+.tab small{ font:10.5px var(--f-data); color:var(--muted-2); }
+.tab:hover{ color:var(--text); background:rgba(255,255,255,0.04); }
+.tab[aria-selected="true"]{ color:var(--brass); border-color:rgba(212,164,97,0.45); background:var(--brass-soft); }
+.tab[aria-selected="true"] small{ color:var(--brass); opacity:.8; }
+.tab.cmp{ margin-left:10px; border-color:var(--hair-2); }
+
+/* ---------- main ---------- */
+#main{ flex:1; display:flex; min-height:0; position:relative; }
+#stage{ flex:1; position:relative; min-width:0; min-height:0; background:var(--void); }
+#stage canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; cursor:grab; }
+#stage canvas.dragging{ cursor:grabbing; }
+#stage canvas.over-part{ cursor:pointer; }
+
+.hud{ position:absolute; pointer-events:none; }
+#hud-title{ left:var(--gl); top:16px; right:var(--gr); }
+#t-name{ font-family:var(--f-display); font-weight:500; font-size:clamp(22px, 3.2vw, 34px); line-height:1.05; text-shadow:0 2px 18px rgba(0,0,0,.8); }
+#t-sub{ color:var(--muted); font-size:12.5px; margin-top:5px; text-shadow:0 1px 8px rgba(0,0,0,.9); }
+#t-src{ color:var(--cyan); font:11px var(--f-data); margin-top:4px; text-shadow:0 1px 8px rgba(0,0,0,.9); }
+
+#hover-tip{ position:absolute; pointer-events:none; padding:4px 8px; background:rgba(8,12,20,.92); border:1px solid var(--hair-2); border-radius:4px; font-size:12px; white-space:nowrap; transform:translate(12px, 14px); z-index:3; }
+
+#toolbar{ position:absolute; left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); display:flex; align-items:center; gap:4px;
+  padding:5px; background:rgba(10,15,24,.86); border:1px solid var(--hair-2); border-radius:8px; backdrop-filter:blur(8px); max-width:calc(100% - 24px); }
+.tool{ display:flex; align-items:center; gap:7px; height:34px; padding:0 11px; border-radius:5px; border:1px solid transparent; background:transparent; color:var(--body); font-size:12.5px; cursor:pointer; white-space:nowrap; }
+.tool svg{ width:16px; height:16px; flex:none; }
+.tool:hover{ background:rgba(255,255,255,.06); color:var(--text); }
+.tool[aria-pressed="true"]{ color:var(--brass); background:var(--brass-soft); border-color:rgba(212,164,97,.4); }
+.tool:disabled{ opacity:.35; cursor:default; }
+.tool-sep{ width:1px; height:20px; background:var(--hair-2); margin:0 3px; }
+.explode{ display:flex; align-items:center; gap:8px; padding:0 10px 0 11px; height:34px; color:var(--body); font-size:12.5px; }
+.explode svg{ width:16px; height:16px; }
+.explode input{ width:110px; accent-color:var(--brass); }
+
+#loader{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:rgba(6,9,15,.72); z-index:4; text-align:center; padding:0 24px; }
+#loader .l-title{ font-family:var(--f-display); font-size:20px; }
+#loader .l-sub{ color:var(--muted); font:12px var(--f-data); font-variant-numeric:tabular-nums; }
+#loader .bar{ width:min(280px, 70%); height:3px; background:var(--hair-2); border-radius:2px; overflow:hidden; }
+#loader .bar i{ display:block; height:100%; width:0%; background:var(--brass); transition:width .15s linear; }
+#loader .l-err{ color:var(--bad); max-width:420px; line-height:1.5; font-size:13px; }
+#loader button{ border:1px solid var(--brass); background:var(--brass-soft); color:var(--brass); border-radius:4px; padding:7px 14px; cursor:pointer; font-size:13px; }
+
+/* compare labels */
+#cmp-labels{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.cmp-label{ position:absolute; transform:translate(-50%, 8px); text-align:center; pointer-events:auto; cursor:pointer; background:rgba(8,12,20,.82); border:1px solid var(--hair-2); border-radius:5px; padding:6px 10px; color:var(--text); font-family:inherit; }
+.cmp-label:hover{ border-color:var(--brass); }
+.cmp-label b{ display:block; font-family:var(--f-display); font-weight:500; font-size:15px; }
+.cmp-label span{ display:block; font:11px var(--f-data); color:var(--cyan); margin-top:2px; white-space:nowrap; }
+.cmp-ruler{ position:absolute; transform:translate(-50%, -24px); font:11px var(--f-data); color:var(--text); background:rgba(8,12,20,.8); padding:1px 6px; border-radius:3px; white-space:nowrap; }
+
+/* ---------- panel ---------- */
+#panel{ width:384px; flex:none; display:flex; flex-direction:column; min-height:0; border-left:1px solid var(--hair); background:var(--panel); }
+#ptabs{ flex:none; display:flex; border-bottom:1px solid var(--hair); padding-left:8px; padding-right:var(--gr); }
+.ptab{ flex:none; padding:11px 12px 10px; background:transparent; border:0; border-bottom:2px solid transparent; color:var(--muted); cursor:pointer; font-size:13px; font-weight:500; }
+.ptab:hover{ color:var(--text); }
+.ptab[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--brass); }
+.ptab .n{ font:10.5px var(--f-data); color:var(--muted-2); margin-left:4px; }
+.ptab.go{ margin-left:auto; color:var(--brass); }
+#pbody{ flex:1; overflow-y:auto; padding:18px 20px calc(28px + env(safe-area-inset-bottom, 0px)); padding-right:max(20px, env(safe-area-inset-right, 0px)); -webkit-overflow-scrolling:touch; }
+#pbody h2{ font-family:var(--f-display); font-weight:500; font-size:19px; margin:0; text-wrap:balance; }
+.launch{ color:var(--muted-2); font-size:12px; margin-top:3px; }
+.hero-stat{ display:flex; align-items:baseline; gap:8px; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--hair); }
+.hero-stat .num{ font-family:var(--f-display); font-size:46px; font-weight:500; color:var(--brass); line-height:1; font-variant-numeric:tabular-nums; }
+.hero-stat .unit{ font-family:var(--f-display); font-size:20px; color:var(--brass); opacity:.8; }
+.hero-stat .label{ font-size:12px; color:var(--muted); line-height:1.4; margin-left:6px; max-width:200px; }
+.desc{ font-size:13px; line-height:1.65; color:var(--body); margin:14px 0 0; }
+.where{ margin-top:16px; }
+.where svg{ width:100%; height:auto; display:block; }
+.spec-section{ margin-top:20px; }
+.spec-section-title{ font-weight:600; font-size:11.5px; letter-spacing:.3px; color:var(--brass); margin-bottom:4px; }
+.spec-row{ display:flex; justify-content:space-between; gap:14px; padding:7px 0; border-bottom:1px solid var(--hair); font-size:12.5px; }
+.spec-row .k{ color:var(--muted); flex:0 0 auto; max-width:46%; }
+.spec-row .v{ font:11.5px/1.45 var(--f-data); text-align:right; color:var(--text); min-width:0; font-variant-numeric:tabular-nums; }
+.source-note{ font-size:11.5px; line-height:1.55; color:var(--muted-2); margin-top:16px; padding-top:12px; border-top:1px dashed var(--hair-2); }
+.cta{ display:block; width:100%; margin-top:16px; padding:11px 13px; text-align:left; border:1px solid rgba(212,164,97,.45); background:var(--brass-soft); color:var(--brass); border-radius:5px; font-weight:500; font-size:13.5px; cursor:pointer; }
+.cta:hover{ background:rgba(212,164,97,.22); }
+.cta small{ display:block; font-size:11.5px; color:var(--muted); margin-top:2px; font-weight:400; }
+
+.parts-intro{ font-size:12.5px; color:var(--muted); line-height:1.55; margin:0 0 12px; }
+.part{ border:1px solid var(--hair); border-radius:5px; margin-bottom:6px; background:transparent; overflow:hidden; }
+.part > button{ display:flex; width:100%; align-items:center; gap:10px; text-align:left; padding:10px 12px; background:transparent; border:0; color:var(--text); cursor:pointer; font-size:13px; font-weight:500; }
+.part > button:hover{ background:rgba(255,255,255,.04); }
+.part .dot{ width:8px; height:8px; border-radius:50%; background:var(--hair-2); flex:none; }
+.part.on{ border-color:rgba(212,164,97,.5); background:rgba(212,164,97,.06); }
+.part.on .dot{ background:var(--brass); }
+.part.on > button{ color:var(--brass); }
+.part .pd{ display:none; padding:0 12px 12px 30px; font-size:12.5px; line-height:1.6; color:var(--body); }
+.part.on .pd{ display:block; }
+.part .pf{ margin-top:8px; font:11px/1.6 var(--f-data); color:var(--cyan); }
+.cmp-table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
+.cmp-table th{ text-align:left; color:var(--muted); font-weight:500; padding:7px 6px 7px 0; border-bottom:1px solid var(--hair-2); font-size:11.5px; }
+.cmp-table td{ padding:8px 6px 8px 0; border-bottom:1px solid var(--hair); font:11.5px var(--f-data); font-variant-numeric:tabular-nums; }
+.cmp-table td:first-child{ font:500 13px var(--f-ui); color:var(--text); }
+.cmp-table tr[data-tele]{ cursor:pointer; }
+.cmp-table tr[data-tele]:hover td{ color:var(--brass); }
+.barcell{ display:flex; align-items:center; gap:8px; }
+.barcell i{ display:block; height:6px; border-radius:2px; background:var(--brass); min-width:2px; }
+
+#err-banner{ position:fixed; left:50%; top:calc(12px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); background:#3a1414; border:1px solid #7a2c2c; color:#ffd7d7; font:12px var(--f-data); padding:9px 13px; border-radius:6px; z-index:999; max-width:88vw; }
+
+@media (max-width: 860px){
+  #top{ flex-wrap:wrap; gap:8px; padding-block:8px; }
+  .brand h1{ font-size:15px; }
+  #tabs{ margin-left:0; width:100%; }
+  .tab{ padding:6px 10px; font-size:13px; }
+  .tab small{ display:none; }
+  #main{ flex-direction:column; }
+  #stage{ flex:0 0 46%; }
+  #panel{ width:auto; flex:1; border-left:0; border-top:1px solid var(--hair); }
+  #ptabs{ padding-left:max(6px, env(safe-area-inset-left, 0px)); }
+  #pbody{ padding-left:var(--gl); padding-right:var(--gr); }
+  #hud-title{ top:10px; }
+  #t-src{ display:none; }
+  .tool span.lbl{ display:none; }
+  .tool{ padding:0 9px; }
+  .explode input{ width:84px; }
+  .explode .lbl{ display:none; }
+  #toolbar{ bottom:8px; }
+}
+@media (prefers-reduced-motion: reduce){ *{ transition-duration:.001ms !important; animation-duration:.001ms !important; } }
+#callout{ position:absolute; pointer-events:none; transform:translate(-50%, -150%); padding:4px 9px; background:rgba(8,12,20,.9); border:1px solid var(--brass); color:var(--brass); border-radius:4px; font-size:12px; font-weight:500; white-space:nowrap; z-index:2; }
+#callout::after{ content:""; position:absolute; left:50%; top:100%; width:1px; height:12px; background:var(--brass); }
+#hint{ position:absolute; left:50%; bottom:calc(64px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); font-size:11.5px; color:var(--muted); pointer-events:none; text-shadow:0 1px 6px rgba(0,0,0,.9); white-space:nowrap; transition:opacity .6s; max-width:92%; overflow:hidden; text-overflow:ellipsis; }
+#hint.gone{ opacity:0; }
+.explode input:disabled{ opacity:.5; }
+@media (max-width: 860px){ #hint{ display:none; } .cmp-label{ padding:4px 7px; } .cmp-label b{ font-size:13px; } .cmp-label span{ font-size:10px; } }
+
+/* ===== Instruments & données (vue plein écran) ===== */
+#app{ position:relative; }
+#inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--void); }
+.inst-top{ display:flex; align-items:center; gap:14px; padding-block:10px; padding-left:var(--gl); padding-right:var(--gr); border-bottom:1px solid var(--hair); background:var(--ink); flex-wrap:wrap; }
+.inst-back{ font:500 12.5px var(--f-ui); color:var(--text); background:transparent; border:1px solid var(--hair-2); border-radius:4px; padding:6px 11px; cursor:pointer; }
+.inst-back:hover{ border-color:var(--brass); color:var(--brass); }
+.inst-title{ font-family:var(--f-display); font-size:18px; font-weight:500; }
+.pills{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
+.pill{ border:1px solid var(--hair-2); background:transparent; color:var(--muted); font:500 12.5px var(--f-ui); padding:5px 11px; border-radius:4px; cursor:pointer; }
+.pill:hover{ color:var(--text); }
+.pill.on{ color:var(--brass); border-color:var(--brass); background:var(--brass-soft); }
+.inst-body{ flex:1; display:flex; min-height:0; }
+.inst-nav{ width:224px; flex:none; border-right:1px solid var(--hair); overflow-y:auto; padding:10px; padding-left:max(10px, env(safe-area-inset-left, 0px)); background:var(--panel); }
+.nav-i{ display:block; width:100%; text-align:left; padding:9px 10px; margin-bottom:4px; border:1px solid transparent; border-left:3px solid var(--c, var(--hair-2)); border-radius:3px; background:transparent; color:var(--muted); cursor:pointer; font-family:var(--f-ui); }
+.nav-i .n{ display:block; font-weight:500; font-size:13px; color:inherit; }
+.nav-i .k{ display:block; font-size:11px; color:var(--muted-2); margin-top:1px; }
+.nav-i:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
+.nav-i.on{ background:var(--brass-soft); color:var(--text); border-color:rgba(212,164,97,0.35); border-left-color:var(--c, var(--brass)); }
+.inst-main{ flex:1; overflow-y:auto; padding:22px 28px calc(70px + env(safe-area-inset-bottom, 0px)); padding-right:max(28px, env(safe-area-inset-right, 0px)); min-width:0; -webkit-overflow-scrolling:touch; }
+.inst-main > *{ max-width:880px; }
+.inst-h{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.inst-name{ font-family:var(--f-display); font-weight:500; font-size:30px; line-height:1.1; }
+.inst-full{ color:var(--muted); font-size:13px; margin-top:3px; }
+.kind{ font-size:11.5px; color:var(--cyan); border:1px solid rgba(147,210,220,0.3); padding:3px 8px; border-radius:3px; white-space:nowrap; }
+.inst-sum{ font-size:13.5px; line-height:1.65; color:var(--body); margin:14px 0 0; max-width:70ch; }
+.inst-range{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.rng{ font:11.5px var(--f-data); padding:3px 8px; border-left:3px solid var(--c); background:rgba(255,255,255,0.04); color:var(--muted); }
+.rng b{ color:var(--text); font-weight:500; }
+.isec{ margin-top:28px; }
+.isec h4{ font:600 12px var(--f-ui); color:var(--brass); margin:0 0 10px; letter-spacing:0.2px; }
+.cap{ font-size:11.5px; color:var(--muted-2); margin-top:8px; line-height:1.5; }
+.muted{ color:var(--muted-2); }
+.stable .srow{ display:flex; gap:18px; padding:8px 0; border-bottom:1px solid var(--hair); font-size:12.5px; }
+.stable .k{ flex:0 0 190px; color:var(--muted); }
+.stable .v{ flex:1; min-width:0; font:11.5px/1.55 var(--f-data); color:var(--text); }
+.codewrap{ position:relative; }
+pre.code{ margin:0; padding:14px 16px; background:#080D16; border:1px solid var(--hair); border-radius:4px; overflow-x:auto; font:11.5px/1.6 var(--f-data); color:#CFD8EA; }
+.copy{ position:absolute; top:8px; right:8px; font:500 11px var(--f-ui); color:var(--muted); background:rgba(13,20,32,0.95); border:1px solid var(--hair-2); border-radius:3px; padding:3px 8px; cursor:pointer; }
+.copy:hover{ color:var(--brass); border-color:var(--brass); }
+.ex-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.ex-title{ font-size:12.5px; color:var(--text); }
+.tag{ font:10.5px var(--f-data); padding:2px 7px; border-radius:3px; border:1px solid var(--hair-2); color:var(--muted); white-space:nowrap; }
+.tag.real{ color:var(--ok); border-color:rgba(143,214,154,0.4); }
+.tag.illus{ color:var(--warn); border-color:rgba(224,160,90,0.4); }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.chip{ font:500 11.5px var(--f-data); padding:4px 8px; border:1px solid var(--hair-2); background:transparent; color:var(--muted); border-radius:3px; cursor:pointer; }
+.chip:hover{ color:var(--text); border-color:var(--brass); }
+.chip.on{ color:var(--void); background:var(--brass); border-color:var(--brass); }
+.filter-detail{ margin-top:10px; font-size:12.5px; color:var(--body); min-height:20px; }
+.filter-detail b{ color:var(--brass); font-weight:600; }
+.svgwrap{ overflow-x:auto; }
+svg.cov, svg.mini{ width:100%; min-width:480px; height:auto; display:block; }
+.cov-row{ cursor:pointer; }
+.cov-lab{ fill:#BFC9DE; font:500 11.5px 'Space Grotesk',sans-serif; }
+.cov-row.sel .cov-lab{ fill:#D4A461; }
+.cov-row:hover .cov-lab{ fill:#EAF0F8; }
+.cov-band{ fill:#0b1220; font:600 10px 'IBM Plex Mono',monospace; pointer-events:none; }
+.cov-tick{ fill:#7C89A4; font:10px 'IBM Plex Mono',monospace; }
+.cov-grid{ stroke:rgba(160,185,225,0.13); stroke-width:1; }
+.cov-axis{ stroke:rgba(160,185,225,0.26); stroke-width:1; }
+.cov-unit{ fill:#7C89A4; font:10px 'Space Grotesk',sans-serif; }
+.cov-vis{ fill:#93A0BA; font:9.5px 'Space Grotesk',sans-serif; }
+.mini-lab{ fill:#EAF0F8; font:600 10.5px 'IBM Plex Mono',monospace; }
+.fov{ display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start; }
+.fov-svg{ width:320px; max-width:100%; height:auto; }
+.fov-svg [data-inst]{ cursor:pointer; }
+.fov-leg{ list-style:none; margin:0; padding:0; font-size:12px; color:var(--muted); min-width:190px; flex:1; max-width:340px; }
+.fov-leg li{ display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer; }
+.fov-leg li:hover, .fov-leg li.sel{ color:var(--text); }
+.fov-leg i{ width:10px; height:10px; border-radius:2px; flex:none; }
+.fov-leg span{ font:11px var(--f-data); margin-left:auto; padding-left:12px; color:var(--muted-2); white-space:nowrap; }
+.fov-bar{ stroke:#EAF0F8; stroke-width:1.5; }
+.fov-barlab{ fill:#93A0BA; font:10px 'IBM Plex Mono',monospace; }
+.archs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
+.arch{ display:block; padding:12px 14px; border:1px solid var(--hair-2); border-radius:4px; text-decoration:none; background:rgba(255,255,255,0.02); }
+.arch:hover{ border-color:var(--brass); }
+.a-l{ display:block; color:var(--text); font-weight:500; font-size:13px; }
+.a-d{ display:block; color:var(--muted); font-size:11.5px; line-height:1.5; margin-top:3px; }
+.a-u{ display:block; color:var(--cyan); font:10.5px var(--f-data); margin-top:7px; }
+.icards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
+.icard{ text-align:left; padding:12px; background:rgba(255,255,255,0.02); border:1px solid var(--hair-2); border-top:3px solid var(--c); border-radius:4px; cursor:pointer; color:var(--text); font-family:var(--f-ui); }
+.icard:hover{ border-color:var(--brass); border-top-color:var(--c); }
+.ic-n{ display:block; font-weight:600; font-size:14px; }
+.ic-k{ display:block; color:var(--muted); font-size:11.5px; margin-top:2px; }
+.ic-r{ display:block; color:var(--cyan); font:10.5px var(--f-data); margin-top:8px; }
+.notes{ margin:0; padding-left:18px; font-size:12.5px; line-height:1.65; color:var(--body); max-width:75ch; }
+.lnks{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+.lnk{ display:inline-flex; flex-direction:column; padding:8px 12px; border:1px solid var(--hair-2); border-radius:4px; text-decoration:none; color:var(--text); font-size:12.5px; }
+.lnk:hover{ border-color:var(--brass); }
+.lnk em{ font:normal 10.5px var(--f-data); color:var(--cyan); margin-top:3px; }
+@media (max-width: 860px){
+  .inst-body{ flex-direction:column; }
+  .inst-nav{ width:auto; display:flex; gap:6px; overflow-x:auto; overflow-y:hidden; border-right:0; border-bottom:1px solid var(--hair); padding:8px var(--gr) 8px var(--gl); flex:none; }
+  .nav-i{ flex:none; width:auto; margin:0; white-space:nowrap; }
+  .nav-i .k{ display:none; }
+  .inst-main{ padding:16px var(--gr) calc(60px + env(safe-area-inset-bottom, 0px)) var(--gl); }
+  .inst-name{ font-size:24px; }
+  .stable .srow{ flex-direction:column; gap:3px; }
+  .stable .k{ flex:none; }
+  .pills{ margin-left:0; width:100%; }
+  .inst-title{ font-size:15px; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header id="top">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#D4A461" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#D4A461" stroke="none"/><ellipse cx="12" cy="12" rx="10.5" ry="4.2" transform="rotate(-24 12 12)"/><circle cx="20.6" cy="7.4" r="1.3" fill="#93D2DC" stroke="none"/></svg>
+      <h1>Observatoires en orbite</h1>
+    </div>
+    <nav id="tabs" role="tablist" aria-label="Observatoire"></nav>
+  </header>
+
+  <div id="main">
+    <section id="stage" aria-label="Vue 3D">
+      <div class="hud" id="hud-title">
+        <div id="t-name"></div>
+        <div id="t-sub"></div>
+        <div id="t-src"></div>
+      </div>
+      <div id="cmp-labels" hidden></div>
+      <div id="callout" hidden></div>
+      <div id="hover-tip" hidden></div>
+      <div id="hint">Glisser pour tourner · molette ou pincement pour zoomer · cliquer une pièce</div>
+
+      <div id="toolbar" role="toolbar" aria-label="Affichage">
+        <label class="explode" title="Écarter les pièces">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5.5" y="5.5" width="5" height="5"/><path d="M8 3.6V1M8 15v-2.6M3.6 8H1M15 8h-2.6"/></svg>
+          <span class="lbl">Éclater</span>
+          <input id="explode" type="range" min="0" max="100" value="0" aria-label="Éclater les pièces">
+        </label>
+        <span class="tool-sep"></span>
+        <button class="tool" id="b-sun" aria-pressed="false" title="Éclairer la maquette comme elle l'est réellement en vol">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>
+          <span class="lbl">Soleil réel</span>
+        </button>
+        <button class="tool" id="b-spin" aria-pressed="true" title="Rotation automatique">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/><path d="M12.4 1.4v3h-3"/></svg>
+          <span class="lbl">Rotation</span>
+        </button>
+        <button class="tool" id="b-reset" title="Recadrer la vue">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 5.5v-4h4M14.5 5.5v-4h-4M1.5 10.5v4h4M14.5 10.5v4h-4"/></svg>
+          <span class="lbl">Recadrer</span>
+        </button>
+      </div>
+
+      <div id="loader" hidden>
+        <div class="l-title"></div>
+        <div class="bar"><i></i></div>
+        <div class="l-sub"></div>
+        <div class="l-err" hidden></div>
+        <button id="l-retry" hidden>Réessayer</button>
+      </div>
+    </section>
+
+    <aside id="panel">
+      <div id="ptabs" role="tablist"></div>
+      <div id="pbody"></div>
+    </aside>
+  </div>
+
+  <div id="inst-page" hidden>
+    <div class="inst-top">
+      <button class="inst-back" id="inst-close">← Vue 3D</button>
+      <div class="inst-title">Instruments et données</div>
+      <div class="pills" id="inst-pills"></div>
+    </div>
+    <div class="inst-body">
+      <nav class="inst-nav" id="inst-nav"></nav>
+      <div class="inst-main" id="inst-main"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+/* =================================================================
+   OBSERVATOIRES — fiche, pièces cliquables, réglages de la maquette.
+   Axes : repère propre à chaque fichier 3D (voir `axis`, `size`).
+   explode = [dx,dy,dz, distance en mètres] dans le repère de la maquette.
+================================================================= */
+var TELESCOPES = [
+  {
+    id:'hubble', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
+    agency:'NASA / ESA', launch:'Lancé le 24 avril 1990, navette Discovery (STS-31)',
+    sub:'Orbite basse terrestre · ultraviolet, visible, proche infrarouge',
+    src:'Maquette : NASA VTAD, via Gaia Sky',
+    file:'models/hubble.glb', bytes:3350204, axis:'z', size:13.2,
+    view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
+    hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
+    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:11110, len:13.2 },
+    desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
+    sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Longueur','13,2 m'], ['Diamètre max.','4,2 m'],
+        ['Masse au lancement','≈ 11 110 kg'],
+        ['Missions d\'entretien','5 (1993, 1997, 1999, 2002, 2009)'],
+        ['Pointage','1 gyroscope en service depuis 2024 (mode économe)'] ]},
+      { title:'Optique', rows:[
+        ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · verre ULE · 828 kg'],
+        ['Miroir secondaire','0,3 m'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
+        ['Stabilité de pointage','0,007″'] ]},
+      { title:'Instruments actifs', rows:[
+        ['WFC3','caméra grand champ, UV à proche IR (2009)'], ['ACS','caméra de relevés (2002)'],
+        ['STIS','spectrographe imageur (1997)'], ['COS','spectrographe ultraviolet (2009)'],
+        ['FGS','3 capteurs de guidage fin'] ]},
+      { title:'Orbite', rows:[
+        ['Altitude','≈ 500–540 km, en lente décroissance'], ['Inclinaison','28,5°'],
+        ['Période','≈ 95 min (≈ 15 orbites par jour)'], ['Vitesse','≈ 27 000 km/h'] ]},
+      { title:'Énergie et données', rows:[
+        ['Panneaux solaires','2 ailes rigides de 7,1 × 2,6 m'], ['Puissance','≈ 5 kW produits'],
+        ['Batteries','6, nickel-hydrogène'], ['Liaison','bande S, relais par satellites TDRS'] ]}
+    ],
+    parts:[
+      { key:'door', name:"Porte d'ouverture et pare-lumière", explode:[0,0,1,3.4],
+        desc:"L'entrée du télescope. Le volet se referme automatiquement si l'axe de visée s'approche trop du Soleil, pour protéger l'optique. Derrière lui, le pare-lumière bloque la lumière parasite de la Terre et de la Lune.",
+        facts:['Volet ≈ 3 m de diamètre','Fermeture automatique de sécurité'] },
+      { key:'ota', name:'Coque avant (miroir secondaire)', explode:[0,0,1,1.5],
+        desc:"Le tube qui prolonge le télescope vers l'avant. Il contient les déflecteurs internes et, à l'intérieur, le miroir secondaire de 0,3 m, tenu à 4,9 m en avant du miroir primaire par une structure en graphite-époxy presque insensible à la température.",
+        facts:['Miroir secondaire : 0,3 m','Écart primaire–secondaire : 4,9 m'] },
+      { key:'ssm', name:"Section d'équipements", explode:[0,0,0,0],
+        desc:"L'anneau de baies qui ceinture le télescope. On y trouve les ordinateurs de bord, les batteries, les roues de réaction qui orientent le satellite et les équipements de communication. Les portes s'ouvrent pour que les astronautes puissent remplacer les boîtiers.",
+        facts:['10 baies d\'équipements','4 roues de réaction','6 batteries nickel-hydrogène'] },
+      { key:'aft', name:'Carénage arrière (instruments)', explode:[0,0,-1,2.6],
+        desc:"La partie la plus large. Juste à l'avant se trouve le miroir primaire de 2,4 m ; derrière lui, au foyer, les instruments scientifiques : quatre logements axiaux, un logement radial occupé par WFC3 et les trois capteurs de guidage fin. Les rampes jaunes servaient aux astronautes.",
+        facts:['Miroir primaire : 2,4 m, 828 kg','4 instruments axiaux + 1 radial','3 capteurs de guidage fin'] },
+      { key:'array_stbd', name:'Panneau solaire (+V2)', explode:[1,0,0,3.2],
+        desc:"L'une des deux ailes solaires rigides à l'arséniure de gallium, posées en 2002. Plus petites que les panneaux souples d'origine, elles produisent pourtant davantage et vibrent moins au passage jour/nuit.",
+        facts:['7,1 × 2,6 m','Arséniure de gallium','Installé en 2002 (SM3B)'] },
+      { key:'array_port', name:'Panneau solaire (−V2)', explode:[-1,0,0,3.2],
+        desc:"La seconde aile solaire, identique à la première. Les deux pivotent autour de leur mât pour rester face au Soleil quelle que soit la direction visée par le télescope.",
+        facts:['7,1 × 2,6 m','≈ 5 kW pour les deux ailes'] },
+      { key:'hga_top', name:'Antenne grand gain', explode:[0,1,0,2.4],
+        desc:"Parabole orientable au bout d'un mât. Hubble ne parle pas directement au sol : il envoie ses données vers les satellites relais TDRS en orbite géostationnaire, qui les retransmettent à White Sands (Nouveau-Mexique).",
+        facts:['Parabole de 1,3 m','Bande S, via TDRS'] },
+      { key:'hga_bottom', name:'Antenne grand gain (seconde)', explode:[0,-1,0,2.4],
+        desc:"La seconde parabole, sur le flanc opposé. Avoir deux antennes permet de garder le contact avec un satellite relais quelle que soit l'orientation du télescope.",
+        facts:['Parabole de 1,3 m','Redondance et couverture'] }
+    ]
+  },
+  {
+    id:'jwst', name:'James Webb Space Telescope', short:'JWST', year:'2021',
+    agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
+    sub:'Point de Lagrange L2 · infrarouge proche et moyen',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/jwst.glb', bytes:3996340, axis:null, size:0,
+    view:{ az:0.62, el:0.30, dist:1.35 }, sun:[0.18,-0.97,-0.16], orbit:'l2',
+    hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
+    cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
+    desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
+    sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Bouclier thermique','21,2 × 14,2 m'], ['Hauteur','≈ 8 m'], ['Masse au lancement','≈ 6 200 kg'],
+        ['Durée de vie','5 ans requis ; ergols pour plus de 20 ans'] ]},
+      { title:'Optique', rows:[
+        ['Type','anastigmat à trois miroirs (Korsch)'], ['Miroir primaire','6,5 m · 18 segments en béryllium doré'],
+        ['Surface collectrice','25,4 m²'], ['Longueur focale','131,4 m'], ['Rapport focal','f/20,2'],
+        ['Domaine spectral','0,6 à 28,8 µm'] ]},
+      { title:'Thermique', rows:[
+        ['Côté froid','≈ 40 K (−233 °C)'], ['Détecteur de MIRI','≈ 7 K (cryo-refroidisseur)'],
+        ['Côté chaud','jusqu\'à ≈ 85 °C'], ['Atténuation du bouclier','≈ 1 million (200 kW reçus, < 1 W transmis)'] ]},
+      { title:'Instruments', rows:[
+        ['NIRCam','caméra proche infrarouge'], ['NIRSpec','spectrographe multi-objets (ESA)'],
+        ['MIRI','imageur et spectrographe moyen infrarouge'], ['NIRISS / FGS','imageur, spectro sans fente et guidage (ASC)'] ]},
+      { title:'Orbite et communications', rows:[
+        ['Position','halo autour de L2, à ≈ 1,5 million de km'], ['Période du halo','≈ 6 mois'],
+        ['Liaison science','bande Ka, jusqu\'à 28 Mbit/s'], ['Volume','≈ 57 Go par jour (2 contacts de 4 h)'] ]}
+    ],
+    parts:[
+      { key:'primary', name:'Miroir primaire', explode:[0,0.25,1,3.0],
+        desc:"Dix-huit hexagones de béryllium, un métal léger et stable au froid, recouverts d'une couche d'or de 100 nanomètres qui réfléchit très bien l'infrarouge. Chaque segment est positionné au nanomètre près par sept actionneurs pour que l'ensemble se comporte comme un seul miroir.",
+        facts:['18 segments de 1,32 m','≈ 20 kg par segment','Or : 100 nm d\'épaisseur','25,4 m² de surface collectrice'] },
+      { key:'secondary', name:'Miroir secondaire et trépied', explode:[0,0.2,1,6.0],
+        desc:"Un miroir convexe de 74 cm tenu devant le primaire par trois longs bras qui se sont dépliés après le lancement. Il renvoie la lumière collectée vers l'ouverture au centre du miroir primaire.",
+        facts:['Miroir convexe de 0,74 m','Bras d\'environ 7,6 m'] },
+      { key:'aos', name:'Optique arrière (AOS)', explode:[0,0,1,4.4],
+        desc:"La tourelle noire au centre du miroir. Elle renferme le miroir tertiaire, qui corrige l'image, et le petit miroir de pointage fin qui compense plusieurs fois par seconde les minuscules mouvements de l'observatoire.",
+        facts:['Miroir tertiaire fixe','Miroir de pointage fin'] },
+      { key:'isim', name:"Module d'instruments (ISIM)", explode:[0,0.55,-1,3.6],
+        desc:"Derrière le miroir, la structure qui porte les quatre instruments scientifiques. Elle reste à environ 40 K dans l'ombre du bouclier ; MIRI, qui observe à plus grande longueur d'onde, est refroidi à 7 K par un réfrigérateur à hélium.",
+        facts:['NIRCam, NIRSpec, MIRI, NIRISS/FGS','≈ 40 K ; MIRI à ≈ 7 K'] },
+      { key:'sunshield', name:'Bouclier thermique', explode:[0,0,0,0],
+        desc:"Cinq feuilles de Kapton plus fines qu'un cheveu, aluminisées, séparées par du vide. Chaque couche est plus froide que la précédente et la chaleur s'échappe par les côtés. Les deux couches côté Soleil portent un revêtement de silicium dopé, d'où leur teinte rosée.",
+        facts:['21,2 × 14,2 m','5 couches de Kapton E','Couche 1 : 0,05 mm ; autres : 0,025 mm'] },
+      { key:'flap', name:"Volet d'équilibrage", explode:[0,0,-1,2.6],
+        desc:"La pression de la lumière solaire sur le grand bouclier fait lentement tourner l'observatoire. Ce volet à l'arrière rééquilibre cette poussée, ce qui économise le carburant nécessaire pour décharger les roues de réaction.",
+        facts:['Compense la pression de radiation solaire'] },
+      { key:'tower', name:'Tour déployable', explode:[0,-0.4,0,1.2],
+        desc:"Un mât télescopique qui a soulevé le télescope d'un peu plus d'un mètre au-dessus de la plateforme après le lancement. Cet écart laisse la place au bouclier de se déployer et isole le côté froid des équipements chauds.",
+        facts:['Extension de ≈ 1,2 m'] },
+      { key:'bus', name:'Plateforme de service', explode:[0,-1,0,3.0],
+        desc:"Le côté chaud. Ce caisson en composite de carbone, toujours éclairé par le Soleil, contient l'ordinateur de bord, les roues de réaction, les réservoirs et moteurs, l'alimentation électrique et le compresseur du réfrigérateur de MIRI.",
+        facts:['Température proche de l\'ambiante','Propulsion, pointage, calcul, énergie'] },
+      { key:'solar', name:'Panneau solaire', explode:[0,-1,-0.7,4.2],
+        desc:"Cinq panneaux articulés, dépliés une demi-heure après le lancement. Comme Webb reste toujours dos au Soleil, le panneau est fixe : il est éclairé en permanence.",
+        facts:['5 panneaux, ≈ 6 m de long','≈ 2 kW'] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,-1,0.5,4.6],
+        desc:"Sous la plateforme, tournée vers la Terre. La petite parabole en bande Ka envoie les données scientifiques vers le réseau Deep Space Network lors de deux contacts quotidiens ; une antenne plus petite en bande S sert aux commandes.",
+        facts:['Parabole Ka de 0,6 m','Jusqu\'à 28 Mbit/s','≈ 57 Go par jour'] }
+    ]
+  },
+  {
+    id:'euclid', name:'Euclid', short:'Euclid', year:'2023',
+    agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
+    sub:'Point de Lagrange L2 · visible et proche infrarouge',
+    src:'Maquette : ESA SciFleet, via Gaia Sky',
+    file:'models/euclid.glb', bytes:5977896, axis:'y', size:4.7,
+    view:{ az:0.75, el:0.26, dist:1.6 }, sun:[-0.44,0.12,0.89], orbit:'l2',
+    hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
+    cmp:{ tag:'4,7 m', dim:'4,7 m de haut · Ø 3,7 m', mirror:1.2, mass:2000, len:4.7 },
+    desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
+    sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Hauteur','4,7 m'], ['Diamètre','3,7 m'], ['Masse au lancement','≈ 2 000 kg'],
+        ['Mission nominale','6 ans'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
+      { title:'Optique', rows:[
+        ['Type','Korsch à trois miroirs, hors axe de champ'], ['Miroir primaire','1,2 m · carbure de silicium'],
+        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,53 deg²'],
+        ['Température du télescope','≈ 130 K, refroidissement passif'] ]},
+      { title:'VIS (visible)', rows:[
+        ['Détecteurs','36 CCD (6 × 6) · ≈ 610 Mpx'], ['Bande','550–900 nm'],
+        ['Échantillonnage','0,1″ par pixel'], ['Température des CCD','≈ 150 K (−123 °C)'] ]},
+      { title:'NISP (proche infrarouge)', rows:[
+        ['Détecteurs','16 matrices HgCdTe H2RG'], ['Photométrie','Y, J, H (0,95–2,02 µm)'],
+        ['Spectroscopie','grismes sans fente (bleu et rouge)'], ['Température des détecteurs','≈ 95 K (−180 °C)'] ]},
+      { title:'Orbite et données', rows:[
+        ['Position','halo autour de L2'], ['Relevé','≈ 14 000 deg² en 6 ans'],
+        ['Liaison science','bande K (26 GHz), ≈ 55 Mbit/s'], ['Volume','jusqu\'à ≈ 850 Gbit par jour'] ]}
+    ],
+    parts:[
+      { key:'sunshield', name:'Pare-soleil et panneaux solaires', explode:[-0.44,0,0.9,2.2],
+        desc:"Le grand panneau tourné en permanence vers le Soleil. Il porte les cellules solaires sur sa face éclairée et garde tout le télescope dans l'ombre, condition indispensable à la stabilité thermique des images.",
+        facts:['3 panneaux photovoltaïques','≈ 1,8 à 2,4 kW selon l\'orientation'] },
+      { key:'baffle', name:'Télescope et baffle externe', explode:[0,1,0,2.2],
+        desc:"Le cylindre couvert d'isolant qui entoure le télescope. À l'intérieur, les miroirs et leur structure sont entièrement en carbure de silicium, une céramique qui ne se déforme presque pas quand la température varie.",
+        facts:['Miroir primaire de 1,2 m','Tout en carbure de silicium','≈ 130 K'] },
+      { key:'instr', name:"Baie d'instruments (VIS et NISP)", explode:[0,1,0,0.9],
+        desc:"Sous le télescope, le plateau qui porte les deux instruments. Une lame dichroïque partage la lumière : le visible part vers VIS, l'infrarouge traverse vers NISP. Les deux observent donc exactement le même champ en même temps. Les radiateurs évacuent la chaleur vers l'espace.",
+        facts:['VIS : 36 CCD, ≈ 610 Mpx','NISP : 16 détecteurs infrarouges','Lame dichroïque de partage'] },
+      { key:'svm', name:'Module de service', explode:[0,0,0,0],
+        desc:"La plateforme : ordinateurs, réservoirs, électronique chaude des instruments et système de pointage. Des micro-propulseurs à azote froid tiennent la visée avec une stabilité de quelques centièmes de seconde d'arc pendant les poses.",
+        facts:['Micro-propulseurs à gaz froid (azote)','Capteur de guidage fin dans le plan focal VIS'] },
+      { key:'hga', name:'Antenne grand gain', explode:[0.9,-0.3,-0.44,1.8],
+        desc:"La parabole orientable en bande K, qui transmet chaque jour pendant environ quatre heures les images compressées vers les stations de 35 m de l'ESA.",
+        facts:['Bande K, 26 GHz','≈ 55 Mbit/s','Jusqu\'à ≈ 850 Gbit par jour'] },
+      { key:'adapter', name:"Anneau d'interface lanceur", explode:[0,-1,0,1.4],
+        desc:"L'anneau par lequel le satellite était fixé au sommet de la fusée Falcon 9. Il ne sert plus après la séparation.",
+        facts:['Interface avec Falcon 9'] }
+    ]
+  },
+  {
+    id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
+    agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
+    sub:'Point de Lagrange L2 (2014–2025) · astrométrie en lumière visible',
+    src:'Maquette : Toni Sagristà, Gaia Sky',
+    file:'models/gaia.glb', bytes:1361236, axis:'x', size:10.2,
+    view:{ az:0.6, el:0.42, dist:1.35 }, sun:[0.5,-0.85,0.17], orbit:'l2',
+    hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
+    cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
+    desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
+    sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Pare-soleil déployé','Ø ≈ 10 m'], ['Hauteur','≈ 3 m'], ['Masse au lancement','≈ 2 030 kg'],
+        ['Fin des observations','15 janvier 2025'], ['Mise hors service','27 mars 2025 (orbite solaire)'] ]},
+      { title:'Optique', rows:[
+        ['Télescopes','2 anastigmats à trois miroirs'], ['Miroirs primaires','1,45 × 0,50 m chacun'],
+        ['Longueur focale','35 m'], ['Angle de base','106,5°'], ['Matériau','carbure de silicium'] ]},
+      { title:'Plan focal', rows:[
+        ['Détecteurs','106 CCD · ≈ 938 Mpx'], ['Dimensions','≈ 1,0 × 0,4 m'],
+        ['Lecture','TDI, synchronisée sur la rotation'], ['Fonctions','astrométrie, photométrie BP/RP, spectromètre RVS'] ]},
+      { title:'Loi de balayage', rows:[
+        ['Rotation','1 tour en 6 h (60″/s)'], ['Axe de rotation','à 45° du Soleil'],
+        ['Précession','63 jours'], ['Orbite','Lissajous autour de L2'] ]},
+      { title:'Catalogues', rows:[
+        ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Précision (étoiles brillantes)','≈ 0,02 mas'],
+        ['Gaia DR4','attendu fin 2026 (5,5 ans de données)'] ]}
+    ],
+    parts:[
+      { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],
+        desc:"Une jupe de douze panneaux qui s'est ouverte comme une ombrelle après le lancement. Elle garde les télescopes dans une ombre permanente, à température constante : la moindre dilatation fausserait des mesures d'angle au millionième de degré.",
+        facts:['Ø ≈ 10 m','12 cadres repliables','Deux couches d\'isolant'] },
+      { key:'solar', name:'Panneaux solaires', nodes:['SolarPanels_Cube'], explode:[0,-1,0,1.9],
+        desc:"Les cellules sont posées sur la face ensoleillée, sous le satellite dans cette vue. Comme l'axe de Gaia garde un angle fixe de 45° avec le Soleil, l'éclairement ne varie jamais.",
+        facts:['Arséniure de gallium','≈ 1,9 kW'] },
+      { key:'svmbase', name:'Antenne réseau à commande de phase', nodes:['Floor_Circle','Bottom-details_Cylinder'], explode:[0,-1,0,2.9],
+        desc:"Sous le satellite, face à la Terre. Une parabole orientable aurait fait vibrer Gaia : le faisceau est donc dirigé électroniquement, sans aucune pièce mobile, pendant que le satellite tourne.",
+        facts:['Bande X','Aucune pièce mobile'] },
+      { key:'svm', name:'Module de service', nodes:['ServiceModule-bottom_Cylinder'], explode:[0,0,0,0],
+        desc:"L'anneau qui porte l'électronique, les réservoirs et une horloge atomique au rubidium pour dater chaque mesure. Des micro-propulseurs à azote froid maintiennent la rotation avec une régularité extrême.",
+        facts:['Horloge atomique au rubidium','Micro-propulsion à gaz froid'] },
+      { key:'tent', name:'Tente thermique', nodes:['TTS_Cylinder','TTS-inner_Cylinder','Top_Circle','Top-ceiling_Circle','GoldenBorders_Cylinder','GoldSquare_Cube'], explode:[0,1,0,2.6],
+        desc:"La coque qui enveloppe la charge utile. Elle la protège des micrométéorites et du rayonnement, et ne laisse que deux ouvertures par lesquelles regardent les deux télescopes.",
+        facts:['2 ouvertures de visée','Structure en composite de carbone'] },
+      { key:'torus', name:'Banc optique (tore)', nodes:['Torus_Torus'], explode:[0,1,0,1.1],
+        desc:"Un anneau de carbure de silicium d'environ 3 m, assemblé à partir de 17 segments brasés. Il porte les dix miroirs des deux télescopes et le plan focal, et garantit que l'angle entre les deux lignes de visée reste fixe.",
+        facts:['Ø ≈ 3 m','17 segments en carbure de silicium','Porte 10 miroirs'] },
+      { key:'focal', name:'Plan focal et instruments', nodes:['FocalPlane_Cube','Instr1_Cube','Instr2_Cube','InstrBG_Plane','Plane'], explode:[0,1,0,1.9],
+        desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
+        facts:['106 CCD · ≈ 938 Mpx','≈ 1,0 × 0,4 m'] }
+    ]
+  }
+];
+
+/* =================================================================
+   INSTRUMENTS — données par observatoire.
+   Caractéristiques issues des documentations officielles (manuels STScI / JDox,
+   ESA Euclid & Gaia, articles d'instrument).
+   example.real = valeurs réellement publiées ; sinon structure réelle du produit
+   avec des valeurs d'exemple (signalé dans l'interface).
+================================================================= */
+var INST_DATA = (function(){
+
+  function F(s){ var p = s.split(":"); return { n:p[0], c:parseFloat(p[1]), k:p[2]||"", note:p[3]||"", g:p[4]||"" }; }
+  function R(n, lo, hi, k, note){ return { n:n, lo:lo, hi:hi, k:k||"G", note:note||"" }; }
+
+  function mastCode(coll, inst, filt, ra, dec, rad, sub, extra){
+    return "from astroquery.mast import Observations\n" +
+           "from astropy.coordinates import SkyCoord\n" +
+           "import astropy.units as u\n\n" +
+           "pos = SkyCoord(" + ra + ", " + dec + ", unit=\"deg\")   # " + extra + "\n" +
+           "obs = Observations.query_criteria(\n" +
+           "    coordinates=pos, radius=" + rad + "*u.arcmin,\n" +
+           "    obs_collection=\"" + coll + "\",\n" +
+           "    instrument_name=\"" + inst + "\",\n" +
+           (filt ? "    filters=\"" + filt + "\",\n" : "") +
+           "    calib_level=3,\n" +
+           ")\n" +
+           "products = Observations.get_product_list(obs[:1])\n" +
+           "sel = Observations.filter_products(products, productSubGroupDescription=\"" + sub + "\")\n" +
+           "Observations.download_products(sel)   # écrit dans ./mastDownload/";
+  }
+
+  var HST_HEADER =
+"SIMPLE  =                    T\n" +
+"TELESCOP= 'HST'                / telescope used to acquire data\n" +
+"INSTRUME= 'WFC3'               / identifier for instrument used\n" +
+"DETECTOR= 'UVIS'               / detector in use: UVIS or IR\n" +
+"FILTER  = 'F606W'              / element selected from filter wheel\n" +
+"APERTURE= 'UVIS-CENTER'        / aperture name\n" +
+"TARGNAME= 'NGC-4258'           / proposer's target name\n" +
+"RA_TARG =       1.847396E+02   / right ascension of the target (deg)\n" +
+"DEC_TARG=       4.730389E+01   / declination of the target (deg)\n" +
+"PROPOSID=                12345 / PEP proposal identifier\n" +
+"DATE-OBS= '2015-03-14'         / UT date of start of observation\n" +
+"EXPTIME =              696.000 / exposure duration (seconds)\n" +
+"[SCI]  BUNIT = 'ELECTRONS'  ·  PHOTPLAM ≈ 5888 Å  ·  PHOTFLAM ≈ 8E-20 erg/cm²/Å/e⁻";
+
+  return {
+
+  /* ------------------------------------------------------------ HUBBLE */
+  hubble: {
+    axis: { min:0.09, max:2.0 },
+    summary: "Cinq instruments scientifiques actifs, dont deux spectrographes ultraviolets et deux caméras. Les instruments sont interchangeables en orbite : la plupart ont été installés lors de missions d'entretien en navette (1993–2009).",
+    archives: [
+      { label:"MAST, archive Hubble", url:"https://archive.stsci.edu/hst/", desc:"Recherche, aperçus et téléchargement des observations HST ; accès par programme via astroquery.mast." },
+      { label:"ESA, eHST", url:"https://hst.esac.esa.int/ehst/", desc:"Archive Hubble de l'ESA (miroir européen)." },
+      { label:"Manuels d'instruments", url:"https://hst-docs.stsci.edu/", desc:"Instrument & Data Handbooks (WFC3, ACS, STIS, COS)." }
+    ],
+    instruments: [
+      { id:"wfc3", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
+        bands:[ {l:"UVIS",lo:0.2,hi:1.0}, {l:"IR",lo:0.8,hi:1.7} ],
+        fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
+        summary:"Caméra de quatrième génération installée en 2009 (SM4). Deux canaux indépendants, dont un seul est utilisable à la fois, couvrent de l'ultraviolet proche à l'infrarouge proche.",
+        specs:[
+          ["Canal UVIS","200–1000 nm · 2 CCD e2v 2k×4k · 0,040″/px · 162″×162″ · f/31"],
+          ["Canal IR","800–1700 nm · HgCdTe 1k×1k (Teledyne) · 0,13″/px · 136″×123″ · f/11"],
+          ["Filtres","UVIS : large choix (large, moyenne, étroite) · IR : 15"],
+          ["Grismes","G280 (UVIS) · G102 et G141 (IR)"],
+          ["Bruit de lecture","3 e⁻ (UVIS), contre 4 e⁻ pour l'ACS"],
+          ["Sensibilité (S/N=10, 10 h)","V = 29,2 (F606W) · H = 27,9 (F160W), mag AB, source ponctuelle"]
+        ],
+        filtersTitle:"Filtres (sélection représentative)",
+        filters:[
+          F("F225W:0.225:W::UVIS"),F("F275W:0.275:W::UVIS"),F("F336W:0.336:W::UVIS"),F("F438W:0.438:W::UVIS"),F("F555W:0.555:W::UVIS"),
+          F("F606W:0.606:W::UVIS"),F("F775W:0.775:W::UVIS"),F("F814W:0.814:W::UVIS"),F("F850LP:0.850:LP:coupure à 850 nm:UVIS"),
+          F("F502N:0.502:N:[O III]:UVIS"),F("F656N:0.656:N:Hα:UVIS"),
+          F("F098M:0.98:M::IR"),F("F105W:1.05:W::IR"),F("F110W:1.10:W::IR"),F("F125W:1.25:W::IR"),F("F128N:1.28:N:Pa β:IR"),
+          F("F140W:1.40:W::IR"),F("F153M:1.53:M::IR"),F("F160W:1.60:W::IR"),F("F164N:1.64:N:[Fe II]:IR")
+        ],
+        products:[
+          ["_raw.fits","exposition brute, non calibrée"],
+          ["_flt.fits","image calibrée (biais, dark, flat), non rééchantillonnée ; extensions SCI / ERR / DQ"],
+          ["_flc.fits","comme _flt, avec correction de CTE (UVIS)"],
+          ["_drz / _drc.fits","produits combinés rééchantillonnés par AstroDrizzle (_drc : CTE corrigée)"],
+          ["Nommage","IPPPSSOOT : « i » = WFC3, puis programme, visite, observation"]
+        ],
+        example:{ real:false, title:"En-tête FITS d'un produit _flt (extrait)", caption:"Mots-clés réels du format ; les valeurs sont un exemple.", text:HST_HEADER },
+        code:{ title:"Récupérer des images WFC3/UVIS (astroquery.mast)", text:mastCode("HST","WFC3/UVIS","F606W","189.6","-5.9",2,"FLC","exemple : champ quelconque") },
+        notes:[
+          "UVIS : les pertes de transfert de charge (CTE) augmentent avec le temps. Préférer les produits _flc / _drc.",
+          "IR : persistance d'image après exposition à des sources brillantes ; la lecture est « up-the-ramp » (plusieurs lectures par pose).",
+          "Un miroir de sélection de canal envoie la lumière soit vers UVIS soit vers IR : pas de pose simultanée."
+        ],
+        docs:[ {l:"WFC3 Instrument Handbook",u:"https://hst-docs.stsci.edu/wfc3ihb"}, {l:"WFC3 Data Handbook",u:"https://hst-docs.stsci.edu/wfc3dhb"} ] },
+
+      { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
+        bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
+        fov:[ {l:"WFC",w:202,h:202} ],
+        summary:"Installée en 2002 (SM3B). Son canal grand champ WFC a servi aux grands relevés (champs profonds, amas de galaxies). Une panne électronique en janvier 2007 a mis hors service WFC et HRC ; le WFC a été réparé en 2009, pas le HRC.",
+        specs:[
+          ["WFC","350–1100 nm · 202″×202″ · 0,05″/px"],
+          ["SBC","imagerie ultraviolette lointaine « solar-blind » (MAMA) · ≈ 115–170 nm · 0,032″/px"],
+          ["HRC","hors service depuis 2007 (non réparable en SM4)"]
+        ],
+        filtersTitle:"Filtres WFC / SBC (sélection)",
+        filters:[
+          F("F435W:0.435:W::WFC"),F("F475W:0.475:W::WFC"),F("F555W:0.555:W::WFC"),F("F606W:0.606:W::WFC"),F("F625W:0.625:W::WFC"),
+          F("F775W:0.775:W::WFC"),F("F814W:0.814:W::WFC"),F("F850LP:0.850:LP:coupure à 850 nm:WFC"),F("F658N:0.658:N:Hα + [N II]:WFC"),
+          F("F115LP:0.115:LP:coupure à 115 nm:SBC"),F("F122M:0.122:M:Lyα:SBC"),F("F140LP:0.140:LP::SBC"),F("F165LP:0.165:LP::SBC")
+        ],
+        products:[
+          ["_flt / _flc.fits","images calibrées sans / avec correction de CTE"],
+          ["_drz / _drc.fits","produits combinés AstroDrizzle"],
+          ["Nommage","IPPPSSOOT : « j » = ACS"]
+        ],
+        example:{ real:false, title:"Structure d'un produit ACS/WFC _flc", caption:"Extensions réelles d'un fichier calibré ; chaque CCD occupe un jeu d'extensions.", text:
+"HDU 0  PRIMARY       en-tête global (TELESCOP, INSTRUME='ACS', DETECTOR='WFC', FILTER1/2, EXPTIME …)\n" +
+"HDU 1  SCI  (1)      CCD WFC2 · image en e⁻  (4096 × 2048)\n" +
+"HDU 2  ERR  (1)      incertitude par pixel\n" +
+"HDU 3  DQ   (1)      masque de qualité (bits)\n" +
+"HDU 4  SCI  (2)      CCD WFC1 · image en e⁻  (4096 × 2048)\n" +
+"HDU 5  ERR  (2)\n" +
+"HDU 6  DQ   (2)" },
+        code:{ title:"Récupérer des images ACS/WFC (astroquery.mast)", text:mastCode("HST","ACS/WFC","F814W","53.1625","-27.7914",2,"DRC","exemple : Hubble Ultra Deep Field") },
+        notes:[
+          "Les deux CCD du WFC sont stockés dans des extensions distinctes (SCI,1 et SCI,2).",
+          "Comme pour WFC3/UVIS, les produits _flc / _drc incluent la correction de CTE."
+        ],
+        docs:[ {l:"ACS Instrument Handbook",u:"https://hst-docs.stsci.edu/acsihb"} ] },
+
+      { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
+        bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.25,hi:1.1} ],
+        fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
+        summary:"Spectrographe à longue fente (jusqu'à 52″) installé en 1997, tombé en panne en 2004 et réparé en 2009 lors de SM4. Il combine trois détecteurs : deux MAMA ultraviolets et un CCD.",
+        specs:[
+          ["FUV-MAMA","115–170 nm · 0,024″/px · champ 25″×25″"],
+          ["NUV-MAMA","165–310 nm · 0,024″/px · champ 25″×25″"],
+          ["CCD","250–1100 nm · 0,05″/px · champ 52″×52″"],
+          ["Résolution spectrale","R ≈ 500–1 000 (réseaux L) · ≈ 10 000–20 000 (M) · ≈ 30 000–114 000 (échelles)"]
+        ],
+        filtersTitle:"Réseaux de dispersion (plages nominales)",
+        filters:[
+          R("G140L",0.115,0.173,"G","FUV-MAMA, basse résolution"),
+          R("G230L",0.157,0.318,"G","NUV-MAMA, basse résolution"),
+          R("G430L",0.29,0.57,"G","CCD, basse résolution"),
+          R("G750L",0.524,1.027,"G","CCD, basse résolution"),
+          R("E140M",0.114,0.171,"G","échelle FUV, R ≈ 45 000")
+        ],
+        products:[
+          ["_raw / _flt.fits","poses brutes et calibrées"],
+          ["_x1d.fits","spectre 1D extrait (table binaire)"],
+          ["_x2d.fits","spectre 2D rectifié (longueur d'onde × position sur la fente)"],
+          ["_crj.fits","combinaison de poses CCD avec rejet des rayons cosmiques"]
+        ],
+        example:{ real:false, title:"Colonnes de la table _x1d (une ligne par ordre spectral)", caption:"Schéma réel des produits STIS ; chaque cellule contient un tableau de NELEM points.", text:
+"SPORDER     ordre spectral\n" +
+"NELEM       nombre de points du spectre\n" +
+"WAVELENGTH  longueur d'onde (Å)\n" +
+"GROSS       taux de comptage brut (c/s)\n" +
+"BACKGROUND  fond estimé (c/s)\n" +
+"NET         taux net = GROSS − BACKGROUND\n" +
+"FLUX        flux calibré (erg/s/cm²/Å)\n" +
+"ERROR       incertitude sur FLUX\n" +
+"DQ          drapeaux de qualité" },
+        code:{ title:"Récupérer des spectres STIS (astroquery.mast)", text:
+"from astroquery.mast import Observations\n\n" +
+"obs = Observations.query_criteria(\n" +
+"    obs_collection=\"HST\", instrument_name=\"STIS/CCD\",\n" +
+"    target_name=\"HD 209458\",           # exemple : hôte d'exoplanète en transit\n" +
+")\n" +
+"prods = Observations.get_product_list(obs[:3])\n" +
+"x1d = Observations.filter_products(prods, productSubGroupDescription=\"X1D\")\n" +
+"Observations.download_products(x1d)" },
+        notes:[
+          "Mode TIME-TAG disponible pour les détecteurs MAMA (événement par événement).",
+          "Panne de l'alimentation en août 2004 ; remise en service lors de la mission SM4 (2009)."
+        ],
+        docs:[ {l:"STIS Instrument Handbook",u:"https://hst-docs.stsci.edu/stisihb"} ] },
+
+      { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
+        bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.17,hi:0.32} ],
+        fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
+        summary:"Spectrographe ultraviolet sans fente à très haute sensibilité, installé en 2009 (SM4) pour étudier le milieu intergalactique, les quasars et la formation des éléments chimiques.",
+        specs:[
+          ["Voie FUV","≈ 90–215 nm · détecteur à galettes de microcanaux (lecture par lignes à retard croisées)"],
+          ["Voie NUV","≈ 170–320 nm · détecteur MAMA"],
+          ["Ouverture","PSA, circulaire, Ø 2,5″ (sans fente)"],
+          ["Résolution","R ≈ 1 500–4 000 (basse) · ≈ 16 000–24 000 (moyenne)"]
+        ],
+        filtersTitle:"Réseaux (plages nominales approximatives)",
+        filters:[
+          R("G140L",0.090,0.215,"G","FUV, basse résolution"),
+          R("G130M",0.090,0.145,"G","FUV, moyenne résolution"),
+          R("G160M",0.1405,0.1775,"G","FUV, moyenne résolution"),
+          R("G185M",0.167,0.210,"G","NUV, moyenne résolution"),
+          R("G225M",0.207,0.250,"G","NUV, moyenne résolution"),
+          R("G285M",0.248,0.322,"G","NUV, moyenne résolution"),
+          R("G230L",0.170,0.320,"G","NUV, basse résolution")
+        ],
+        products:[
+          ["_corrtag.fits","liste d'événements photon par photon (TIME-TAG) corrigée"],
+          ["_x1d.fits / _x1dsum.fits","spectre 1D extrait / somme des expositions"],
+          ["_flt.fits","image calibrée"]
+        ],
+        example:{ real:false, title:"Colonnes de la table _corrtag (une ligne par photon)", caption:"Schéma des événements TIME-TAG ; unités indicatives.", text:
+"TIME        instant d'arrivée du photon (s)\n" +
+"RAWX, RAWY  position brute sur le détecteur (pixels)\n" +
+"XCORR, YCORR  position corrigée (distorsion géométrique)\n" +
+"XDOPP       position corrigée du décalage Doppler orbital\n" +
+"EPSILON     poids (efficacité / flat-field)\n" +
+"WAVELENGTH  longueur d'onde assignée (Å)\n" +
+"DQ          drapeaux de qualité" },
+        code:{ title:"Récupérer des spectres COS (astroquery.mast)", text:
+"from astroquery.mast import Observations\n\n" +
+"obs = Observations.query_criteria(\n" +
+"    obs_collection=\"HST\", instrument_name=\"COS/FUV\",\n" +
+"    target_name=\"3C 273\",              # exemple : quasar brillant\n" +
+")\n" +
+"prods = Observations.get_product_list(obs[:3])\n" +
+"x1d = Observations.filter_products(prods, productSubGroupDescription=\"X1D\")\n" +
+"Observations.download_products(x1d)" },
+        notes:[
+          "Sans fente : la résolution effective dépend de la taille angulaire de la source.",
+          "Les données TIME-TAG permettent de redécouper le temps d'exposition a posteriori."
+        ],
+        docs:[ {l:"COS Instrument Handbook",u:"https://hst-docs.stsci.edu/cosihb"} ] },
+
+      { id:"fgs", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
+        bands:null,
+        summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (stabilité de pointage ≈ 0,007″). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
+        specs:[
+          ["Nombre","3 (deux pour le guidage, un disponible pour la science)"],
+          ["Principe","interféromètres à prismes de Koesters"],
+          ["Stabilité de pointage","≈ 0,007″"]
+        ],
+        products:[ ["Archive","données FGS (astrométrie) disponibles au MAST sous l'instrument « FGS »"] ],
+        notes:["Les FGS ont fourni plusieurs parallaxes d'étoiles céphéides avant l'ère Gaia."],
+        docs:[ {l:"Documentation Hubble (STScI)",u:"https://hst-docs.stsci.edu/"} ] }
+    ]
+  },
+
+  /* -------------------------------------------------------------- JWST */
+  jwst: {
+    axis: { min:0.5, max:30 },
+    summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,8 µm.",
+    archives: [
+      { label:"MAST, archive JWST", url:"https://archive.stsci.edu/missions-and-data/jwst", desc:"Observations JWST, niveaux de calibration 1 à 3 ; accès par programme via astroquery.mast." },
+      { label:"ESA, archive JWST", url:"https://jwst.esac.esa.int/archive/", desc:"Accès européen aux données JWST." },
+      { label:"JDox, documentation", url:"https://jwst-docs.stsci.edu/", desc:"Documentation utilisateur de chaque instrument." },
+      { label:"Pipeline de calibration", url:"https://jwst-pipeline.readthedocs.io/", desc:"Étapes de calibration et formats des produits de données." }
+    ],
+    instruments: [
+      { id:"nircam", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
+        bands:[ {l:"SW",lo:0.6,hi:2.3}, {l:"LW",lo:2.4,hi:5.0} ],
+        fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
+        summary:"Caméra principale de JWST. Deux modules identiques observent le même champ dans deux plages de longueur d'onde à la fois grâce à un dichroïque. Elle sert aussi de capteur de front d'onde pour aligner les 18 segments du miroir.",
+        specs:[
+          ["Domaine","0,6–5,0 µm"],
+          ["Voie courte (SW)","0,6–2,3 µm · 0,031″/px"],
+          ["Voie longue (LW)","2,4–5,0 µm · 0,063″/px"],
+          ["Champ","2 modules de 2,2′×2,2′ séparés de ≈ 44″ · 9,7 arcmin² au total"],
+          ["Détecteurs","10 matrices HgCdTe 2048×2048 (8 SW + 2 LW)"],
+          ["Autres modes","coronographie · spectroscopie sans fente (grisme LW, R ≈ 1 700) · séries temporelles"]
+        ],
+        filtersTitle:"Filtres (sélection représentative)",
+        filters:[
+          F("F070W:0.70:W::SW"),F("F090W:0.90:W::SW"),F("F115W:1.15:W::SW"),F("F150W:1.50:W::SW"),F("F200W:2.00:W::SW"),
+          F("F140M:1.40:M::SW"),F("F162M:1.62:M::SW"),F("F182M:1.82:M::SW"),F("F210M:2.10:M::SW"),
+          F("F187N:1.87:N:Pa α:SW"),F("F212N:2.12:N:H₂ 2,12 µm:SW"),
+          F("F277W:2.77:W::LW"),F("F322W2:3.22:W:très large:LW"),F("F356W:3.56:W::LW"),F("F444W:4.44:W::LW"),
+          F("F250M:2.50:M::LW"),F("F300M:3.00:M::LW"),F("F335M:3.35:M::LW"),F("F360M:3.60:M::LW"),F("F410M:4.10:M::LW"),
+          F("F430M:4.30:M::LW"),F("F460M:4.60:M::LW"),F("F480M:4.80:M::LW"),F("F405N:4.05:N:Br α:LW"),F("F470N:4.70:N:H₂ 4,7 µm:LW")
+        ],
+        products:[
+          ["_uncal.fits","niveau 1b : rampes brutes, non calibrées"],
+          ["_rate.fits","niveau 2a : taux de comptage par pixel"],
+          ["_cal.fits","niveau 2b : image calibrée (astrométrie et photométrie)"],
+          ["_i2d.fits","niveau 3 : mosaïque combinée et rééchantillonnée"],
+          ["_cat.ecsv","niveau 3 : catalogue de sources"],
+          ["Nommage","jwPPPPPOOOVVV_GGSAA_EEEEE_détecteur_suffixe"]
+        ],
+        example:{ real:false, title:"En-tête FITS d'un produit _cal (extrait)", caption:"Mots-clés réels des produits JWST ; les valeurs sont un exemple.", text:
+"TELESCOP= 'JWST'       / Telescope used to acquire the data\n" +
+"INSTRUME= 'NIRCAM'     / Instrument used to acquire the data\n" +
+"DETECTOR= 'NRCA1'      / Name of detector used to acquire the data\n" +
+"FILTER  = 'F200W'      / Name of the filter element used\n" +
+"PUPIL   = 'CLEAR'      / Name of the pupil element used\n" +
+"EXP_TYPE= 'NRC_IMAGE'  / Type of data in the exposure\n" +
+"TARGPROP= 'SMACS-0723' / Proposer's name for the target\n" +
+"DATE-OBS= '2022-06-07' / UTC date at start of exposure\n" +
+"EFFEXPTM=      1.2E+03 / Effective exposure time (seconds)\n" +
+"CAL_VER = '…'          / Calibration software version number\n" +
+"CRDS_CTX= '…'          / CRDS context (reference files)\n" +
+"S_REGION= 'POLYGON ICRS …'  / footprint on the sky" },
+        code:{ title:"Récupérer des mosaïques NIRCam (astroquery.mast)", text:mastCode("JWST","NIRCAM/IMAGE","F200W","110.8375","-73.4540",2,"I2D","exemple : amas SMACS 0723") },
+        notes:[
+          "Les deux voies (SW et LW) observent le même champ en même temps : une pose produit des images dans deux filtres.",
+          "Les fichiers _i2d.fits contiennent les extensions SCI, ERR, WHT et le WCS (astrométrie) du produit combiné."
+        ],
+        docs:[ {l:"JDox, NIRCam",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-camera"} ] },
+
+      { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
+        bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
+        fov:[ {l:"MSA",w:204,h:204}, {l:"IFU",w:3,h:3} ],
+        summary:"Spectrographe fourni par l'ESA. Sa matrice de micro-volets (MSA) permet d'observer des centaines de galaxies à la fois. Il offre aussi une unité à champ intégral (IFU) et des fentes fixes.",
+        specs:[
+          ["Domaine","0,6–5,3 µm"],
+          ["Résolution","R ≈ 100 (prisme) · ≈ 1 000 (réseaux M) · ≈ 2 700 (réseaux H)"],
+          ["Multi-objets (MSA)","4 quadrants de 365×171 volets · champ ≈ 3,4′×3,4′"],
+          ["IFU","3″×3″ découpé en 30 tranches de 0,1″"],
+          ["Fentes fixes","S200A1/A2, S400A1, S1600A1 et mode séries temporelles (BOTS)"]
+        ],
+        filtersTitle:"Dispersions (plages nominales)",
+        filters:[
+          R("PRISM",0.60,5.30,"G","R ≈ 100"),
+          R("G140M/H + F070LP",0.70,1.27,"G","R ≈ 1 000 / 2 700"),
+          R("G140M/H + F100LP",0.97,1.89,"G","R ≈ 1 000 / 2 700"),
+          R("G235M/H + F170LP",1.66,3.17,"G","R ≈ 1 000 / 2 700"),
+          R("G395M/H + F290LP",2.87,5.27,"G","R ≈ 1 000 / 2 700")
+        ],
+        products:[
+          ["_cal.fits","niveau 2b : image 2D calibrée par fente ou volet"],
+          ["_s2d.fits","spectres 2D rééchantillonnés"],
+          ["_x1d.fits","spectres 1D extraits (table binaire)"],
+          ["_s3d.fits","cube de données IFU (x, y, λ)"]
+        ],
+        example:{ real:false, title:"Colonnes d'un fichier _x1d (spectre 1D)", caption:"Schéma réel du produit JWST ; une ligne par pixel spectral.", text:
+"WAVELENGTH      longueur d'onde (µm)\n" +
+"FLUX            densité de flux (Jy)\n" +
+"FLUX_ERROR      incertitude sur le flux\n" +
+"FLUX_VAR_POISSON / _RNOISE / _FLAT   composantes de variance\n" +
+"SURF_BRIGHT     brillance de surface (MJy/sr)\n" +
+"DQ              drapeaux de qualité\n" +
+"BACKGROUND      fond soustrait\n" +
+"NPIXELS         nombre de pixels dans l'ouverture" },
+        code:{ title:"Récupérer des spectres NIRSpec (astroquery.mast)", text:mastCode("JWST","NIRSPEC/MSA","","110.8375","-73.4540",2,"X1D","exemple : amas SMACS 0723") },
+        notes:[
+          "Un fichier _x1d peut contenir plusieurs sources (un spectre par volet MSA ouvert).",
+          "Le mode MSA demande des catalogues préparés avec NIRCam pour choisir les sources."
+        ],
+        docs:[ {l:"JDox, NIRSpec",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-spectrograph"} ] },
+
+      { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
+        bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:28.8} ],
+        fov:[ {l:"Imageur",w:74,h:113} ],
+        summary:"Seul instrument opérant dans l'infrarouge moyen, refroidi à environ 7 K par un cryo-refroidisseur actif. Il observe la poussière tiède, les disques protoplanétaires et les galaxies lointaines enfouies.",
+        specs:[
+          ["Imageur","5,6–25,5 µm · 74″×113″ · 0,11″/px"],
+          ["Spectro. moyenne résolution (MRS)","4,9–28,8 µm · R ≈ 1 500–3 500 · 4 IFU (3,9″×3,9″ à ≈ 7,7″×7,7″)"],
+          ["Spectro. basse résolution (LRS)","≈ 5–12 µm · R ≈ 100 · fente 0,6″×5,5″"],
+          ["Coronographes","4 · rayon interne 0,34″–2,16″ · contraste 10⁻⁶–10⁻⁵"],
+          ["Température","≈ 7 K (cryo-refroidisseur)"]
+        ],
+        filtersTitle:"Filtres d'imagerie et coronographes",
+        filters:[
+          F("F560W:5.6:W::imagerie"),F("F770W:7.7:W:bande PAH 7,7 µm:imagerie"),F("F1000W:10.0:W::imagerie"),
+          F("F1130W:11.3:W:bande PAH 11,3 µm:imagerie"),F("F1280W:12.8:W::imagerie"),F("F1500W:15.0:W::imagerie"),
+          F("F1800W:18.0:W::imagerie"),F("F2100W:21.0:W::imagerie"),F("F2550W:25.5:W::imagerie"),
+          F("F1065C:10.65:C::coronographe"),F("F1140C:11.4:C::coronographe"),F("F1550C:15.5:C::coronographe"),F("F2300C:23.0:C::coronographe")
+        ],
+        products:[
+          ["_cal.fits","image calibrée (niveau 2b)"],
+          ["_i2d.fits","mosaïque combinée (niveau 3)"],
+          ["_s3d.fits","cube MRS (x, y, λ) par canal et sous-bande"],
+          ["_x1d.fits","spectre 1D extrait (MRS, LRS)"]
+        ],
+        example:{ real:false, title:"Organisation d'un cube MRS (_s3d)", caption:"Structure réelle du produit ; dimensions indicatives.", text:
+"HDU SCI       cube flux     (λ, y, x)   unités MJy/sr\n" +
+"HDU ERR       incertitude   (λ, y, x)\n" +
+"HDU DQ        qualité       (λ, y, x)\n" +
+"HDU WMAP      carte des poids\n" +
+"WCS           3 axes : RA/Dec + longueur d'onde (µm)\n" +
+"canaux 1 à 4  4,9 → 28,8 µm  (chacun en 3 sous-bandes A/B/C)" },
+        code:{ title:"Récupérer des images MIRI (astroquery.mast)", text:mastCode("JWST","MIRI/IMAGE","F770W","110.8375","-73.4540",2,"I2D","exemple : amas SMACS 0723") },
+        notes:[
+          "Aux grandes longueurs d'onde, le fond (lumière zodiacale, émission thermique) devient important : sa soustraction est une étape clé du traitement.",
+          "Le cryo-refroidisseur maintient le détecteur à ≈ 7 K, bien plus froid que le reste d'ISIM (≈ 40 K)."
+        ],
+        docs:[ {l:"JDox, MIRI",u:"https://jwst-docs.stsci.edu/jwst-mid-infrared-instrument"} ] },
+
+      { id:"niriss", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
+        bands:[ {l:"0,6–5,0 µm",lo:0.6,hi:5.0} ],
+        fov:[ {l:"Imageur",w:132,h:132} ],
+        summary:"Fourni par l'Agence spatiale canadienne. Spécialisé dans les spectres d'exoplanètes en transit (SOSS), la spectroscopie sans fente grand champ (WFSS) et l'interférométrie à masque d'ouverture (AMI).",
+        specs:[
+          ["Imagerie","0,8–5,0 µm · 2,2′×2,2′ · 0,065″/px"],
+          ["WFSS","R ≈ 150 · 0,8–2,2 µm"],
+          ["SOSS","0,6–2,8 µm · R ≈ 700 (objet unique, transits)"],
+          ["AMI","interférométrie à masque d'ouverture · 2,8–4,8 µm (4 filtres)"]
+        ],
+        filtersTitle:"Filtres d'imagerie",
+        filters:[
+          F("F090W:0.90:W"),F("F115W:1.15:W"),F("F140M:1.40:M"),F("F150W:1.50:W"),F("F158M:1.58:M"),F("F200W:2.00:W"),
+          F("F277W:2.77:W:AMI"),F("F356W:3.56:W"),F("F380M:3.80:M:AMI"),F("F430M:4.30:M:AMI"),F("F444W:4.44:W"),F("F480M:4.80:M:AMI")
+        ],
+        products:[
+          ["_cal.fits","images calibrées (imagerie)"],
+          ["_x1d.fits","spectres 1D (SOSS, WFSS)"],
+          ["_i2d.fits","mosaïques (imagerie)"]
+        ],
+        example:{ real:false, title:"Séries temporelles SOSS (transit d'exoplanète)", caption:"Structure typique d'une observation SOSS ; nombres indicatifs.", text:
+"_calints.fits  une image calibrée par intégration  (n_int, 256, 2048)\n" +
+"_x1dints.fits  un spectre 1D par intégration       (n_int, n_λ)\n" +
+"ordre 1 : 0,85–2,8 µm  ·  ordre 2 : 0,6–1,4 µm\n" +
+"→ courbe de lumière spectroscopique = flux(λ) en fonction du temps" },
+        code:{ title:"Récupérer des données NIRISS (astroquery.mast)", text:mastCode("JWST","NIRISS/IMAGE","F200W","110.8375","-73.4540",2,"I2D","exemple : amas SMACS 0723") },
+        notes:["Le mode SOSS mesure le spectre de transmission de l'atmosphère d'une exoplanète pendant son transit."],
+        docs:[ {l:"JDox, NIRISS",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-imager-and-slitless-spectrograph"} ] },
+
+      { id:"fgs", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
+        bands:null, fov:[ {l:"Guider",w:138,h:138} ],
+        summary:"Capteur de guidage fin qui verrouille l'observatoire sur des étoiles guides pour tenir le pointage à quelques millisecondes d'arc.",
+        specs:[
+          ["Domaine","0,6–5,0 µm"],
+          ["Champ","2,3′×2,3′ · ≈ 0,07″/px"],
+          ["Redondance","2 voies de guidage (FGS1, FGS2)"]
+        ],
+        products:[ ["Archive","les données de guidage sont archivées mais ne constituent pas un produit scientifique usuel"] ],
+        notes:["Il partage son boîtier avec NIRISS, mais fonctionne comme sous-système de contrôle de pointage."],
+        docs:[ {l:"JDox",u:"https://jwst-docs.stsci.edu/"} ] }
+    ]
+  },
+
+  /* ------------------------------------------------------------ EUCLID */
+  euclid: {
+    axis: { min:0.5, max:2.2 },
+    summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). Les données publiques actuelles sont celles de la « Quick Release » Q1 (19 mars 2025).",
+    archives: [
+      { label:"ESA, Euclid Science Archive", url:"https://eas.esac.esa.int/", desc:"Archive officielle : catalogues (ADQL), images, spectres." },
+      { label:"Contenu de Q1", url:"https://www.cosmos.esa.int/web/euclid/q1-contents", desc:"Description des produits publiés dans la Quick Release 1." },
+      { label:"NASA/IPAC, IRSA Euclid", url:"https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html", desc:"Miroir NASA : mosaïques, catalogues, services VO." },
+      { label:"Documentation des produits (DPDD)", url:"https://euclid.esac.esa.int/dr/q1/dpdd/", desc:"Data Product Description Document de Q1." },
+      { label:"astroquery.esa.euclid", url:"https://astroquery.readthedocs.io/en/latest/esa/euclid/euclid.html", desc:"Accès Python à l'archive (TAP+)." }
+    ],
+    instruments: [
+      { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
+        bands:[ {l:"IE",lo:0.55,hi:0.90} ],
+        summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
+        specs:[
+          ["Bande","IE · 550–900 nm (bords ≈ 20 nm)"],
+          ["Détecteurs","36 CCD e2v CCD273-84 amincis (40 µm), disposés en 6×6"],
+          ["Format","4096×4132 px par CCD · pixels de 12 µm · 4 nœuds de lecture"],
+          ["Mosaïque","≈ 610 Mpx · échantillonnage ≈ 0,1″/px"],
+          ["Champ","≈ 0,53 deg² (champ commun VIS/NISP)"],
+          ["Température des CCD","≈ 150 K (transfert de charge optimal) · électronique ≥ 250 K"],
+          ["Saturation","≈ 200 000 e⁻ · limite brillante : IE(AB) ≈ 17,8 (pose nominale)"],
+          ["Nombre focal","f/20,4 · pupille 1,2 m · obstruction centrale 11 %"]
+        ],
+        filtersTitle:"Bande photométrique",
+        filters:[ R("IE",0.55,0.90,"B","bande large unique") ],
+        products:[
+          ["Images calibrées","fichiers FITS multi-extensions par exposition (niveau 2)"],
+          ["Mosaïques MER","empilements par tuile du ciel, incluant des données sol"],
+          ["Catalogue MER","table maîtresse de sources (VIS + NISP + sol)"],
+          ["Découpes","service de cutouts dans l'archive web et dans ESA Datalabs"]
+        ],
+        example:{ real:true, title:"Schéma réel de la table catalogue.mer_catalogue (extrait)", caption:"Colonnes de la table publique Q1 interrogeable en ADQL, avec les noms publiés par l'archive ESA.", text:
+"object_id          long   identifiant unique Euclid de la source\n" +
+"right_ascension    deg    ascension droite (barycentre de la source)\n" +
+"declination        deg    déclinaison\n" +
+"segmentation_area         aire de la source dans la carte de segmentation\n" +
+"ellipticity               ellipticité\n" +
+"kron_radius        pix    demi-grand axe de l'ouverture de Kron\n" +
+"flux_vis_psf              flux VIS (ajustement de PSF) · mag_vis_psf : magnitude AB associée\n" +
+"flux_h_templfit           flux bande H du NISP (ajustement de modèle) · mag_h_templfit : magnitude AB\n" +
+"[≈ 30 millions de lignes : champs EDF-Nord, EDF-Fornax, EDF-Sud et LDN 1641]" },
+        code:{ title:"Interroger le catalogue MER (astroquery.esa.euclid)", text:
+"from astroquery.esa.euclid import Euclid\n\n" +
+"query = \"\"\"\n" +
+"SELECT TOP 10 object_id, right_ascension, declination,\n" +
+"       flux_vis_psf, flux_h_templfit\n" +
+"FROM catalogue.mer_catalogue\n" +
+"WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination),\n" +
+"                 CIRCLE('ICRS', 53.1, -28.1, 0.05))\n" +
+"ORDER BY object_id\n" +
+"\"\"\"\n" +
+"job = Euclid.launch_job(query)\n" +
+"tbl = job.get_results()\n" +
+"print(tbl)" },
+        notes:[
+          "L'identifiant object_id encode la position de la source : les déclinaisons négatives donnent des identifiants négatifs.",
+          "Q1 couvre ≈ 63 deg² (EDF-Nord 22,9 · EDF-Fornax 12,1 · EDF-Sud 28,1 deg²) plus la nébuleuse sombre LDN 1641, soit ≈ 35 To."
+        ],
+        docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Q1, contenu",u:"https://www.cosmos.esa.int/web/euclid/q1-contents"} ] },
+
+      { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
+        bands:[ {l:"Y",lo:0.95,hi:1.21}, {l:"J",lo:1.17,hi:1.57}, {l:"H",lo:1.52,hi:2.02} ],
+        summary:"Il mesure les couleurs infrarouges (pour les décalages vers le rouge photométriques) et fournit une spectroscopie sans fente par grismes, qui donne les décalages spectroscopiques de millions de galaxies.",
+        specs:[
+          ["Domaine","0,92–2,0 µm"],
+          ["Détecteurs","16 matrices HgCdTe H2RG en 4×4 · 2040×2040 px utiles · pixels de 18 µm"],
+          ["Échantillonnage","≈ 0,3″/px"],
+          ["Photométrie","3 filtres : Y (0,95–1,21), J (1,17–1,57), H (1,52–2,02 µm)"],
+          ["Spectroscopie","grisme bleu (BG) ≈ 0,92–1,37 µm · grisme rouge (RG) ≈ 1,21–1,89 µm, 3 orientations"],
+          ["Masse et puissance","85,3 kg (instrument) + 40,7 kg (électronique chaude) · ≤ 200 W"],
+          ["Température","détecteurs ≈ 95 K · optique ≈ 130 K"]
+        ],
+        filtersTitle:"Bandes et grismes (plages nominales)",
+        filters:[
+          R("Y",0.95,1.21,"B","photométrie"),
+          R("J",1.17,1.57,"B","photométrie"),
+          R("H",1.52,2.02,"B","photométrie"),
+          R("BG",0.92,1.37,"G","grisme bleu, non publié dans Q1"),
+          R("RG",1.21,1.89,"G","grisme rouge, spectres publiés dans Q1")
+        ],
+        products:[
+          ["Images NISP","images calibrées par exposition et mosaïques MER (Y, J, H)"],
+          ["Spectres SIR","spectres 1D (DataLink / SSA) et images 2D calibrées ; Q1 : grisme rouge uniquement"],
+          ["Catalogue SPE","13 tables de mesures spectroscopiques (redshifts, qualité)"],
+          ["Catalogue PHZ","8 tables de redshifts photométriques"]
+        ],
+        example:{ real:true, title:"Contenu du catalogue de Q1 (nombre de tables par produit)", caption:"Organisation réelle des catalogues interrogeables en ADQL dans l'archive ESA.", text:
+"MER  (produit fusionné)      3 tables   catalogue.mer_catalogue · mer_morphology · mer_cutouts\n" +
+"PHZ  (redshifts photo.)      8 tables   dont catalogue.phz_classification\n" +
+"SPE  (spectroscopie)        13 tables   redshifts et qualité à partir des spectres SIR\n" +
+"\n" +
+"Jointure : toutes les tables partagent la clé  object_id" },
+        code:{ title:"Lister les tables disponibles (astroquery.esa.euclid)", text:
+"from astroquery.esa.euclid import Euclid\n\n" +
+"tables = Euclid.load_tables(only_names=True)\n" +
+"for t in tables:\n" +
+"    print(t.name)          # ex. catalogue.mer_catalogue, catalogue.phz_classification, …" },
+        notes:[
+          "Dans Q1, seuls les spectres du grisme rouge sont publiés.",
+          "VIS et NISP reçoivent la lumière du même champ par le dichroïque et peuvent acquérir en même temps."
+        ],
+        docs:[ {l:"Euclid Consortium, instruments",u:"https://www.euclid-ec.org/euclid-scientific-instruments/"} ] }
+    ]
+  },
+
+  /* -------------------------------------------------------------- GAIA */
+  gaia: {
+    axis: { min:0.3, max:1.1 },
+    summary: "Gaia n'a pas d'instruments séparés au sens habituel. Un unique plan focal de 106 CCD, partagé par les deux télescopes, remplit trois fonctions qui lisent le même flux de lumière pendant que le satellite balaie le ciel.",
+    archives: [
+      { label:"ESA, Gaia Archive", url:"https://gea.esac.esa.int/archive/", desc:"Archive officielle : requêtes ADQL sur Gaia DR3, téléchargements, spectres XP et RVS." },
+      { label:"Documentation Gaia DR3", url:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html", desc:"Description complète du catalogue et des tables." },
+      { label:"VizieR, Gaia DR3 (I/355)", url:"https://vizier.cds.unistra.fr/viz-bin/VizieR-3?-source=I/355", desc:"Accès CDS au catalogue." },
+      { label:"astroquery.gaia", url:"https://astroquery.readthedocs.io/en/latest/gaia/gaia.html", desc:"Accès Python à l'archive." }
+    ],
+    instruments: [
+      { id:"astro", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
+        bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
+        summary:"Le cartographe de ciel (SM) détecte les objets en temps réel ; le champ astrométrique (AF) mesure ensuite leur position avec une précision de quelques dizaines de micro-secondes d'arc. L'ensemble fournit aussi la magnitude G en lumière blanche.",
+        specs:[
+          ["Détecteurs","SM : 14 CCD (7 par télescope) · AF : 62 CCD"],
+          ["Pixels","4500×1966 px · 10 µm × 30 µm"],
+          ["Mode de lecture","TDI : intégration synchronisée sur la rotation (≈ 4,4 s par CCD)"],
+          ["Bande G","≈ 330–1050 nm (lumière blanche)"],
+          ["Magnitudes observées","G ≈ 3 à ≈ 21"],
+          ["Précision parallaxe (DR3)","≈ 0,02–0,03 mas (G < 15) · 0,07 mas (G = 17) · 0,5 mas (G = 20)"]
+        ],
+        filtersTitle:"Bande photométrique",
+        filters:[ R("G",0.33,1.05,"B","lumière blanche (SM + AF)") ],
+        products:[
+          ["gaia_source","table maîtresse : astrométrie, photométrie, paramètres, vitesses radiales (≈ 1,8 milliard de sources en DR3)"],
+          ["Astrométrie","5 ou 6 paramètres : position, parallaxe, mouvement propre (± pseudo-couleur)"],
+          ["RUWE","indicateur de qualité de l'ajustement astrométrique (≈ 1 attendu)"]
+        ],
+        example:{ real:true, title:"Extrait de gaia_source, étoiles bien connues", caption:"Valeurs réellement publiées (astrométrie et photométrie de Gaia EDR3, identiques dans DR3). Époque 2016,0.", text:
+"source_id             ra (°)       dec (°)       parallax (mas)    G (mag)  BP−RP  RUWE\n" +
+"5853498713190525696   217.392321   −62.676075    768.067 ± 0.050   8.985    3.805  0.97   Proxima Cen\n" +
+"5250032958818831360   146.311593   −62.507867      1.984 ± 0.110   3.471    1.503  2.39   ℓ Car\n" +
+"5351161399793209984   161.136160   −57.565357      0.553 ± 0.017   7.338    1.511  0.92   VY Car\n" +
+"5240441472232302848   165.566881   −64.262893      0.378 ± 0.014   8.941    1.549  1.07   XY Car\n" +
+"\n" +
+"→ ℓ Car (étoile très brillante) a un RUWE de 2,39 : solution astrométrique à manier avec prudence." },
+        code:{ title:"Requête ADQL (astroquery.gaia)", text:
+"from astroquery.gaia import Gaia\n\n" +
+"query = \"\"\"\n" +
+"SELECT TOP 10 source_id, ra, dec, parallax, parallax_error,\n" +
+"       pmra, pmdec, phot_g_mean_mag, bp_rp, ruwe\n" +
+"FROM gaiadr3.gaia_source\n" +
+"WHERE parallax > 100 AND parallax_over_error > 10\n" +
+"ORDER BY parallax DESC\n" +
+"\"\"\"\n" +
+"job = Gaia.launch_job(query)        # ≤ 2000 lignes ; launch_job_async au-delà\n" +
+"print(job.get_results())" },
+        notes:[
+          "Proxima Centauri (768 mas de parallaxe, soit 1,30 pc) est l'étoile la plus proche du Soleil.",
+          "Un RUWE nettement supérieur à 1,4 signale en général un mauvais ajustement (binaire non résolue, source étendue)."
+        ],
+        docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
+
+      { id:"bprp", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
+        bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
+        summary:"Deux prismes dispersent la lumière de chaque étoile en un spectre de très basse résolution, bleu (BP) et rouge (RP), qui donne couleurs, température et extinction.",
+        specs:[
+          ["BP","≈ 330–680 nm · 7 CCD"],
+          ["RP","≈ 640–1050 nm · 7 CCD"],
+          ["Résolution","R ≈ 20–100 selon la longueur d'onde"],
+          ["Spectres XP publiés (DR3)","≈ 220 millions"]
+        ],
+        filtersTitle:"Bandes photométriques",
+        filters:[ R("BP",0.33,0.68,"B","bande bleue"), R("RP",0.64,1.05,"B","bande rouge") ],
+        products:[
+          ["phot_bp_mean_mag / phot_rp_mean_mag","magnitudes dans gaia_source"],
+          ["XP continuous / sampled","spectres XP : coefficients de base (continus) ou échantillonnés"]
+        ],
+        example:{ real:false, title:"Représentation continue d'un spectre XP", caption:"Structure du produit ; les valeurs ne sont pas reproduites ici.", text:
+"source_id           identifiant\n" +
+"bp_n_parameters     nombre de coefficients BP\n" +
+"bp_coefficients[]   coefficients de la décomposition sur une base de fonctions\n" +
+"bp_coefficient_errors[]\n" +
+"(idem pour RP)\n" +
+"→ le spectre se reconstruit avec GaiaXPy (échantillonnage libre)" },
+        code:{ title:"Couleur BP − RP (ADQL)", text:
+"SELECT TOP 10 source_id, phot_g_mean_mag, phot_bp_mean_mag,\n" +
+"       phot_rp_mean_mag, bp_rp\n" +
+"FROM gaiadr3.gaia_source\n" +
+"WHERE phot_g_mean_mag < 6 AND bp_rp IS NOT NULL" },
+        notes:["La différence BP − RP est un indice de couleur : plus elle est grande, plus l'étoile est rouge (Proxima : 3,8)."],
+        docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
+
+      { id:"rvs", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
+        bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
+        summary:"Spectromètre sans fente centré sur le triplet du calcium ionisé (Ca II). Il mesure par effet Doppler les vitesses radiales de dizaines de millions d'étoiles.",
+        specs:[
+          ["Domaine","845–872 nm"],
+          ["Résolution","R ≈ 11 500"],
+          ["Détecteurs","12 CCD"],
+          ["Vitesses radiales (DR3)","≈ 33,8 millions d'étoiles"]
+        ],
+        filtersTitle:"Plage spectrale",
+        filters:[ R("RVS",0.845,0.872,"G","triplet du Ca II") ],
+        products:[
+          ["radial_velocity","vitesse radiale (km/s) dans gaia_source"],
+          ["rv_nb_transits","nombre de passages utilisés"]
+        ],
+        example:{ real:false, title:"Champs de vitesse radiale dans gaia_source", caption:"Colonnes réelles de la table.", text:
+"radial_velocity          km/s   vitesse radiale\n" +
+"radial_velocity_error    km/s   incertitude\n" +
+"rv_nb_transits           —      nombre de transits utilisés\n" +
+"rv_template_teff         K      température du gabarit stellaire utilisé" },
+        code:{ title:"Étoiles proches avec vitesse radiale (ADQL)", text:
+"SELECT TOP 10 source_id, parallax, radial_velocity, radial_velocity_error\n" +
+"FROM gaiadr3.gaia_source\n" +
+"WHERE parallax > 50 AND radial_velocity IS NOT NULL\n" +
+"ORDER BY parallax DESC" },
+        notes:["Vitesse radiale, mouvement propre et parallaxe réunis donnent la vitesse 3D de l'étoile dans la Galaxie."],
+        docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] }
+    ]
+  }
+
+  };
+})();
+
+/* =================================================================
+   INSTRUMENTS — rendu HTML/SVG (aucune dépendance à three.js)
+================================================================= */
+var InstrumentsUI = (function(){
+  var ORDER = ['hubble','jwst','euclid','gaia'];
+  var NAMES = { hubble:'Hubble', jwst:'JWST', euclid:'Euclid', gaia:'Gaia' };
+  var copyStore = [];
+
+  /* champs de vue ajoutés ici pour les relevés à grand champ (valeurs approchées) */
+  (function(){
+    var e = INST_DATA.euclid.instruments, g = INST_DATA.gaia.instruments;
+    e[0].fov = [ {l:'VIS', w:2830, h:2550} ];
+    e[1].fov = [ {l:'NISP', w:2750, h:2600} ];
+    g[0].fov = [ {l:'Champ d\'un télescope', w:2520, h:2520} ];
+  })();
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return t.replace('.', ','); }
+  function wl(um){ return um < 1 ? num(um*1000, um*1000 < 200 ? 1 : 0) + ' nm' : num(um, 2) + ' µm'; }
+  function ang(a){ return a >= 3600 ? num(a/3600, 2) + '°' : a >= 120 ? num(a/60, 1) + '′' : num(a, 1) + '″'; }
+  function get(tid, iid){ var a = INST_DATA[tid].instruments; for (var i=0;i<a.length;i++) if (a[i].id===iid) return a[i]; return null; }
+
+  var KIND = { W:'filtre large', M:'filtre à bande moyenne', N:'filtre étroit', LP:'filtre passe-haut', C:'filtre de coronographe', G:'élément dispersif', B:'bande photométrique' };
+  function span(f){
+    if (f.lo != null) return [f.lo, f.hi];
+    var w = f.k==='W' ? 0.25 : f.k==='M' ? 0.10 : f.k==='N' ? 0.012 : f.k==='C' ? 0.06 : 0.25;
+    if (f.k==='LP') return [f.c, f.c*1.35];
+    return [f.c*(1-w/2), f.c*(1+w/2)];
+  }
+
+  /* ---------- axe logarithmique commun ---------- */
+  function Axis(min, max, x0, x1){
+    var a = Math.log(min), b = Math.log(max);
+    this.x = function(v){ v = Math.max(min, Math.min(max, v)); return x0 + (Math.log(v)-a)/(b-a)*(x1-x0); };
+    this.min = min; this.max = max;
+    var cand = [0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30], out = [], last = -99;
+    for (var i=0;i<cand.length;i++){ var v = cand[i]; if (v < min*0.999 || v > max*1.001) continue; var px = this.x(v); if (px - last < 46) continue; out.push(v); last = px; }
+    this.ticks = out;
+  }
+  function visibleBand(ax, y, h){
+    if (ax.max < 0.4 || ax.min > 0.75) return '';
+    var a = ax.x(0.38), b = ax.x(0.75);
+    return '<rect x="'+a+'" y="'+y+'" width="'+(b-a)+'" height="'+h+'" fill="url(#gvis)" opacity="0.16"/>';
+  }
+  var GRAD = '<defs><linearGradient id="gvis" x1="0" x2="1"><stop offset="0" stop-color="#7a5cff"/><stop offset="0.25" stop-color="#3fa0ff"/><stop offset="0.5" stop-color="#5fe07a"/><stop offset="0.72" stop-color="#ffd85a"/><stop offset="1" stop-color="#ff5a4a"/></linearGradient></defs>';
+
+  function coverage(tid, sel){
+    var d = INST_DATA[tid], W = 760, L = 96, R = 14, ax = new Axis(d.axis.min, d.axis.max, L, W-R);
+    var rows = [], y = 30;
+    d.instruments.forEach(function(it){
+      if (!it.bands) return;
+      var lanes = [];
+      var placed = it.bands.map(function(b){
+        var a = ax.x(b.lo), z = ax.x(b.hi), lane = 0;
+        for (;; lane++){
+          var clash = (lanes[lane]||[]).some(function(o){ var ov = Math.min(z,o[1]) - Math.max(a,o[0]); return ov > 0.4*Math.min(z-a, o[1]-o[0]); });
+          if (!clash) break;
+        }
+        (lanes[lane] = lanes[lane] || []).push([a,z]);
+        return { b:b, a:a, z:z, lane:lane };
+      });
+      var h = lanes.length*17 + 9;
+      rows.push({ it:it, y:y, h:h, placed:placed }); y += h;
+    });
+    var H = y + 30, s = '<svg class="cov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale des instruments">' + GRAD;
+    s += visibleBand(ax, 22, y-22);
+    if (ax.max >= 0.4 && ax.min <= 0.75) s += '<text class="cov-vis" x="'+((ax.x(0.38)+ax.x(0.75))/2)+'" y="14" text-anchor="middle">visible</text>';
+    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="22" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+num(v,2)+'</text>'; });
+    s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+27)+'" text-anchor="end">longueur d\'onde (µm), échelle logarithmique</text>';
+    rows.forEach(function(r){
+      s += '<g class="cov-row'+(r.it.id===sel?' sel':'')+'" data-inst="'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
+      s += '<text class="cov-lab" x="4" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
+      r.placed.forEach(function(p){
+        var yy = r.y + 5 + p.lane*17, w = Math.max(3, p.z - p.a);
+        s += '<rect x="'+p.a+'" y="'+yy+'" width="'+w+'" height="13" rx="2" fill="'+r.it.color+'"><title>'+esc(r.it.name+' '+p.b.l+' : '+wl(p.b.lo)+' – '+wl(p.b.hi))+'</title></rect>';
+        if (w > p.b.l.length*6.4 + 8) s += '<text class="cov-band" x="'+(p.a + w/2)+'" y="'+(yy+10)+'" text-anchor="middle">'+esc(p.b.l)+'</text>';
+      });
+      s += '</g>';
+    });
+    return '<div class="svgwrap">' + s + '</svg></div>';
+  }
+
+  /* ---------- champs de vue à l'échelle ---------- */
+  function fovBlock(tid, sel){
+    var d = INST_DATA[tid], items = [];
+    d.instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ if (!sel || sel===it.id) items.push({ it:it, f:f }); }); });
+    if (!items.length) return '';
+    var ext = 0; items.forEach(function(o){ ext = Math.max(ext, Math.abs(o.f.dx||0)*2 + o.f.w, o.f.h); });
+    var moon = ext > 1200, S = 300, pad = 26;
+    if (moon) ext = Math.max(ext, 1865);
+    var k = (S - 2*pad) / ext, c = S/2;
+    var s = '<svg class="fov-svg" viewBox="0 0 '+S+' '+(S+18)+'" role="img" aria-label="Champs de vue à l\'échelle"><rect x="0.5" y="0.5" width="'+(S-1)+'" height="'+(S-1)+'" fill="#080D16" stroke="rgba(160,185,225,0.2)"/>';
+    if (moon){ var rm = 1865/2*k; s += '<circle cx="'+c+'" cy="'+c+'" r="'+rm+'" fill="rgba(234,240,248,0.06)" stroke="#93A0BA" stroke-dasharray="3 3"/><text class="fov-barlab" x="'+c+'" y="'+(c+4)+'" text-anchor="middle">pleine Lune</text>'; }
+    items.sort(function(a,b){ return b.f.w*b.f.h - a.f.w*a.f.h; }).forEach(function(o){
+      var w = Math.max(2.5, o.f.w*k), h = Math.max(2.5, o.f.h*k), x = c + (o.f.dx||0)*k - w/2, y = c - h/2;
+      var st = 'fill="'+o.it.color+'" fill-opacity="0.16" stroke="'+o.it.color+'" stroke-width="1.4" data-inst="'+o.it.id+'"';
+      s += o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" '+st+'/>';
+    });
+    var nice = [1,2,5,10,20,30,60,120,300,600,1200,1800,3600], bar = nice[0];
+    for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
+    s += '<line class="fov-bar" x1="'+pad+'" y1="'+(S-12)+'" x2="'+(pad+bar*k)+'" y2="'+(S-12)+'"/><text class="fov-barlab" x="'+(pad+bar*k+6)+'" y="'+(S-8)+'">'+ang(bar)+'</text></svg>';
+    var leg = '<ul class="fov-leg">' + items.map(function(o){
+      return '<li data-inst="'+o.it.id+'"'+(o.it.id===sel?' class="sel"':'')+'><i style="background:'+o.it.color+'"></i>'+esc(o.it.name + (o.f.l && o.f.l!==o.it.name ? ' · '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
+    }).join('') + '</ul>';
+    return '<div class="fov">' + s + leg + '</div>';
+  }
+
+  /* ---------- filtres ---------- */
+  function filterPanel(tid, iid, idx){
+    var it = get(tid, iid); if (!it || !it.filters || !it.filters.length) return '';
+    var lo = Infinity, hi = 0;
+    it.filters.forEach(function(f){ var p = span(f); lo = Math.min(lo, p[0]); hi = Math.max(hi, p[1]); });
+    var W = 760, ax = new Axis(lo*0.92, hi*1.08, 14, W-14), H = 74;
+    var s = '<svg class="mini" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Position des filtres en longueur d\'onde">' + GRAD + visibleBand(ax, 8, 40);
+    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="8" x2="'+x+'" y2="48"/><text class="cov-tick" x="'+x+'" y="62" text-anchor="middle">'+(v<1 ? num(v*1000,0)+' nm' : num(v,2)+' µm')+'</text>'; });
+    s += '<line class="cov-axis" x1="14" y1="48" x2="'+(W-14)+'" y2="48"/>';
+    it.filters.forEach(function(f, i){
+      var p = span(f), a = ax.x(p[0]), z = ax.x(p[1]), on = i===idx;
+      s += '<rect data-filter="'+i+'" x="'+a+'" y="'+(on?12:20)+'" width="'+Math.max(2.5, z-a)+'" height="'+(on?36:28)+'" rx="1.5" fill="'+(on ? '#D4A461' : it.color)+'" fill-opacity="'+(on?0.95:0.3)+'" style="cursor:pointer"/>';
+    });
+    s += '</svg>';
+    var chips = '<div class="chips">' + it.filters.map(function(f, i){ return '<button class="chip'+(i===idx?' on':'')+'" data-filter="'+i+'">'+esc(f.n)+'</button>'; }).join('') + '</div>';
+    var f = it.filters[idx], det = '';
+    if (f){
+      var p = span(f);
+      det = '<b>'+esc(f.n)+'</b> · ' + (f.lo != null ? wl(f.lo)+' – '+wl(f.hi) : (f.k==='LP' ? 'transmet au-delà de '+wl(f.c) : 'centré vers '+wl(f.c))) +
+            ' · ' + KIND[f.k] + (f.g ? ' · ' + esc(f.g) : '') + (f.note ? ' · ' + esc(f.note) : '');
+    }
+    var hasF = it.filters.some(function(f){ return f.lo == null; });
+    return chips + '<div class="svgwrap">' + s + '</div><div class="filter-detail">' + det + '</div>' +
+      (hasF ? '<div class="cap">Les largeurs dessinées sont schématiques : elles suivent la classe du filtre (W large, M moyenne, N étroite), pas sa courbe de transmission.</div>' : '');
+  }
+
+  function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
+  function table(rows){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1])+'</div></div>'; }).join('') + '</div>'; }
+  function host(u){ return u.replace(/^https?:\/\//,'').replace(/\/.*$/,''); }
+
+  function overview(tid){
+    var d = INST_DATA[tid], s = '';
+    s += '<div class="inst-h"><div><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions · cliquer sur une ligne pour le détail</div></div></div>';
+    s += '<p class="inst-sum">'+esc(d.summary)+'</p>';
+    s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'</div>';
+    var f = fovBlock(tid, null);
+    if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(tid==='euclid'||tid==='gaia' ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
+    s += '<div class="isec"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
+      var r = it.bands ? wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))) : 'guidage';
+      return '<button class="icard" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="ic-n">'+esc(it.name)+'</span><span class="ic-k">'+esc(it.kind)+'</span><span class="ic-r">'+r+'</span></button>';
+    }).join('') + '</div></div>';
+    s += '<div class="isec"><h4>Archives et documentation</h4><div class="archs">' + d.archives.map(function(a){
+      return '<a class="arch" href="'+esc(a.url)+'" target="_blank" rel="noopener"><span class="a-l">'+esc(a.label)+' ↗</span><span class="a-d">'+esc(a.desc)+'</span><span class="a-u">'+esc(host(a.url))+'</span></a>';
+    }).join('') + '</div></div>';
+    return s;
+  }
+
+  function detail(tid, iid, fidx){
+    var d = INST_DATA[tid], it = get(tid, iid), s = '';
+    s += '<div class="inst-h"><div><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div></div><span class="kind">'+esc(it.kind)+'</span></div>';
+    s += '<p class="inst-sum">'+esc(it.summary)+'</p>';
+    if (it.bands) s += '<div class="inst-range">' + it.bands.map(function(b){ return '<span class="rng" style="--c:'+it.color+'"><b>'+esc(b.l)+'</b> '+wl(b.lo)+' – '+wl(b.hi)+'</span>'; }).join('') + '</div>';
+    s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs)+'</div>';
+    if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+'</div>';
+    if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
+    var f = fovBlock(tid, iid);
+    if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+'</div>';
+    if (it.products) s += '<div class="isec"><h4>Produits de données</h4>'+table(it.products)+'</div>';
+    if (it.example){
+      s += '<div class="isec"><h4>Exemple de données</h4><div class="ex-head"><span class="ex-title">'+esc(it.example.title)+'</span><span class="tag '+(it.example.real?'real':'illus')+'">'+(it.example.real?'données réelles':'structure réelle · valeurs illustratives')+'</span></div>'+code(it.example.text)+'<div class="cap">'+esc(it.example.caption)+'</div></div>';
+    }
+    if (it.code) s += '<div class="isec"><h4>Accéder aux données</h4><div class="ex-head"><span class="ex-title">'+esc(it.code.title)+'</span></div>'+code(it.code.text)+'</div>';
+    if (it.notes && it.notes.length) s += '<div class="isec"><h4>À savoir</h4><ul class="notes">'+it.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ul></div>';
+    s += '<div class="isec"><h4>Archive et documentation</h4><div class="lnks">' +
+      [{l:d.archives[0].label, u:d.archives[0].url}].concat(it.docs||[]).map(function(l){ return '<a class="lnk" href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.l)+' ↗<em>'+esc(host(l.u))+'</em></a>'; }).join('') + '</div></div>';
+    return s;
+  }
+
+  function render(tid, sel, fidx){
+    copyStore = [];
+    var d = INST_DATA[tid];
+    if (sel && !get(tid, sel)) sel = null;
+    var pills = ORDER.map(function(t){ return '<button class="pill'+(t===tid?' on':'')+'" data-tele="'+t+'">'+NAMES[t]+'</button>'; }).join('');
+    var nav = '<button class="nav-i'+(!sel?' on':'')+'" data-inst=""><span class="n">Vue d\'ensemble</span><span class="k">spectre, champs, archives</span></button>' +
+      d.instruments.map(function(it){ return '<button class="nav-i'+(it.id===sel?' on':'')+'" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="n">'+esc(it.name)+'</span><span class="k">'+esc(it.kind)+'</span></button>'; }).join('');
+    return { pills:pills, nav:nav, main: sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
+  }
+
+  return { ORDER:ORDER, NAMES:NAMES, render:render, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+})();
+
+/* =================================================================
+   APPLICATION — vue 3D, pièces cliquables, comparaison, routage
+================================================================= */
+(function(){
+'use strict';
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
+function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+
+function banner(msg){
+  var b = $('err-banner'); if (!b){ b = document.createElement('div'); b.id = 'err-banner'; document.body.appendChild(b); }
+  b.textContent = msg;
+}
+window.addEventListener('error', function(e){ if (e && e.message && !/ResizeObserver/.test(e.message)) banner('Erreur : ' + e.message); });
+
+var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, spin:!REDUCED,
+          inst:false, instSel:null, filterIdx:0 };
+
+var stage = $('stage'), hasGL = !!(window.THREE && THREE.GLTFLoader);
+var renderer = null;
+if (hasGL){
+  try { renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance' }); }
+  catch(e){ renderer = null; }
+}
+
+/* =================================================================
+   PANNEAU (fonctionne même sans WebGL)
+================================================================= */
+function orbitSvg(t){
+  if (t.orbit === 'leo'){
+    return '<svg viewBox="0 0 340 150" role="img" aria-label="Orbite basse terrestre, à l\'échelle">' +
+      '<defs><radialGradient id="ge" cx="0.35" cy="0.35"><stop offset="0" stop-color="#4f8fd0"/><stop offset="1" stop-color="#14335c"/></radialGradient></defs>' +
+      '<circle cx="92" cy="75" r="60" fill="url(#ge)"/>' +
+      '<circle cx="92" cy="75" r="65" fill="none" stroke="#D4A461" stroke-width="1.2"/>' +
+      '<circle cx="138" cy="29" r="3.4" fill="#D4A461"/>' +
+      '<path d="M142 27 L186 20" stroke="#66738E" stroke-width="1"/>' +
+      '<text x="190" y="19" fill="#EAF0F8" font-size="12" font-family="Space Grotesk, sans-serif">Hubble</text>' +
+      '<text x="190" y="35" fill="#93A0BA" font-size="11" font-family="IBM Plex Mono, monospace">≈ 530 km d\'altitude</text>' +
+      '<text x="190" y="74" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">Un tour toutes les 95 min.</text>' +
+      '<text x="190" y="90" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">Terre et orbite dessinées</text>' +
+      '<text x="190" y="106" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">à la même échelle.</text></svg>';
+  }
+  var gone = t.id === 'gaia';
+  return '<svg viewBox="0 0 340 118" role="img" aria-label="Position au point de Lagrange L2">' +
+    '<path d="M2 62 H24" stroke="#E8C46A" stroke-width="1.4"/><path d="M2 62 l7 -4 v8 z" fill="#E8C46A"/>' +
+    '<text x="2" y="84" fill="#E8C46A" font-size="10.5" font-family="Space Grotesk, sans-serif">Soleil</text>' +
+    '<text x="2" y="97" fill="#93A0BA" font-size="9.5" font-family="IBM Plex Mono, monospace">150 M km</text>' +
+    '<line x1="62" y1="62" x2="316" y2="62" stroke="rgba(160,185,225,0.26)" stroke-dasharray="2 4"/>' +
+    '<circle cx="62" cy="62" r="7" fill="#3f7fc4"/><text x="62" y="87" text-anchor="middle" fill="#EAF0F8" font-size="11" font-family="Space Grotesk, sans-serif">Terre</text>' +
+    '<circle cx="62" cy="62" r="62.5" fill="none" stroke="rgba(160,185,225,0.2)"/>' +
+    '<circle cx="106" cy="18" r="2.2" fill="#C3CCDD"/><text x="112" y="16" fill="#93A0BA" font-size="10" font-family="Space Grotesk, sans-serif">Lune · 384 000 km</text>' +
+    '<ellipse cx="306" cy="62" rx="9" ry="30" fill="none" stroke="#D4A461" stroke-width="1.2"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+    '<circle cx="306" cy="62" r="1.6" fill="#93A0BA"/><circle cx="313" cy="43" r="3.4" fill="#D4A461"' + (gone ? ' fill-opacity="0.45"' : '') + '/>' +
+    '<text x="290" y="60" text-anchor="end" fill="#EAF0F8" font-size="11" font-family="Space Grotesk, sans-serif">L2 · ' + esc(t.short) + '</text>' +
+    '<text x="290" y="75" text-anchor="end" fill="#93A0BA" font-size="10" font-family="IBM Plex Mono, monospace">1,5 million de km</text>' +
+    '<text x="170" y="112" text-anchor="middle" fill="#66738E" font-size="10" font-family="Space Grotesk, sans-serif">' +
+      (gone ? 'Position occupée de 2014 à 2025 · Terre–Lune–L2 à l\'échelle' : 'Distances Terre–Lune–L2 à l\'échelle · toujours à l\'opposé du Soleil') + '</text></svg>';
+}
+
+function renderTabs(){
+  var h = TELESCOPES.map(function(t){
+    return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
+  }).join('');
+  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
+  $('tabs').innerHTML = h;
+}
+
+function renderPanel(){
+  var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
+  if (S.mode === 'compare'){
+    pt.innerHTML = '<button class="ptab" role="tab" aria-selected="true">À la même échelle</button>';
+    var maxM = 6.5, maxK = 11110;
+    h = '<h2>Quatre observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
+        '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
+        TELESCOPES.map(function(x){
+          return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
+            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + String(x.cmp.mirror).replace('.',',') + ' m</div></td>' +
+            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px;background:var(--cyan)"></i>' + fr(x.cmp.mass) + ' kg</div></td></tr>';
+        }).join('') + '</tbody></table>' +
+        '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
+        TELESCOPES.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
+        '<p class="source-note">Pour Gaia, la valeur de miroir est le grand côté de ses deux miroirs rectangulaires (1,45 × 0,50 m). Cliquer une maquette ou une ligne ouvre sa fiche.</p>';
+    pb.innerHTML = h; pb.scrollTop = 0; return;
+  }
+  pt.innerHTML =
+    '<button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
+    '<button class="ptab go" data-inst-open="1">Instruments et données →</button>';
+  if (S.ptab === 'fiche'){
+    h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + ' · ' + esc(t.launch) + '</div>' +
+        '<div class="hero-stat"><span class="num">' + t.hero.num + '</span><span class="unit">' + t.hero.unit + '</span><span class="label">' + esc(t.hero.label) + '</span></div>' +
+        '<p class="desc">' + esc(t.desc) + '</p>' +
+        '<div class="where">' + orbitSvg(t) + '</div>' +
+        '<button class="cta" data-inst-open="1">Instruments et données →<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(' · ') + ' · archives, filtres, exemples</small></button>' +
+        t.sections.map(function(sec){
+          return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + esc(r[1]) + '</div></div>'; }).join('') + '</div>';
+        }).join('') +
+        '<p class="source-note">' + esc(t.sourceNote) + '</p>';
+  } else {
+    h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
+        t.parts.map(function(p){
+          return '<div class="part' + (S.part===p.key ? ' on' : '') + '" data-part="' + p.key + '"><button aria-expanded="' + (S.part===p.key) + '"><span class="dot"></span>' + esc(p.name) + '</button>' +
+            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + '</div></div>';
+        }).join('');
+  }
+  pb.innerHTML = h;
+}
+
+function renderHud(){
+  var t = tele(S.id);
+  if (S.mode === 'compare'){ $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = 'Hubble, JWST, Euclid et Gaia côte à côte, en taille réelle'; $('t-src').textContent = ''; }
+  else { $('t-name').textContent = t.name; $('t-sub').textContent = t.sub; $('t-src').textContent = t.src; }
+}
+
+/* ---------- instruments ---------- */
+function renderInst(keepScroll){
+  var r = InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
+  S.instSel = r.sel;
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
+  var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
+  var on = $('inst-nav').querySelector('.on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){}
+}
+$('inst-page').addEventListener('click', function(e){
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-inst],[data-tele],#inst-close') : null;
+  if (!el) return;
+  if (el.id === 'inst-close'){ location.hash = S.id; return; }
+  if (el.hasAttribute('data-copy')){
+    var txt = InstrumentsUI.getCopy(+el.getAttribute('data-copy')), pre = el.parentNode.querySelector('pre');
+    var done = function(){ el.textContent = 'Copié'; setTimeout(function(){ el.textContent = 'Copier'; }, 1400); };
+    var fallback = function(){ try { var rg = document.createRange(); rg.selectNodeContents(pre); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); el.textContent = 'Sélectionné'; } catch(x){} };
+    try { navigator.clipboard.writeText(txt).then(done, fallback); } catch(x){ fallback(); }
+    return;
+  }
+  if (el.hasAttribute('data-filter')){
+    S.filterIdx = +el.getAttribute('data-filter');
+    var fs = $('fsec'); if (fs) fs.innerHTML = InstrumentsUI.filterPanel(S.id, S.instSel, S.filterIdx);
+    return;
+  }
+  if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
+  if (el.hasAttribute('data-inst')){ S.instSel = el.getAttribute('data-inst') || null; S.filterIdx = 0; renderInst(); }
+});
+
+/* ---------- navigation ---------- */
+document.addEventListener('click', function(e){
+  var el = e.target.closest ? e.target.closest('[data-go],[data-ptab],[data-inst-open],[data-part]') : null;
+  if (!el || $('inst-page').contains(el)) return;
+  if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
+  if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
+  if (el.hasAttribute('data-part') && e.target.closest('button')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
+});
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  if (S.inst) location.hash = S.id; else if (S.part) selectPart(null);
+});
+
+function route(){
+  var h = (location.hash || '').replace(/^#/, ''), inst = false, mode = 'tele', id = S.id;
+  if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
+  if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
+  var changed = id !== S.id || mode !== S.mode;
+  if (id !== S.id){ S.instSel = null; S.filterIdx = 0; }
+  S.id = id; S.mode = mode; S.inst = inst && mode === 'tele';
+  if (changed){ S.part = null; S.hover = null; S.ptab = 'fiche'; }
+  renderTabs(); renderHud(); renderPanel();
+  $('inst-page').hidden = !S.inst;
+  if (S.inst) renderInst();
+  if (renderer) show3D(changed);
+}
+window.addEventListener('hashchange', route);
+
+function selectPart(key, fromList){
+  S.part = key;
+  if (key && S.ptab !== 'parts') S.ptab = 'parts';
+  renderPanel();
+  if (key && !fromList){ var el = $('pbody').querySelector('.part.on'); if (el && el.scrollIntoView) try { el.scrollIntoView({ block:'nearest' }); } catch(e){} }
+  if (renderer) applyHighlight();
+}
+
+/* =================================================================
+   Sans WebGL : fiche et instruments restent utilisables
+================================================================= */
+var show3D = function(){}, applyHighlight = function(){};
+if (!renderer){
+  $('toolbar').hidden = true; $('hint').hidden = true;
+  var ld = $('loader'); ld.hidden = false; ld.querySelector('.bar').hidden = true;
+  ld.querySelector('.l-title').textContent = 'Vue 3D indisponible';
+  ld.querySelector('.l-sub').textContent = hasGL ? 'Ce navigateur n\'a pas pu ouvrir WebGL. Les fiches et les instruments restent consultables.' : 'La bibliothèque 3D n\'a pas pu être chargée. Les fiches et les instruments restent consultables.';
+  route(); return;
+}
+
+/* =================================================================
+   RENDU
+================================================================= */
+var canvas = renderer.domElement;
+stage.insertBefore(canvas, stage.firstChild);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.autoClear = false;
+renderer.setClearColor(0x04060b, 1);
+
+var scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.05, 600);
+var bgScene = new THREE.Scene(), bgCam = new THREE.PerspectiveCamera(36, 1, 40, 200000);
+
+/* environnement pour les reflets : quelques panneaux lumineux dans le noir */
+(function(){
+  var es = new THREE.Scene();
+  var g = new THREE.SphereGeometry(40, 24, 16), col = [], p = g.attributes.position;
+  for (var i=0;i<p.count;i++){ var y = p.getY(i)/40, k = Math.pow(Math.max(0, y*0.5+0.5), 1.6); col.push(0.012 + 0.10*k, 0.016 + 0.13*k, 0.03 + 0.2*k); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+  es.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors:true, side:THREE.BackSide })));
+  function panel(x,y,z,w,h,r,gc,b){ var m = new THREE.Mesh(new THREE.PlaneGeometry(w,h), new THREE.MeshBasicMaterial({ color:new THREE.Color(r,gc,b), side:THREE.DoubleSide })); m.position.set(x,y,z); m.lookAt(0,0,0); es.add(m); }
+  panel(18, 22, 16, 22, 22, 9, 8.4, 7.4);
+  panel(-24, 6, -14, 18, 26, 1.4, 1.9, 2.8);
+  panel(-6, -26, 12, 30, 30, 0.5, 0.6, 0.8);
+  panel(10, 4, -30, 14, 30, 1.6, 1.5, 1.4);
+  var pm = new THREE.PMREMGenerator(renderer);
+  scene.environment = pm.fromScene(es, 0.03).texture;
+  pm.dispose();
+})();
+
+var key = new THREE.DirectionalLight(0xfff4e2, 2.6), fill = new THREE.DirectionalLight(0x8fb0e8, 0.55), rim = new THREE.DirectionalLight(0xbfe4ee, 0.5);
+var hemi = new THREE.HemisphereLight(0x9fb4d8, 0x1a1c24, 0.5);
+key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004;
+scene.add(key, key.target, fill, rim, hemi);
+var STUDIO = new THREE.Vector3(0.52, 0.72, 0.62).normalize();
+
+/* ---------- arrière-plan : étoiles, Voie lactée, Soleil, Terre ---------- */
+var sunDir = new THREE.Vector3(0.5, 0.6, 0.6).normalize(), sunSprite, earth = null, earthMat, atmoMat;
+(function(){
+  var rnd = (function(s){ return function(){ s = (s*1664525 + 1013904223) >>> 0; return s/4294967296; }; })(20231107);
+  var N = 5200, M = 3800, pos = new Float32Array((N+M)*3), col = new Float32Array((N+M)*3), siz = new Float32Array(N+M);
+  var pal = [[1,0.97,0.93],[0.78,0.86,1],[1,0.88,0.72],[0.92,0.95,1],[1,1,1],[1,0.78,0.62]];
+  var pole = new THREE.Vector3(0.45, 0.62, -0.64).normalize(), u = new THREE.Vector3(1,0,0).cross(pole).normalize(), w = pole.clone().cross(u);
+  for (var i=0;i<N+M;i++){
+    var v = new THREE.Vector3();
+    if (i < N){ var z = 2*rnd()-1, a = rnd()*6.2832, r = Math.sqrt(1-z*z); v.set(r*Math.cos(a), z, r*Math.sin(a)); }
+    else { var a2 = rnd()*6.2832, b = (rnd()+rnd()+rnd()-1.5)*0.22*(0.55 + 0.45*Math.cos(a2)); v.copy(u).multiplyScalar(Math.cos(a2)).addScaledVector(w, Math.sin(a2)).addScaledVector(pole, b).normalize(); }
+    pos[i*3] = v.x*90000; pos[i*3+1] = v.y*90000; pos[i*3+2] = v.z*90000;
+    var c = pal[(rnd()*pal.length)|0], m = Math.pow(rnd(), i < N ? 5 : 9), br = (i < N ? 0.32 : 0.2) + 0.9*m;
+    col[i*3] = c[0]*br; col[i*3+1] = c[1]*br; col[i*3+2] = c[2]*br;
+    siz[i] = (i < N ? 1.0 : 0.85) + 2.4*m;
+  }
+  var g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.setAttribute('size', new THREE.BufferAttribute(siz, 1));
+  var stars = new THREE.Points(g, new THREE.ShaderMaterial({
+    uniforms:{ dpr:{ value:renderer.getPixelRatio() } }, depthTest:false, depthWrite:false, transparent:true, blending:THREE.AdditiveBlending,
+    vertexShader:'attribute float size; attribute vec3 color; varying vec3 vC; uniform float dpr; void main(){ vC = color; gl_PointSize = size*dpr; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+    fragmentShader:'varying vec3 vC; void main(){ float d = length(gl_PointCoord-0.5); float a = smoothstep(0.5, 0.08, d); gl_FragColor = vec4(vC*a, a); }'
+  }));
+  stars.frustumCulled = false; stars.renderOrder = -10; bgScene.add(stars);
+
+  var cv = document.createElement('canvas'); cv.width = cv.height = 256; var cx = cv.getContext('2d'), gr = cx.createRadialGradient(128,128,0,128,128,128);
+  gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.035, 'rgba(255,250,235,1)'); gr.addColorStop(0.09, 'rgba(255,225,170,0.42)'); gr.addColorStop(0.3, 'rgba(255,190,120,0.09)'); gr.addColorStop(1, 'rgba(255,160,90,0)');
+  cx.fillStyle = gr; cx.fillRect(0,0,256,256);
+  sunSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(cv), blending:THREE.AdditiveBlending, depthTest:false, depthWrite:false, transparent:true }));
+  sunSprite.scale.set(30000, 30000, 1); sunSprite.renderOrder = -5; sunSprite.visible = false; bgScene.add(sunSprite);
+
+  /* Terre vue de l'orbite de Hubble : rayon 6 371 km, observateur à ≈ 530 km */
+  var RE = 6371, ALT = 530;
+  var NOISE = 'float h3(vec3 p){ p = fract(p*0.3183099 + 0.1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }' +
+    'float n3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f); return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x), mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x), f.y), mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x), mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x), f.y), f.z); }' +
+    'float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i=0;i<6;i++){ s += a*n3(p); p = p*2.03 + 7.1; a *= 0.5; } return s; }';
+  earthMat = new THREE.ShaderMaterial({
+    uniforms:{ sun:{ value:new THREE.Vector3(0,1,0) }, t:{ value:0 } },
+    vertexShader:'varying vec3 vO; varying vec3 vW; varying vec3 vN; void main(){ vO = normalize(position); vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix)*normal); gl_Position = projectionMatrix*viewMatrix*w; }',
+    fragmentShader:'uniform vec3 sun; uniform float t; varying vec3 vO; varying vec3 vW; varying vec3 vN;' + NOISE +
+      'void main(){ vec3 n = normalize(vN); vec3 p = normalize(vO); vec3 V = normalize(cameraPosition - vW);' +
+      ' float f = fbm(p*2.6 + 3.0) + 0.25*fbm(p*9.0); float land = smoothstep(0.60, 0.66, f);' +
+      ' float dry = fbm(p*5.0 + 11.0); vec3 lc = mix(vec3(0.05,0.14,0.04), vec3(0.30,0.22,0.11), smoothstep(0.42,0.62,dry)); lc = mix(lc, vec3(0.42,0.36,0.24), smoothstep(0.62,0.8,dry));' +
+      ' vec3 oc = mix(vec3(0.004,0.022,0.075), vec3(0.01,0.07,0.16), smoothstep(0.45,0.6,f));' +
+      ' vec3 c = mix(oc, lc, land); float ice = smoothstep(0.80, 0.9, abs(p.y) + 0.08*fbm(p*8.0)); c = mix(c, vec3(0.8,0.85,0.9), ice);' +
+      ' vec3 q = p*3.6 + vec3(t*0.004, 0.0, t*0.002); float cl = fbm(q + 1.7*vec3(fbm(q*1.6), fbm(q*1.6+5.2), 0.0)); cl = smoothstep(0.60, 0.86, cl + 0.10*fbm(p*18.0));' +
+      ' float d = dot(n, sun); float day = smoothstep(-0.12, 0.25, d);' +
+      ' vec3 H = normalize(sun + V); float spec = pow(max(dot(n,H),0.0), 60.0)*(1.0-land)*(1.0-cl)*0.6;' +
+      ' vec3 lit = (c*(0.2 + 1.25*max(d,0.0)) + spec)*day; lit = mix(lit, vec3(0.95)*(0.15 + 0.95*max(d,0.0))*day, cl*0.9);' +
+      ' float rimv = pow(1.0 - max(dot(n,V),0.0), 2.6); lit += vec3(0.16,0.36,0.9)*rimv*1.0*day; lit = mix(lit, lit*vec3(0.78,0.88,1.12) + vec3(0.012,0.03,0.07)*day, 0.55);' +
+      ' gl_FragColor = vec4(lit, 1.0);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'
+  });
+  atmoMat = new THREE.ShaderMaterial({
+    uniforms:{ sun:{ value:new THREE.Vector3(0,1,0) } }, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, side:THREE.BackSide,
+    vertexShader:'varying vec3 vW; varying vec3 vN; void main(){ vec4 w = modelMatrix*vec4(position,1.0); vW = w.xyz; vN = normalize(mat3(modelMatrix)*normal); gl_Position = projectionMatrix*viewMatrix*w; }',
+    fragmentShader:'uniform vec3 sun; varying vec3 vW; varying vec3 vN; void main(){ vec3 n = normalize(vN); vec3 V = normalize(cameraPosition - vW); float g = pow(clamp(1.0 + dot(n,V), 0.0, 1.0), 7.0)*smoothstep(0.0, 0.22, -dot(n,V)); float day = smoothstep(-0.2, 0.3, dot(n,sun)); gl_FragColor = vec4(vec3(0.25,0.5,1.0)*g*day*1.6, 1.0);\n#include <tonemapping_fragment>\n#include <encodings_fragment>\n}'
+  });
+  earth = new THREE.Group();
+  var ball = new THREE.Mesh(new THREE.SphereGeometry(RE, 192, 128), earthMat); ball.name = 'ball';
+  earth.add(ball, new THREE.Mesh(new THREE.SphereGeometry(RE + 75, 128, 96), atmoMat));
+  earth.position.set(0, -(RE + ALT), 0); earth.visible = false; bgScene.add(earth);
+})();
+
+/* =================================================================
+   MAQUETTES
+================================================================= */
+var models = {}, buffers = {}, loader = new THREE.GLTFLoader(), current = null, loadToken = 0;
+
+function fetchModel(t, onProgress){
+  if (buffers[t.id]) return buffers[t.id];
+  var raw = !/\.txt$/.test(t.file);
+  var p = fetch(t.file).then(function(res){
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var total = +res.headers.get('content-length') || t.bytes;
+    if (!res.body || !res.body.getReader) return res.arrayBuffer().then(function(b){ return raw ? b : unb64(new Uint8Array(b)); });
+    var rd = res.body.getReader(), chunks = [], got = 0;
+    function pump(){ return rd.read().then(function(r){
+      if (r.done){ var out = new Uint8Array(got), o = 0; chunks.forEach(function(c){ out.set(c, o); o += c.length; }); return raw ? out.buffer : unb64(out); }
+      chunks.push(r.value); got += r.value.length; if (p.onProgress) p.onProgress(got, Math.max(total, got)); return pump();
+    }); }
+    return pump();
+  });
+  p.onProgress = onProgress;
+  p.catch(function(){ delete buffers[t.id]; });
+  return (buffers[t.id] = p);
+}
+
+/* les maquettes sont publiées en base64 (fichiers texte) : décodage vers le binaire glTF */
+var B64 = (function(){ var t = new Uint8Array(128), a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'; for (var i=0;i<64;i++) t[a.charCodeAt(i)] = i; return t; })();
+function unb64(src){
+  var n = src.length; while (n > 0 && (src[n-1] === 61 || src[n-1] === 10 || src[n-1] === 13)) n--;
+  var out = new Uint8Array(Math.floor(n*3/4)), o = 0, i = 0;
+  for (; i + 3 < n; i += 4){ var v = (B64[src[i]] << 18) | (B64[src[i+1]] << 12) | (B64[src[i+2]] << 6) | B64[src[i+3]]; out[o++] = v >> 16; out[o++] = (v >> 8) & 255; out[o++] = v & 255; }
+  if (n - i === 2){ out[o++] = ((B64[src[i]] << 18) | (B64[src[i+1]] << 12)) >> 16; }
+  else if (n - i === 3){ var w = (B64[src[i]] << 18) | (B64[src[i+1]] << 12) | (B64[src[i+2]] << 6); out[o++] = w >> 16; out[o++] = (w >> 8) & 255; }
+  return out.buffer.slice(0, o);
+}
+function tweakMaterial(id, m){
+  var n = m.name || '';
+  if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  if (id === 'jwst'){
+    if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
+    else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }
+    else if (/PURPLEY/.test(n)){ m.metalness = 0.75; m.roughness = 0.36; }
+    else if (/silver/.test(n)){ m.metalness = 0.9; m.roughness = 0.34; }
+    else if (/SolarPanel/.test(n)){ m.metalness = 0.4; m.roughness = 0.32; }
+    else if (/black/.test(n)){ m.roughness = 0.7; m.metalness = 0.2; }
+    else if (/bronze|sa_edge/.test(n)){ m.metalness = 0.9; m.roughness = 0.35; }
+  } else if (id === 'hubble'){
+    if (/foil_silver|shiny/.test(n)){ m.metalness = Math.max(m.metalness, 0.85); m.roughness = Math.min(m.roughness, 0.34); }
+  } else if (id === 'gaia'){
+    if (/Gold|Aluminum|Metal/.test(n)){ m.metalness = Math.max(m.metalness, 0.75); m.roughness = Math.min(m.roughness, 0.45); }
+    if (/SolarArray/.test(n)){ m.metalness = 0.35; m.roughness = 0.35; }
+  } else if (id === 'euclid'){
+    m.metalness = Math.min(m.metalness, 0.5); m.roughness = Math.max(0.5, Math.min(m.roughness, 0.75)); m.color.multiplyScalar(0.78);
+  }
+  m.userData.env = 1;
+}
+
+function prepare(t, gltf){
+  var inner = gltf.scene, root = new THREE.Group(); root.name = t.id;
+  /* three r128 ne dénormalise pas les attributs entiers côté CPU (lancer de rayon, boîtes) : positions converties en flottants */
+  inner.traverse(function(o){
+    if (!o.isMesh) return; var g = o.geometry, pa = g.attributes.position;
+    if (!pa || !(pa.normalized || pa.isInterleavedBufferAttribute)) return;
+    var arr = pa.array || pa.data.array, nm = pa.normalized, den = arr instanceof Int16Array ? 32767 : arr instanceof Uint16Array ? 65535 : arr instanceof Int8Array ? 127 : arr instanceof Uint8Array ? 255 : 1;
+    var out = new Float32Array(pa.count*3);
+    for (var i=0;i<pa.count;i++){ var x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i); if (nm){ x = Math.max(x/den, -1); y = Math.max(y/den, -1); z = Math.max(z/den, -1); } out[i*3] = x; out[i*3+1] = y; out[i*3+2] = z; }
+    g.setAttribute('position', new THREE.BufferAttribute(out, 3)); g.boundingBox = null; g.boundingSphere = null; g.computeBoundingSphere();
+  });
+  inner.updateMatrixWorld(true);
+  var box = new THREE.Box3().setFromObject(inner), size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+  var s = t.axis ? t.size / size[t.axis] : 1;
+  inner.scale.setScalar(s); inner.position.copy(ctr).multiplyScalar(-s); root.add(inner); root.updateMatrixWorld(true);
+  var M = { t:t, root:root, inner:inner, scale:s, parts:{}, meshes:[], mats:[], radius:size.length()*s/2, size:size.multiplyScalar(s) };
+  t.parts.forEach(function(p){ M.parts[p.key] = { def:p, meshes:[], box:new THREE.Box3(), off:new THREE.Vector3(p.explode[0], p.explode[1], p.explode[2]).multiplyScalar(p.explode[3]) }; });
+  function keyOf(o){
+    for (; o && o !== root; o = o.parent){
+      var nm = o.name || '';
+      for (var i=0;i<t.parts.length;i++){
+        var p = t.parts[i], names = p.nodes || [p.key];
+        for (var j=0;j<names.length;j++){ var base = names[j].replace(/[\s\[\]\.:\/]/g, ''); if (nm === base || (nm.indexOf(base) === 0 && /^_\d+$/.test(nm.slice(base.length)))) return p.key; }
+      }
+    }
+    return null;
+  }
+  var orphans = [];
+  inner.traverse(function(o){
+    if (!o.isMesh) return;
+    o.castShadow = true; o.receiveShadow = true;
+    o.material = o.material.clone(); tweakMaterial(t.id, o.material); M.mats.push(o.material);
+    if (o.material.transparent) o.castShadow = false;
+    M.meshes.push(o);
+    var k = keyOf(o); if (k) attach(o, k); else orphans.push(o);
+  });
+  function attach(o, k){ o.userData.part = k; M.parts[k].meshes.push(o); M.parts[k].box.expandByObject(o); }
+  orphans.forEach(function(o){
+    var c = new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()), best = null, bd = Infinity;
+    for (var k in M.parts){ var b = M.parts[k].box; if (b.isEmpty()) continue; var d = b.distanceToPoint(c); if (d < bd){ bd = d; best = k; } }
+    if (best) attach(o, best);
+  });
+  var invInner = new THREE.Matrix4().copy(inner.matrixWorld).invert(), m4 = new THREE.Matrix4(), m3 = new THREE.Matrix3();
+  for (var k in M.parts){
+    var P = M.parts[k]; P.center = P.box.isEmpty() ? new THREE.Vector3() : P.box.getCenter(new THREE.Vector3());
+    P.meshes.forEach(function(o){
+      m4.multiplyMatrices(invInner, o.parent.matrixWorld).invert(); m3.setFromMatrix4(m4);
+      o.userData.base = o.position.clone();
+      o.userData.ex = P.off.clone().divideScalar(s).applyMatrix3(m3);
+    });
+  }
+  return M;
+}
+
+function loadModel(t, onProgress){
+  if (models[t.id]) return Promise.resolve(models[t.id]);
+  return fetchModel(t, onProgress).then(function(buf){
+    if (models[t.id]) return models[t.id];
+    return new Promise(function(ok, ko){ loader.parse(buf, '', function(g){ ok(models[t.id] = models[t.id] || prepare(t, g)); }, function(e){ ko(e || new Error('fichier illisible')); }); });
+  });
+}
+
+function setExplode(M, e){
+  M.meshes.forEach(function(o){ if (o.userData.base) o.position.copy(o.userData.base).addScaledVector(o.userData.ex, e); });
+}
+
+var BRASS = new THREE.Color(0xD4A461), HOV = new THREE.Color(0x9fd8e6);
+applyHighlight = function(){
+  if (!current || S.mode !== 'tele') return;
+  current.meshes.forEach(function(o){
+    var m = o.material, k = o.userData.part;
+    if (!m.emissive) return;
+    if (m.userData.em0 === undefined){ m.userData.em0 = m.emissive.clone(); m.userData.ei0 = m.emissiveIntensity; }
+    if (k && k === S.part){ m.emissive.copy(BRASS); m.emissiveIntensity = 0.16; }
+    else if (k && k === S.hover){ m.emissive.copy(HOV); m.emissiveIntensity = 0.2; }
+    else { m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; }
+    var dim = S.part && k !== S.part;
+    if (m.userData.c0 === undefined) m.userData.c0 = m.color.clone();
+    m.color.copy(m.userData.c0); if (dim) m.color.multiplyScalar(0.5);
+  });
+  var P = S.part && current.parts[S.part];
+  $('callout').hidden = !P;
+  if (P) $('callout').textContent = P.def.name;
+};
+
+/* ---------- éclairage ---------- */
+function applyLighting(){
+  var real = S.sunReal && S.mode === 'tele', t = tele(S.id), R = S.mode === 'compare' ? cmp.radius : (current ? current.radius : 10);
+  var tgt = S.mode === 'compare' ? cmp.center : ZERO;
+  sunDir.fromArray(t.sun).normalize();
+  var d = real ? sunDir : STUDIO;
+  key.position.copy(tgt).addScaledVector(d, R*4); key.target.position.copy(tgt);
+  key.intensity = real ? 3.6 : 2.5;
+  var sc = key.shadow.camera; sc.left = -R*1.25; sc.right = R*1.25; sc.top = R*1.25; sc.bottom = -R*1.25; sc.near = R*1.5; sc.far = R*6.5; sc.updateProjectionMatrix();
+  key.shadow.normalBias = R*0.0035;
+  if (real){
+    if (t.orbit === 'leo'){ fill.color.setHex(0x7fb0ff); fill.position.set(0.15, -1, 0.1); fill.intensity = 0.75; } else { fill.intensity = 0.05; fill.position.set(-0.6, 0.2, -0.5); }
+    rim.intensity = 0.0; hemi.intensity = 0.12;
+  } else {
+    fill.color.setHex(0x8fb0e8); fill.position.set(-0.7, 0.05, -0.45); fill.intensity = 0.6;
+    rim.position.set(-0.25, 0.5, -0.9); rim.intensity = 0.55; hemi.intensity = 0.55;
+  }
+  var env = real ? 0.42 : 1.0;
+  for (var id in models) models[id].mats.forEach(function(m){ m.envMapIntensity = env; });
+  sunSprite.visible = real; sunSprite.position.copy(sunDir).multiplyScalar(80000);
+  earth.visible = S.mode === 'tele' && t.orbit === 'leo';
+  earthMat.uniforms.sun.value.copy(sunDir); atmoMat.uniforms.sun.value.copy(sunDir);
+  $('b-sun').setAttribute('aria-pressed', String(S.sunReal));
+}
+var ZERO = new THREE.Vector3();
+
+/* ---------- caméra orbitale ---------- */
+var C = { az:0, el:0.2, dist:30, tgt:new THREE.Vector3(), gaz:0, gel:0.2, gdist:30, gtgt:new THREE.Vector3(), min:1, max:100, last:0 };
+function fitDist(R){ var v = camera.fov*Math.PI/360, h = Math.atan(Math.tan(v)*camera.aspect); return R / Math.sin(Math.min(v, h)); }
+function frame(snap){
+  if (S.mode === 'compare'){
+    var v = camera.fov*Math.PI/360, d = Math.max((cmp.h/2)/Math.tan(v), (cmp.w/2)/(Math.tan(v)*camera.aspect))*1.04 + cmp.depth*0.12;
+    C.gaz = 0.0; C.gel = 0.14; C.gdist = d; C.gtgt.copy(cmp.center); C.min = d*0.25; C.max = d*2.2;
+  } else if (current){
+    var t = current.t, R = current.radius, f = fitDist(R);
+    C.gaz = t.view.az; C.gel = t.view.el; C.gdist = f*t.view.dist*0.64; C.gtgt.set(0,0,0); C.min = R*0.35; C.max = f*3;
+  }
+  if (snap){ C.az = C.gaz; C.el = C.gel; C.dist = C.gdist*1.18; C.tgt.copy(C.gtgt); }
+}
+function touch(){ C.last = performance.now(); var h = $('hint'); if (!h.classList.contains('gone')) h.classList.add('gone'); }
+
+var ptrs = {}, nptr = 0, drag = null, pinch = 0;
+canvas.addEventListener('pointerdown', function(e){
+  try { canvas.setPointerCapture(e.pointerId); } catch(x){}
+  ptrs[e.pointerId] = { x:e.clientX, y:e.clientY }; nptr = Object.keys(ptrs).length;
+  if (nptr === 1) drag = { x:e.clientX, y:e.clientY, t:performance.now(), moved:0 };
+  else if (nptr === 2){ pinch = pdist(); if (drag) drag.moved = 99; }
+  canvas.classList.add('dragging'); setTip(null); touch();
+});
+function pdist(){ var k = Object.keys(ptrs); if (k.length < 2) return 0; var a = ptrs[k[0]], b = ptrs[k[1]]; return Math.hypot(a.x-b.x, a.y-b.y); }
+canvas.addEventListener('pointermove', function(e){
+  var p = ptrs[e.pointerId];
+  if (!p){ if (e.pointerType === 'mouse') hoverAt(e.clientX, e.clientY); return; }
+  var dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  if (nptr === 1 && drag){
+    drag.moved += Math.abs(dx) + Math.abs(dy);
+    C.gaz -= dx*0.0062; C.gel = Math.max(-1.45, Math.min(1.45, C.gel + dy*0.0062));
+  } else if (nptr === 2){
+    var d = pdist(); if (pinch > 0 && d > 0) C.gdist = Math.max(C.min, Math.min(C.max, C.gdist*pinch/d)); pinch = d;
+  }
+  touch();
+});
+function endPtr(e){
+  if (!ptrs[e.pointerId]) return;
+  delete ptrs[e.pointerId]; nptr = Object.keys(ptrs).length;
+  if (nptr === 0){
+    canvas.classList.remove('dragging');
+    if (e.type === 'pointerup' && drag && drag.moved < 7 && performance.now() - drag.t < 600) clickAt(e.clientX, e.clientY);
+    drag = null;
+  }
+}
+canvas.addEventListener('pointerup', endPtr); canvas.addEventListener('pointercancel', endPtr);
+canvas.addEventListener('pointerleave', function(){ setHover(null); setTip(null); });
+canvas.addEventListener('wheel', function(e){
+  e.preventDefault();
+  var k = e.deltaMode === 1 ? 32 : 1;
+  C.gdist = Math.max(C.min, Math.min(C.max, C.gdist*Math.exp(e.deltaY*k*0.0012))); touch();
+}, { passive:false });
+
+/* ---------- sélection ---------- */
+var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pick(x, y){
+  var r = canvas.getBoundingClientRect(); ndc.set((x - r.left)/r.width*2 - 1, -((y - r.top)/r.height*2 - 1));
+  ray.setFromCamera(ndc, camera);
+  if (S.mode === 'compare'){
+    var best = null, bd = Infinity;
+    cmp.items.forEach(function(it){ var h = ray.intersectObjects(it.M.meshes, false); if (h.length && h[0].distance < bd){ bd = h[0].distance; best = it.M.t.id; } });
+    return best ? { tele:best } : null;
+  }
+  if (!current) return null;
+  var hits = ray.intersectObjects(current.meshes, false);
+  for (var i=0;i<hits.length;i++) if (hits[i].object.userData.part) return { part:hits[i].object.userData.part };
+  return null;
+}
+function setTip(txt, x, y){
+  var tip = $('hover-tip'); tip.hidden = !txt; if (!txt) return;
+  var r = stage.getBoundingClientRect(); tip.textContent = txt;
+  tip.style.left = Math.min(x - r.left, r.width - 190) + 'px'; tip.style.top = (y - r.top) + 'px';
+}
+function setHover(k){ if (S.hover === k) return; S.hover = k; applyHighlight(); canvas.classList.toggle('over-part', !!k); }
+var hoverPending = null;
+function hoverAt(x, y){
+  if (hoverPending){ hoverPending = [x,y]; return; }
+  hoverPending = [x,y];
+  requestAnimationFrame(function(){
+    var p = hoverPending; hoverPending = null;
+    var h = pick(p[0], p[1]);
+    if (S.mode === 'compare'){ canvas.classList.toggle('over-part', !!h); setTip(h ? 'Ouvrir ' + tele(h.tele).short : null, p[0], p[1]); return; }
+    setHover(h ? h.part : null);
+    setTip(h && h.part !== S.part ? current.parts[h.part].def.name : null, p[0], p[1]);
+  });
+}
+function clickAt(x, y){
+  var h = pick(x, y);
+  if (S.mode === 'compare'){ if (h) location.hash = h.tele; return; }
+  selectPart(h ? (h.part === S.part ? null : h.part) : null);
+}
+
+/* ---------- barre d'outils ---------- */
+$('explode').addEventListener('input', function(){ S.explodeGoal = this.value/100; touch(); });
+$('b-sun').addEventListener('click', function(){ S.sunReal = !S.sunReal; applyLighting(); });
+$('b-spin').addEventListener('click', function(){ S.spin = !S.spin; this.setAttribute('aria-pressed', String(S.spin)); C.last = 0; });
+$('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
+$('b-spin').setAttribute('aria-pressed', String(S.spin));
+$('l-retry').addEventListener('click', function(){ show3D(true); });
+
+/* ---------- chargement ---------- */
+function loaderUI(state, t, a, b){
+  var ld = $('loader'), err = ld.querySelector('.l-err');
+  if (state === 'off'){ ld.hidden = true; return; }
+  ld.hidden = false; ld.querySelector('.l-title').textContent = t;
+  var isErr = state === 'error';
+  err.hidden = !isErr; $('l-retry').hidden = !isErr; ld.querySelector('.bar').hidden = isErr; ld.querySelector('.l-sub').hidden = isErr;
+  if (isErr){ err.textContent = a; return; }
+  ld.querySelector('.bar i').style.width = (b ? Math.round(a/b*100) : 0) + '%';
+  ld.querySelector('.l-sub').textContent = b ? (a/1048576).toFixed(1).replace('.', ',') + ' / ' + (b/1048576).toFixed(1).replace('.', ',') + ' Mo' : '';
+}
+
+var cmp = { group:new THREE.Group(), items:[], center:new THREE.Vector3(), w:10, h:10, depth:10, radius:20, ruler:null, built:false };
+scene.add(cmp.group);
+function resetRoot(M){ M.root.position.set(0,0,0); M.root.rotation.set(0,0,0); M.root.updateMatrixWorld(true); setExplode(M, 0); }
+
+function layoutCompare(){
+  var order = ['jwst','hubble','gaia','euclid'], gap = 3.4, portrait = camera.aspect < 0.95;
+  cmp.items = order.map(function(id){
+    var M = models[id]; resetRoot(M);
+    M.meshes.forEach(function(o){ var m = o.material; if (m.userData.c0) m.color.copy(m.userData.c0); if (m.userData.em0){ m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; } });
+    if (id === 'hubble') M.root.rotation.set(-Math.PI/2, 0, 0.0);
+    if (id === 'gaia') M.root.rotation.set(0.5, 0, 0);
+    if (id === 'euclid') M.root.rotation.set(0, -1.05, 0);
+    if (id === 'jwst') M.root.rotation.set(0, 0.35, 0);
+    M.root.updateMatrixWorld(true);
+    var b = new THREE.Box3().setFromObject(M.root), sz = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
+    return { M:M, sz:sz, c:c };
+  });
+  var all = new THREE.Box3();
+  function place(it, cx, cy){ it.M.root.position.set(cx - it.c.x, cy - it.c.y, -it.c.z); it.M.root.updateMatrixWorld(true); it.anchor = new THREE.Vector3(cx, cy - it.sz.y/2, 0); it.cx = cx; it.M.root.parent !== cmp.group && cmp.group.add(it.M.root); all.expandByObject(it.M.root); }
+  if (!portrait){
+    var x = 0; cmp.items.forEach(function(it){ place(it, x + it.sz.x/2, 0); x += it.sz.x + gap; });
+  } else {
+    var rows = [[cmp.items[0], cmp.items[3]], [cmp.items[1], cmp.items[2]]], y = 0;
+    rows.forEach(function(r){
+      var hmax = Math.max(r[0].sz.y, r[1].sz.y), wsum = r[0].sz.x + r[1].sz.x + gap, x0 = -wsum/2;
+      place(r[0], x0 + r[0].sz.x/2, y - hmax/2); place(r[1], x0 + r[0].sz.x + gap + r[1].sz.x/2, y - hmax/2);
+      y -= hmax + 5.2;
+    });
+  }
+  var sz = all.getSize(new THREE.Vector3()); all.getCenter(cmp.center);
+  if (cmp.ruler) cmp.group.remove(cmp.ruler);
+  if (!portrait) cmp.items.forEach(function(it){ it.anchor.set(it.cx, all.min.y - 0.4, 0); });
+  var y0 = all.max.y + 1.6, x0 = all.min.x, pts = [x0,y0+0.35,0, x0,y0-0.35,0, x0,y0,0, x0+10,y0,0, x0+10,y0+0.35,0, x0+10,y0-0.35,0];
+  for (var i=1;i<10;i++) pts.push(x0+i, y0, 0, x0+i, y0 + (i===5 ? 0.3 : 0.16), 0);
+  var g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+  cmp.ruler = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color:0xEAF0F8 })); cmp.group.add(cmp.ruler);
+  cmp.rulerAnchor = new THREE.Vector3(x0 + 5, y0, 0);
+  cmp.center.y -= 0.6; cmp.w = sz.x + 2; cmp.h = sz.y + 8.5; cmp.depth = sz.z; cmp.radius = sz.length()/2 + 2;
+  $('cmp-labels').innerHTML = cmp.items.map(function(it, i){ return '<button class="cmp-label" data-go="' + it.M.t.id + '" data-i="' + i + '"><b>' + esc(it.M.t.short) + '</b><span>' + esc(it.M.t.cmp.tag) + '</span></button>'; }).join('') + '<div class="cmp-ruler">10 m</div>';
+  cmp.built = true; cmp.portrait = portrait;
+}
+
+show3D = function(changed){
+  if (S.inst) return;
+  if (!changed && (S.mode === 'compare' ? cmp.built && cmp.group.visible : current && current.t.id === S.id && current.root.parent === scene)) return;
+  var token = ++loadToken;
+  $('cmp-labels').hidden = true; $('callout').hidden = true; setTip(null);
+  S.explodeGoal = S.explode = 0; $('explode').value = 0;
+  var cmpMode = S.mode === 'compare';
+  $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode; $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
+  if (cmpMode){
+    var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
+    var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
+    if (need.length) loaderUI('load', 'Chargement des quatre maquettes', 0, total);
+    Promise.all(TELESCOPES.map(function(t){
+      return loadModel(t, function(a){ got[t.id] = a; }).then(function(M){ got[t.id] = t.bytes; return M; });
+    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; TELESCOPES.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des quatre maquettes', s, total); if (TELESCOPES.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
+      if (token !== loadToken) return;
+      if (current){ scene.remove(current.root); current = null; }
+      cmp.group.visible = true; layoutCompare(); loaderUI('off'); $('cmp-labels').hidden = false;
+      applyLighting(); frame(true);
+    }).catch(function(e){ if (token === loadToken) loaderUI('error', 'Chargement interrompu', 'Une maquette n\'a pas pu être chargée (' + (e && e.message || 'erreur réseau') + ').'); });
+    return;
+  }
+  var t = tele(S.id);
+  cmp.group.visible = false;
+  if (!models[t.id]){ if (current){ scene.remove(current.root); current = null; } loaderUI('load', 'Chargement de ' + t.short, 0, t.bytes); }
+  loadModel(t, function(a, b){ if (token === loadToken) loaderUI('load', 'Chargement de ' + t.short, a, b); }).then(function(M){
+    if (token !== loadToken) return;
+    if (current && current !== M) scene.remove(current.root);
+    if (M.root.parent === cmp.group) cmp.group.remove(M.root);
+    resetRoot(M); scene.add(M.root); current = M; cmp.built = false;
+    loaderUI('off'); applyLighting(); applyHighlight(); frame(true);
+    prefetch();
+  }).catch(function(e){
+    if (token !== loadToken) return;
+    loaderUI('error', 'La maquette de ' + t.short + ' n\'a pas pu être chargée', 'Le fichier 3D est introuvable ou la connexion a été interrompue (' + (e && e.message || 'erreur') + '). La fiche et les instruments restent consultables.');
+  });
+};
+
+var prefetched = false;
+function prefetch(){
+  if (prefetched) return; prefetched = true;
+  var c = navigator.connection; if (c && (c.saveData || /2g/.test(c.effectiveType || ''))) return;
+  var list = TELESCOPES.filter(function(t){ return !buffers[t.id]; }), i = 0;
+  (function next(){ if (i >= list.length) return; var t = list[i++]; setTimeout(function(){ fetchModel(t).then(next, next); }, 600); })();
+}
+
+/* ---------- boucle ---------- */
+function resize(){
+  var w = stage.clientWidth, h = stage.clientHeight; if (!w || !h) return;
+  renderer.setSize(w, h, false); camera.aspect = bgCam.aspect = w/h; camera.updateProjectionMatrix(); bgCam.updateProjectionMatrix();
+  if (S.mode === 'compare' && cmp.built){ if ((camera.aspect < 0.95) !== cmp.portrait) layoutCompare(); frame(false); }
+  else if (current){ var keep = [C.gaz, C.gel]; frame(false); C.gaz = keep[0]; C.gel = keep[1]; }
+}
+if (window.ResizeObserver) new ResizeObserver(resize).observe(stage); else window.addEventListener('resize', resize);
+resize();
+
+var v3 = new THREE.Vector3(), clock = performance.now(), T0 = clock;
+function project(p, el, dx, dy){
+  v3.copy(p).project(camera);
+  if (v3.z > 1 || v3.z < -1){ el.style.visibility = 'hidden'; return; }
+  el.style.visibility = ''; el.style.left = ((v3.x*0.5+0.5)*stage.clientWidth + (dx||0)) + 'px'; el.style.top = ((-v3.y*0.5+0.5)*stage.clientHeight + (dy||0)) + 'px';
+}
+function tick(now){
+  requestAnimationFrame(tick);
+  if (S.inst || document.hidden) { clock = now; return; }
+  var dt = Math.min(0.05, (now - clock)/1000); clock = now;
+  var k = 1 - Math.exp(-dt*7);
+  if (S.spin && !nptr && now - C.last > 2600 && !S.part) C.gaz += dt*(S.mode === 'compare' ? 0 : 0.085);
+  if (S.mode === 'tele' && current){
+    if (Math.abs(S.explodeGoal - S.explode) > 0.0005){ S.explode += (S.explodeGoal - S.explode)*(1 - Math.exp(-dt*9)); setExplode(current, S.explode); }
+    var P = S.part && current.parts[S.part];
+    if (P){ v3.copy(P.center).addScaledVector(P.off, S.explode); C.gtgt.copy(v3).multiplyScalar(0.55); } else C.gtgt.set(0,0,0);
+  }
+  C.az += (C.gaz - C.az)*k; C.el += (C.gel - C.el)*k; C.dist += (C.gdist - C.dist)*k; C.tgt.lerp(C.gtgt, k);
+  var ce = Math.cos(C.el);
+  camera.position.set(C.tgt.x + C.dist*ce*Math.sin(C.az), C.tgt.y + C.dist*Math.sin(C.el), C.tgt.z + C.dist*ce*Math.cos(C.az));
+  camera.lookAt(C.tgt);
+  var R = S.mode === 'compare' ? cmp.radius : (current ? current.radius : 10);
+  camera.near = Math.max(0.05, C.dist - R*1.6); camera.far = C.dist + R*4; camera.updateProjectionMatrix();
+  bgCam.quaternion.copy(camera.quaternion);
+  if (earth.visible){ earth.children[0].rotation.x = (now - T0)/1000*(2*Math.PI/5700) + 0.6; earthMat.uniforms.t.value = (now - T0)/1000; }
+  if (S.mode === 'tele' && current && S.part){
+    var Q = current.parts[S.part]; v3.copy(Q.center).addScaledVector(Q.off, S.explode);
+    var pulse = 0.15 + 0.07*Math.sin(now*0.004); Q.meshes.forEach(function(o){ o.material.emissiveIntensity = pulse; });
+    project(v3, $('callout'));
+  }
+  if (S.mode === 'compare' && cmp.built){
+    var ls = $('cmp-labels').children;
+    cmp.items.forEach(function(it, i){ project(it.anchor, ls[i]); });
+    project(cmp.rulerAnchor, ls[ls.length-1]);
+  }
+  renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
+}
+canvas.addEventListener('webglcontextlost', function(e){ e.preventDefault(); banner('Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.'); });
+
+window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
+route();
+requestAnimationFrame(tick);
+})();
+
+</script>
+</body>
+</html>
