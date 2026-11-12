@@ -19,7 +19,7 @@ const fonts = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?fa
 const style = '<style>\n' + r('style.css') + '\n' + r('inst.css') + '\n</style>';
 const scripts = '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>\n' +
   '<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>\n' +
-  '<script>\n' + data + '\n' + r('data-inst.js') + '\n' + r('inst-render.js') + '\n' + r('app.js') + '\n</script>\n';
+  '<script>\n' + data + '\n' + r('data-inst.js') + '\n' + r('optics.js') + '\n' + r('inst-render.js') + '\n' + r('app.js') + '\n</script>\n';
 
 if (artifact) {
   const out = path.join(__dirname, 'dist');

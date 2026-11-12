@@ -30,7 +30,15 @@ Limites connues :
 
 ## 3. Évolutions
 
-Ordre proposé : A, puis B, puis C et D selon l'envie, E et F ensuite. A passe en premier parce que le public expert ne pardonne pas une valeur fausse, et parce que B (les sources) est beaucoup plus simple à faire en même temps que la relecture.
+**Décisions (12 novembre 2026).** On commence par le visible : lots **D, puis E, puis F**. Le site sera en **français et en anglais** (H4). Les lots A et B (fiabilisation et sources) viennent ensuite ; d'ici là, tout nouveau contenu dit explicitement ce qui est exact et ce qui est schématique.
+
+| Lot | État |
+|---|---|
+| D. Trajet de la lumière | D1 et D2 livrés en première version ; D3 et D4 à faire |
+| E. Vraies données | à faire |
+| F. Orbites et temps | à faire |
+| H4. Anglais | à faire, avant que le volume de texte n'augmente encore |
+| A, B, C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
 
@@ -81,6 +89,15 @@ Ordre proposé : A, puis B, puis C et D selon l'envie, E et F ensuite. A passe e
 - D4. En option : coupe ou transparence dans la vue 3D. À n'engager que si les maquettes contiennent une géométrie intérieure exploitable (à vérifier maquette par maquette).
 
 **Acceptation.** Pour chaque observatoire, on peut suivre un rayon de l'entrée au détecteur et lire la taille réelle du plan focal.
+
+**Livré (première version).** Page « Trajet de la lumière » dans Instruments et données, pour chaque observatoire (`src/optics.js`) : schéma optique, explication en quatre étapes, tableau de la combinaison optique, détecteurs dessinés à l'échelle.
+
+**Reste à faire**
+
+- Le schéma de Hubble est entièrement à l'échelle. Ceux de JWST et d'Euclid ne le sont que pour les deux premiers miroirs ; celui de Gaia est un schéma de principe, peu lisible à cause des faisceaux croisés. Les refaire à partir des prescriptions optiques publiées (rayons de courbure, positions des miroirs).
+- Plans focaux : espaces entre détecteurs indicatifs ; la disposition de Gaia (colonne de contrôle, RVS) est à vérifier face à la documentation ESA.
+- Comparaison des plans focaux des quatre observatoires à la même échelle, dans la page « Comparer ».
+- D3 (lien entre la maquette 3D et le schéma) et D4 (coupe ou transparence).
 
 ### E. Vraies données
 

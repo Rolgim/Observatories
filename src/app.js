@@ -107,7 +107,7 @@ function renderPanel(){
         '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
         '<div class="where">' + orbitSvg(t) + '</div>' +
-        '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Filtres, exemples de données, accès aux archives.</small></button>' +
+        '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Trajet de la lumière, filtres, exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
             sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + '</div></div>'; }).join('') + '</div>';
