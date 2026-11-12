@@ -1,0 +1,423 @@
+{
+ "hubble/stis": {
+  "type": "plot",
+  "file": "hubble-stis.json",
+  "title": "Spectre STIS de l'étoile HD 209458",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "STIS/CCD"
+   ],
+   [
+    "Identifiant d'observation",
+    "o63302030"
+   ],
+   [
+    "Cible",
+    "HD209458"
+   ],
+   [
+    "Filtres ou réseau",
+    "G750M"
+   ],
+   [
+    "Programme",
+    "8789"
+   ],
+   [
+    "Responsable du programme",
+    "Brown, Timothy"
+   ],
+   [
+    "Début d'observation",
+    "2000-04-28"
+   ],
+   [
+    "Temps de pose",
+    "8 640 s"
+   ],
+   [
+    "Fichier d'origine",
+    "o63302030_x1d.fits"
+   ],
+   [
+    "Points",
+    "1 024 dans le fichier, 1 024 tracés (moyenne par paquets)"
+   ]
+  ],
+  "url": "https://archive.stsci.edu/proposal_search.php?id=8789&mission=hst",
+  "caption": "Spectre extrait d'une étoile de type solaire, hôte de la première exoplanète observée en transit.",
+  "credit": "NASA, ESA, STScI",
+  "fetched": "2026-11-12"
+ },
+ "hubble/cos": {
+  "type": "plot",
+  "file": "hubble-cos.json",
+  "title": "Spectre ultraviolet COS du quasar 3C 273",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "COS/FUV"
+   ],
+   [
+    "Identifiant d'observation",
+    "lbgl31020"
+   ],
+   [
+    "Cible",
+    "3C273"
+   ],
+   [
+    "Filtres ou réseau",
+    "G130M"
+   ],
+   [
+    "Programme",
+    "12038"
+   ],
+   [
+    "Responsable du programme",
+    "Green, James Carswell"
+   ],
+   [
+    "Début d'observation",
+    "2012-04-22"
+   ],
+   [
+    "Temps de pose",
+    "1 192 s"
+   ],
+   [
+    "Fichier d'origine",
+    "lbgl31020_x1dsum.fits"
+   ],
+   [
+    "Points",
+    "29 366 dans le fichier, 1 200 tracés (moyenne par paquets)"
+   ]
+  ],
+  "url": "https://archive.stsci.edu/proposal_search.php?id=12038&mission=hst",
+  "caption": "Sur le continu du quasar, les raies fines en absorption sont dues au gaz situé le long de la ligne de visée, dans notre Galaxie et entre les galaxies.",
+  "credit": "NASA, ESA, STScI",
+  "fetched": "2026-11-12"
+ },
+ "jwst/nircam": {
+  "type": "image",
+  "file": "jwst-nircam.jpg",
+  "width": 1100,
+  "height": 606,
+  "title": "L'amas de galaxies SMACS 0723 vu par NIRCam",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "NIRCAM/IMAGE"
+   ],
+   [
+    "Identifiant d'observation",
+    "jw04043-o001_t001_nircam_clear-f115w"
+   ],
+   [
+    "Cible",
+    "SMACSPROTO"
+   ],
+   [
+    "Filtres ou réseau",
+    "F115W"
+   ],
+   [
+    "Programme",
+    "4043"
+   ],
+   [
+    "Responsable du programme",
+    "Witten, Callum"
+   ],
+   [
+    "Début d'observation",
+    "2024-05-11"
+   ],
+   [
+    "Temps de pose",
+    "39 511 s"
+   ],
+   [
+    "Fichier d'origine",
+    "jw04043-o001_t001_nircam_clear-f115w_i2d.jpg"
+   ]
+  ],
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=4043",
+  "caption": "Mosaïque combinée dans un filtre. Les arcs sont des galaxies lointaines déformées par la gravité de l'amas. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "credit": "NASA, ESA, ASC, STScI",
+  "fetched": "2026-11-12"
+ },
+ "jwst/miri": {
+  "type": "image",
+  "file": "jwst-miri.jpg",
+  "width": 1032,
+  "height": 1024,
+  "title": "SMACS 0723 vu par MIRI",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "MIRI/IMAGE"
+   ],
+   [
+    "Identifiant d'observation",
+    "jw02736-o002_t001_miri_f1800w"
+   ],
+   [
+    "Cible",
+    "SMACS-J0723.3-7327"
+   ],
+   [
+    "Filtres ou réseau",
+    "F1800W"
+   ],
+   [
+    "Programme",
+    "2736"
+   ],
+   [
+    "Responsable du programme",
+    "Pontoppidan, Klaus M."
+   ],
+   [
+    "Début d'observation",
+    "2022-06-14"
+   ],
+   [
+    "Temps de pose",
+    "5 633 s"
+   ],
+   [
+    "Fichier d'origine",
+    "jw02736002001_02107_00005_mirimage_o002_crf.jpg"
+   ]
+  ],
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
+  "caption": "Le même champ dans l'infrarouge moyen, où dominent les poussières chauffées. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "credit": "NASA, ESA, ASC, STScI",
+  "fetched": "2026-11-12"
+ },
+ "jwst/niriss": {
+  "type": "image",
+  "file": "jwst-niriss.jpg",
+  "width": 1100,
+  "height": 1100,
+  "title": "SMACS 0723 vu par NIRISS",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "NIRISS/IMAGE"
+   ],
+   [
+    "Identifiant d'observation",
+    "jw02736-o003_t001_niriss_clear-f115w"
+   ],
+   [
+    "Cible",
+    "SMACS-J0723.3-7327"
+   ],
+   [
+    "Filtres ou réseau",
+    "CLEAR;F115W"
+   ],
+   [
+    "Programme",
+    "2736"
+   ],
+   [
+    "Responsable du programme",
+    "Pontoppidan, Klaus M."
+   ],
+   [
+    "Début d'observation",
+    "2022-06-17"
+   ],
+   [
+    "Temps de pose",
+    "859 s"
+   ],
+   [
+    "Fichier d'origine",
+    "jw02736003001_02101_00001_nis_o003_crf.jpg"
+   ]
+  ],
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
+  "caption": "Image directe prise par NIRISS sur le même amas. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "credit": "NASA, ESA, ASC, STScI",
+  "fetched": "2026-11-12"
+ },
+ "jwst/nirspec": {
+  "type": "plot",
+  "file": "jwst-nirspec.json",
+  "title": "Spectre NIRSpec d'une galaxie derrière SMACS 0723",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "NIRSPEC/MSA"
+   ],
+   [
+    "Identifiant d'observation",
+    "jw02736-o008_v000000043_nirspec_f290lp-g395m"
+   ],
+   [
+    "Cible",
+    "MPTCAT-0628"
+   ],
+   [
+    "Filtres ou réseau",
+    "F290LP;G395M"
+   ],
+   [
+    "Programme",
+    "2736"
+   ],
+   [
+    "Responsable du programme",
+    "Pontoppidan, Klaus M."
+   ],
+   [
+    "Début d'observation",
+    "2022-06-30"
+   ],
+   [
+    "Temps de pose",
+    "8 753 s"
+   ],
+   [
+    "Fichier d'origine",
+    "jw02736008001_03103_00003_nrs2_x1d.fits"
+   ],
+   [
+    "Points",
+    "1 303 dans le fichier, 1 200 tracés (moyenne par paquets)"
+   ]
+  ],
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
+  "caption": "Spectre d'une des sources observées à travers les micro-volets. Les pics sont des raies d'émission du gaz de la galaxie.",
+  "credit": "NASA, ESA, ASC, STScI",
+  "fetched": "2026-11-12"
+ },
+ "gaia/astro": {
+  "type": "plot",
+  "file": "gaia-astro.json",
+  "title": "Diagramme de Hertzsprung-Russell des étoiles proches",
+  "meta": [
+   [
+    "Archive",
+    "ESA Gaia Archive"
+   ],
+   [
+    "Catalogue",
+    "Gaia DR3, table gaiadr3.gaia_source"
+   ],
+   [
+    "Sélection",
+    "parallaxe > 10 mas (moins de 100 pc), parallaxe/erreur > 20, RUWE < 1,4, G < 16"
+   ],
+   [
+    "Étoiles",
+    "8 000 tirées au hasard (random_index)"
+   ],
+   [
+    "Requête ADQL",
+    "SELECT TOP 8000 phot_g_mean_mag, parallax, bp_rp, radial_velocity FROM gaiadr3.gaia_source WHERE parallax > 10 AND parallax_over_error > 20 AND ruwe < 1.4 AND phot_g_mean_mag < 16 AND bp_rp IS NOT NULL ORDER BY random_index"
+   ]
+  ],
+  "url": "https://gea.esac.esa.int/archive/",
+  "caption": "Chaque point est une étoile à moins de 100 parsecs. La magnitude absolue vient de la parallaxe mesurée par le champ astrométrique : M_G = G + 5 log10(parallaxe / 100 mas). La séquence principale, les géantes et les naines blanches se séparent d'elles-mêmes.",
+  "credit": "ESA/Gaia/DPAC",
+  "fetched": "2026-11-12"
+ },
+ "gaia/bprp": {
+  "type": "plot",
+  "file": "gaia-bprp.json",
+  "title": "Couleurs des étoiles proches, mesurées par les photomètres BP et RP",
+  "meta": [
+   [
+    "Archive",
+    "ESA Gaia Archive"
+   ],
+   [
+    "Catalogue",
+    "Gaia DR3, table gaiadr3.gaia_source"
+   ],
+   [
+    "Sélection",
+    "parallaxe > 10 mas (moins de 100 pc), parallaxe/erreur > 20, RUWE < 1,4, G < 16"
+   ],
+   [
+    "Étoiles",
+    "8 000 tirées au hasard (random_index)"
+   ],
+   [
+    "Requête ADQL",
+    "SELECT TOP 8000 phot_g_mean_mag, parallax, bp_rp, radial_velocity FROM gaiadr3.gaia_source WHERE parallax > 10 AND parallax_over_error > 20 AND ruwe < 1.4 AND phot_g_mean_mag < 16 AND bp_rp IS NOT NULL ORDER BY random_index"
+   ]
+  ],
+  "url": "https://gea.esac.esa.int/archive/",
+  "caption": "Répartition de l'indice de couleur BP − RP pour le même échantillon. Les étoiles rouges de faible masse dominent largement le voisinage solaire.",
+  "credit": "ESA/Gaia/DPAC",
+  "fetched": "2026-11-12"
+ },
+ "gaia/rvs": {
+  "type": "plot",
+  "file": "gaia-rvs.json",
+  "title": "Vitesses radiales des étoiles proches, mesurées par le RVS",
+  "meta": [
+   [
+    "Archive",
+    "ESA Gaia Archive"
+   ],
+   [
+    "Catalogue",
+    "Gaia DR3, table gaiadr3.gaia_source"
+   ],
+   [
+    "Sélection",
+    "parallaxe > 10 mas (moins de 100 pc), parallaxe/erreur > 20, RUWE < 1,4, G < 16"
+   ],
+   [
+    "Étoiles",
+    "8 000 tirées au hasard (random_index)"
+   ],
+   [
+    "Avec vitesse radiale",
+    "6 817 étoiles"
+   ],
+   [
+    "Requête ADQL",
+    "SELECT TOP 8000 phot_g_mean_mag, parallax, bp_rp, radial_velocity FROM gaiadr3.gaia_source WHERE parallax > 10 AND parallax_over_error > 20 AND ruwe < 1.4 AND phot_g_mean_mag < 16 AND bp_rp IS NOT NULL ORDER BY random_index"
+   ]
+  ],
+  "url": "https://gea.esac.esa.int/archive/",
+  "caption": "Vitesse d'éloignement (positive) ou de rapprochement (négative) de chaque étoile de l'échantillon pour laquelle le spectromètre a obtenu une mesure.",
+  "credit": "ESA/Gaia/DPAC",
+  "fetched": "2026-11-12"
+ }
+}
