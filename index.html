@@ -5,266 +5,268 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Hubble, JWST, Euclid et Gaia en 3D : pièces cliquables, vue éclatée, comparaison à l'échelle, instruments et archives.">
 <title>Observatoires en orbite</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>[hidden]{display:none!important}</style>
 <style>
-/* Layout: the 3D stage is the page; a header of observatory tabs above, a reading panel docked right (below on phones). */
+/* Parti pris : une fiche technique imprimée (papier gris froid, encre noire, une seule famille de caractères)
+   posée à côté d'un hublot noir sur la maquette. Un seul accent : le jaune de surligneur, réservé à « ce qui est sélectionné ». */
 :root{
-  --void:#06090F; --ink:#0B111B; --panel:#0C131F; --raise:#121B2B;
-  --hair:rgba(160,185,225,0.13); --hair-2:rgba(160,185,225,0.26);
-  --brass:#D4A461; --brass-soft:rgba(212,164,97,0.14); --cyan:#93D2DC;
-  --text:#EAF0F8; --body:#C3CCDD; --muted:#93A0BA; --muted-2:#66738E;
-  --ok:#8FD69A; --warn:#E0A05A; --bad:#F08A7A;
-  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
-  --f-ui:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --f-data:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --paper:#ECEEEF; --sheet:#F7F8F8; --ink:#14171A; --ink-2:#3A4147; --mute:#667077; --rule:#C8CDD1; --rule-2:#98A1A7;
+  --mark:#FFD21F; --black:#000; --ok:#0B7A4B; --warn:#8A5200; --bad:#B3261E;
+  --f:'Archivo', 'Helvetica Neue', Arial, sans-serif; --f-code:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --gl:max(16px, env(safe-area-inset-left, 0px)); --gr:max(16px, env(safe-area-inset-right, 0px));
-  color-scheme: dark;
+  color-scheme: light;
 }
 *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html, body{ height:100%; }
-body{ margin:0; background:var(--void); color:var(--text); font-family:var(--f-ui); font-size:14px; overflow:hidden; }
-button{ font-family:inherit; }
-button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--f); font-size:14px; overflow:hidden; }
+button{ font-family:inherit; color:inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid var(--ink); outline-offset:2px; }
+#stage button:focus-visible, #stage input:focus-visible{ outline-color:var(--mark); }
 
-#app{ height:100%; display:flex; flex-direction:column; min-height:0; }
+#app{ height:100%; display:flex; flex-direction:column; min-height:0; position:relative; }
 
-/* ---------- header ---------- */
-#top{ flex:none; display:flex; align-items:center; gap:18px; padding-block:10px; padding-left:var(--gl); padding-right:var(--gr);
-  border-bottom:1px solid var(--hair); background:var(--ink); }
-.brand{ display:flex; align-items:center; gap:10px; min-width:0; }
-.brand svg{ width:22px; height:22px; flex:none; }
-.brand h1{ font-family:var(--f-display); font-weight:500; font-size:17px; margin:0; white-space:nowrap; }
-#tabs{ display:flex; gap:4px; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
+/* ---------- en-tête ---------- */
+#top{ flex:none; display:flex; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); background:var(--paper); }
+.brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
+.brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
+#tabs{ display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
 #tabs::-webkit-scrollbar{ display:none; }
-.tab{ flex:none; border:1px solid transparent; background:transparent; color:var(--muted); cursor:pointer; padding:6px 12px; border-radius:4px; font-size:13.5px; font-weight:500; display:flex; align-items:baseline; gap:7px; }
-.tab small{ font:10.5px var(--f-data); color:var(--muted-2); }
-.tab:hover{ color:var(--text); background:rgba(255,255,255,0.04); }
-.tab[aria-selected="true"]{ color:var(--brass); border-color:rgba(212,164,97,0.45); background:var(--brass-soft); }
-.tab[aria-selected="true"] small{ color:var(--brass); opacity:.8; }
-.tab.cmp{ margin-left:10px; border-color:var(--hair-2); }
+.tab{ flex:none; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
+.tab small{ font-size:11.5px; font-weight:400; color:var(--mute); font-variant-numeric:tabular-nums; }
+.tab:hover{ background:var(--sheet); color:var(--ink); }
+.tab[aria-selected="true"]{ background:var(--ink); color:#fff; }
+.tab[aria-selected="true"] small{ color:#B9C0C5; }
+.tab.cmp{ border-right:1px solid var(--rule); }
 
-/* ---------- main ---------- */
+/* ---------- vue 3D ---------- */
 #main{ flex:1; display:flex; min-height:0; position:relative; }
-#stage{ flex:1; position:relative; min-width:0; min-height:0; background:var(--void); }
+#stage{ flex:1; position:relative; min-width:0; min-height:0; background:var(--black); color:#fff; }
 #stage canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; cursor:grab; }
 #stage canvas.dragging{ cursor:grabbing; }
 #stage canvas.over-part{ cursor:pointer; }
 
 .hud{ position:absolute; pointer-events:none; }
 #hud-title{ left:var(--gl); top:16px; right:var(--gr); }
-#t-name{ font-family:var(--f-display); font-weight:500; font-size:clamp(22px, 3.2vw, 34px); line-height:1.05; text-shadow:0 2px 18px rgba(0,0,0,.8); }
-#t-sub{ color:var(--muted); font-size:12.5px; margin-top:5px; text-shadow:0 1px 8px rgba(0,0,0,.9); }
-#t-src{ color:var(--cyan); font:11px var(--f-data); margin-top:4px; text-shadow:0 1px 8px rgba(0,0,0,.9); }
+#t-name{ font-weight:800; font-stretch:75%; font-size:clamp(24px, 3.4vw, 40px); line-height:1; text-shadow:0 2px 14px #000; }
+#t-sub{ color:#C9CED2; font-size:13px; margin-top:7px; text-shadow:0 1px 8px #000; }
+#t-src{ color:#8E979D; font-size:11.5px; margin-top:3px; text-shadow:0 1px 8px #000; }
 
-#hover-tip{ position:absolute; pointer-events:none; padding:4px 8px; background:rgba(8,12,20,.92); border:1px solid var(--hair-2); border-radius:4px; font-size:12px; white-space:nowrap; transform:translate(12px, 14px); z-index:3; }
+#hover-tip{ position:absolute; pointer-events:none; padding:3px 8px; background:#fff; color:var(--ink); font-size:12px; font-weight:600; white-space:nowrap; transform:translate(12px, 14px); z-index:3; }
+#callout{ position:absolute; pointer-events:none; transform:translate(-50%, -150%); padding:3px 9px; background:var(--mark); color:var(--ink); font-size:12.5px; font-weight:700; white-space:nowrap; z-index:2; }
+#callout::after{ content:""; position:absolute; left:50%; top:100%; width:2px; height:12px; margin-left:-1px; background:var(--mark); }
+#hint{ position:absolute; left:50%; bottom:calc(66px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); font-size:12px; color:#AEB5BA; pointer-events:none; text-shadow:0 1px 6px #000; white-space:nowrap; transition:opacity .6s; max-width:92%; overflow:hidden; text-overflow:ellipsis; }
+#hint.gone{ opacity:0; }
 
-#toolbar{ position:absolute; left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); display:flex; align-items:center; gap:4px;
-  padding:5px; background:rgba(10,15,24,.86); border:1px solid var(--hair-2); border-radius:8px; backdrop-filter:blur(8px); max-width:calc(100% - 24px); }
-.tool{ display:flex; align-items:center; gap:7px; height:34px; padding:0 11px; border-radius:5px; border:1px solid transparent; background:transparent; color:var(--body); font-size:12.5px; cursor:pointer; white-space:nowrap; }
+#toolbar{ position:absolute; left:50%; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); display:flex; align-items:stretch; background:#0B0D0F; border:1px solid #4A5157; max-width:calc(100% - 24px); }
+.tool{ display:flex; align-items:center; gap:7px; height:38px; padding:0 13px; border:0; border-left:1px solid #33393E; background:transparent; color:#E4E7E9; font-size:13px; font-weight:500; cursor:pointer; white-space:nowrap; }
 .tool svg{ width:16px; height:16px; flex:none; }
-.tool:hover{ background:rgba(255,255,255,.06); color:var(--text); }
-.tool[aria-pressed="true"]{ color:var(--brass); background:var(--brass-soft); border-color:rgba(212,164,97,.4); }
+.tool:hover{ background:#1D2125; }
+.tool[aria-pressed="true"]{ background:var(--mark); color:var(--ink); }
 .tool:disabled{ opacity:.35; cursor:default; }
-.tool-sep{ width:1px; height:20px; background:var(--hair-2); margin:0 3px; }
-.explode{ display:flex; align-items:center; gap:8px; padding:0 10px 0 11px; height:34px; color:var(--body); font-size:12.5px; }
+.tool-sep{ display:none; }
+.explode{ display:flex; align-items:center; gap:9px; padding:0 13px; height:38px; color:#E4E7E9; font-size:13px; font-weight:500; }
 .explode svg{ width:16px; height:16px; }
-.explode input{ width:110px; accent-color:var(--brass); }
+.explode input{ width:120px; accent-color:var(--mark); }
+.explode input:disabled{ opacity:.5; }
 
-#loader{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:rgba(6,9,15,.72); z-index:4; text-align:center; padding:0 24px; }
-#loader .l-title{ font-family:var(--f-display); font-size:20px; }
-#loader .l-sub{ color:var(--muted); font:12px var(--f-data); font-variant-numeric:tabular-nums; }
-#loader .bar{ width:min(280px, 70%); height:3px; background:var(--hair-2); border-radius:2px; overflow:hidden; }
-#loader .bar i{ display:block; height:100%; width:0%; background:var(--brass); transition:width .15s linear; }
-#loader .l-err{ color:var(--bad); max-width:420px; line-height:1.5; font-size:13px; }
-#loader button{ border:1px solid var(--brass); background:var(--brass-soft); color:var(--brass); border-radius:4px; padding:7px 14px; cursor:pointer; font-size:13px; }
+#loader{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; background:rgba(0,0,0,.78); z-index:4; text-align:center; padding:0 24px; }
+#loader .l-title{ font-weight:700; font-stretch:75%; font-size:22px; }
+#loader .l-sub{ color:#AEB5BA; font-size:12.5px; font-variant-numeric:tabular-nums; max-width:420px; line-height:1.5; }
+#loader .bar{ width:min(280px, 70%); height:4px; background:#33393E; overflow:hidden; }
+#loader .bar i{ display:block; height:100%; width:0%; background:var(--mark); transition:width .15s linear; }
+#loader .l-err{ color:#FFB4A8; max-width:420px; line-height:1.5; font-size:13px; }
+#loader button{ border:0; background:var(--mark); color:var(--ink); padding:8px 16px; cursor:pointer; font-size:13px; font-weight:700; }
 
-/* compare labels */
 #cmp-labels{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
-.cmp-label{ position:absolute; transform:translate(-50%, 8px); text-align:center; pointer-events:auto; cursor:pointer; background:rgba(8,12,20,.82); border:1px solid var(--hair-2); border-radius:5px; padding:6px 10px; color:var(--text); font-family:inherit; }
-.cmp-label:hover{ border-color:var(--brass); }
-.cmp-label b{ display:block; font-family:var(--f-display); font-weight:500; font-size:15px; }
-.cmp-label span{ display:block; font:11px var(--f-data); color:var(--cyan); margin-top:2px; white-space:nowrap; }
-.cmp-ruler{ position:absolute; transform:translate(-50%, -24px); font:11px var(--f-data); color:var(--text); background:rgba(8,12,20,.8); padding:1px 6px; border-radius:3px; white-space:nowrap; }
+.cmp-label{ position:absolute; transform:translate(-50%, 8px); text-align:center; pointer-events:auto; cursor:pointer; background:#fff; border:0; padding:5px 10px; color:var(--ink); }
+.cmp-label:hover{ background:var(--mark); }
+.cmp-label b{ display:block; font-weight:800; font-stretch:75%; font-size:16px; }
+.cmp-label span{ display:block; font-size:11.5px; color:var(--ink-2); margin-top:1px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.cmp-ruler{ position:absolute; transform:translate(-50%, -24px); font-size:12px; font-weight:600; color:#fff; white-space:nowrap; }
 
-/* ---------- panel ---------- */
-#panel{ width:384px; flex:none; display:flex; flex-direction:column; min-height:0; border-left:1px solid var(--hair); background:var(--panel); }
-#ptabs{ flex:none; display:flex; border-bottom:1px solid var(--hair); padding-left:8px; padding-right:var(--gr); }
-.ptab{ flex:none; padding:11px 12px 10px; background:transparent; border:0; border-bottom:2px solid transparent; color:var(--muted); cursor:pointer; font-size:13px; font-weight:500; }
-.ptab:hover{ color:var(--text); }
-.ptab[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--brass); }
-.ptab .n{ font:10.5px var(--f-data); color:var(--muted-2); margin-left:4px; }
-.ptab.go{ margin-left:auto; color:var(--brass); }
-#pbody{ flex:1; overflow-y:auto; padding:18px 20px calc(28px + env(safe-area-inset-bottom, 0px)); padding-right:max(20px, env(safe-area-inset-right, 0px)); -webkit-overflow-scrolling:touch; }
-#pbody h2{ font-family:var(--f-display); font-weight:500; font-size:19px; margin:0; text-wrap:balance; }
-.launch{ color:var(--muted-2); font-size:12px; margin-top:3px; }
-.hero-stat{ display:flex; align-items:baseline; gap:8px; margin-top:16px; padding-bottom:14px; border-bottom:1px solid var(--hair); }
-.hero-stat .num{ font-family:var(--f-display); font-size:46px; font-weight:500; color:var(--brass); line-height:1; font-variant-numeric:tabular-nums; }
-.hero-stat .unit{ font-family:var(--f-display); font-size:20px; color:var(--brass); opacity:.8; }
-.hero-stat .label{ font-size:12px; color:var(--muted); line-height:1.4; margin-left:6px; max-width:200px; }
-.desc{ font-size:13px; line-height:1.65; color:var(--body); margin:14px 0 0; }
-.where{ margin-top:16px; }
+/* ---------- fiche ---------- */
+#panel{ width:400px; flex:none; display:flex; flex-direction:column; min-height:0; border-left:2px solid var(--ink); background:var(--paper); }
+#ptabs{ flex:none; display:flex; border-bottom:1px solid var(--ink); }
+.ptab{ flex:1; padding:11px 8px 10px; background:transparent; border:0; border-right:1px solid var(--rule); color:var(--ink-2); cursor:pointer; font-size:13px; font-weight:600; white-space:nowrap; }
+.ptab:last-child{ border-right:0; }
+.ptab:hover{ background:var(--sheet); }
+.ptab[aria-selected="true"]{ background:var(--ink); color:#fff; }
+.ptab .n{ font-weight:400; margin-left:5px; opacity:.7; font-variant-numeric:tabular-nums; }
+.ptab.go{ text-decoration:underline; text-underline-offset:3px; }
+#pbody{ flex:1; overflow-y:auto; padding:20px 22px calc(28px + env(safe-area-inset-bottom, 0px)); padding-right:max(22px, env(safe-area-inset-right, 0px)); -webkit-overflow-scrolling:touch; }
+#pbody h2{ font-weight:800; font-stretch:75%; font-size:26px; line-height:1.05; margin:0; text-wrap:balance; }
+.launch{ color:var(--mute); font-size:12.5px; margin-top:6px; line-height:1.5; }
+.facts{ display:grid; grid-template-columns:1fr 1fr; margin-top:16px; border-top:2px solid var(--ink); border-left:1px solid var(--rule); }
+.facts div{ padding:8px 10px 9px; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); min-width:0; }
+.facts dt{ font-size:11.5px; color:var(--mute); }
+.facts dd{ margin:2px 0 0; font-weight:700; font-stretch:75%; font-size:19px; line-height:1.15; font-variant-numeric:tabular-nums; }
+.facts dd small{ font-size:12px; font-weight:500; font-stretch:100%; color:var(--ink-2); }
+.desc{ font-size:14px; line-height:1.6; color:var(--ink); margin:16px 0 0; }
+.where{ margin-top:16px; background:var(--sheet); border:1px solid var(--rule); padding:10px 10px 6px; }
 .where svg{ width:100%; height:auto; display:block; }
-.spec-section{ margin-top:20px; }
-.spec-section-title{ font-weight:600; font-size:11.5px; letter-spacing:.3px; color:var(--brass); margin-bottom:4px; }
-.spec-row{ display:flex; justify-content:space-between; gap:14px; padding:7px 0; border-bottom:1px solid var(--hair); font-size:12.5px; }
-.spec-row .k{ color:var(--muted); flex:0 0 auto; max-width:46%; }
-.spec-row .v{ font:11.5px/1.45 var(--f-data); text-align:right; color:var(--text); min-width:0; font-variant-numeric:tabular-nums; }
-.source-note{ font-size:11.5px; line-height:1.55; color:var(--muted-2); margin-top:16px; padding-top:12px; border-top:1px dashed var(--hair-2); }
-.cta{ display:block; width:100%; margin-top:16px; padding:11px 13px; text-align:left; border:1px solid rgba(212,164,97,.45); background:var(--brass-soft); color:var(--brass); border-radius:5px; font-weight:500; font-size:13.5px; cursor:pointer; }
-.cta:hover{ background:rgba(212,164,97,.22); }
-.cta small{ display:block; font-size:11.5px; color:var(--muted); margin-top:2px; font-weight:400; }
+.spec-section{ margin-top:24px; }
+.spec-section-title{ font-weight:800; font-stretch:75%; font-size:16px; padding-bottom:5px; border-bottom:2px solid var(--ink); }
+.spec-row{ display:flex; justify-content:space-between; gap:16px; padding:7px 0; border-bottom:1px solid var(--rule); font-size:13px; }
+.spec-row .k{ color:var(--ink-2); flex:0 0 auto; max-width:44%; }
+.spec-row .v{ text-align:right; font-weight:600; min-width:0; line-height:1.4; font-variant-numeric:tabular-nums; }
+.source-note{ font-size:12px; line-height:1.55; color:var(--mute); margin-top:20px; }
+.cta{ display:block; width:100%; margin-top:16px; padding:11px 14px; text-align:left; border:0; background:var(--ink); color:#fff; font-weight:700; font-size:14px; cursor:pointer; }
+.cta:hover{ background:#2B3136; }
+.cta small{ display:block; font-size:12px; color:#C9CED2; margin-top:3px; font-weight:400; line-height:1.4; }
 
-.parts-intro{ font-size:12.5px; color:var(--muted); line-height:1.55; margin:0 0 12px; }
-.part{ border:1px solid var(--hair); border-radius:5px; margin-bottom:6px; background:transparent; overflow:hidden; }
-.part > button{ display:flex; width:100%; align-items:center; gap:10px; text-align:left; padding:10px 12px; background:transparent; border:0; color:var(--text); cursor:pointer; font-size:13px; font-weight:500; }
-.part > button:hover{ background:rgba(255,255,255,.04); }
-.part .dot{ width:8px; height:8px; border-radius:50%; background:var(--hair-2); flex:none; }
-.part.on{ border-color:rgba(212,164,97,.5); background:rgba(212,164,97,.06); }
-.part.on .dot{ background:var(--brass); }
-.part.on > button{ color:var(--brass); }
-.part .pd{ display:none; padding:0 12px 12px 30px; font-size:12.5px; line-height:1.6; color:var(--body); }
+.parts-intro{ font-size:13px; color:var(--ink-2); line-height:1.55; margin:0 0 12px; }
+.part{ border-bottom:1px solid var(--rule); }
+.part:first-of-type{ border-top:2px solid var(--ink); }
+.part > button{ display:flex; width:100%; align-items:center; gap:10px; text-align:left; padding:10px 8px; background:transparent; border:0; cursor:pointer; font-size:14px; font-weight:600; }
+.part > button:hover{ background:var(--sheet); }
+.part .dot{ width:9px; height:9px; border:1.5px solid var(--ink); flex:none; }
+.part.on > button{ background:var(--mark); }
+.part.on .dot{ background:var(--ink); }
+.part .pd{ display:none; padding:10px 8px 14px 27px; font-size:13.5px; line-height:1.6; }
 .part.on .pd{ display:block; }
-.part .pf{ margin-top:8px; font:11px/1.6 var(--f-data); color:var(--cyan); }
-.cmp-table{ width:100%; border-collapse:collapse; font-size:12.5px; margin-top:14px; }
-.cmp-table th{ text-align:left; color:var(--muted); font-weight:500; padding:7px 6px 7px 0; border-bottom:1px solid var(--hair-2); font-size:11.5px; }
-.cmp-table td{ padding:8px 6px 8px 0; border-bottom:1px solid var(--hair); font:11.5px var(--f-data); font-variant-numeric:tabular-nums; }
-.cmp-table td:first-child{ font:500 13px var(--f-ui); color:var(--text); }
-.cmp-table tr[data-tele]{ cursor:pointer; }
-.cmp-table tr[data-tele]:hover td{ color:var(--brass); }
-.barcell{ display:flex; align-items:center; gap:8px; }
-.barcell i{ display:block; height:6px; border-radius:2px; background:var(--brass); min-width:2px; }
+.part .pf{ margin-top:10px; padding-top:8px; border-top:1px solid var(--rule); font-size:12.5px; line-height:1.7; font-weight:600; font-variant-numeric:tabular-nums; }
+.cmp-table{ width:100%; border-collapse:collapse; font-size:13px; margin-top:16px; }
+.cmp-table th{ text-align:left; color:var(--mute); font-weight:500; padding:7px 6px 7px 0; border-bottom:2px solid var(--ink); font-size:12px; }
+.cmp-table td{ padding:8px 6px 8px 0; border-bottom:1px solid var(--rule); font-variant-numeric:tabular-nums; }
+.cmp-table td:first-child{ font-weight:700; }
+.cmp-table tr[data-go]{ cursor:pointer; }
+.cmp-table tr[data-go]:hover td{ background:var(--sheet); }
+.barcell{ display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.barcell i{ display:block; height:8px; background:var(--ink); min-width:2px; }
+.barcell i.alt{ background:var(--rule-2); }
 
-#err-banner{ position:fixed; left:50%; top:calc(12px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); background:#3a1414; border:1px solid #7a2c2c; color:#ffd7d7; font:12px var(--f-data); padding:9px 13px; border-radius:6px; z-index:999; max-width:88vw; }
+#err-banner{ position:fixed; left:50%; top:calc(12px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); background:var(--bad); color:#fff; font-size:12.5px; padding:9px 13px; z-index:999; max-width:88vw; }
 
 @media (max-width: 860px){
-  #top{ flex-wrap:wrap; gap:8px; padding-block:8px; }
-  .brand h1{ font-size:15px; }
-  #tabs{ margin-left:0; width:100%; }
-  .tab{ padding:6px 10px; font-size:13px; }
+  #top{ flex-direction:column; gap:0; padding:0; }
+  .brand{ padding:9px var(--gr) 8px var(--gl); }
+  .brand h1{ font-size:18px; }
+  #tabs{ margin-left:0; border-top:1px solid var(--rule); }
+  .tab{ padding:9px 13px; font-size:13.5px; }
+  .tab:first-child{ border-left:0; padding-left:var(--gl); }
   .tab small{ display:none; }
   #main{ flex-direction:column; }
   #stage{ flex:0 0 46%; }
-  #panel{ width:auto; flex:1; border-left:0; border-top:1px solid var(--hair); }
-  #ptabs{ padding-left:max(6px, env(safe-area-inset-left, 0px)); }
+  #panel{ width:auto; flex:1; border-left:0; border-top:2px solid var(--ink); }
   #pbody{ padding-left:var(--gl); padding-right:var(--gr); }
   #hud-title{ top:10px; }
-  #t-src{ display:none; }
-  .tool span.lbl{ display:none; }
-  .tool{ padding:0 9px; }
+  #t-src, #hint{ display:none; }
+  .tool span.lbl, .explode .lbl{ display:none; }
+  .tool{ padding:0 11px; }
   .explode input{ width:84px; }
-  .explode .lbl{ display:none; }
   #toolbar{ bottom:8px; }
+  .cmp-label{ padding:3px 6px; } .cmp-label b{ font-size:13px; } .cmp-label span{ font-size:10px; }
 }
 @media (prefers-reduced-motion: reduce){ *{ transition-duration:.001ms !important; animation-duration:.001ms !important; } }
-#callout{ position:absolute; pointer-events:none; transform:translate(-50%, -150%); padding:4px 9px; background:rgba(8,12,20,.9); border:1px solid var(--brass); color:var(--brass); border-radius:4px; font-size:12px; font-weight:500; white-space:nowrap; z-index:2; }
-#callout::after{ content:""; position:absolute; left:50%; top:100%; width:1px; height:12px; background:var(--brass); }
-#hint{ position:absolute; left:50%; bottom:calc(64px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); font-size:11.5px; color:var(--muted); pointer-events:none; text-shadow:0 1px 6px rgba(0,0,0,.9); white-space:nowrap; transition:opacity .6s; max-width:92%; overflow:hidden; text-overflow:ellipsis; }
-#hint.gone{ opacity:0; }
-.explode input:disabled{ opacity:.5; }
-@media (max-width: 860px){ #hint{ display:none; } .cmp-label{ padding:4px 7px; } .cmp-label b{ font-size:13px; } .cmp-label span{ font-size:10px; } }
 
-/* ===== Instruments & données (vue plein écran) ===== */
-#app{ position:relative; }
-#inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--void); }
-.inst-top{ display:flex; align-items:center; gap:14px; padding-block:10px; padding-left:var(--gl); padding-right:var(--gr); border-bottom:1px solid var(--hair); background:var(--ink); flex-wrap:wrap; }
-.inst-back{ font:500 12.5px var(--f-ui); color:var(--text); background:transparent; border:1px solid var(--hair-2); border-radius:4px; padding:6px 11px; cursor:pointer; }
-.inst-back:hover{ border-color:var(--brass); color:var(--brass); }
-.inst-title{ font-family:var(--f-display); font-size:18px; font-weight:500; }
-.pills{ display:flex; gap:6px; margin-left:auto; flex-wrap:wrap; }
-.pill{ border:1px solid var(--hair-2); background:transparent; color:var(--muted); font:500 12.5px var(--f-ui); padding:5px 11px; border-radius:4px; cursor:pointer; }
-.pill:hover{ color:var(--text); }
-.pill.on{ color:var(--brass); border-color:var(--brass); background:var(--brass-soft); }
+/* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
+#inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
+.inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
+.inst-back{ font-size:13px; font-weight:600; background:var(--ink); color:#fff; border:0; padding:0 14px; margin:9px 16px 9px 0; height:30px; cursor:pointer; }
+.inst-back:hover{ background:#2B3136; }
+.inst-title{ font-weight:800; font-stretch:75%; font-size:21px; align-self:center; padding-block:10px; }
+.pills{ display:flex; margin-left:auto; }
+.pill{ border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); font-size:14px; font-weight:600; padding:0 16px; cursor:pointer; }
+.pill:last-child{ border-right:1px solid var(--rule); }
+.pill:hover{ background:var(--sheet); }
+.pill.on{ background:var(--ink); color:#fff; }
 .inst-body{ flex:1; display:flex; min-height:0; }
-.inst-nav{ width:224px; flex:none; border-right:1px solid var(--hair); overflow-y:auto; padding:10px; padding-left:max(10px, env(safe-area-inset-left, 0px)); background:var(--panel); }
-.nav-i{ display:block; width:100%; text-align:left; padding:9px 10px; margin-bottom:4px; border:1px solid transparent; border-left:3px solid var(--c, var(--hair-2)); border-radius:3px; background:transparent; color:var(--muted); cursor:pointer; font-family:var(--f-ui); }
-.nav-i .n{ display:block; font-weight:500; font-size:13px; color:inherit; }
-.nav-i .k{ display:block; font-size:11px; color:var(--muted-2); margin-top:1px; }
-.nav-i:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
-.nav-i.on{ background:var(--brass-soft); color:var(--text); border-color:rgba(212,164,97,0.35); border-left-color:var(--c, var(--brass)); }
-.inst-main{ flex:1; overflow-y:auto; padding:22px 28px calc(70px + env(safe-area-inset-bottom, 0px)); padding-right:max(28px, env(safe-area-inset-right, 0px)); min-width:0; -webkit-overflow-scrolling:touch; }
-.inst-main > *{ max-width:880px; }
-.inst-h{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-.inst-name{ font-family:var(--f-display); font-weight:500; font-size:30px; line-height:1.1; }
-.inst-full{ color:var(--muted); font-size:13px; margin-top:3px; }
-.kind{ font-size:11.5px; color:var(--cyan); border:1px solid rgba(147,210,220,0.3); padding:3px 8px; border-radius:3px; white-space:nowrap; }
-.inst-sum{ font-size:13.5px; line-height:1.65; color:var(--body); margin:14px 0 0; max-width:70ch; }
-.inst-range{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-.rng{ font:11.5px var(--f-data); padding:3px 8px; border-left:3px solid var(--c); background:rgba(255,255,255,0.04); color:var(--muted); }
-.rng b{ color:var(--text); font-weight:500; }
-.isec{ margin-top:28px; }
-.isec h4{ font:600 12px var(--f-ui); color:var(--brass); margin:0 0 10px; letter-spacing:0.2px; }
-.cap{ font-size:11.5px; color:var(--muted-2); margin-top:8px; line-height:1.5; }
-.muted{ color:var(--muted-2); }
-.stable .srow{ display:flex; gap:18px; padding:8px 0; border-bottom:1px solid var(--hair); font-size:12.5px; }
-.stable .k{ flex:0 0 190px; color:var(--muted); }
-.stable .v{ flex:1; min-width:0; font:11.5px/1.55 var(--f-data); color:var(--text); }
+.inst-nav{ width:232px; flex:none; border-right:1px solid var(--ink); overflow-y:auto; padding-left:env(safe-area-inset-left, 0px); }
+.nav-i{ display:block; width:100%; text-align:left; padding:10px 14px 10px 12px; border:0; border-bottom:1px solid var(--rule); border-left:6px solid var(--c, transparent); background:transparent; cursor:pointer; }
+.nav-i .n{ display:block; font-weight:700; font-size:14px; }
+.nav-i .k{ display:block; font-size:12px; color:var(--mute); margin-top:1px; }
+.nav-i:hover{ background:var(--sheet); }
+.nav-i.on{ background:var(--mark); }
+.nav-i.on .k{ color:var(--ink-2); }
+.inst-main{ flex:1; overflow-y:auto; padding:24px 32px calc(70px + env(safe-area-inset-bottom, 0px)); padding-right:max(32px, env(safe-area-inset-right, 0px)); min-width:0; -webkit-overflow-scrolling:touch; }
+.inst-head{ padding-bottom:20px; border-bottom:2px solid var(--ink); display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 1.25fr); gap:8px 40px; align-items:end; }
+.inst-h{ display:block; }
+.inst-name{ font-weight:800; font-stretch:75%; font-size:clamp(30px, 4vw, 52px); line-height:.98; }
+.inst-full{ color:var(--ink-2); font-size:14px; margin-top:8px; }
+.kind{ display:inline-block; font-size:12.5px; font-weight:600; background:var(--ink); color:#fff; padding:2px 8px; margin-top:10px; }
+.inst-sum{ font-size:15px; line-height:1.6; margin:0; max-width:72ch; }
+.inst-range{ display:flex; gap:6px 18px; flex-wrap:wrap; margin-top:12px; }
+.rng{ font-size:13px; padding-left:8px; border-left:6px solid var(--c); color:var(--ink-2); font-variant-numeric:tabular-nums; }
+.rng b{ color:var(--ink); font-weight:700; }
+.inst-cols{ columns:2 440px; column-gap:40px; }
+.isec{ padding-top:24px; break-inside:avoid; }
+.isec.wide{ column-span:all; }
+.isec h4{ font-weight:800; font-stretch:75%; font-size:17px; margin:0 0 10px; padding-bottom:5px; border-bottom:2px solid var(--ink); }
+.cap{ font-size:12px; color:var(--mute); margin-top:8px; line-height:1.5; }
+.stable .srow{ display:flex; gap:18px; padding:7px 0; border-bottom:1px solid var(--rule); font-size:13px; }
+.stable .k{ flex:0 0 36%; color:var(--ink-2); }
+.stable .v{ flex:1; min-width:0; font-weight:600; line-height:1.45; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .codewrap{ position:relative; }
-pre.code{ margin:0; padding:14px 16px; background:#080D16; border:1px solid var(--hair); border-radius:4px; overflow-x:auto; font:11.5px/1.6 var(--f-data); color:#CFD8EA; }
-.copy{ position:absolute; top:8px; right:8px; font:500 11px var(--f-ui); color:var(--muted); background:rgba(13,20,32,0.95); border:1px solid var(--hair-2); border-radius:3px; padding:3px 8px; cursor:pointer; }
-.copy:hover{ color:var(--brass); border-color:var(--brass); }
-.ex-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
-.ex-title{ font-size:12.5px; color:var(--text); }
-.tag{ font:10.5px var(--f-data); padding:2px 7px; border-radius:3px; border:1px solid var(--hair-2); color:var(--muted); white-space:nowrap; }
-.tag.real{ color:var(--ok); border-color:rgba(143,214,154,0.4); }
-.tag.illus{ color:var(--warn); border-color:rgba(224,160,90,0.4); }
-.chips{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
-.chip{ font:500 11.5px var(--f-data); padding:4px 8px; border:1px solid var(--hair-2); background:transparent; color:var(--muted); border-radius:3px; cursor:pointer; }
-.chip:hover{ color:var(--text); border-color:var(--brass); }
-.chip.on{ color:var(--void); background:var(--brass); border-color:var(--brass); }
-.filter-detail{ margin-top:10px; font-size:12.5px; color:var(--body); min-height:20px; }
-.filter-detail b{ color:var(--brass); font-weight:600; }
+pre.code{ margin:0; padding:14px 16px; background:#0B0D0F; color:#E4E7E9; overflow-x:auto; font:12px/1.6 var(--f-code); }
+.copy{ position:absolute; top:0; right:0; font-size:11.5px; font-weight:700; color:var(--ink); background:#fff; border:0; padding:4px 9px; cursor:pointer; }
+.copy:hover{ background:var(--mark); }
+.ex-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.ex-title{ font-size:13px; font-weight:600; }
+.tag{ font-size:11.5px; font-weight:700; padding:1px 7px; white-space:nowrap; }
+.tag.real{ background:var(--ok); color:#fff; }
+.tag.illus{ border:1.5px solid var(--warn); color:var(--warn); }
+.chips{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px; }
+.chip{ font-size:12px; font-weight:600; padding:3px 7px; border:1px solid var(--rule-2); background:transparent; cursor:pointer; font-variant-numeric:tabular-nums; }
+.chip:hover{ background:var(--sheet); border-color:var(--ink); }
+.chip.on{ background:var(--mark); border-color:var(--ink); }
+.filter-detail{ margin-top:10px; font-size:13px; min-height:20px; }
+.filter-detail b{ font-weight:800; background:var(--mark); padding:0 4px; }
 .svgwrap{ overflow-x:auto; }
-svg.cov, svg.mini{ width:100%; min-width:480px; height:auto; display:block; }
+svg.cov, svg.mini{ width:100%; min-width:400px; height:auto; display:block; }
 .cov-row{ cursor:pointer; }
-.cov-lab{ fill:#BFC9DE; font:500 11.5px 'Space Grotesk',sans-serif; }
-.cov-row.sel .cov-lab{ fill:#D4A461; }
-.cov-row:hover .cov-lab{ fill:#EAF0F8; }
-.cov-band{ fill:#0b1220; font:600 10px 'IBM Plex Mono',monospace; pointer-events:none; }
-.cov-tick{ fill:#7C89A4; font:10px 'IBM Plex Mono',monospace; }
-.cov-grid{ stroke:rgba(160,185,225,0.13); stroke-width:1; }
-.cov-axis{ stroke:rgba(160,185,225,0.26); stroke-width:1; }
-.cov-unit{ fill:#7C89A4; font:10px 'Space Grotesk',sans-serif; }
-.cov-vis{ fill:#93A0BA; font:9.5px 'Space Grotesk',sans-serif; }
-.mini-lab{ fill:#EAF0F8; font:600 10.5px 'IBM Plex Mono',monospace; }
+.cov-lab{ fill:#14171A; font:600 12.5px Archivo, Arial, sans-serif; }
+.cov-row.sel .cov-lab{ font-weight:800; text-decoration:underline; }
+.cov-row:hover .cov-lab{ text-decoration:underline; }
+.cov-band{ fill:#fff; font:700 10.5px Archivo, Arial, sans-serif; pointer-events:none; }
+.cov-tick{ fill:#3A4147; font:11px Archivo, Arial, sans-serif; }
+.cov-grid{ stroke:#C8CDD1; stroke-width:1; }
+.cov-axis{ stroke:#14171A; stroke-width:1.5; }
+.cov-unit{ fill:#667077; font:11px Archivo, Arial, sans-serif; }
+.cov-vis{ fill:#3A4147; font:11px Archivo, Arial, sans-serif; }
 .fov{ display:flex; gap:22px; flex-wrap:wrap; align-items:flex-start; }
-.fov-svg{ width:320px; max-width:100%; height:auto; }
+.fov-svg{ width:300px; max-width:100%; height:auto; }
 .fov-svg [data-inst]{ cursor:pointer; }
-.fov-leg{ list-style:none; margin:0; padding:0; font-size:12px; color:var(--muted); min-width:190px; flex:1; max-width:340px; }
-.fov-leg li{ display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer; }
-.fov-leg li:hover, .fov-leg li.sel{ color:var(--text); }
-.fov-leg i{ width:10px; height:10px; border-radius:2px; flex:none; }
-.fov-leg span{ font:11px var(--f-data); margin-left:auto; padding-left:12px; color:var(--muted-2); white-space:nowrap; }
-.fov-bar{ stroke:#EAF0F8; stroke-width:1.5; }
-.fov-barlab{ fill:#93A0BA; font:10px 'IBM Plex Mono',monospace; }
-.archs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; }
-.arch{ display:block; padding:12px 14px; border:1px solid var(--hair-2); border-radius:4px; text-decoration:none; background:rgba(255,255,255,0.02); }
-.arch:hover{ border-color:var(--brass); }
-.a-l{ display:block; color:var(--text); font-weight:500; font-size:13px; }
-.a-d{ display:block; color:var(--muted); font-size:11.5px; line-height:1.5; margin-top:3px; }
-.a-u{ display:block; color:var(--cyan); font:10.5px var(--f-data); margin-top:7px; }
-.icards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:10px; }
-.icard{ text-align:left; padding:12px; background:rgba(255,255,255,0.02); border:1px solid var(--hair-2); border-top:3px solid var(--c); border-radius:4px; cursor:pointer; color:var(--text); font-family:var(--f-ui); }
-.icard:hover{ border-color:var(--brass); border-top-color:var(--c); }
-.ic-n{ display:block; font-weight:600; font-size:14px; }
-.ic-k{ display:block; color:var(--muted); font-size:11.5px; margin-top:2px; }
-.ic-r{ display:block; color:var(--cyan); font:10.5px var(--f-data); margin-top:8px; }
-.notes{ margin:0; padding-left:18px; font-size:12.5px; line-height:1.65; color:var(--body); max-width:75ch; }
-.lnks{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-.lnk{ display:inline-flex; flex-direction:column; padding:8px 12px; border:1px solid var(--hair-2); border-radius:4px; text-decoration:none; color:var(--text); font-size:12.5px; }
-.lnk:hover{ border-color:var(--brass); }
-.lnk em{ font:normal 10.5px var(--f-data); color:var(--cyan); margin-top:3px; }
+.fov-leg{ list-style:none; margin:0; padding:0; font-size:13px; min-width:190px; flex:1; }
+.fov-leg li{ display:flex; align-items:center; gap:8px; padding:6px 0; cursor:pointer; border-bottom:1px solid var(--rule); }
+.fov-leg li:hover, .fov-leg li.sel{ font-weight:700; }
+.fov-leg i{ width:11px; height:11px; flex:none; }
+.fov-leg span{ margin-left:auto; padding-left:12px; color:var(--ink-2); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.fov-bar{ stroke:#14171A; stroke-width:2; }
+.fov-barlab{ fill:#3A4147; font:11px Archivo, Arial, sans-serif; }
+.archs{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); border-top:1px solid var(--rule); border-left:1px solid var(--rule); }
+.arch{ display:block; padding:12px 14px; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); text-decoration:none; color:var(--ink); }
+.arch:hover{ background:var(--sheet); }
+.a-l{ display:block; font-weight:700; font-size:14px; text-decoration:underline; text-underline-offset:3px; }
+.a-d{ display:block; color:var(--ink-2); font-size:12.5px; line-height:1.5; margin-top:4px; }
+.a-u{ display:block; color:var(--mute); font-size:12px; margin-top:6px; }
+.icards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:0; border-top:1px solid var(--rule); border-left:1px solid var(--rule); }
+.icard{ text-align:left; padding:10px 12px 12px; background:transparent; border:0; border-right:1px solid var(--rule); border-bottom:1px solid var(--rule); border-top:6px solid var(--c); cursor:pointer; }
+.icard:hover{ background:var(--sheet); }
+.ic-n{ display:block; font-weight:800; font-stretch:75%; font-size:19px; }
+.ic-k{ display:block; color:var(--ink-2); font-size:12.5px; margin-top:2px; }
+.ic-r{ display:block; font-size:12.5px; font-weight:600; margin-top:8px; font-variant-numeric:tabular-nums; }
+.notes{ margin:0; padding-left:18px; font-size:13.5px; line-height:1.6; }
+.notes li{ margin-bottom:6px; }
+.lnks{ display:flex; flex-direction:column; }
+.lnk{ display:flex; justify-content:space-between; gap:14px; padding:8px 0; border-bottom:1px solid var(--rule); color:var(--ink); font-size:13.5px; font-weight:600; text-underline-offset:3px; }
+.lnk em{ font-style:normal; font-weight:400; font-size:12.5px; color:var(--mute); text-decoration:none; white-space:nowrap; }
 @media (max-width: 860px){
+  .inst-top{ padding:0; }
+  .inst-back{ margin:9px 12px 9px var(--gl); }
+  .inst-title{ font-size:17px; }
+  .pills{ margin-left:0; width:100%; border-top:1px solid var(--rule); overflow-x:auto; }
+  .pill{ padding:9px 14px; } .pill:first-child{ border-left:0; padding-left:var(--gl); }
   .inst-body{ flex-direction:column; }
-  .inst-nav{ width:auto; display:flex; gap:6px; overflow-x:auto; overflow-y:hidden; border-right:0; border-bottom:1px solid var(--hair); padding:8px var(--gr) 8px var(--gl); flex:none; }
-  .nav-i{ flex:none; width:auto; margin:0; white-space:nowrap; }
+  .inst-nav{ width:auto; display:flex; overflow-x:auto; overflow-y:hidden; border-right:0; border-bottom:1px solid var(--ink); flex:none; padding-left:0; }
+  .nav-i{ flex:none; width:auto; white-space:nowrap; border-bottom:0; border-left:0; border-top:5px solid var(--c, transparent); border-right:1px solid var(--rule); padding:7px 13px 9px; }
+  .nav-i:first-child{ padding-left:var(--gl); }
   .nav-i .k{ display:none; }
-  .inst-main{ padding:16px var(--gr) calc(60px + env(safe-area-inset-bottom, 0px)) var(--gl); }
-  .inst-name{ font-size:24px; }
-  .stable .srow{ flex-direction:column; gap:3px; }
+  .inst-main{ padding:18px var(--gr) calc(60px + env(safe-area-inset-bottom, 0px)) var(--gl); }
+  .inst-head{ grid-template-columns:minmax(0, 1fr); gap:14px; }
+  .inst-cols{ columns:1; }
+  .stable .srow{ flex-direction:column; gap:2px; }
   .stable .k{ flex:none; }
-  .pills{ margin-left:0; width:100%; }
-  .inst-title{ font-size:15px; }
 }
 
 </style>
@@ -274,7 +276,6 @@ svg.cov, svg.mini{ width:100%; min-width:480px; height:auto; display:block; }
 <div id="app">
   <header id="top">
     <div class="brand">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#D4A461" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="#D4A461" stroke="none"/><ellipse cx="12" cy="12" rx="10.5" ry="4.2" transform="rotate(-24 12 12)"/><circle cx="20.6" cy="7.4" r="1.3" fill="#93D2DC" stroke="none"/></svg>
       <h1>Observatoires en orbite</h1>
     </div>
     <nav id="tabs" role="tablist" aria-label="Observatoire"></nav>
@@ -290,7 +291,7 @@ svg.cov, svg.mini{ width:100%; min-width:480px; height:auto; display:block; }
       <div id="cmp-labels" hidden></div>
       <div id="callout" hidden></div>
       <div id="hover-tip" hidden></div>
-      <div id="hint">Glisser pour tourner · molette ou pincement pour zoomer · cliquer une pièce</div>
+      <div id="hint">Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier</div>
 
       <div id="toolbar" role="toolbar" aria-label="Affichage">
         <label class="explode" title="Écarter les pièces">
@@ -330,7 +331,7 @@ svg.cov, svg.mini{ width:100%; min-width:480px; height:auto; display:block; }
 
   <div id="inst-page" hidden>
     <div class="inst-top">
-      <button class="inst-back" id="inst-close">← Vue 3D</button>
+      <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
       <div class="inst-title">Instruments et données</div>
       <div class="pills" id="inst-pills"></div>
     </div>
@@ -353,7 +354,7 @@ var TELESCOPES = [
   {
     id:'hubble', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
     agency:'NASA / ESA', launch:'Lancé le 24 avril 1990, navette Discovery (STS-31)',
-    sub:'Orbite basse terrestre · ultraviolet, visible, proche infrarouge',
+    sub:'Orbite basse terrestre, ultraviolet, visible, proche infrarouge',
     src:'Maquette : NASA VTAD, via Gaia Sky',
     file:'models/hubble.glb', bytes:3350204, axis:'z', size:13.2,
     view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
@@ -412,7 +413,7 @@ var TELESCOPES = [
   {
     id:'jwst', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
-    sub:'Point de Lagrange L2 · infrarouge proche et moyen',
+    sub:'Point de Lagrange L2, infrarouge proche et moyen',
     src:'Maquette : NASA 3D Resources (domaine public)',
     file:'models/jwst.glb', bytes:3996340, axis:null, size:0,
     view:{ az:0.62, el:0.30, dist:1.35 }, sun:[0.18,-0.97,-0.16], orbit:'l2',
@@ -474,12 +475,12 @@ var TELESCOPES = [
   {
     id:'euclid', name:'Euclid', short:'Euclid', year:'2023',
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
-    sub:'Point de Lagrange L2 · visible et proche infrarouge',
+    sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
     file:'models/euclid.glb', bytes:5977896, axis:'y', size:4.7,
     view:{ az:0.75, el:0.26, dist:1.6 }, sun:[-0.44,0.12,0.89], orbit:'l2',
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
-    cmp:{ tag:'4,7 m', dim:'4,7 m de haut · Ø 3,7 m', mirror:1.2, mass:2000, len:4.7 },
+    cmp:{ tag:'4,7 m', dim:'4,7 m de haut, Ø 3,7 m', mirror:1.2, mass:2000, len:4.7 },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     sections:[
@@ -524,7 +525,7 @@ var TELESCOPES = [
   {
     id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
-    sub:'Point de Lagrange L2 (2014–2025) · astrométrie en lumière visible',
+    sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
     src:'Maquette : Toni Sagristà, Gaia Sky',
     file:'models/gaia.glb', bytes:1361236, axis:'x', size:10.2,
     view:{ az:0.6, el:0.42, dist:1.35 }, sun:[0.5,-0.85,0.17], orbit:'l2',
@@ -1233,6 +1234,9 @@ var InstrumentsUI = (function(){
     e[0].fov = [ {l:'VIS', w:2830, h:2550} ];
     e[1].fov = [ {l:'NISP', w:2750, h:2600} ];
     g[0].fov = [ {l:'Champ d\'un télescope', w:2520, h:2520} ];
+    /* couleurs catégorielles lisibles sur papier clair, attribuées par rang */
+    var PAL = ['#2450C8', '#D4500F', '#0B7F63', '#8A38C2', '#6B747B'];
+    for (var k in INST_DATA) INST_DATA[k].instruments.forEach(function(it, i){ it.color = it.bands ? PAL[i % 4] : PAL[4]; });
   })();
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1261,12 +1265,12 @@ var InstrumentsUI = (function(){
   function visibleBand(ax, y, h){
     if (ax.max < 0.4 || ax.min > 0.75) return '';
     var a = ax.x(0.38), b = ax.x(0.75);
-    return '<rect x="'+a+'" y="'+y+'" width="'+(b-a)+'" height="'+h+'" fill="url(#gvis)" opacity="0.16"/>';
+    return '<rect x="'+a+'" y="'+y+'" width="'+(b-a)+'" height="'+h+'" fill="url(#gvis)" opacity="0.26"/>';
   }
   var GRAD = '<defs><linearGradient id="gvis" x1="0" x2="1"><stop offset="0" stop-color="#7a5cff"/><stop offset="0.25" stop-color="#3fa0ff"/><stop offset="0.5" stop-color="#5fe07a"/><stop offset="0.72" stop-color="#ffd85a"/><stop offset="1" stop-color="#ff5a4a"/></linearGradient></defs>';
 
   function coverage(tid, sel){
-    var d = INST_DATA[tid], W = 760, L = 96, R = 14, ax = new Axis(d.axis.min, d.axis.max, L, W-R);
+    var d = INST_DATA[tid], W = 560, L = 76, R = 12, ax = new Axis(d.axis.min, d.axis.max, L, W-R);
     var rows = [], y = 30;
     d.instruments.forEach(function(it){
       if (!it.bands) return;
@@ -1310,18 +1314,18 @@ var InstrumentsUI = (function(){
     var moon = ext > 1200, S = 300, pad = 26;
     if (moon) ext = Math.max(ext, 1865);
     var k = (S - 2*pad) / ext, c = S/2;
-    var s = '<svg class="fov-svg" viewBox="0 0 '+S+' '+(S+18)+'" role="img" aria-label="Champs de vue à l\'échelle"><rect x="0.5" y="0.5" width="'+(S-1)+'" height="'+(S-1)+'" fill="#080D16" stroke="rgba(160,185,225,0.2)"/>';
-    if (moon){ var rm = 1865/2*k; s += '<circle cx="'+c+'" cy="'+c+'" r="'+rm+'" fill="rgba(234,240,248,0.06)" stroke="#93A0BA" stroke-dasharray="3 3"/><text class="fov-barlab" x="'+c+'" y="'+(c+4)+'" text-anchor="middle">pleine Lune</text>'; }
+    var s = '<svg class="fov-svg" viewBox="0 0 '+S+' '+(S+18)+'" role="img" aria-label="Champs de vue à l\'échelle"><rect x="0.5" y="0.5" width="'+(S-1)+'" height="'+(S-1)+'" fill="#F7F8F8" stroke="#98A1A7"/>';
+    if (moon){ var rm = 1865/2*k; s += '<circle cx="'+c+'" cy="'+c+'" r="'+rm+'" fill="none" stroke="#3A4147" stroke-dasharray="3 3"/><text class="fov-barlab" x="'+c+'" y="'+(c+4)+'" text-anchor="middle">pleine Lune</text>'; }
     items.sort(function(a,b){ return b.f.w*b.f.h - a.f.w*a.f.h; }).forEach(function(o){
       var w = Math.max(2.5, o.f.w*k), h = Math.max(2.5, o.f.h*k), x = c + (o.f.dx||0)*k - w/2, y = c - h/2;
-      var st = 'fill="'+o.it.color+'" fill-opacity="0.16" stroke="'+o.it.color+'" stroke-width="1.4" data-inst="'+o.it.id+'"';
+      var st = 'fill="'+o.it.color+'" fill-opacity="0.14" stroke="'+o.it.color+'" stroke-width="1.8" data-inst="'+o.it.id+'"';
       s += o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" '+st+'/>';
     });
     var nice = [1,2,5,10,20,30,60,120,300,600,1200,1800,3600], bar = nice[0];
     for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
     s += '<line class="fov-bar" x1="'+pad+'" y1="'+(S-12)+'" x2="'+(pad+bar*k)+'" y2="'+(S-12)+'"/><text class="fov-barlab" x="'+(pad+bar*k+6)+'" y="'+(S-8)+'">'+ang(bar)+'</text></svg>';
     var leg = '<ul class="fov-leg">' + items.map(function(o){
-      return '<li data-inst="'+o.it.id+'"'+(o.it.id===sel?' class="sel"':'')+'><i style="background:'+o.it.color+'"></i>'+esc(o.it.name + (o.f.l && o.f.l!==o.it.name ? ' · '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
+      return '<li data-inst="'+o.it.id+'"'+(o.it.id===sel?' class="sel"':'')+'><i style="background:'+o.it.color+'"></i>'+esc(o.it.name + (o.f.l && o.f.l!==o.it.name ? ', '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
     }).join('') + '</ul>';
     return '<div class="fov">' + s + leg + '</div>';
   }
@@ -1331,21 +1335,21 @@ var InstrumentsUI = (function(){
     var it = get(tid, iid); if (!it || !it.filters || !it.filters.length) return '';
     var lo = Infinity, hi = 0;
     it.filters.forEach(function(f){ var p = span(f); lo = Math.min(lo, p[0]); hi = Math.max(hi, p[1]); });
-    var W = 760, ax = new Axis(lo*0.92, hi*1.08, 14, W-14), H = 74;
+    var W = 560, ax = new Axis(lo*0.92, hi*1.08, 14, W-14), H = 74;
     var s = '<svg class="mini" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Position des filtres en longueur d\'onde">' + GRAD + visibleBand(ax, 8, 40);
     ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="8" x2="'+x+'" y2="48"/><text class="cov-tick" x="'+x+'" y="62" text-anchor="middle">'+(v<1 ? num(v*1000,0)+' nm' : num(v,2)+' µm')+'</text>'; });
     s += '<line class="cov-axis" x1="14" y1="48" x2="'+(W-14)+'" y2="48"/>';
     it.filters.forEach(function(f, i){
       var p = span(f), a = ax.x(p[0]), z = ax.x(p[1]), on = i===idx;
-      s += '<rect data-filter="'+i+'" x="'+a+'" y="'+(on?12:20)+'" width="'+Math.max(2.5, z-a)+'" height="'+(on?36:28)+'" rx="1.5" fill="'+(on ? '#D4A461' : it.color)+'" fill-opacity="'+(on?0.95:0.3)+'" style="cursor:pointer"/>';
+      s += '<rect data-filter="'+i+'" x="'+a+'" y="'+(on?12:20)+'" width="'+Math.max(2.5, z-a)+'" height="'+(on?36:28)+'" rx="1.5" fill="'+(on ? '#FFD21F' : it.color)+'" fill-opacity="'+(on?1:0.3)+'"'+(on?' stroke="#14171A" stroke-width="1.5"':'')+' style="cursor:pointer"/>';
     });
     s += '</svg>';
     var chips = '<div class="chips">' + it.filters.map(function(f, i){ return '<button class="chip'+(i===idx?' on':'')+'" data-filter="'+i+'">'+esc(f.n)+'</button>'; }).join('') + '</div>';
     var f = it.filters[idx], det = '';
     if (f){
       var p = span(f);
-      det = '<b>'+esc(f.n)+'</b> · ' + (f.lo != null ? wl(f.lo)+' – '+wl(f.hi) : (f.k==='LP' ? 'transmet au-delà de '+wl(f.c) : 'centré vers '+wl(f.c))) +
-            ' · ' + KIND[f.k] + (f.g ? ' · ' + esc(f.g) : '') + (f.note ? ' · ' + esc(f.note) : '');
+      det = '<b>'+esc(f.n)+'</b> ' + (f.lo != null ? wl(f.lo)+' – '+wl(f.hi) : (f.k==='LP' ? 'transmet au-delà de '+wl(f.c) : 'centré vers '+wl(f.c))) +
+            ', ' + KIND[f.k] + (f.g ? ', ' + esc(f.g) : '') + (f.note ? ' (' + esc(f.note) + ')' : '') + '.';
     }
     var hasF = it.filters.some(function(f){ return f.lo == null; });
     return chips + '<div class="svgwrap">' + s + '</div><div class="filter-detail">' + det + '</div>' +
@@ -1353,31 +1357,31 @@ var InstrumentsUI = (function(){
   }
 
   function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
-  function table(rows){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1])+'</div></div>'; }).join('') + '</div>'; }
+  function table(rows){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+'</div></div>'; }).join('') + '</div>'; }
   function host(u){ return u.replace(/^https?:\/\//,'').replace(/\/.*$/,''); }
 
   function overview(tid){
     var d = INST_DATA[tid], s = '';
-    s += '<div class="inst-h"><div><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions · cliquer sur une ligne pour le détail</div></div></div>';
-    s += '<p class="inst-sum">'+esc(d.summary)+'</p>';
+    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions. Cliquer une ligne du graphique ou une case pour ouvrir le détail.</div></div><p class="inst-sum">'+esc(d.summary)+'</p></div>';
+    s += '<div class="inst-cols">';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'</div>';
     var f = fovBlock(tid, null);
     if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(tid==='euclid'||tid==='gaia' ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
-    s += '<div class="isec"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
+    s += '<div class="isec wide"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
       var r = it.bands ? wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))) : 'guidage';
       return '<button class="icard" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="ic-n">'+esc(it.name)+'</span><span class="ic-k">'+esc(it.kind)+'</span><span class="ic-r">'+r+'</span></button>';
     }).join('') + '</div></div>';
-    s += '<div class="isec"><h4>Archives et documentation</h4><div class="archs">' + d.archives.map(function(a){
-      return '<a class="arch" href="'+esc(a.url)+'" target="_blank" rel="noopener"><span class="a-l">'+esc(a.label)+' ↗</span><span class="a-d">'+esc(a.desc)+'</span><span class="a-u">'+esc(host(a.url))+'</span></a>';
-    }).join('') + '</div></div>';
+    s += '<div class="isec wide"><h4>Archives et documentation</h4><div class="archs">' + d.archives.map(function(a){
+      return '<a class="arch" href="'+esc(a.url)+'" target="_blank" rel="noopener"><span class="a-l">'+esc(a.label)+'</span><span class="a-d">'+esc(a.desc)+'</span><span class="a-u">'+esc(host(a.url))+'</span></a>';
+    }).join('') + '</div></div></div>';
     return s;
   }
 
   function detail(tid, iid, fidx){
     var d = INST_DATA[tid], it = get(tid, iid), s = '';
-    s += '<div class="inst-h"><div><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div></div><span class="kind">'+esc(it.kind)+'</span></div>';
-    s += '<p class="inst-sum">'+esc(it.summary)+'</p>';
+    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div><p class="inst-sum">'+esc(it.summary)+'</p>';
     if (it.bands) s += '<div class="inst-range">' + it.bands.map(function(b){ return '<span class="rng" style="--c:'+it.color+'"><b>'+esc(b.l)+'</b> '+wl(b.lo)+' – '+wl(b.hi)+'</span>'; }).join('') + '</div>';
+    s += '</div></div><div class="inst-cols">';
     s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs)+'</div>';
     if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+'</div>';
     if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
@@ -1385,12 +1389,12 @@ var InstrumentsUI = (function(){
     if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+'</div>';
     if (it.products) s += '<div class="isec"><h4>Produits de données</h4>'+table(it.products)+'</div>';
     if (it.example){
-      s += '<div class="isec"><h4>Exemple de données</h4><div class="ex-head"><span class="ex-title">'+esc(it.example.title)+'</span><span class="tag '+(it.example.real?'real':'illus')+'">'+(it.example.real?'données réelles':'structure réelle · valeurs illustratives')+'</span></div>'+code(it.example.text)+'<div class="cap">'+esc(it.example.caption)+'</div></div>';
+      s += '<div class="isec"><h4>Exemple de données</h4><div class="ex-head"><span class="ex-title">'+esc(it.example.title)+'</span><span class="tag '+(it.example.real?'real':'illus')+'">'+(it.example.real?'données réelles':'structure réelle, valeurs illustratives')+'</span></div>'+code(it.example.text)+'<div class="cap">'+esc(it.example.caption)+'</div></div>';
     }
     if (it.code) s += '<div class="isec"><h4>Accéder aux données</h4><div class="ex-head"><span class="ex-title">'+esc(it.code.title)+'</span></div>'+code(it.code.text)+'</div>';
     if (it.notes && it.notes.length) s += '<div class="isec"><h4>À savoir</h4><ul class="notes">'+it.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ul></div>';
     s += '<div class="isec"><h4>Archive et documentation</h4><div class="lnks">' +
-      [{l:d.archives[0].label, u:d.archives[0].url}].concat(it.docs||[]).map(function(l){ return '<a class="lnk" href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.l)+' ↗<em>'+esc(host(l.u))+'</em></a>'; }).join('') + '</div></div>';
+      [{l:d.archives[0].label, u:d.archives[0].url}].concat(it.docs||[]).map(function(l){ return '<a class="lnk" href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.l)+'<em>'+esc(host(l.u))+'</em></a>'; }).join('') + '</div></div></div>';
     return s;
   }
 
@@ -1399,7 +1403,7 @@ var InstrumentsUI = (function(){
     var d = INST_DATA[tid];
     if (sel && !get(tid, sel)) sel = null;
     var pills = ORDER.map(function(t){ return '<button class="pill'+(t===tid?' on':'')+'" data-tele="'+t+'">'+NAMES[t]+'</button>'; }).join('');
-    var nav = '<button class="nav-i'+(!sel?' on':'')+'" data-inst=""><span class="n">Vue d\'ensemble</span><span class="k">spectre, champs, archives</span></button>' +
+    var nav = '<button class="nav-i'+(!sel?' on':'')+'" data-inst=""><span class="n">Vue d\'ensemble</span><span class="k">Spectre, champs de vue, archives</span></button>' +
       d.instruments.map(function(it){ return '<button class="nav-i'+(it.id===sel?' on':'')+'" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="n">'+esc(it.name)+'</span><span class="k">'+esc(it.kind)+'</span></button>'; }).join('');
     return { pills:pills, nav:nav, main: sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
@@ -1438,36 +1442,42 @@ if (hasGL){
    PANNEAU (fonctionne même sans WebGL)
 ================================================================= */
 function orbitSvg(t){
+  var F = 'font-family="Archivo, Arial, sans-serif"';
   if (t.orbit === 'leo'){
     return '<svg viewBox="0 0 340 150" role="img" aria-label="Orbite basse terrestre, à l\'échelle">' +
-      '<defs><radialGradient id="ge" cx="0.35" cy="0.35"><stop offset="0" stop-color="#4f8fd0"/><stop offset="1" stop-color="#14335c"/></radialGradient></defs>' +
-      '<circle cx="92" cy="75" r="60" fill="url(#ge)"/>' +
-      '<circle cx="92" cy="75" r="65" fill="none" stroke="#D4A461" stroke-width="1.2"/>' +
-      '<circle cx="138" cy="29" r="3.4" fill="#D4A461"/>' +
-      '<path d="M142 27 L186 20" stroke="#66738E" stroke-width="1"/>' +
-      '<text x="190" y="19" fill="#EAF0F8" font-size="12" font-family="Space Grotesk, sans-serif">Hubble</text>' +
-      '<text x="190" y="35" fill="#93A0BA" font-size="11" font-family="IBM Plex Mono, monospace">≈ 530 km d\'altitude</text>' +
-      '<text x="190" y="74" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">Un tour toutes les 95 min.</text>' +
-      '<text x="190" y="90" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">Terre et orbite dessinées</text>' +
-      '<text x="190" y="106" fill="#93A0BA" font-size="11" font-family="Space Grotesk, sans-serif">à la même échelle.</text></svg>';
+      '<circle cx="92" cy="75" r="60" fill="#2C5E9E"/>' +
+      '<circle cx="92" cy="75" r="65" fill="none" stroke="#14171A" stroke-width="1.5"/>' +
+      '<circle cx="138" cy="29" r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"/>' +
+      '<path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>' +
+      '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>Hubble</text>' +
+      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 530 km d\'altitude</text>' +
+      '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les 95 min.</text>' +
+      '<text x="190" y="93" fill="#3A4147" font-size="12" ' + F + '>Terre et orbite dessinées</text>' +
+      '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
   var gone = t.id === 'gaia';
-  return '<svg viewBox="0 0 340 118" role="img" aria-label="Position au point de Lagrange L2">' +
-    '<path d="M2 62 H24" stroke="#E8C46A" stroke-width="1.4"/><path d="M2 62 l7 -4 v8 z" fill="#E8C46A"/>' +
-    '<text x="2" y="84" fill="#E8C46A" font-size="10.5" font-family="Space Grotesk, sans-serif">Soleil</text>' +
-    '<text x="2" y="97" fill="#93A0BA" font-size="9.5" font-family="IBM Plex Mono, monospace">150 M km</text>' +
-    '<line x1="62" y1="62" x2="316" y2="62" stroke="rgba(160,185,225,0.26)" stroke-dasharray="2 4"/>' +
-    '<circle cx="62" cy="62" r="7" fill="#3f7fc4"/><text x="62" y="87" text-anchor="middle" fill="#EAF0F8" font-size="11" font-family="Space Grotesk, sans-serif">Terre</text>' +
-    '<circle cx="62" cy="62" r="62.5" fill="none" stroke="rgba(160,185,225,0.2)"/>' +
-    '<circle cx="106" cy="18" r="2.2" fill="#C3CCDD"/><text x="112" y="16" fill="#93A0BA" font-size="10" font-family="Space Grotesk, sans-serif">Lune · 384 000 km</text>' +
-    '<ellipse cx="306" cy="62" rx="9" ry="30" fill="none" stroke="#D4A461" stroke-width="1.2"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
-    '<circle cx="306" cy="62" r="1.6" fill="#93A0BA"/><circle cx="313" cy="43" r="3.4" fill="#D4A461"' + (gone ? ' fill-opacity="0.45"' : '') + '/>' +
-    '<text x="290" y="60" text-anchor="end" fill="#EAF0F8" font-size="11" font-family="Space Grotesk, sans-serif">L2 · ' + esc(t.short) + '</text>' +
-    '<text x="290" y="75" text-anchor="end" fill="#93A0BA" font-size="10" font-family="IBM Plex Mono, monospace">1,5 million de km</text>' +
-    '<text x="170" y="112" text-anchor="middle" fill="#66738E" font-size="10" font-family="Space Grotesk, sans-serif">' +
-      (gone ? 'Position occupée de 2014 à 2025 · Terre–Lune–L2 à l\'échelle' : 'Distances Terre–Lune–L2 à l\'échelle · toujours à l\'opposé du Soleil') + '</text></svg>';
+  return '<svg viewBox="0 0 340 122" role="img" aria-label="Position au point de Lagrange L2">' +
+    '<path d="M2 62 H26" stroke="#14171A" stroke-width="1.5"/><path d="M2 62 l8 -4.5 v9 z" fill="#14171A"/>' +
+    '<text x="2" y="84" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +
+    '<text x="2" y="98" fill="#3A4147" font-size="11" ' + F + '>150 M km</text>' +
+    '<line x1="62" y1="62" x2="316" y2="62" stroke="#98A1A7" stroke-dasharray="2 4"/>' +
+    '<circle cx="62" cy="62" r="62.5" fill="none" stroke="#C8CDD1"/>' +
+    '<circle cx="62" cy="62" r="7" fill="#2C5E9E"/><text x="62" y="87" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+    '<circle cx="106" cy="18" r="2.6" fill="#667077"/><text x="113" y="17" fill="#3A4147" font-size="11" ' + F + '>Lune, 384 000 km</text>' +
+    '<ellipse cx="306" cy="62" rx="9" ry="30" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+    '<circle cx="306" cy="62" r="1.8" fill="#14171A"/><circle cx="313" cy="43" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+    '<text x="290" y="59" text-anchor="end" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + ' à L2</text>' +
+    '<text x="290" y="75" text-anchor="end" fill="#3A4147" font-size="11" ' + F + '>1,5 million de km</text>' +
+    '<text x="170" y="116" text-anchor="middle" fill="#667077" font-size="11" ' + F + '>' +
+      (gone ? 'Position occupée de 2014 à 2025. Terre, Lune et L2 à l\'échelle.' : 'Terre, Lune et L2 à l\'échelle. Toujours à l\'opposé du Soleil.') + '</text></svg>';
 }
 
+function lines(v){ return esc(v).split(' · ').join('<br>'); }
+function facts(t){
+  var hl = { hubble:['Miroir primaire','2,4 <small>m</small>'], jwst:['Miroir primaire','6,5 <small>m</small>'], euclid:['Miroir primaire','1,2 <small>m</small>'], gaia:['Plan focal','106 <small>CCD</small>'] }[t.id];
+  var sz = { hubble:'13,2 <small>m de long</small>', jwst:'21,2 × 14,2 <small>m</small>', euclid:'4,7 <small>m de haut</small>', gaia:'≈ 10 <small>m de diamètre</small>' }[t.id];
+  return [hl, ['Encombrement', sz], ['Masse au lancement', fr(t.cmp.mass) + ' <small>kg</small>'], ['Lancement', t.year]];
+}
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -1486,7 +1496,7 @@ function renderPanel(){
         TELESCOPES.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
             '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + String(x.cmp.mirror).replace('.',',') + ' m</div></td>' +
-            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px;background:var(--cyan)"></i>' + fr(x.cmp.mass) + ' kg</div></td></tr>';
+            '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
         TELESCOPES.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
@@ -1496,16 +1506,16 @@ function renderPanel(){
   pt.innerHTML =
     '<button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
     '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
-    '<button class="ptab go" data-inst-open="1">Instruments et données →</button>';
+    '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
-    h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + ' · ' + esc(t.launch) + '</div>' +
-        '<div class="hero-stat"><span class="num">' + t.hero.num + '</span><span class="unit">' + t.hero.unit + '</span><span class="label">' + esc(t.hero.label) + '</span></div>' +
+    h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + '<br>' + esc(t.launch) + '</div>' +
+        '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
         '<div class="where">' + orbitSvg(t) + '</div>' +
-        '<button class="cta" data-inst-open="1">Instruments et données →<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(' · ') + ' · archives, filtres, exemples</small></button>' +
+        '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Filtres, exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
-            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + esc(r[1]) + '</div></div>'; }).join('') + '</div>';
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
   } else {
@@ -1613,7 +1623,7 @@ renderer.toneMappingExposure = 1.0;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.autoClear = false;
-renderer.setClearColor(0x04060b, 1);
+renderer.setClearColor(0x000000, 1);
 
 var scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, 0.05, 600);
 var bgScene = new THREE.Scene(), bgCam = new THREE.PerspectiveCamera(36, 1, 40, 200000);
@@ -1826,7 +1836,7 @@ function setExplode(M, e){
   M.meshes.forEach(function(o){ if (o.userData.base) o.position.copy(o.userData.base).addScaledVector(o.userData.ex, e); });
 }
 
-var BRASS = new THREE.Color(0xD4A461), HOV = new THREE.Color(0x9fd8e6);
+var BRASS = new THREE.Color(0xFFC81A), HOV = new THREE.Color(0xffffff);
 applyHighlight = function(){
   if (!current || S.mode !== 'tele') return;
   current.meshes.forEach(function(o){
@@ -1834,7 +1844,7 @@ applyHighlight = function(){
     if (!m.emissive) return;
     if (m.userData.em0 === undefined){ m.userData.em0 = m.emissive.clone(); m.userData.ei0 = m.emissiveIntensity; }
     if (k && k === S.part){ m.emissive.copy(BRASS); m.emissiveIntensity = 0.16; }
-    else if (k && k === S.hover){ m.emissive.copy(HOV); m.emissiveIntensity = 0.2; }
+    else if (k && k === S.hover){ m.emissive.copy(HOV); m.emissiveIntensity = 0.1; }
     else { m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; }
     var dim = S.part && k !== S.part;
     if (m.userData.c0 === undefined) m.userData.c0 = m.color.clone();
