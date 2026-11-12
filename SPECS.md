@@ -1,0 +1,144 @@
+# Observatoires en orbite : spécifications pour la suite
+
+Document de travail. Il décrit l'état actuel, le public visé, puis les évolutions envisagées, chacune avec son besoin, ses exigences et ses critères d'acceptation. Les priorités et les questions ouvertes sont à trancher avant de commencer un lot.
+
+## 1. Objet et public
+
+Le site présente des télescopes spatiaux en 3D et explique comment ils sont construits, ce qu'ils mesurent et comment accéder à leurs données.
+
+Public visé : **de l'étudiant à l'expert**. Conséquences sur tout le contenu :
+
+- **Deux niveaux de lecture.** Chaque fiche se comprend sans prérequis (phrases complètes, termes définis à leur première apparition) et donne en dessous les valeurs exactes qu'un expert vient chercher (unités, tolérances, références).
+- **Rien d'approximatif sans le dire.** Une valeur arrondie, estimée ou schématique est signalée comme telle. C'est déjà le cas pour les exemples de données (« données réelles » ou « structure réelle, valeurs illustratives ») et pour la largeur des filtres.
+- **Toute valeur a une source.** Un expert doit pouvoir vérifier ; un étudiant doit pouvoir aller plus loin.
+
+## 2. État actuel (novembre 2026)
+
+- Quatre observatoires : Hubble, JWST, Euclid, Gaia.
+- Vue 3D : maquettes réelles redécoupées en pièces cliquables (8, 10, 6 et 7 pièces), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, comparaison des tailles à l'échelle.
+- Fiche par observatoire : chiffres clés, description, schéma d'orbite, cinq tableaux de caractéristiques.
+- Instruments et données : 15 instruments ; couverture spectrale, champs de vue à l'échelle, filtres, produits de données, exemple, code d'accès (astroquery, ADQL), liens vers les archives ; comparaison des instruments entre observatoires.
+- Thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#jwst-instruments`, `#comparer`, `#comparer-instruments`).
+- Site statique sans serveur : `node build.js` assemble `src/` en `index.html`. Chaîne de préparation des maquettes dans `tools/models/`.
+
+Limites connues :
+
+- Les fiches et les caractéristiques d'instruments ont été rédigées sans relecture systématique face aux sources. Valeurs les moins sûres : débits de télémesure d'Euclid, diamètre du pare-soleil de Gaia, résolution du grisme rouge de NISP, champs de vue d'Euclid et de Gaia.
+- Licence de la maquette Euclid (ESA SciFleet) non établie.
+- Vérifications faites en local uniquement (Chromium, bureau et téléphone émulé) ; aucun test automatique dans le dépôt en dehors de `tools/shot.js`.
+- Pas d'accès clavier aux pièces dans la vue 3D (la liste « Pièces » sert d'équivalent).
+
+## 3. Évolutions
+
+Ordre proposé : A, puis B, puis C et D selon l'envie, E et F ensuite. A passe en premier parce que le public expert ne pardonne pas une valeur fausse, et parce que B (les sources) est beaucoup plus simple à faire en même temps que la relecture.
+
+### A. Fiabiliser le contenu
+
+**Besoin.** Un expert doit pouvoir se fier à chaque valeur.
+
+**Exigences**
+
+- A1. Relire toutes les valeurs de `src/data-tele.js` et `src/data-inst.js` face à une source primaire : manuels d'instrument STScI et JDox, pages mission ESA, articles de référence des instruments.
+- A2. Corriger ou retirer toute valeur non confirmée. Une valeur retirée n'est pas remplacée par une estimation.
+- A3. Établir la licence de la maquette Euclid (demande à l'ESA ou conditions SciFleet). Si elle n'autorise pas la redistribution, retirer le fichier et prévoir l'affichage d'Euclid sans vue 3D.
+- A4. Dater le contenu : mention « valeurs vérifiées le … » par observatoire.
+
+**Acceptation.** Chaque ligne de données porte une référence (voir B) ; la liste « valeurs les moins sûres » de la section 2 est vide.
+
+### B. Sources visibles
+
+**Besoin.** L'étudiant veut aller plus loin, l'expert veut vérifier.
+
+**Exigences**
+
+- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation).
+- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument.
+- B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source.
+
+**Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.
+
+### C. Deux niveaux de lecture
+
+**Besoin.** Servir l'étudiant et l'expert sur la même page sans frustrer l'un ni l'autre.
+
+**Exigences**
+
+- C1. Glossaire : les termes techniques (TDI, grisme, point de Lagrange, R = λ/Δλ, magnitude AB, CTE, IFU…) sont définis une fois, et consultables au survol ou au toucher partout où ils apparaissent.
+- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux.
+- C3. Pas de bascule « mode débutant / mode expert » : un seul contenu, ordonné du plus accessible au plus pointu.
+
+**Acceptation.** Un lecteur de licence scientifique comprend le premier écran de chaque fiche sans recherche extérieure ; aucune valeur experte n'a été retirée pour y parvenir.
+
+### D. Trajet de la lumière et intérieur des télescopes
+
+**Besoin.** Les maquettes montrent l'extérieur. Or ce qui distingue ces télescopes est à l'intérieur : combinaison optique, plan focal, partage du faisceau.
+
+**Exigences**
+
+- D1. Schéma optique par observatoire, à l'échelle : miroirs, foyers, trajet des rayons du primaire au détecteur (Ritchey-Chrétien pour Hubble, Korsch pour JWST et Euclid, deux télescopes et un plan focal commun pour Gaia).
+- D2. Plan focal dessiné à l'échelle : disposition réelle des détecteurs (36 CCD de VIS, 16 détecteurs de NISP, 106 CCD de Gaia avec leurs fonctions, détecteurs de NIRCam…).
+- D3. Lien avec la vue 3D : cliquer « miroir primaire » dans la maquette met en évidence le même élément dans le schéma, et inversement.
+- D4. En option : coupe ou transparence dans la vue 3D. À n'engager que si les maquettes contiennent une géométrie intérieure exploitable (à vérifier maquette par maquette).
+
+**Acceptation.** Pour chaque observatoire, on peut suivre un rayon de l'entrée au détecteur et lire la taille réelle du plan focal.
+
+### E. Vraies données
+
+**Besoin.** Passer de « voici la structure d'un fichier » à « voici ce que l'instrument a réellement vu ».
+
+**Exigences**
+
+- E1. Une image ou un spectre réel par instrument, avec son identifiant d'observation, son programme et sa licence, et le code qui permet de le retélécharger.
+- E2. Les fichiers sont réduits (aperçus, pas de FITS complets) et stockés dans le dépôt, pour que le site reste statique.
+- E3. Requêtes en direct vers les archives (MAST, ESA, Gaia TAP) : à étudier seulement après E1. Dépend des règles CORS de chaque archive ; un serveur intermédiaire ne se justifie que si elles l'imposent.
+
+**Acceptation.** Chaque instrument d'imagerie ou de spectroscopie montre au moins un produit réel, traçable jusqu'à l'archive.
+
+### F. Orbites et temps
+
+**Besoin.** Situer les observatoires et montrer ce qui bouge.
+
+**Exigences**
+
+- F1. Vue du système Terre–Lune–L2 à l'échelle, avec les orbites de halo et de Lissajous, et la position de Hubble sur son orbite.
+- F2. Loi de balayage de Gaia animée (rotation en 6 h, précession en 63 jours) et couverture du ciel qui en résulte.
+- F3. Déploiement de JWST par étapes, si la maquette permet d'articuler le bouclier et les ailes du miroir (à vérifier).
+- F4. Zones du ciel observables à un instant donné (contraintes d'angle solaire), pour les lecteurs qui préparent des observations.
+
+**Acceptation.** Les mouvements montrés respectent les périodes et les angles réels, ou indiquent le facteur d'accélération.
+
+### G. Autres observatoires
+
+**Besoin.** Couvrir le spectre au-delà de l'ultraviolet–infrarouge et les missions à venir.
+
+**Candidats.** Chandra et XMM-Newton (rayons X), Spitzer et Herschel (infrarouge, missions terminées), Planck (micro-ondes), TESS et PLATO (exoplanètes), Roman (grand champ infrarouge).
+
+**Exigences**
+
+- G1. Un observatoire n'est ajouté que s'il a une maquette de licence claire, un redécoupage en pièces vérifié visuellement, une fiche et des instruments sourcés (A et B).
+- G2. Procédure d'ajout documentée dans `tools/models/README.md` : conversion, classifieur de pièces, entrée dans `data-tele.js` et `data-inst.js`.
+- G3. La navigation tient au-delà de six ou sept observatoires (les onglets d'en-tête ne suffiront plus) : prévoir un classement par domaine spectral ou par agence.
+
+**Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js`.
+
+### H. Socle technique
+
+- H1. Tests automatiques dans le dépôt : chargement des quatre maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push.
+- H2. Publication GitHub Pages automatique depuis `main`, avec `index.html` construit par l'intégration continue plutôt que commité.
+- H3. Accessibilité : parcours complet au clavier, y compris la sélection des pièces ; contrastes vérifiés dans les deux thèmes.
+- H4. Version anglaise : textes sortis du code dans des fichiers par langue. À décider avant A et B, car cela double le travail de relecture.
+- H5. Poids : la maquette d'Euclid fait 6 Mo ; viser moins de 3 Mo par maquette (textures KTX2 ou résolution adaptée au téléphone).
+
+## 4. Questions ouvertes
+
+1. Ordre des lots : l'ordre proposé (A, B, puis C et D) convient-il ?
+2. Langue : français seul, ou français et anglais (H4) ?
+3. Licence du dépôt lui-même (code et textes) : à choisir.
+4. Lot G : quels observatoires en premier ?
+5. Lot E : accepte-t-on un petit serveur si les archives l'imposent, ou le site doit-il rester strictement statique ?
+
+## 5. Hors périmètre pour l'instant
+
+- Télescopes au sol.
+- Comptes utilisateurs, contenu modifiable en ligne.
+- Simulation physique (thermique, orbitographie précise).

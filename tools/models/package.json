@@ -1,0 +1,12 @@
+{
+  "name": "observatories-model-tools",
+  "private": true,
+  "description": "Conversion et redécoupage des maquettes 3D",
+  "dependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "obj2gltf": "^3.1.6"
+  }
+}

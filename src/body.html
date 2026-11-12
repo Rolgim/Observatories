@@ -1,0 +1,68 @@
+<div id="app">
+  <header id="top">
+    <div class="brand">
+      <h1>Observatoires en orbite</h1>
+    </div>
+    <nav id="tabs" role="tablist" aria-label="Observatoire"></nav>
+  </header>
+
+  <div id="main">
+    <section id="stage" aria-label="Vue 3D">
+      <div class="hud" id="hud-title">
+        <div id="t-name"></div>
+        <div id="t-sub"></div>
+        <div id="t-src"></div>
+      </div>
+      <div id="cmp-labels" hidden></div>
+      <div id="callout" hidden></div>
+      <div id="hover-tip" hidden></div>
+      <div id="hint">Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier</div>
+
+      <div id="toolbar" role="toolbar" aria-label="Affichage">
+        <label class="explode" title="Écarter les pièces">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="5.5" y="5.5" width="5" height="5"/><path d="M8 3.6V1M8 15v-2.6M3.6 8H1M15 8h-2.6"/></svg>
+          <span class="lbl">Éclater</span>
+          <input id="explode" type="range" min="0" max="100" value="0" aria-label="Éclater les pièces">
+        </label>
+        <span class="tool-sep"></span>
+        <button class="tool" id="b-sun" aria-pressed="false" title="Éclairer la maquette comme elle l'est réellement en vol">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>
+          <span class="lbl">Soleil réel</span>
+        </button>
+        <button class="tool" id="b-spin" aria-pressed="true" title="Rotation automatique">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/><path d="M12.4 1.4v3h-3"/></svg>
+          <span class="lbl">Rotation</span>
+        </button>
+        <button class="tool" id="b-reset" title="Recadrer la vue">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 5.5v-4h4M14.5 5.5v-4h-4M1.5 10.5v4h4M14.5 10.5v4h-4"/></svg>
+          <span class="lbl">Recadrer</span>
+        </button>
+      </div>
+
+      <div id="loader" hidden>
+        <div class="l-title"></div>
+        <div class="bar"><i></i></div>
+        <div class="l-sub"></div>
+        <div class="l-err" hidden></div>
+        <button id="l-retry" hidden>Réessayer</button>
+      </div>
+    </section>
+
+    <aside id="panel">
+      <div id="ptabs" role="tablist"></div>
+      <div id="pbody"></div>
+    </aside>
+  </div>
+
+  <div id="inst-page" hidden>
+    <div class="inst-top">
+      <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
+      <div class="inst-title">Instruments et données</div>
+      <div class="pills" id="inst-pills"></div>
+    </div>
+    <div class="inst-body">
+      <nav class="inst-nav" id="inst-nav"></nav>
+      <div class="inst-main" id="inst-main"></div>
+    </div>
+  </div>
+</div>
