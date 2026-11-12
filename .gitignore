@@ -3,3 +3,4 @@ dist/
 shots/
 tools/models/tmp/
 __pycache__/
+tools/data/_tmp/
