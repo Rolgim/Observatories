@@ -14,7 +14,7 @@
    ],
    [
     "Identifiant d'observation",
-    "o63301030"
+    "o63304030"
    ],
    [
     "Cible",
@@ -34,7 +34,7 @@
    ],
    [
     "Début d'observation",
-    "2000-04-25"
+    "2000-05-12"
    ],
    [
     "Temps de pose",
@@ -42,7 +42,7 @@
    ],
    [
     "Fichier d'origine",
-    "o63301030_x1d.fits"
+    "o63304030_x1d.fits"
    ],
    [
     "Points",
@@ -218,9 +218,9 @@
  "jwst/niriss": {
   "type": "image",
   "file": "jwst-niriss.jpg",
-  "width": 1089,
+  "width": 1091,
   "height": 1100,
-  "title": "SMACS 0723, NIRISS, filtre CLEAR;F200W",
+  "title": "SMACS 0723, NIRISS, filtre CLEAR;F115W",
   "meta": [
    [
     "Archive",
@@ -232,7 +232,7 @@
    ],
    [
     "Identifiant d'observation",
-    "jw02736-o003_t001_niriss_clear-f200w"
+    "jw02736-o003_t001_niriss_clear-f115w"
    ],
    [
     "Cible",
@@ -240,7 +240,7 @@
    ],
    [
     "Filtres ou réseau",
-    "CLEAR;F200W"
+    "CLEAR;F115W"
    ],
    [
     "Programme",
@@ -260,7 +260,7 @@
    ],
    [
     "Fichier d'origine",
-    "jw02736-o003_t001_niriss_clear-f200w_i2d.jpg"
+    "jw02736-o003_t001_niriss_clear-f115w_i2d.jpg"
    ]
   ],
   "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
@@ -283,7 +283,7 @@
    ],
    [
     "Identifiant d'observation",
-    "jw02736-o007_s000008730_nirspec_f170lp-g235m"
+    "jw02736-o007_v000000018_nirspec_f170lp-g235m"
    ],
    [
     "Cible",
@@ -311,15 +311,15 @@
    ],
    [
     "Fichier d'origine",
-    "jw02736007001_03101_00004_nrs2_x1d.fits"
+    "jw02736-o007_v000000018_nirspec_f170lp-g235m_x1d.fits"
    ],
    [
     "Points",
-    "1 370 dans le fichier, 1 200 tracés (moyenne par paquets)"
+    "1 210 dans le fichier, 1 200 tracés (moyenne par paquets)"
    ],
    [
     "Choix de la source",
-    "meilleur rapport signal sur bruit parmi 12 sources examinées (≈ 1 par pixel)"
+    "meilleur rapport signal sur bruit parmi 30 sources examinées (≈ 16 par pixel)"
    ]
   ],
   "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
@@ -580,7 +580,7 @@
    ],
    [
     "Détectées aussi en H",
-    "2 297 sources tracées"
+    "2 090 sources tracées"
    ],
    [
     "Conversion",
