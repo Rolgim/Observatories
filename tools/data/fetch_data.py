@@ -322,6 +322,162 @@ def euclid_nisp(key):
     return dict(type="plot", file="euclid-nisp.json", title="Couleur visible − infrarouge des sources, VIS et NISP combinés", meta=meta, url="https://eas.esac.esa.int/",
                 caption="Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
 
+# ---------------------------------------------------------------- Euclid : images et spectre (IRSA, données Q1 publiques)
+def stretch(d, hi_pct=99.7):
+    """Étirement asinh : fond ramené à zéro, hautes lumières compressées."""
+    d = np.nan_to_num(np.asarray(d, dtype=float))
+    bg = np.median(d); sig = 1.4826 * np.median(np.abs(d - bg)) + 1e-12; hi = np.percentile(d, hi_pct)
+    v = np.arcsinh((d - bg) / (3 * sig)) / np.arcsinh(max(hi - bg, 3 * sig) / (3 * sig))
+    return np.clip(v, 0, 1)
+
+_emos = {}
+def euclid_cutouts(size_arcmin=4.0):
+    if "cut" in _emos:
+        return _emos["cut"]
+    from astroquery.ipac.irsa import Irsa
+    from astropy.coordinates import SkyCoord
+    from astropy.io import fits
+    from astropy.nddata import Cutout2D
+    from astropy.wcs import WCS
+    import astropy.units as u
+    last = None
+    for label, ra, dec in (("la nébuleuse de l'Œil de chat (NGC 6543)", 269.6392, 66.6331), ("un champ du Euclid Deep Field Fornax", 52.93, -28.09)):
+        try:
+            coord = SkyCoord(ra, dec, unit="deg")
+            tab = Irsa.query_sia(pos=(coord, 5 * u.arcsec), collection="euclid_DpdMerBksMosaic")
+            print("   SIA :", len(tab), "lignes ; colonnes :", tab.colnames[:40])
+            sci = tab[np.array([str(x).strip().lower() == "science" for x in tab["dataproduct_subtype"]])]
+            bands = {}
+            for r in sci:
+                b = str(r["energy_bandpassname"]).strip().upper()
+                if b in ("VIS", "Y", "J", "H") and b not in bands:
+                    bands[b] = r
+            print("   bandes Euclid trouvées :", sorted(bands))
+            cut = {}
+            for b, r in bands.items():
+                with fits.open(str(r["access_url"]), use_fsspec=True) as hdul:
+                    c = Cutout2D(hdul[0].section, position=coord, size=size_arcmin * u.arcmin, wcs=WCS(hdul[0].header))
+                    cut[b] = np.array(c.data, dtype=float)[::-1]  # nord en haut
+                    print("   découpe", b, cut[b].shape, str(r["access_url"]).split("/")[-1])
+                    cut[b + "_file"] = str(r["access_url"]).split("/")[-1]
+            if "VIS" in cut:
+                _emos["cut"] = (label, ra, dec, size_arcmin, cut)
+                return _emos["cut"]
+        except Exception as e:
+            last = e
+            print("   échec sur", label, ":", repr(e))
+    raise RuntimeError(f"aucune mosaïque Euclid accessible ({last!r})")
+
+def euclid_img_meta(ra, dec, size, files):
+    return [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "Quick Release Q1, mosaïques MER"], ["Centre de la découpe", f"{fr(ra, 4)}° ; {fr(dec, 4)}°".replace("-", "−")],
+            ["Champ", f"{fr(size, 0)}′ × {fr(size, 0)}′"], ["Fichiers d'origine", " · ".join(files)], ["Traitement", "découpe, étirement asinh, réduction pour le site"]]
+
+def euclid_vis_image(key):
+    from PIL import Image
+    label, ra, dec, size, cut = euclid_cutouts()
+    im = Image.fromarray((stretch(cut["VIS"]) * 255).astype("uint8")); im.thumbnail((1100, 1100))
+    im.save(os.path.join(OUT, "euclid-vis-image.jpg"), "JPEG", quality=86, optimize=True)
+    return dict(type="image", file="euclid-vis-image.jpg", width=im.size[0], height=im.size[1], title="VIS : " + label, meta=euclid_img_meta(ra, dec, size, [cut["VIS_file"]]), url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+                caption="Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+
+def euclid_nisp_image(key):
+    from PIL import Image
+    label, ra, dec, size, cut = euclid_cutouts()
+    if not all(b in cut for b in ("Y", "J", "H")):
+        raise RuntimeError("bandes NISP manquantes : " + str(sorted(k for k in cut if len(k) == 1)))
+    rgb = np.dstack([stretch(cut["H"]), stretch(cut["J"]), stretch(cut["Y"])])
+    im = Image.fromarray((rgb * 255).astype("uint8")); im.thumbnail((1100, 1100))
+    im.save(os.path.join(OUT, "euclid-nisp-image.jpg"), "JPEG", quality=86, optimize=True)
+    return dict(type="image", file="euclid-nisp-image.jpg", width=im.size[0], height=im.size[1], title="NISP : " + label + ", bandes Y, J et H", meta=euclid_img_meta(ra, dec, size, [cut[b + "_file"] for b in "YJH"]), url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+                caption="Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+
+def euclid_spectrum(key):
+    from astroquery.ipac.irsa import Irsa
+    from astropy.io import fits
+    from astropy.table import Table
+    adql = ("SELECT TOP 12 a.objectid, a.path, a.hdu, m.flux_h_templfit, m.ra, m.dec FROM euclid.objectid_spectrafile_association_q1 a "
+            "JOIN euclid_q1_mer_catalogue m ON a.objectid = m.object_id "
+            "WHERE CONTAINS(POINT('ICRS', m.ra, m.dec), CIRCLE('ICRS', 269.7, 66.0, 0.25)) = 1 AND m.flux_h_templfit BETWEEN 150 AND 2000 ORDER BY m.flux_h_templfit DESC")
+    res = Irsa.query_tap(adql).to_table()
+    print("   candidats :", len(res), res.colnames)
+    best = None
+    for r in res:
+        try:
+            url = "https://irsa.ipac.caltech.edu/" + str(r["path"]).lstrip("/")
+            with fits.open(url) as hdul:
+                h = hdul[int(r["hdu"])]
+                t = Table(h.data); cols = [c.upper() for c in t.colnames]
+                fscale = float(h.header.get("FSCALE", 1.0))
+                w = np.array(t[t.colnames[cols.index("WAVELENGTH")]], dtype=float); f = np.array(t[t.colnames[cols.index("SIGNAL")]], dtype=float) * fscale
+                ok = np.isfinite(w) & np.isfinite(f) & (f != 0)
+                if "MASK" in cols:
+                    m = np.array(t[t.colnames[cols.index("MASK")]]).astype(int); ok &= (m % 2 == 0) & (m < 64)
+                w, f = w[ok], f[ok]
+                if len(w) < 100:
+                    continue
+                snr = float(np.median(f) / (np.std(np.diff(f)) / 1.414 + 1e-300))
+                print(f"   objet {r['objectid']} : {len(w)} points, signal sur bruit ≈ {snr:.1f}")
+                if best is None or snr > best[0]:
+                    best = (snr, r, w, f, url)
+        except Exception as e:
+            print("   illisible :", repr(e))
+    if best is None:
+        raise RuntimeError("aucun spectre Euclid lisible")
+    snr, r, w, f, url = best
+    w = w / 1e4; lo, hi = np.percentile(f, [0.5, 99.5])
+    save_json("euclid-nisp-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=float(min(lo, 0)), ymax=float(hi * 1.08), xlabel="longueur d'onde (µm)", ylabel="flux (erg/s/cm²/Å)"))
+    mag = 23.9 - 2.5 * math.log10(float(r["flux_h_templfit"]))
+    meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "Quick Release Q1, spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", str(r["objectid"])],
+            ["Position", f"{fr(float(r['ra']), 4)}° ; {fr(float(r['dec']), 4)}°".replace("-", "−")], ["Magnitude H", fr(mag, 1) + " (AB)"], ["Grisme", "rouge (RG)"],
+            ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(r["hdu"])], ["Choix de la source", f"meilleur signal sur bruit parmi les sources brillantes examinées (≈ {snr:.0f} par pixel)"]]
+    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source brillante du Euclid Deep Field North", meta=meta, url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+                caption="Spectre sans fente du grisme rouge, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+
+# ---------------------------------------------------------------- Gaia : vrais spectres (DataLink)
+_gstar = {}
+def gaia_star():
+    if "s" not in _gstar:
+        names, data = tap(GAIA_TAP, "SELECT TOP 1 source_id, phot_g_mean_mag, bp_rp, teff_gspphot, parallax, radial_velocity FROM gaiadr3.gaia_source "
+                                    "WHERE has_xp_sampled = 'True' AND has_rvs = 'True' AND phot_g_mean_mag BETWEEN 6.5 AND 8 AND parallax > 20 AND teff_gspphot BETWEEN 5000 AND 6500 ORDER BY random_index")
+        _gstar["s"] = dict(zip(names, data[0]))
+        print("   étoile retenue :", _gstar["s"])
+    return _gstar["s"]
+
+def gaia_datalink(source_id, kind):
+    import zipfile, gzip, csv
+    r = requests.get("https://gea.esac.esa.int/data-server/data", params=dict(ID=f"Gaia DR3 {source_id}", RETRIEVAL_TYPE=kind, DATA_STRUCTURE="INDIVIDUAL", FORMAT="csv", RELEASE="Gaia DR3"), timeout=300)
+    print("   DataLink", kind, r.status_code, r.headers.get("content-type"), len(r.content), "octets")
+    r.raise_for_status()
+    raw = r.content
+    if raw[:2] == b"PK":
+        z = zipfile.ZipFile(io.BytesIO(raw)); print("   archive :", z.namelist()); raw = z.read(z.namelist()[0])
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    lines = [l for l in raw.decode("utf-8", "replace").splitlines() if l and not l.startswith("#")]
+    rd = list(csv.reader(lines)); head = [h.strip().lower() for h in rd[0]]
+    print("   colonnes :", head, "·", len(rd) - 1, "lignes")
+    iw, i_f = head.index("wavelength"), head.index("flux")
+    w = np.array([float(x[iw]) for x in rd[1:]]); f = np.array([float(x[i_f]) if x[i_f] not in ("", "null", "NaN") else np.nan for x in rd[1:]])
+    ok = np.isfinite(w) & np.isfinite(f)
+    return w[ok], f[ok]
+
+def gaia_star_meta(s, extra):
+    return [["Archive", "ESA Gaia Archive, service DataLink"], ["Catalogue", "Gaia DR3"], ["Identifiant de la source", str(s["source_id"])], ["Magnitude G", fr(float(s["phot_g_mean_mag"]), 2)],
+            ["Température estimée", fr(float(s["teff_gspphot"])) + " K"], ["Distance", fr(1000 / float(s["parallax"]), 1) + " pc"]] + extra + [["Choix de l'étoile", "tirée au hasard parmi les étoiles proches de type solaire ayant les deux spectres publiés"]]
+
+def gaia_xp_spectrum(key):
+    s = gaia_star(); w, f = gaia_datalink(s["source_id"], "XP_SAMPLED")
+    save_json("gaia-bprp-spectre.json", dict(type="line", x=rnd(w, 5), y=rnd(f), ymin=0, ymax=float(f.max() * 1.08), xlabel="longueur d'onde (nm)", ylabel="flux (W/m²/nm)"))
+    return dict(type="plot", file="gaia-bprp-spectre.json", title="Spectre BP/RP d'une étoile proche de type solaire", meta=gaia_star_meta(s, [["Produit", "XP_SAMPLED : spectre BP/RP calibré, échantillonné tous les 2 nm"]]), url="https://gea.esac.esa.int/archive/",
+                caption="Le spectre basse résolution des deux photomètres, raccordés en une seule courbe de 336 à 1 020 nm. C'est de cette forme que sont tirées la température et l'extinction de l'étoile.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+
+def gaia_rvs_spectrum(key):
+    s = gaia_star(); w, f = gaia_datalink(s["source_id"], "RVS")
+    save_json("gaia-rvs-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=0, ymax=float(max(1.1, np.percentile(f, 99.5) * 1.05)), xlabel="longueur d'onde (nm)", ylabel="flux normalisé"))
+    rv = s.get("radial_velocity")
+    return dict(type="plot", file="gaia-rvs-spectre.json", title="Spectre RVS de la même étoile", meta=gaia_star_meta(s, [["Produit", "RVS : spectre moyen normalisé, 846 à 870 nm"]] + ([["Vitesse radiale mesurée", fr(float(rv), 1).replace("-", "−") + " km/s"]] if rv is not None else [])), url="https://gea.esac.esa.int/archive/",
+                caption="Les trois creux profonds sont le triplet du calcium ionisé. Leur décalage par rapport à leur position au repos donne la vitesse radiale de l'étoile.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+
 # ---------------------------------------------------------------- recettes
 M51, M83, Q3C273, HD209458, SMACS = (202.4696, 47.1952), (204.2538, -29.8658), (187.27792, 2.05239), (330.79489, 18.88432), (110.8375, -73.4540)
 ERO = dict(proposal_id="2736")  # premières images scientifiques de JWST, données publiques
@@ -338,6 +494,9 @@ RECIPES = {
                                             title="Spectre NIRSpec d'une source du champ de SMACS 0723", caption="Spectre extrait d'une des sources observées à travers les micro-volets, retenue automatiquement pour son rapport signal sur bruit."),
     "euclid/vis": euclid_vis, "euclid/nisp": euclid_nisp,
     "gaia/astro": gaia_astro, "gaia/bprp": gaia_bprp, "gaia/rvs": gaia_rvs,
+    # produits supplémentaires d'un même instrument : clé « observatoire/instrument:nom »
+    "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
+    "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
 }
 
 def main():
