@@ -136,6 +136,7 @@ function renderInst(keepScroll){
   $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
+  if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
   var on = $('inst-nav').querySelector('.on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){}
 }
 /* observations réelles : manifeste chargé une fois, mesures chargées à l'ouverture de la fiche */

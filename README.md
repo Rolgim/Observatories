@@ -15,6 +15,7 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) |
 | `data/` | observations réelles affichées dans les fiches d'instrument ; produit par `tools/data/fetch_data.py` (workflow « Données réelles »), ne pas modifier à la main |
 | `tools/data/fetch_data.py` | télécharge les observations dans les archives (MAST, ESA) et en tire des aperçus légers |
+| `tools/data/fetch_orbits.py` | trajectoires réelles des observatoires de L2 (JPL Horizons) → `data/orbits.json` |
 | `tools/shot.js` | captures d'écran et tests dans un vrai navigateur (Playwright) |
 | `tools/models/` | conversion et redécoupage des maquettes 3D en pièces |
 | `SPECS.md` | spécifications des évolutions prévues |

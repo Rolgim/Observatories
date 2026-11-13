@@ -321,12 +321,13 @@ var InstrumentsUI = (function(){
   function render(tid, sel, fidx){
     copyStore = [];
     var d = INST_DATA[tid];
-    if (sel && sel !== 'optique' && !get(tid, sel)) sel = null;
+    if (sel && sel !== 'optique' && sel !== 'orbite' && !get(tid, sel)) sel = null;
     var pills = pillsFor(tid);
     var nav = '<button class="nav-i'+(!sel?' on':'')+'" data-inst=""><span class="n">Vue d\'ensemble</span><span class="k">Spectre, champs de vue, archives</span></button>' +
       '<button class="nav-i'+(sel==='optique'?' on':'')+'" data-inst="optique"><span class="n">Trajet de la lumière</span><span class="k">Schéma optique, plan focal</span></button>' +
+      '<button class="nav-i'+(sel==='orbite'?' on':'')+'" data-inst="orbite"><span class="n">Orbite</span><span class="k">Trajectoire réelle, balayage</span></button>' +
       d.instruments.map(function(it){ return '<button class="nav-i'+(it.id===sel?' on':'')+'" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="n">'+esc(it.name)+'</span><span class="k">'+esc(it.kind)+'</span></button>'; }).join('');
-    return { pills:pills, nav:nav, main: sel === 'optique' ? Optics.render(tid, NAMES[tid]) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
+    return { pills:pills, nav:nav, main: sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid]) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
   return { ORDER:ORDER, NAMES:NAMES, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };

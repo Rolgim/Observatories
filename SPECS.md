@@ -36,7 +36,7 @@ Limites connues :
 |---|---|
 | D. Trajet de la lumière | D1 et D2 livrés en première version ; D3 et D4 à faire |
 | E. Vraies données | E1 et E2 livrés pour 13 instruments sur 15 ; E3 non commencé |
-| F. Orbites et temps | à faire |
+| F. Orbites et temps | F1 et F2 livrés en première version ; F3 et F4 à faire |
 | H4. Anglais | à faire, avant que le volume de texte n'augmente encore |
 | A, B, C, G, autres H | plus tard |
 
@@ -126,7 +126,8 @@ Limites connues :
 
 - Les deux capteurs de guidage (FGS) n'ont pas de produit.
 - Images : ce sont les aperçus en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition colorée à plusieurs filtres) donnerait un bien meilleur résultat.
-- Euclid : aucune image, seulement le catalogue. Ajouter une découpe VIS et NISP et un spectre du grisme rouge. L'archive expose aussi des tables `dr1.*` : vérifier leur statut et mettre à jour les textes du site, qui ne parlent que de Q1.
+- Euclid : aucune image, seulement le catalogue. Ajouter une découpe VIS et NISP et un spectre du grisme rouge.
+- Euclid DR1 est sorti le 12 novembre 2026 (tables `dr1.*` dans l'archive). Le site le mentionne, mais ses exemples et ses graphiques viennent encore de Q1 : les faire passer sur DR1, et relire la fiche NISP (grisme bleu, contenu des catalogues).
 - Gaia : ajouter un vrai spectre BP/RP et un vrai spectre RVS (service DataLink).
 - Les choix d'observation sont automatiques (la plus longue pose publique sur la cible). Les figer par identifiant une fois validés, pour que le site ne change pas tout seul.
 - E3 (requêtes en direct depuis le navigateur) : non commencé.
@@ -143,6 +144,20 @@ Limites connues :
 - F4. Zones du ciel observables à un instant donné (contraintes d'angle solaire), pour les lecteurs qui préparent des observations.
 
 **Acceptation.** Les mouvements montrés respectent les périodes et les angles réels, ou indiquent le facteur d'accélération.
+
+**Livré (première version).** Page « Orbite » par observatoire, dans Instruments et données (`src/orbits.js`).
+
+- JWST, Euclid, Gaia : trajectoire réelle autour de L2, animée, vue depuis la Terre et vue de dessus, avec l'orbite de la Lune à la même échelle. Les positions viennent des éphémérides JPL Horizons (`tools/data/fetch_orbits.py`, fichier `data/orbits.json`), exprimées dans le repère tournant Soleil–Terre. Les distances extrêmes affichées sont mesurées sur ces données.
+- Hubble : orbite basse à l'échelle, avec l'ombre de la Terre. Le mouvement est calculé (période de 95 min, Soleil dans le plan de l'orbite), ce n'est pas une éphéméride.
+- Gaia : loi de balayage nominale simulée (rotation en 6 h, précession en 63 jours, axe à 45° du Soleil), qui dessine la couverture du ciel au fil des jours.
+
+**Reste à faire**
+
+- F1 : position réelle de Hubble (éphéméride ou éléments orbitaux à jour), et les trois observatoires de L2 sur une même figure dans « Comparer ».
+- F2 : la carte de balayage est une simulation de la loi nominale ; la comparer à la vraie couverture de Gaia DR3 (nombre de passages par source).
+- F3 (déploiement de JWST) : non commencé. La maquette n'est pas articulée ; il faudrait d'abord la redécouper par élément mobile.
+- F4 (zones du ciel observables) : non commencé.
+- Indiquer le facteur d'accélération des animations, et permettre de choisir une date.
 
 ### G. Autres observatoires
 

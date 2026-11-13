@@ -130,3 +130,8 @@ svg.cov.big{ min-width:640px; }
 
 /* observations réelles */
 .real-img{ display:block; width:100%; height:auto; background:#000; }
+
+/* orbites */
+canvas.orb{ display:block; width:100%; max-width:560px; height:auto; background:var(--sheet); border:1px solid var(--rule); }
+.orb-ctl{ display:flex; align-items:center; gap:12px; margin-top:8px; min-height:26px; }
+.orb-read{ font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
