@@ -137,6 +137,7 @@ function renderInst(keepScroll){
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
+  if (S.mode === 'compare') Orbits.startCompare($('inst-main'), InstrumentsUI.OBS, InstrumentsUI.NAMES);
   var on = $('inst-nav').querySelector('.on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){}
 }
 /* observations réelles : manifeste chargé une fois, mesures chargées à l'ouverture de la fiche */

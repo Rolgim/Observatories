@@ -175,14 +175,21 @@ var InstrumentsUI = (function(){
     else { var bw = (X(x0 + j.binw) - X(x0)); for (i=0;i<n;i++){ var yy = Y(j.y[i]); s += '<rect x="'+(X(j.x[i]) - bw/2 + 0.5).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+Math.max(1, bw-1).toFixed(1)+'" height="'+(H-B-yy).toFixed(1)+'" fill="#3D6BE0"/>'; } }
     return '<div class="svgwrap">' + s + '</svg></div>';
   }
-  function real(tid, iid){
-    var m = (window.OBS_DATA || {})[tid + '/' + iid]; if (!m) return '';
+  function realBlock(m){
     var body = m.type === 'image'
       ? '<img class="real-img" src="data/'+esc(m.file)+'" width="'+m.width+'" height="'+m.height+'" loading="lazy" alt="'+esc(m.title)+'">'
       : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
-    return '<div class="isec"><h4>Observation réelle</h4><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
-      '<div class="cap">'+esc(m.caption)+(m.type === 'image' ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
-      '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></div>';
+    return '<div class="real-item"><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
+      '<div class="cap">'+esc(m.caption)+(m.type === 'image' && /MAST/.test(m.meta[0][1]) ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' +
+      '<details class="real-meta"><summary>Provenance et traitement</summary>' + table(m.meta) +
+      '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></details></div>';
+  }
+  /* un instrument peut avoir plusieurs produits : clés « obs/inst:image », « obs/inst:spectre », puis « obs/inst » */
+  function real(tid, iid){
+    var D = window.OBS_DATA || {}, base = tid + '/' + iid, list = [];
+    [':image', ':spectre', ''].forEach(function(sfx){ if (D[base + sfx]) list.push(D[base + sfx]); });
+    if (!list.length) return '';
+    return '<div class="isec"><h4>'+(list.length > 1 ? 'Observations réelles' : 'Observation réelle')+'</h4>' + list.map(realBlock).join('') + '</div>';
   }
 
   function overview(tid){
@@ -306,6 +313,7 @@ var InstrumentsUI = (function(){
         rows += '<tr data-jump="'+tid+':'+it.id+'"'+(i===0?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(i===0?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td>'+esc(it.kind)+'</td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
       });
     });
+    s += Orbits.renderCompare(OBS, NAMES);
     s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
@@ -330,5 +338,5 @@ var InstrumentsUI = (function(){
     return { pills:pills, nav:nav, main: sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid]) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
-  return { ORDER:ORDER, NAMES:NAMES, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+  return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
 })();

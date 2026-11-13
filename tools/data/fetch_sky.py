@@ -33,35 +33,42 @@ def mast_pointings(collection, cell):
     print(f"   {len(t)} cases-années, {int(np.array(t['n']).sum()):,} observations, années {min(out)} à {max(out)}")
     return dict(cell=cell, years=out, source="MAST, table dbo.ObsPointing (observations scientifiques)")
 
-def euclid_discovery():
-    """Repérage : quelles tables de l'archive Euclid décrivent les observations (position et date) ?"""
-    def tap(q):
-        r = requests.post(EUCLID_TAP, data=dict(REQUEST="doQuery", LANG="ADQL", FORMAT="json", QUERY=q), timeout=300)
-        if not r.ok:
-            print("   TAP", r.status_code, r.text[:400].replace("\n", " "))
-        r.raise_for_status(); return r.json()["data"]
-    tabs = [t[0] for t in tap("SELECT table_name FROM tap_schema.tables")]
-    print("   schémas :", sorted(set(t.split(".")[0] for t in tabs)))
-    for t in tabs:
-        low = t.lower()
-        if any(k in low for k in ("observation", "pointing", "frame", "tile", "mosaic", "survey", "raw_")) and not low.startswith("tap_schema"):
-            cols = [c[0] for c in tap(f"SELECT column_name FROM tap_schema.columns WHERE table_name = '{t}'")]
-            print("   table", t, ":", cols[:45])
+def euclid_survey(cell=0.5):
+    """Avancée réelle du relevé : une ligne par observation VIS de DR1 (position moyenne des poses, date de début)."""
+    import pyvo
+    svc = pyvo.dal.TAPService("https://eas.esac.esa.int/tap-server/tap")
+    adql = ("SELECT observation_id, MIN(start_time_mjd) AS t, AVG(ra) AS ra, AVG(dec) AS dec FROM dr1.calibrated_frame "
+            "WHERE instrument_name = 'VIS' AND ra IS NOT NULL AND start_time_mjd IS NOT NULL GROUP BY observation_id")
+    print("  ", adql)
+    t = svc.run_async(adql, maxrec=1000000).to_table()
+    mjd, ra, dec = np.array(t["t"], dtype=float), np.array(t["ra"], dtype=float), np.array(t["dec"], dtype=float)
+    out, cells = {}, {}
+    for m, a, d in zip(mjd, ra, dec):
+        day = datetime.date(1858, 11, 17) + datetime.timedelta(days=float(m))
+        k = (f"{day.year}-{day.month:02d}", int(a // cell), int((d + 90) // cell))
+        cells[k] = cells.get(k, 0) + 1
+    for (lab, i, j), n in sorted(cells.items()):
+        out.setdefault(lab, []).extend([i, j, n])
+    print(f"   {len(t)} observations, {len(cells)} cases-mois, de {min(out)} à {max(out)}")
+    return dict(cell=cell, years=out, source="ESA Euclid Science Archive, table dr1.calibrated_frame (observations VIS de DR1)")
 
 def main():
     out = dict(fetched=datetime.date.today().isoformat(), bodies={})
+    path = os.path.join(ROOT, "data", "sky.json")
+    have = json.load(open(path, encoding="utf-8")).get("bodies", {}) if os.path.exists(path) else {}
     for key, coll, cell in (("jwst", "JWST", 0.5), ("hubble", "HST", 1.0)):
         print("==", key, flush=True)
+        if key in have:
+            print("   déjà présent, non refait"); continue
         try:
             out["bodies"][key] = mast_pointings(coll, cell)
         except Exception as e:
             print("   ÉCHEC :", repr(e)[:1500], flush=True)
-    print("== euclid (repérage)", flush=True)
+    print("== euclid", flush=True)
     try:
-        euclid_discovery()
+        out["bodies"]["euclid"] = euclid_survey()
     except Exception as e:
-        print("   ÉCHEC :", repr(e)[:800], flush=True)
-    path = os.path.join(ROOT, "data", "sky.json")
+        print("   ÉCHEC :", repr(e)[:1500], flush=True)
     if out["bodies"]:
         if os.path.exists(path):  # garder ce qui existait pour les corps en échec
             old = json.load(open(path, encoding="utf-8"))

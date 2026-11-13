@@ -135,3 +135,10 @@ svg.cov.big{ min-width:640px; }
 canvas.orb{ display:block; width:100%; max-width:560px; height:auto; background:var(--sheet); border:1px solid var(--rule); }
 .orb-ctl{ display:flex; align-items:center; gap:12px; margin-top:8px; min-height:26px; }
 .orb-read{ font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; }
+
+.real-item + .real-item{ margin-top:26px; padding-top:18px; border-top:1px solid var(--rule); }
+.real-meta{ margin-top:10px; }
+.real-meta summary{ cursor:pointer; font-size:13px; font-weight:600; padding:4px 0; }
+.real-meta .lnks{ margin-top:4px; }
+.orb-key{ display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; font-weight:600; margin:0 0 10px; padding:0; list-style:none; }
+.orb-key i{ display:inline-block; width:11px; height:11px; margin-right:6px; vertical-align:-1px; }

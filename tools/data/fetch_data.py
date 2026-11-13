@@ -395,10 +395,7 @@ def euclid_spectrum(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
-    adql = ("SELECT TOP 12 a.objectid, a.path, a.hdu, m.flux_h_templfit, m.ra, m.dec FROM euclid.objectid_spectrafile_association_q1 a "
-            "JOIN euclid_q1_mer_catalogue m ON a.objectid = m.object_id "
-            "WHERE CONTAINS(POINT('ICRS', m.ra, m.dec), CIRCLE('ICRS', 269.7, 66.0, 0.25)) = 1 AND m.flux_h_templfit BETWEEN 150 AND 2000 ORDER BY m.flux_h_templfit DESC")
-    res = Irsa.query_tap(adql).to_table()
+    res = Irsa.query_tap("SELECT TOP 60 objectid, path, hdu FROM euclid.objectid_spectrafile_association_q1").to_table()
     print("   candidats :", len(res), res.colnames)
     best = None
     for r in res:
@@ -426,11 +423,10 @@ def euclid_spectrum(key):
     snr, r, w, f, url = best
     w = w / 1e4; lo, hi = np.percentile(f, [0.5, 99.5])
     save_json("euclid-nisp-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=float(min(lo, 0)), ymax=float(hi * 1.08), xlabel="longueur d'onde (µm)", ylabel="flux (erg/s/cm²/Å)"))
-    mag = 23.9 - 2.5 * math.log10(float(r["flux_h_templfit"]))
     meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "Quick Release Q1, spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", str(r["objectid"])],
-            ["Position", f"{fr(float(r['ra']), 4)}° ; {fr(float(r['dec']), 4)}°".replace("-", "−")], ["Magnitude H", fr(mag, 1) + " (AB)"], ["Grisme", "rouge (RG)"],
-            ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(r["hdu"])], ["Choix de la source", f"meilleur signal sur bruit parmi les sources brillantes examinées (≈ {snr:.0f} par pixel)"]]
-    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source brillante du Euclid Deep Field North", meta=meta, url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+            ["Grisme", "rouge (RG)"],
+            ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(r["hdu"])], ["Choix de la source", f"meilleur signal sur bruit parmi {len(res)} sources examinées (≈ {snr:.0f} par pixel)"]]
+    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source du relevé Q1", meta=meta, url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
                 caption="Spectre sans fente du grisme rouge, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
 
 # ---------------------------------------------------------------- Gaia : vrais spectres (DataLink)
@@ -444,20 +440,14 @@ def gaia_star():
     return _gstar["s"]
 
 def gaia_datalink(source_id, kind):
-    import zipfile, gzip, csv
-    r = requests.get("https://gea.esac.esa.int/data-server/data", params=dict(ID=f"Gaia DR3 {source_id}", RETRIEVAL_TYPE=kind, DATA_STRUCTURE="INDIVIDUAL", FORMAT="csv", RELEASE="Gaia DR3"), timeout=300)
-    print("   DataLink", kind, r.status_code, r.headers.get("content-type"), len(r.content), "octets")
-    r.raise_for_status()
-    raw = r.content
-    if raw[:2] == b"PK":
-        z = zipfile.ZipFile(io.BytesIO(raw)); print("   archive :", z.namelist()); raw = z.read(z.namelist()[0])
-    if raw[:2] == b"\x1f\x8b":
-        raw = gzip.decompress(raw)
-    lines = [l for l in raw.decode("utf-8", "replace").splitlines() if l and not l.startswith("#")]
-    rd = list(csv.reader(lines)); head = [h.strip().lower() for h in rd[0]]
-    print("   colonnes :", head, "·", len(rd) - 1, "lignes")
-    iw, i_f = head.index("wavelength"), head.index("flux")
-    w = np.array([float(x[iw]) for x in rd[1:]]); f = np.array([float(x[i_f]) if x[i_f] not in ("", "null", "NaN") else np.nan for x in rd[1:]])
+    from astroquery.gaia import Gaia
+    res = Gaia.load_data(ids=[int(source_id)], data_release="Gaia DR3", retrieval_type=kind, data_structure="INDIVIDUAL")
+    print("   DataLink", kind, ":", list(res.keys()))
+    item = list(res.values())[0]
+    item = item[0] if isinstance(item, (list, tuple)) else item
+    t = item.to_table() if hasattr(item, "to_table") else item
+    print("   colonnes :", t.colnames, "·", len(t), "lignes")
+    w = np.array(t["wavelength"], dtype=float); f = np.array(np.ma.filled(t["flux"].astype(float), np.nan), dtype=float)
     ok = np.isfinite(w) & np.isfinite(f)
     return w[ok], f[ok]
 
