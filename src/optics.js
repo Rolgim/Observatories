@@ -96,6 +96,9 @@ var Optics = (function(){
     }
   };
 
+  /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
+  var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -154,15 +157,37 @@ var Optics = (function(){
       '<div class="cap">'+d.note+' Taille des détecteurs à l\'échelle ; les espaces entre détecteurs sont indicatifs.</div>';
   }
 
+  /* tous les plans focaux à la même échelle, pour la page « Comparer » */
+  function compareFocal(OBS, NAMES){
+    var W = 1000, k = 0.8, gap = 44, rows = [[], []], s = '';
+    ['gaia','euclid','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' ? 0 : 1].push({ t:t, g:g }); }); });
+    var y = 10;
+    rows.forEach(function(r){
+      var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
+      var x = Math.max(8, (W - tw)/2);
+      r.forEach(function(o){
+        var y0 = y + (th - o.g.h*k);
+        o.g.cells.forEach(function(c){ s += '<rect x="'+f(x + c.x*k)+'" y="'+f(y0 + c.y*k)+'" width="'+f(c.w*k)+'" height="'+f(c.h*k)+'" fill="'+OBS[o.t]+'" fill-opacity="0.8" stroke="#ECEEEF" stroke-width="0.5"/>'; });
+        var cx = x + o.g.w*k/2, lab = o.g.lab[0].replace(' / ', ' ').replace('Plan focal de Gaia', 'Gaia, 106 CCD').replace(', voie courte', ' SW').replace(', voie longue', ' LW').replace(', imageur', '');
+        s += T(cx, y + th + 15, lab, 'middle', true);
+        x += o.g.w*k + gap;
+      });
+      y += th + 40;
+    });
+    s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
+    return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des quatre observatoires à la même échelle') +
+      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
+  }
+
   function render(tid, name){
     var t = TEXT[tid];
     return '<div class="inst-head"><div class="inst-h"><div class="inst-name">Trajet de la lumière</div><div class="inst-full">'+name+' : du ciel au détecteur</div></div><p class="inst-sum">'+t.title+'. '+t.steps[0]+'</p></div>' +
       '<div class="inst-cols">' +
-      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div></div>' +
+      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>Étape par étape</h4><ol class="notes">'+t.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ol></div>' +
       '<div class="isec"><h4>Combinaison optique</h4><div class="stable">'+t.specs.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1].split(' · ').join('<br>')+'</div></div>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
       '</div>';
   }
-  return { render:render };
+  return { render:render, compareFocal:compareFocal };
 })();

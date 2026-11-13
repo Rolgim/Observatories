@@ -116,9 +116,20 @@ var Orbits = (function(){
     });
     var sky = root.querySelector('[data-orb="sky"]'), skyD = null, skyYears = [], skyI = 0, skyT = 0, skyN = 0, skyInk = '';
     if (sky) loadSky().then(function(j){ if (my !== run) return; skyD = j && j.bodies && j.bodies[tid]; var el = root.querySelector('[data-orb-sky]'); if (!skyD){ if (el) el.textContent = 'Les pointés n\'ont pas pu être chargés.'; return; } skyYears = Object.keys(skyD.years).sort().filter(function(y){ return tid !== 'hubble' || y >= '1990'; }); });
+    /* repères : écliptique et plan de la Galaxie, en coordonnées équatoriales (centre de la carte : ascension droite 12 h) */
+    function skyRefs(g, W, H){
+      var e = 23.4393*Math.PI/180, R = [[-0.0548755604, -0.8734370902, -0.4838350155], [0.4941094279, -0.4448296300, 0.7469822445]];
+      function curve(fn, dash, lab){
+        var prev = null, best = null; g.setLineDash(dash); g.strokeStyle = css('--mute'); g.lineWidth = 1; g.beginPath();
+        for (var i=0;i<=180;i++){ var v = fn(i/180*6.2832), p = hammer([-v[0], -v[1], v[2]], W, H); if (prev && Math.abs(p[2] - prev[2]) < 3) g.lineTo(p[0], p[1]); else g.moveTo(p[0], p[1]); prev = p; if (!best || p[1] < best[1]) best = p; }
+        g.stroke(); g.setLineDash([]); g.fillStyle = css('--mute'); label(g, lab, Math.max(60, Math.min(W - 60, best[0])), Math.max(22, best[1] - 5), false, 'center');
+      }
+      curve(function(l){ return [Math.cos(l), Math.sin(l)*Math.cos(e), Math.sin(l)*Math.sin(e)]; }, [2, 4], 'écliptique');
+      curve(function(l){ var c = Math.cos(l), s = Math.sin(l); return [R[0][0]*c + R[1][0]*s, R[0][1]*c + R[1][1]*s, R[0][2]*c + R[1][2]*s]; }, [7, 4], 'plan de la Galaxie');
+    }
     function skyFrame(dt){
       var g = prep(sky), W = sky._w, H = sky._h, ink = css('--ink');
-      if (skyInk !== ink || skyI >= skyYears.length + 3){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); }
+      if (skyInk !== ink || skyI >= skyYears.length + 3){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); skyRefs(g, W, H); }
       if (!playing) return;
       skyT += dt;
       if (skyT > 0.55 && skyI < skyYears.length){

@@ -313,6 +313,7 @@ var InstrumentsUI = (function(){
         rows += '<tr data-jump="'+tid+':'+it.id+'"'+(i===0?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(i===0?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td>'+esc(it.kind)+'</td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
       });
     });
+    s += Optics.compareFocal(OBS, NAMES);
     s += Orbits.renderCompare(OBS, NAMES);
     s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';

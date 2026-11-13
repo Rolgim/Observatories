@@ -173,6 +173,8 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 }
 @media (prefers-reduced-motion: reduce){ *{ transition-duration:.001ms !important; animation-duration:.001ms !important; } }
 
+.plink{ display:inline-block; margin-top:10px; padding:0; border:0; background:transparent; font-size:13px; font-weight:700; text-decoration:underline; text-underline-offset:3px; cursor:pointer; color:var(--ink); }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -1366,6 +1368,9 @@ var Optics = (function(){
     }
   };
 
+  /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
+  var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -1424,17 +1429,39 @@ var Optics = (function(){
       '<div class="cap">'+d.note+' Taille des détecteurs à l\'échelle ; les espaces entre détecteurs sont indicatifs.</div>';
   }
 
+  /* tous les plans focaux à la même échelle, pour la page « Comparer » */
+  function compareFocal(OBS, NAMES){
+    var W = 1000, k = 0.8, gap = 44, rows = [[], []], s = '';
+    ['gaia','euclid','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' ? 0 : 1].push({ t:t, g:g }); }); });
+    var y = 10;
+    rows.forEach(function(r){
+      var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
+      var x = Math.max(8, (W - tw)/2);
+      r.forEach(function(o){
+        var y0 = y + (th - o.g.h*k);
+        o.g.cells.forEach(function(c){ s += '<rect x="'+f(x + c.x*k)+'" y="'+f(y0 + c.y*k)+'" width="'+f(c.w*k)+'" height="'+f(c.h*k)+'" fill="'+OBS[o.t]+'" fill-opacity="0.8" stroke="#ECEEEF" stroke-width="0.5"/>'; });
+        var cx = x + o.g.w*k/2, lab = o.g.lab[0].replace(' / ', ' ').replace('Plan focal de Gaia', 'Gaia, 106 CCD').replace(', voie courte', ' SW').replace(', voie longue', ' LW').replace(', imageur', '');
+        s += T(cx, y + th + 15, lab, 'middle', true);
+        x += o.g.w*k + gap;
+      });
+      y += th + 40;
+    });
+    s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
+    return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des quatre observatoires à la même échelle') +
+      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
+  }
+
   function render(tid, name){
     var t = TEXT[tid];
     return '<div class="inst-head"><div class="inst-h"><div class="inst-name">Trajet de la lumière</div><div class="inst-full">'+name+' : du ciel au détecteur</div></div><p class="inst-sum">'+t.title+'. '+t.steps[0]+'</p></div>' +
       '<div class="inst-cols">' +
-      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div></div>' +
+      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>Étape par étape</h4><ol class="notes">'+t.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ol></div>' +
       '<div class="isec"><h4>Combinaison optique</h4><div class="stable">'+t.specs.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1].split(' · ').join('<br>')+'</div></div>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
       '</div>';
   }
-  return { render:render };
+  return { render:render, compareFocal:compareFocal };
 })();
 
 /* =================================================================
@@ -1555,9 +1582,20 @@ var Orbits = (function(){
     });
     var sky = root.querySelector('[data-orb="sky"]'), skyD = null, skyYears = [], skyI = 0, skyT = 0, skyN = 0, skyInk = '';
     if (sky) loadSky().then(function(j){ if (my !== run) return; skyD = j && j.bodies && j.bodies[tid]; var el = root.querySelector('[data-orb-sky]'); if (!skyD){ if (el) el.textContent = 'Les pointés n\'ont pas pu être chargés.'; return; } skyYears = Object.keys(skyD.years).sort().filter(function(y){ return tid !== 'hubble' || y >= '1990'; }); });
+    /* repères : écliptique et plan de la Galaxie, en coordonnées équatoriales (centre de la carte : ascension droite 12 h) */
+    function skyRefs(g, W, H){
+      var e = 23.4393*Math.PI/180, R = [[-0.0548755604, -0.8734370902, -0.4838350155], [0.4941094279, -0.4448296300, 0.7469822445]];
+      function curve(fn, dash, lab){
+        var prev = null, best = null; g.setLineDash(dash); g.strokeStyle = css('--mute'); g.lineWidth = 1; g.beginPath();
+        for (var i=0;i<=180;i++){ var v = fn(i/180*6.2832), p = hammer([-v[0], -v[1], v[2]], W, H); if (prev && Math.abs(p[2] - prev[2]) < 3) g.lineTo(p[0], p[1]); else g.moveTo(p[0], p[1]); prev = p; if (!best || p[1] < best[1]) best = p; }
+        g.stroke(); g.setLineDash([]); g.fillStyle = css('--mute'); label(g, lab, Math.max(60, Math.min(W - 60, best[0])), Math.max(22, best[1] - 5), false, 'center');
+      }
+      curve(function(l){ return [Math.cos(l), Math.sin(l)*Math.cos(e), Math.sin(l)*Math.sin(e)]; }, [2, 4], 'écliptique');
+      curve(function(l){ var c = Math.cos(l), s = Math.sin(l); return [R[0][0]*c + R[1][0]*s, R[0][1]*c + R[1][1]*s, R[0][2]*c + R[1][2]*s]; }, [7, 4], 'plan de la Galaxie');
+    }
     function skyFrame(dt){
       var g = prep(sky), W = sky._w, H = sky._h, ink = css('--ink');
-      if (skyInk !== ink || skyI >= skyYears.length + 3){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); }
+      if (skyInk !== ink || skyI >= skyYears.length + 3){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); skyRefs(g, W, H); }
       if (!playing) return;
       skyT += dt;
       if (skyT > 0.55 && skyI < skyYears.length){
@@ -1942,6 +1980,7 @@ var InstrumentsUI = (function(){
         rows += '<tr data-jump="'+tid+':'+it.id+'"'+(i===0?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(i===0?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td>'+esc(it.kind)+'</td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
       });
     });
+    s += Optics.compareFocal(OBS, NAMES);
     s += Orbits.renderCompare(OBS, NAMES);
     s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
@@ -2052,6 +2091,7 @@ function renderTabs(){
   $('tabs').innerHTML = h;
 }
 
+var OPTICAL = { hubble:['ota','aft'], jwst:['primary','secondary','aos','isim'], euclid:['baffle','instr'], gaia:['torus','focal','tent'] };
 function renderPanel(){
   var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
   if (S.mode === 'compare'){
@@ -2089,7 +2129,7 @@ function renderPanel(){
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){
           return '<div class="part' + (S.part===p.key ? ' on' : '') + '" data-part="' + p.key + '"><button aria-expanded="' + (S.part===p.key) + '"><span class="dot"></span>' + esc(p.name) + '</button>' +
-            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + '</div></div>';
+            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + (OPTICAL[t.id].indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
         }).join('');
   }
   pb.innerHTML = h;
@@ -2125,9 +2165,10 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump],[data-inst],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
+  if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){
     var txt = InstrumentsUI.getCopy(+el.getAttribute('data-copy')), pre = el.parentNode.querySelector('pre');
@@ -2147,13 +2188,14 @@ $('inst-page').addEventListener('click', function(e){
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
-  if (el.hasAttribute('data-part') && e.target.closest('button')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
+  if (el.hasAttribute('data-part') && e.target.closest('button') && !e.target.closest('.plink')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
 });
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
@@ -2173,6 +2215,13 @@ function route(){
   $('inst-page').hidden = !S.inst;
   if (S.inst) renderInst();
   if (renderer) show3D(changed);
+  consumePart();
+}
+/* pièce demandée depuis un schéma : sélectionnée dès que la maquette est affichée */
+function consumePart(){
+  if (!S.pendingPart || S.inst || S.mode !== 'tele') return;
+  if (renderer && !(window.__obs && window.__obs.current && window.__obs.current.t.id === S.id)) return;
+  var k = S.pendingPart; S.pendingPart = null; if (tele(S.id).parts.some(function(p){ return p.key === k; })) selectPart(k, true);
 }
 window.addEventListener('hashchange', route);
 
@@ -2650,7 +2699,7 @@ show3D = function(changed){
     if (current && current !== M) scene.remove(current.root);
     if (M.root.parent === cmp.group) cmp.group.remove(M.root);
     resetRoot(M); scene.add(M.root); current = M; cmp.built = false;
-    loaderUI('off'); applyLighting(); applyHighlight(); frame(true);
+    loaderUI('off'); applyLighting(); applyHighlight(); frame(true); consumePart();
     prefetch();
   }).catch(function(e){
     if (token !== loadToken) return;

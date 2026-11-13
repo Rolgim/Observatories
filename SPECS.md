@@ -34,7 +34,7 @@ Limites connues :
 
 | Lot | État |
 |---|---|
-| D. Trajet de la lumière | D1 et D2 livrés en première version ; D3 et D4 à faire |
+| D. Trajet de la lumière | D1, D2 et D3 livrés en première version ; D4 à faire |
 | E. Vraies données | E1 et E2 livrés : image ou spectre réel pour 13 instruments sur 15 ; E3 non commencé |
 | F. Orbites et temps | F1 et F2 livrés (orbites réelles, comparaison, pointés réels) ; F3 et F4 à faire |
 | H4. Anglais | à faire, avant que le volume de texte n'augmente encore |
@@ -96,8 +96,9 @@ Limites connues :
 
 - Le schéma de Hubble est entièrement à l'échelle. Ceux de JWST et d'Euclid ne le sont que pour les deux premiers miroirs ; celui de Gaia est un schéma de principe, peu lisible à cause des faisceaux croisés. Les refaire à partir des prescriptions optiques publiées (rayons de courbure, positions des miroirs).
 - Plans focaux : espaces entre détecteurs indicatifs ; la disposition de Gaia (colonne de contrôle, RVS) est à vérifier face à la documentation ESA.
-- Comparaison des plans focaux des quatre observatoires à la même échelle, dans la page « Comparer ».
-- D3 (lien entre la maquette 3D et le schéma) et D4 (coupe ou transparence).
+- Livré depuis : comparaison des plans focaux des quatre observatoires à la même échelle dans « Comparer » ; D3 sous forme de liens dans les deux sens (boutons « Voir dans la maquette 3D » sous chaque schéma, qui sélectionnent la pièce ; lien « Voir le trajet de la lumière » dans la description des pièces optiques).
+- D3, suite : mettre en évidence l'élément dans le schéma lui-même, et pas seulement ouvrir la page.
+- D4 (coupe ou transparence) : non commencé.
 
 ### E. Vraies données
 
@@ -157,7 +158,7 @@ Limites connues :
 
 - Livré depuis : les trois orbites de L2 sur une même figure animée dans « Comparer » ; carte des pointés réels de Hubble (1990 à aujourd'hui) et de JWST, année par année, tirée de l'archive MAST ; carte de l'avancée réelle du relevé d'Euclid, mois par mois, tirée des observations VIS de DR1 (`tools/data/fetch_sky.py`, fichier `data/sky.json`).
 - F1 : position réelle de Hubble (éphéméride ou éléments orbitaux à jour).
-- Cartes de pointés : ajouter le plan de l'écliptique et celui de la Galaxie comme repères, distinguer les instruments, et montrer pour Euclid l'ordre des plaques à l'intérieur d'un mois.
+- Cartes de pointés : l'écliptique et le plan de la Galaxie sont tracés. Reste à distinguer les instruments et à montrer pour Euclid l'ordre des plaques à l'intérieur d'un mois.
 - F2 : la carte de balayage est une simulation de la loi nominale ; la comparer à la vraie couverture de Gaia DR3 (nombre de passages par source).
 - F3 (déploiement de JWST) : non commencé. La maquette n'est pas articulée ; il faudrait d'abord la redécouper par élément mobile.
 - F4 (zones du ciel observables) : non commencé.
@@ -179,7 +180,7 @@ Limites connues :
 
 ### H. Socle technique
 
-- H1. Tests automatiques dans le dépôt : chargement des quatre maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push.
+- H1. Tests automatiques dans le dépôt : chargement des quatre maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push. **Livré** : `tools/smoke.js` (bureau en thème clair, téléphone en thème sombre, absence de défilement horizontal) et workflow « Tests », qui vérifie aussi que `index.html` correspond bien aux sources.
 - H2. Publication GitHub Pages automatique depuis `main`, avec `index.html` construit par l'intégration continue plutôt que commité.
 - H3. Accessibilité : parcours complet au clavier, y compris la sélection des pièces ; contrastes vérifiés dans les deux thèmes.
 - H4. Version anglaise : textes sortis du code dans des fichiers par langue. À décider avant A et B, car cela double le travail de relecture.

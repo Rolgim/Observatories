@@ -80,6 +80,7 @@ function renderTabs(){
   $('tabs').innerHTML = h;
 }
 
+var OPTICAL = { hubble:['ota','aft'], jwst:['primary','secondary','aos','isim'], euclid:['baffle','instr'], gaia:['torus','focal','tent'] };
 function renderPanel(){
   var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
   if (S.mode === 'compare'){
@@ -117,7 +118,7 @@ function renderPanel(){
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){
           return '<div class="part' + (S.part===p.key ? ' on' : '') + '" data-part="' + p.key + '"><button aria-expanded="' + (S.part===p.key) + '"><span class="dot"></span>' + esc(p.name) + '</button>' +
-            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + '</div></div>';
+            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + (OPTICAL[t.id].indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
         }).join('');
   }
   pb.innerHTML = h;
@@ -153,9 +154,10 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump],[data-inst],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
+  if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){
     var txt = InstrumentsUI.getCopy(+el.getAttribute('data-copy')), pre = el.parentNode.querySelector('pre');
@@ -175,13 +177,14 @@ $('inst-page').addEventListener('click', function(e){
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
-  if (el.hasAttribute('data-part') && e.target.closest('button')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
+  if (el.hasAttribute('data-part') && e.target.closest('button') && !e.target.closest('.plink')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
 });
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
@@ -201,6 +204,13 @@ function route(){
   $('inst-page').hidden = !S.inst;
   if (S.inst) renderInst();
   if (renderer) show3D(changed);
+  consumePart();
+}
+/* pièce demandée depuis un schéma : sélectionnée dès que la maquette est affichée */
+function consumePart(){
+  if (!S.pendingPart || S.inst || S.mode !== 'tele') return;
+  if (renderer && !(window.__obs && window.__obs.current && window.__obs.current.t.id === S.id)) return;
+  var k = S.pendingPart; S.pendingPart = null; if (tele(S.id).parts.some(function(p){ return p.key === k; })) selectPart(k, true);
 }
 window.addEventListener('hashchange', route);
 
@@ -678,7 +688,7 @@ show3D = function(changed){
     if (current && current !== M) scene.remove(current.root);
     if (M.root.parent === cmp.group) cmp.group.remove(M.root);
     resetRoot(M); scene.add(M.root); current = M; cmp.built = false;
-    loaderUI('off'); applyLighting(); applyHighlight(); frame(true);
+    loaderUI('off'); applyLighting(); applyHighlight(); frame(true); consumePart();
     prefetch();
   }).catch(function(e){
     if (token !== loadToken) return;

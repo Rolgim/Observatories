@@ -1,0 +1,21 @@
+name: Tests
+# Vérifie que index.html est bien construit à partir de src/, puis parcourt le site dans un vrai navigateur.
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'build.js', 'index.html', 'models/**', 'data/**', 'tools/smoke.js', '.github/workflows/tests.yml']
+  workflow_dispatch:
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: index.html à jour
+        run: |
+          node build.js
+          git diff --exit-code --stat index.html || (echo "index.html ne correspond pas aux sources : relancer node build.js et commiter" && exit 1)
+      - run: npm install --no-save playwright@1.56.0 && npx playwright install --with-deps chromium
+      - run: node tools/smoke.js
