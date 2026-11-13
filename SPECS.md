@@ -35,7 +35,7 @@ Limites connues :
 | Lot | État |
 |---|---|
 | D. Trajet de la lumière | D1 et D2 livrés en première version ; D3 et D4 à faire |
-| E. Vraies données | à faire |
+| E. Vraies données | E1 et E2 livrés pour 13 instruments sur 15 ; E3 non commencé |
 | F. Orbites et temps | à faire |
 | H4. Anglais | à faire, avant que le volume de texte n'augmente encore |
 | A, B, C, G, autres H | plus tard |
@@ -110,6 +110,26 @@ Limites connues :
 - E3. Requêtes en direct vers les archives (MAST, ESA, Gaia TAP) : à étudier seulement après E1. Dépend des règles CORS de chaque archive ; un serveur intermédiaire ne se justifie que si elles l'imposent.
 
 **Acceptation.** Chaque instrument d'imagerie ou de spectroscopie montre au moins un produit réel, traçable jusqu'à l'archive.
+
+**Livré.** `tools/data/fetch_data.py` interroge les archives et écrit dans `data/` un aperçu léger par instrument (image JPEG ou mesures JSON) et un manifeste. Le workflow GitHub « Données réelles » le lance à chaque modification du script, ou à la demande, et commite le résultat. Le site affiche une section « Observation réelle » dans la fiche de l'instrument, avec l'identifiant d'observation, le programme, la requête utilisée et la date de récupération.
+
+| Instrument | Produit réel affiché |
+|---|---|
+| Hubble WFC3, ACS | aperçus de mosaïques combinées de M83 et M51 (MAST) |
+| Hubble STIS, COS | spectres extraits de HD 209458 et du quasar 3C 273 |
+| JWST NIRCam, MIRI, NIRISS | images combinées de l'amas SMACS 0723 (programme 2736) |
+| JWST NIRSpec | spectre d'une source du même champ, choisie automatiquement au meilleur signal sur bruit |
+| Euclid VIS, NISP | comptages par magnitude et couleur visible − infrarouge, tirés de `q1.mer_catalogue` |
+| Gaia Astro, BP/RP, RVS | diagramme de Hertzsprung-Russell, couleurs et vitesses radiales de 8 000 étoiles à moins de 100 pc |
+
+**Reste à faire**
+
+- Les deux capteurs de guidage (FGS) n'ont pas de produit.
+- Images : ce sont les aperçus en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition colorée à plusieurs filtres) donnerait un bien meilleur résultat.
+- Euclid : aucune image, seulement le catalogue. Ajouter une découpe VIS et NISP et un spectre du grisme rouge. L'archive expose aussi des tables `dr1.*` : vérifier leur statut et mettre à jour les textes du site, qui ne parlent que de Q1.
+- Gaia : ajouter un vrai spectre BP/RP et un vrai spectre RVS (service DataLink).
+- Les choix d'observation sont automatiques (la plus longue pose publique sur la cible). Les figer par identifiant une fois validés, pour que le site ne change pas tout seul.
+- E3 (requêtes en direct depuis le navigateur) : non commencé.
 
 ### F. Orbites et temps
 

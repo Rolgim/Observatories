@@ -13,6 +13,8 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | `index.html`, `models/*.glb` | le site tel qu'il est servi par GitHub Pages |
 | `src/` | sources : styles, structure de la page, données (`data-tele.js`, `data-inst.js`), rendu des pages d'instruments, application 3D |
 | `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) |
+| `data/` | observations réelles affichées dans les fiches d'instrument ; produit par `tools/data/fetch_data.py` (workflow « Données réelles »), ne pas modifier à la main |
+| `tools/data/fetch_data.py` | télécharge les observations dans les archives (MAST, ESA) et en tire des aperçus légers |
 | `tools/shot.js` | captures d'écran et tests dans un vrai navigateur (Playwright) |
 | `tools/models/` | conversion et redécoupage des maquettes 3D en pièces |
 | `SPECS.md` | spécifications des évolutions prévues |
