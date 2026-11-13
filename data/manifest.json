@@ -759,5 +759,40 @@
   "caption": "Les trois creux profonds sont le triplet du calcium ionisé. Leur décalage par rapport à leur position au repos donne la vitesse radiale de l'étoile.",
   "credit": "ESA/Gaia/DPAC",
   "fetched": "2026-11-13"
+ },
+ "euclid/nisp:spectre": {
+  "type": "plot",
+  "file": "euclid-nisp-spectre.json",
+  "title": "Spectre NISP d'une source du relevé Q1",
+  "meta": [
+   [
+    "Archive",
+    "NASA/IPAC IRSA, miroir des données Euclid"
+   ],
+   [
+    "Publication",
+    "Quick Release Q1, spectres 1D combinés (SIR)"
+   ],
+   [
+    "Identifiant Euclid de la source",
+    "2716245017685336145"
+   ],
+   [
+    "Grisme",
+    "rouge (RG)"
+   ],
+   [
+    "Fichier d'origine",
+    "EUC_SIR_W-COMBSPEC_102160610_2024-11-05T17:27:22.071881Z.fits, extension 39"
+   ],
+   [
+    "Choix de la source",
+    "meilleur signal sur bruit parmi 60 sources examinées (≈ 23 par pixel)"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+  "caption": "Spectre sans fente du grisme rouge, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).",
+  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "fetched": "2026-11-13"
  }
 }
