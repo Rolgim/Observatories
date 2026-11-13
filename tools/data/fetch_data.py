@@ -405,12 +405,16 @@ def euclid_spectrum(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
-    res = Irsa.query_tap("SELECT TOP 60 objectid, path, hdu FROM euclid.objectid_spectrafile_association_q1").to_table()
-    print("   candidats :", len(res), res.colnames)
+    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1").to_table()
+    print("   candidats :", len(res), res.colnames, "· première ligne :", [str(v)[:120] for v in res[0]])
+    pcol = [c for c in res.colnames if c.lower() in ("path", "uri", "access_url", "file_path")]
+    pcol = pcol[0] if pcol else res.colnames[1]
+    res = res[[len(str(v).strip()) > 3 and str(v).strip() != "--" for v in res[pcol]]]
+    print("   colonne de chemin :", pcol, "· lignes avec chemin :", len(res))
     best, shown, shown2 = None, False, False
     for r in res:
         try:
-            url = "https://irsa.ipac.caltech.edu/" + str(r["path"]).lstrip("/")
+            pth = str(r[pcol]).strip(); url = pth if pth.startswith("http") else "https://irsa.ipac.caltech.edu/" + pth.lstrip("/")
             raw = requests.get(url, timeout=300).content
             if not shown:
                 shown = True; print("   première réponse :", url, len(raw), "octets, début :", raw[:80])
