@@ -46,7 +46,7 @@
    ],
    [
     "Points",
-    "1 024 dans le fichier, 1 024 tracés (moyenne par paquets)"
+    "1 024 dans le fichier, 1 024 tracés"
    ]
   ],
   "url": "https://archive.stsci.edu/proposal_search.php?id=8789&mission=hst",
@@ -105,7 +105,7 @@
    ]
   ],
   "url": "https://archive.stsci.edu/proposal_search.php?id=12038&mission=hst",
-  "caption": "Sur le continu du quasar, les raies fines en absorption sont dues au gaz situé le long de la ligne de visée, dans notre Galaxie et entre les galaxies.",
+  "caption": "Sur le continu du quasar, les raies fines en absorption sont dues au gaz situé le long de la ligne de visée, dans notre Galaxie et entre les galaxies. La raie large à droite est l'émission Lyman α du quasar, décalée vers le rouge.",
   "credit": "NASA, ESA, STScI",
   "fetched": "2026-11-13"
  },
@@ -113,8 +113,8 @@
   "type": "image",
   "file": "jwst-nircam.jpg",
   "width": 1100,
-  "height": 606,
-  "title": "L'amas de galaxies SMACS 0723 vu par NIRCam",
+  "height": 1096,
+  "title": "SMACS 0723, NIRCam, filtre F444W",
   "meta": [
    [
     "Archive",
@@ -126,48 +126,48 @@
    ],
    [
     "Identifiant d'observation",
-    "jw04043-o001_t001_nircam_clear-f115w"
+    "jw02736-o001_t001_nircam_clear-f444w"
    ],
    [
     "Cible",
-    "SMACSPROTO"
+    "SMACS-J0723.3-7327"
    ],
    [
     "Filtres ou réseau",
-    "F115W"
+    "F444W"
    ],
    [
     "Programme",
-    "4043"
+    "2736"
    ],
    [
     "Responsable du programme",
-    "Witten, Callum"
+    "Pontoppidan, Klaus M."
    ],
    [
     "Début d'observation",
-    "2024-05-11"
+    "2022-06-07"
    ],
    [
     "Temps de pose",
-    "39 511 s"
+    "7 537 s"
    ],
    [
     "Fichier d'origine",
-    "jw04043-o001_t001_nircam_clear-f115w_i2d.jpg"
+    "jw02736001001_02105_00006_nrcalong_i2d.jpg"
    ]
   ],
-  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=4043",
-  "caption": "Mosaïque combinée dans un filtre. Les arcs sont des galaxies lointaines déformées par la gravité de l'amas. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
+  "caption": "L'amas de galaxies SMACS 0723 : les arcs sont des galaxies lointaines dont l'image est déformée par la gravité de l'amas. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-13"
  },
  "jwst/miri": {
   "type": "image",
   "file": "jwst-miri.jpg",
-  "width": 1032,
-  "height": 1024,
-  "title": "SMACS 0723 vu par MIRI",
+  "width": 1029,
+  "height": 1019,
+  "title": "SMACS 0723, MIRI, filtre F1800W",
   "meta": [
    [
     "Archive",
@@ -207,20 +207,20 @@
    ],
    [
     "Fichier d'origine",
-    "jw02736002001_02107_00005_mirimage_o002_crf.jpg"
+    "jw02736002001_02107_00008_mirimage_i2d.jpg"
    ]
   ],
   "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
-  "caption": "Le même champ dans l'infrarouge moyen, où dominent les poussières chauffées. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "caption": "Le même amas dans l'infrarouge moyen. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-13"
  },
  "jwst/niriss": {
   "type": "image",
   "file": "jwst-niriss.jpg",
-  "width": 1100,
+  "width": 1089,
   "height": 1100,
-  "title": "SMACS 0723 vu par NIRISS",
+  "title": "SMACS 0723, NIRISS, filtre CLEAR;F200W",
   "meta": [
    [
     "Archive",
@@ -232,27 +232,27 @@
    ],
    [
     "Identifiant d'observation",
-    "jw04368-o001_t001_niriss_clear-f150w"
+    "jw02736-o003_t001_niriss_clear-f200w"
    ],
    [
     "Cible",
-    "SMACS0723"
+    "SMACS-J0723.3-7327"
    ],
    [
     "Filtres ou réseau",
-    "CLEAR;F150W"
+    "CLEAR;F200W"
    ],
    [
     "Programme",
-    "4368"
+    "2736"
    ],
    [
     "Responsable du programme",
-    "Noirot, Gael"
+    "Pontoppidan, Klaus M."
    ],
    [
     "Début d'observation",
-    "2024-09-04"
+    "2022-06-17"
    ],
    [
     "Temps de pose",
@@ -260,18 +260,18 @@
    ],
    [
     "Fichier d'origine",
-    "jw04368001001_04101_00003_nis_o001_crf.jpg"
+    "jw02736-o003_t001_niriss_clear-f200w_i2d.jpg"
    ]
   ],
-  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=4368",
-  "caption": "Image directe prise par NIRISS sur le même amas. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
+  "caption": "Image directe du même amas prise par NIRISS. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-13"
  },
  "jwst/nirspec": {
   "type": "plot",
   "file": "jwst-nirspec.json",
-  "title": "Spectre NIRSpec d'une galaxie derrière SMACS 0723",
+  "title": "Spectre NIRSpec d'une source du champ de SMACS 0723",
   "meta": [
    [
     "Archive",
@@ -283,7 +283,7 @@
    ],
    [
     "Identifiant d'observation",
-    "jw02736-o007_s000008717_nirspec_f170lp-g235m"
+    "jw02736-o007_s000008730_nirspec_f170lp-g235m"
    ],
    [
     "Cible",
@@ -316,10 +316,14 @@
    [
     "Points",
     "1 370 dans le fichier, 1 200 tracés (moyenne par paquets)"
+   ],
+   [
+    "Choix de la source",
+    "meilleur rapport signal sur bruit parmi 12 sources examinées (≈ 1 par pixel)"
    ]
   ],
   "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=2736",
-  "caption": "Spectre d'une des sources observées à travers les micro-volets. Les pics sont des raies d'émission du gaz de la galaxie.",
+  "caption": "Spectre extrait d'une des sources observées à travers les micro-volets, retenue automatiquement pour son rapport signal sur bruit.",
   "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-13"
  },
@@ -425,7 +429,7 @@
   "file": "hubble-wfc3.jpg",
   "width": 1062,
   "height": 1100,
-  "title": "La galaxie spirale M83 vue par WFC3",
+  "title": "Cible MESSIER-083, WFC3/UVIS, filtre F336W",
   "meta": [
    [
     "Archive",
@@ -461,7 +465,7 @@
    ]
   ],
   "url": "https://mast.stsci.edu/",
-  "caption": "Une pose calibrée et combinée de la galaxie M83. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "caption": "Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, STScI",
   "fetched": "2026-11-13"
  },
@@ -470,7 +474,7 @@
   "file": "hubble-acs.jpg",
   "width": 1100,
   "height": 1069,
-  "title": "La galaxie du Tourbillon (M51) vue par ACS/WFC",
+  "title": "La galaxie du Tourbillon (M51), ACS/WFC, filtre F814W",
   "meta": [
    [
     "Archive",
@@ -506,8 +510,90 @@
    ]
   ],
   "url": "https://mast.stsci.edu/",
-  "caption": "Une pose calibrée et combinée de M51. Aperçu produit par la chaîne de traitement de l'archive, réduit pour le site.",
+  "caption": "Une région de la galaxie du Tourbillon. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, STScI",
+  "fetched": "2026-11-13"
+ },
+ "euclid/vis": {
+  "type": "plot",
+  "file": "euclid-vis.json",
+  "title": "Comptage des sources par magnitude dans la bande I_E de VIS",
+  "meta": [
+   [
+    "Archive",
+    "ESA Euclid Science Archive"
+   ],
+   [
+    "Table",
+    "q1.mer_catalogue"
+   ],
+   [
+    "Colonnes",
+    "flux_vis_psf et flux_h_templfit"
+   ],
+   [
+    "Champ",
+    "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)"
+   ],
+   [
+    "Sources",
+    "6 000"
+   ],
+   [
+    "Conversion",
+    "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"
+   ],
+   [
+    "Requête ADQL",
+    "SELECT TOP 6000 flux_vis_psf, flux_h_templfit FROM q1.mer_catalogue WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination), CIRCLE('ICRS', 52.93, -28.09, 0.08)) AND flux_vis_psf > 0"
+   ]
+  ],
+  "url": "https://eas.esac.esa.int/",
+  "caption": "Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.",
+  "credit": "ESA/Euclid/Euclid Consortium",
+  "fetched": "2026-11-13"
+ },
+ "euclid/nisp": {
+  "type": "plot",
+  "file": "euclid-nisp.json",
+  "title": "Couleur visible − infrarouge des sources, VIS et NISP combinés",
+  "meta": [
+   [
+    "Archive",
+    "ESA Euclid Science Archive"
+   ],
+   [
+    "Table",
+    "q1.mer_catalogue"
+   ],
+   [
+    "Colonnes",
+    "flux_vis_psf et flux_h_templfit"
+   ],
+   [
+    "Champ",
+    "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)"
+   ],
+   [
+    "Sources",
+    "6 000"
+   ],
+   [
+    "Détectées aussi en H",
+    "2 297 sources tracées"
+   ],
+   [
+    "Conversion",
+    "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"
+   ],
+   [
+    "Requête ADQL",
+    "SELECT TOP 6000 flux_vis_psf, flux_h_templfit FROM q1.mer_catalogue WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination), CIRCLE('ICRS', 52.93, -28.09, 0.08)) AND flux_vis_psf > 0"
+   ]
+  ],
+  "url": "https://eas.esac.esa.int/",
+  "caption": "Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.",
+  "credit": "ESA/Euclid/Euclid Consortium",
   "fetched": "2026-11-13"
  }
 }
