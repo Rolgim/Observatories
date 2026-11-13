@@ -189,5 +189,5 @@ var Optics = (function(){
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
       '</div>';
   }
-  return { render:render, compareFocal:compareFocal };
+  return { render:render, compareFocal:compareFocal, TEXT:TEXT, LINK3D:LINK3D, FP:FP };
 })();

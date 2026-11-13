@@ -18,7 +18,7 @@ var InstrumentsUI = (function(){
   })();
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return t.replace('.', ','); }
+  function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return OBS_LANG === 'en' ? t : t.replace('.', ','); }
   function wl(um){ return um < 1 ? num(um*1000, um*1000 < 200 ? 1 : 0) + ' nm' : num(um, 2) + ' µm'; }
   function ang(a){ return a >= 3600 ? num(a/3600, 2) + '°' : a >= 120 ? num(a/60, 1) + '′' : num(a, 1) + '″'; }
   function get(tid, iid){ var a = INST_DATA[tid].instruments; for (var i=0;i<a.length;i++) if (a[i].id===iid) return a[i]; return null; }

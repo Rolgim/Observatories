@@ -1,5 +1,7 @@
 # Observatoires en orbite
 
+*Observatories in orbit: an interactive 3D guide to Hubble, JWST, Euclid and Gaia, in French and English.*
+
 Visualisation 3D de quatre télescopes spatiaux (Hubble, JWST, Euclid, Gaia) : pièces cliquables, vue éclatée, éclairage solaire réel, comparaison à l'échelle, et une page « Instruments et données » par observatoire (couverture spectrale, champs de vue, filtres, produits de données, accès aux archives).
 
 Site statique, sans serveur. Dépendance à l'exécution : three.js r128 (CDN).
@@ -12,6 +14,7 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 |---|---|
 | `index.html`, `models/*.glb` | le site tel qu'il est servi par GitHub Pages |
 | `src/` | sources : styles, structure de la page, données (`data-tele.js`, `data-inst.js`), rendu des pages d'instruments, application 3D |
+| `src/en/`, `src/i18n.js`, `src/lang.js` | version anglaise : textes anglais et leur application ; `node tools/i18n-scan.js` liste ce qui n'est pas traduit |
 | `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) |
 | `data/` | observations réelles affichées dans les fiches d'instrument ; produit par `tools/data/fetch_data.py` (workflow « Données réelles »), ne pas modifier à la main |
 | `tools/data/fetch_data.py` | télécharge les observations dans les archives (MAST, ESA) et en tire des aperçus légers |

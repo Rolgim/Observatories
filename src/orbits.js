@@ -9,10 +9,10 @@ var Orbits = (function(){
   function loadSky(){ return skyLoading || (skyLoading = fetch('data/sky.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ SKY = j; return j; })); }
   function load(){ return loading || (loading = fetch('data/orbits.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ DATA = j; return j; })); }
   function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
-  function fr(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function fr(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
   function rows(a){ return '<div class="stable">' + a.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>'; }).join('') + '</div>'; }
   function cv(id, w, h, label){ return '<canvas class="orb" data-orb="'+id+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+label+'"></canvas>'; }
-  function date(jd){ var d = new Date((jd - 2440587.5)*86400000); return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2)+'/'+d.getUTCFullYear(); }
+  function date(jd){ var d = new Date((jd - 2440587.5)*86400000); var dd = ('0'+d.getUTCDate()).slice(-2), mm = ('0'+(d.getUTCMonth()+1)).slice(-2); return OBS_LANG === 'en' ? d.getUTCFullYear()+'-'+mm+'-'+dd : dd+'/'+mm+'/'+d.getUTCFullYear(); }
 
   var TEXT = {
     hubble:{ sum:'Hubble tourne à environ 530 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
@@ -53,7 +53,7 @@ var Orbits = (function(){
   }
 
   function prep(c){ var d = Math.min(window.devicePixelRatio || 1, 2), w = +c.getAttribute('width'), h = +c.getAttribute('height'); if (!c._w){ c._w = w; c._h = h; c.width = w*d; c.height = h*d; } var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); return g; }
-  function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(s, x, y); }
+  function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(OBS_T(s), x, y); }
 
   function drawLeo(c, tmin){
     var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6901, re = 6371*k, ro = 6901*k;
@@ -196,5 +196,5 @@ var Orbits = (function(){
       })();
     });
   }
-  return { render:render, start:start, renderCompare:renderCompare, startCompare:startCompare };
+  return { render:render, start:start, renderCompare:renderCompare, startCompare:startCompare, TEXT:TEXT };
 })();

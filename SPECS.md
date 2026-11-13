@@ -37,7 +37,7 @@ Limites connues :
 | D. Trajet de la lumière | D1, D2 et D3 livrés en première version ; D4 à faire |
 | E. Vraies données | E1 et E2 livrés : image ou spectre réel pour 13 instruments sur 15 ; E3 non commencé |
 | F. Orbites et temps | F1 et F2 livrés (orbites réelles, comparaison, pointés réels) ; F3 et F4 à faire |
-| H4. Anglais | à faire, avant que le volume de texte n'augmente encore |
+| H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A, B, C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
@@ -183,7 +183,13 @@ Limites connues :
 - H1. Tests automatiques dans le dépôt : chargement des quatre maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push. **Livré** : `tools/smoke.js` (bureau en thème clair, téléphone en thème sombre, absence de défilement horizontal) et workflow « Tests », qui vérifie aussi que `index.html` correspond bien aux sources.
 - H2. Publication GitHub Pages automatique depuis `main`, avec `index.html` construit par l'intégration continue plutôt que commité.
 - H3. Accessibilité : parcours complet au clavier, y compris la sélection des pièces ; contrastes vérifiés dans les deux thèmes.
-- H4. Version anglaise : textes sortis du code dans des fichiers par langue. À décider avant A et B, car cela double le travail de relecture.
+- H4. Version anglaise. **Livré.** Le français reste la langue des sources ; l'anglais est dans `src/en/` et appliqué par `src/i18n.js`.
+  - Langue choisie d'après le navigateur, modifiable par le bouton EN / FR de l'en-tête (choix mémorisé). Un lien peut l'imposer : `#en-jwst`, `#fr-jwst`.
+  - Contenu structuré (fiches, pièces, instruments, optique, orbites, observations réelles) : traduit champ par champ dans `src/en/tele.js`, `inst.js`, `more.js`.
+  - Textes d'interface écrits dans le code : traduits à l'affichage par dictionnaire et par règles (`src/en/ui.js`). Une chaîne absente du dictionnaire reste en français.
+  - `node tools/i18n-scan.js` parcourt le site en anglais et liste ce qui n'est pas traduit ; le test de fumée échoue si du français subsiste dans les pages d'instruments.
+  - À faire à chaque ajout de texte : compléter `src/en/`. Les libellés produits par les scripts Python (`tools/data/`) sont en français et traduits côté site : un nouveau libellé doit être ajouté au dictionnaire.
+  - Non traduit : `README.md`, `SPECS.md`, les commentaires du code.
 - H5. Poids : la maquette d'Euclid fait 6 Mo ; viser moins de 3 Mo par maquette (textures KTX2 ou résolution adaptée au téléphone).
 
 ## 4. Questions ouvertes

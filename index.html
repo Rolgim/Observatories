@@ -175,6 +175,8 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 
 .plink{ display:inline-block; margin-top:10px; padding:0; border:0; background:transparent; font-size:13px; font-weight:700; text-decoration:underline; text-underline-offset:3px; cursor:pointer; color:var(--ink); }
 
+.tab.lang{ align-items:center; padding:0 12px; font-size:12.5px; font-weight:700; letter-spacing:.3px; }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -394,6 +396,19 @@ canvas.orb{ display:block; width:100%; max-width:560px; height:auto; background:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
+/* Langue du site : français ou anglais.
+   Ordre de décision : préfixe du lien (#en-jwst, #fr-jwst), puis choix mémorisé, puis langue du navigateur.
+   Les textes français sont dans les sources ; les textes anglais sont dans src/en/ et appliqués par src/i18n.js. */
+var OBS_LANG = (function(){
+  var m = /^#(en|fr)-/.exec(location.hash || ''), v = m && m[1];
+  if (!v) try { v = localStorage.getItem('obs-lang'); } catch(e){}
+  if (v !== 'en' && v !== 'fr') v = /^fr/i.test(navigator.language || 'fr') ? 'fr' : 'en';
+  try { document.documentElement.lang = v; } catch(e){}
+  return v;
+})();
+/* nombres : virgule décimale et espace des milliers en français, point et virgule en anglais */
+function OBS_NUM(s){ return OBS_LANG === 'en' ? String(s).replace(/(\d)[   ](?=\d{3}(\D|$))/g, '$1,').replace(/(\d),(\d)/g, function(_, a, b){ return a + '.' + b; }) : s; }
+
 /* =================================================================
    OBSERVATOIRES — fiche, pièces cliquables, réglages de la maquette.
    Axes : repère propre à chaque fichier 3D (voir `axis`, `size`).
@@ -1461,7 +1476,7 @@ var Optics = (function(){
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
       '</div>';
   }
-  return { render:render, compareFocal:compareFocal };
+  return { render:render, compareFocal:compareFocal, TEXT:TEXT, LINK3D:LINK3D, FP:FP };
 })();
 
 /* =================================================================
@@ -1475,10 +1490,10 @@ var Orbits = (function(){
   function loadSky(){ return skyLoading || (skyLoading = fetch('data/sky.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ SKY = j; return j; })); }
   function load(){ return loading || (loading = fetch('data/orbits.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ DATA = j; return j; })); }
   function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
-  function fr(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function fr(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
   function rows(a){ return '<div class="stable">' + a.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div></div>'; }).join('') + '</div>'; }
   function cv(id, w, h, label){ return '<canvas class="orb" data-orb="'+id+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+label+'"></canvas>'; }
-  function date(jd){ var d = new Date((jd - 2440587.5)*86400000); return ('0'+d.getUTCDate()).slice(-2)+'/'+('0'+(d.getUTCMonth()+1)).slice(-2)+'/'+d.getUTCFullYear(); }
+  function date(jd){ var d = new Date((jd - 2440587.5)*86400000); var dd = ('0'+d.getUTCDate()).slice(-2), mm = ('0'+(d.getUTCMonth()+1)).slice(-2); return OBS_LANG === 'en' ? d.getUTCFullYear()+'-'+mm+'-'+dd : dd+'/'+mm+'/'+d.getUTCFullYear(); }
 
   var TEXT = {
     hubble:{ sum:'Hubble tourne à environ 530 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
@@ -1519,7 +1534,7 @@ var Orbits = (function(){
   }
 
   function prep(c){ var d = Math.min(window.devicePixelRatio || 1, 2), w = +c.getAttribute('width'), h = +c.getAttribute('height'); if (!c._w){ c._w = w; c._h = h; c.width = w*d; c.height = h*d; } var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); return g; }
-  function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(s, x, y); }
+  function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(OBS_T(s), x, y); }
 
   function drawLeo(c, tmin){
     var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6901, re = 6371*k, ro = 6901*k;
@@ -1662,7 +1677,7 @@ var Orbits = (function(){
       })();
     });
   }
-  return { render:render, start:start, renderCompare:renderCompare, startCompare:startCompare };
+  return { render:render, start:start, renderCompare:renderCompare, startCompare:startCompare, TEXT:TEXT };
 })();
 
 /* =================================================================
@@ -1685,7 +1700,7 @@ var InstrumentsUI = (function(){
   })();
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return t.replace('.', ','); }
+  function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return OBS_LANG === 'en' ? t : t.replace('.', ','); }
   function wl(um){ return um < 1 ? num(um*1000, um*1000 < 200 ? 1 : 0) + ' nm' : num(um, 2) + ' µm'; }
   function ang(a){ return a >= 3600 ? num(a/3600, 2) + '°' : a >= 120 ? num(a/60, 1) + '′' : num(a, 1) + '″'; }
   function get(tid, iid){ var a = INST_DATA[tid].instruments; for (var i=0;i<a.length;i++) if (a[i].id===iid) return a[i]; return null; }
@@ -2009,6 +2024,531 @@ var InstrumentsUI = (function(){
   return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
 })();
 
+/* English text for the observatory sheets and clickable parts (applied over src/data-tele.js by src/i18n.js). */
+var EN_TELE = {
+  hubble:{
+    agency:'NASA / ESA', launch:'Launched 24 April 1990, Space Shuttle Discovery (STS-31)',
+    sub:'Low Earth orbit, ultraviolet, visible, near infrared', src:'Model: NASA VTAD, via Gaia Sky',
+    cmp:{ tag:'13.2 m', dim:'13.2 m long' },
+    desc:"The first of NASA's Great Observatories, Hubble has circled the Earth since 1990. Five Space Shuttle missions repaired and upgraded it in orbit: almost all of its current instruments date from those visits. Its silver tube houses a Ritchey-Chrétien telescope and a bay of replaceable instruments.",
+    sourceNote:"Model created by NASA Visualization Technology Applications and Development (VTAD), distributed with Gaia Sky. The original file is split by texture; it has been re-cut here into physical parts so that a click picks the right piece.",
+    sections:[
+      { title:'Spacecraft', rows:[['Length','13.2 m'],['Maximum diameter','4.2 m'],['Launch mass','≈ 11,110 kg'],['Servicing missions','5 (1993, 1997, 1999, 2002, 2009)'],['Pointing','1 gyroscope in use since 2024 (one-gyro mode)']] },
+      { title:'Optics', rows:[['Design','Ritchey-Chrétien'],['Primary mirror','2.4 m · ULE glass · 828 kg'],['Secondary mirror','0.3 m'],['Focal length','57.6 m'],['Focal ratio','f/24'],['Pointing stability','0.007″']] },
+      { title:'Active instruments', rows:[['WFC3','wide-field camera, UV to near IR (2009)'],['ACS','survey camera (2002)'],['STIS','imaging spectrograph (1997)'],['COS','ultraviolet spectrograph (2009)'],['FGS','3 fine guidance sensors']] },
+      { title:'Orbit', rows:[['Altitude','≈ 500–540 km, slowly decaying'],['Inclination','28.5°'],['Period','≈ 95 min (≈ 15 orbits per day)'],['Speed','≈ 27,000 km/h']] },
+      { title:'Power and data', rows:[['Solar arrays','2 rigid wings, 7.1 × 2.6 m each'],['Power','≈ 5 kW generated'],['Batteries','6, nickel-hydrogen'],['Link','S band, relayed by TDRS satellites']] }
+    ],
+    parts:{
+      door:{ name:'Aperture door and light shield', desc:"The entrance to the telescope. The door closes automatically if the line of sight strays too close to the Sun, to protect the optics. Behind it, the light shield blocks stray light from the Earth and the Moon.", facts:['Door ≈ 3 m across','Automatic safety closure'] },
+      ota:{ name:'Forward shell (secondary mirror)', desc:"The tube that extends the telescope forward. It holds the internal baffles and, inside, the 0.3 m secondary mirror, held 4.9 m in front of the primary by a graphite-epoxy truss that barely reacts to temperature.", facts:['Secondary mirror: 0.3 m','Primary–secondary spacing: 4.9 m'] },
+      ssm:{ name:'Equipment section', desc:"The ring of bays around the telescope. It holds the flight computers, the batteries, the reaction wheels that turn the spacecraft and the communications equipment. The doors open so that astronauts could swap the units.", facts:['10 equipment bays','4 reaction wheels','6 nickel-hydrogen batteries'] },
+      aft:{ name:'Aft shroud (instruments)', desc:"The widest section. The 2.4 m primary mirror sits just ahead of it; behind the mirror, at the focus, are the science instruments: four axial bays, one radial bay occupied by WFC3, and the three fine guidance sensors. The yellow handrails were for the astronauts.", facts:['Primary mirror: 2.4 m, 828 kg','4 axial instruments + 1 radial','3 fine guidance sensors'] },
+      array_stbd:{ name:'Solar array (+V2)', desc:"One of the two rigid gallium-arsenide solar wings fitted in 2002. Smaller than the original flexible arrays, they nevertheless produce more power and shake less at each day–night crossing.", facts:['7.1 × 2.6 m','Gallium arsenide','Installed in 2002 (SM3B)'] },
+      array_port:{ name:'Solar array (−V2)', desc:"The second solar wing, identical to the first. Both rotate about their mast to stay face-on to the Sun whatever direction the telescope is pointing.", facts:['7.1 × 2.6 m','≈ 5 kW for the two wings'] },
+      hga_top:{ name:'High-gain antenna', desc:"A steerable dish at the end of a mast. Hubble does not talk to the ground directly: it sends its data to the TDRS relay satellites in geostationary orbit, which pass them on to White Sands, New Mexico.", facts:['1.3 m dish','S band, via TDRS'] },
+      hga_bottom:{ name:'High-gain antenna (second)', desc:"The second dish, on the opposite side. Two antennas keep a relay satellite in view whatever the telescope's orientation.", facts:['1.3 m dish','Redundancy and coverage'] }
+    }
+  },
+  jwst:{
+    agency:'NASA / ESA / CSA', launch:'Launched 25 December 2021, Ariane 5, Kourou',
+    sub:'Lagrange point L2, near and mid infrared', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'21.2 × 14.2 m', dim:'21.2 × 14.2 m (sunshield)' },
+    desc:"Built for the infrared, Webb has to stay very cold so that it is not blinded by its own heat. A five-layer sunshield the size of a tennis court splits the observatory in two: a hot side facing the Sun, and a cold side at about −233 °C that holds the mirror and the instruments.",
+    sourceNote:"Official model published by NASA (NASA 3D Resources). The parts are identified from the file's materials and their position; the pinkish tint on the underside of the sunshield is that of the real doped-silicon coating.",
+    sections:[
+      { title:'Spacecraft', rows:[['Sunshield','21.2 × 14.2 m'],['Height','≈ 8 m'],['Launch mass','≈ 6,200 kg'],['Lifetime','5 years required; propellant for more than 20']] },
+      { title:'Optics', rows:[['Design','three-mirror anastigmat (Korsch)'],['Primary mirror','6.5 m · 18 gold-coated beryllium segments'],['Collecting area','25.4 m²'],['Focal length','131.4 m'],['Focal ratio','f/20.2'],['Wavelength range','0.6 to 28.8 µm']] },
+      { title:'Thermal', rows:[['Cold side','≈ 40 K (−233 °C)'],['MIRI detector','≈ 7 K (cryocooler)'],['Hot side','up to ≈ 85 °C'],['Sunshield attenuation','≈ 1 million (200 kW in, < 1 W through)']] },
+      { title:'Instruments', rows:[['NIRCam','near-infrared camera'],['NIRSpec','multi-object spectrograph (ESA)'],['MIRI','mid-infrared imager and spectrograph'],['NIRISS / FGS','imager, slitless spectrograph and guider (CSA)']] },
+      { title:'Orbit and communications', rows:[['Location','halo orbit around L2, ≈ 1.5 million km away'],['Halo period','≈ 6 months'],['Science link','Ka band, up to 28 Mbit/s'],['Volume','≈ 57 GB per day (2 contacts of 4 h)']] }
+    ],
+    parts:{
+      primary:{ name:'Primary mirror', desc:"Eighteen hexagons of beryllium, a light metal that stays stable in the cold, coated with 100 nanometres of gold, which reflects infrared light very well. Seven actuators position each segment to the nanometre so that together they behave as a single mirror.", facts:['18 segments, 1.32 m each','≈ 20 kg per segment','Gold: 100 nm thick','25.4 m² of collecting area'] },
+      secondary:{ name:'Secondary mirror and tripod', desc:"A 74 cm convex mirror held in front of the primary by three long struts that unfolded after launch. It sends the collected light back towards the opening at the centre of the primary mirror.", facts:['0.74 m convex mirror','Struts about 7.6 m long'] },
+      aos:{ name:'Aft optics subsystem (AOS)', desc:"The black tower at the centre of the mirror. It holds the tertiary mirror, which corrects the image, and the small fine steering mirror, which cancels the observatory's tiny motions several times a second.", facts:['Fixed tertiary mirror','Fine steering mirror'] },
+      isim:{ name:'Instrument module (ISIM)', desc:"Behind the mirror, the structure that carries the four science instruments. It sits at about 40 K in the shadow of the sunshield; MIRI, which observes at longer wavelengths, is cooled to 7 K by a helium refrigerator.", facts:['NIRCam, NIRSpec, MIRI, NIRISS/FGS','≈ 40 K; MIRI at ≈ 7 K'] },
+      sunshield:{ name:'Sunshield', desc:"Five sheets of aluminised Kapton, thinner than a hair, separated by vacuum. Each layer is colder than the one before, and the heat escapes sideways. The two Sun-facing layers carry a doped-silicon coating, hence their pinkish tint.", facts:['21.2 × 14.2 m','5 layers of Kapton E','Layer 1: 0.05 mm; others: 0.025 mm'] },
+      flap:{ name:'Momentum flap', desc:"Sunlight pressing on the large sunshield slowly turns the observatory. This flap at the back balances that push, which saves the propellant needed to unload the reaction wheels.", facts:['Offsets solar radiation pressure'] },
+      tower:{ name:'Deployable tower', desc:"A telescoping mast that lifted the telescope a little over a metre above the spacecraft bus after launch. The gap leaves room for the sunshield to unfold and isolates the cold side from the warm equipment.", facts:['Extends by ≈ 1.2 m'] },
+      bus:{ name:'Spacecraft bus', desc:"The hot side. This carbon-composite box, always in sunlight, holds the flight computer, the reaction wheels, the tanks and thrusters, the power system and the compressor of MIRI's refrigerator.", facts:['Close to room temperature','Propulsion, pointing, computing, power'] },
+      solar:{ name:'Solar array', desc:"Five hinged panels, unfolded half an hour after launch. Because Webb always keeps its back to the Sun, the array is fixed: it is lit all the time.", facts:['5 panels, ≈ 6 m long','≈ 2 kW'] },
+      hga:{ name:'High-gain antenna', desc:"Under the bus, facing the Earth. The small Ka-band dish sends the science data to the Deep Space Network during two daily contacts; a smaller S-band antenna handles commanding.", facts:['0.6 m Ka-band dish','Up to 28 Mbit/s','≈ 57 GB per day'] }
+    }
+  },
+  euclid:{
+    agency:'ESA (with NASA)', launch:'Launched 1 July 2023, Falcon 9, Cape Canaveral',
+    sub:'Lagrange point L2, visible and near infrared', src:'Model: ESA SciFleet, via Gaia Sky',
+    cmp:{ tag:'4.7 m', dim:'4.7 m tall, Ø 3.7 m' },
+    desc:"Euclid is mapping a third of the sky to understand dark energy and dark matter. In a single exposure its telescope sees a field more than twice the size of the full Moon, almost as sharply as Hubble. It measures the shapes and distances of billions of galaxies.",
+    sourceNote:"Model by ESA's SciFleet team, distributed with Gaia Sky. The original file is a single block: it has been re-cut here into six assemblies from their geometry.",
+    sections:[
+      { title:'Spacecraft', rows:[['Height','4.7 m'],['Diameter','3.7 m'],['Launch mass','≈ 2,000 kg'],['Nominal mission','6 years'],['Prime contractor','Thales Alenia Space; payload by Airbus']] },
+      { title:'Optics', rows:[['Design','three-mirror Korsch, off-axis field'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m'],['Common field','≈ 0.53 deg²'],['Telescope temperature','≈ 130 K, passively cooled']] },
+      { title:'VIS (visible)', rows:[['Detectors','36 CCDs (6 × 6) · ≈ 610 Mpx'],['Band','550–900 nm'],['Sampling','0.1″ per pixel'],['CCD temperature','≈ 150 K (−123 °C)']] },
+      { title:'NISP (near infrared)', rows:[['Detectors','16 HgCdTe H2RG arrays'],['Photometry','Y, J, H (0.95–2.02 µm)'],['Spectroscopy','slitless grisms (blue and red)'],['Detector temperature','≈ 95 K (−180 °C)']] },
+      { title:'Orbit and data', rows:[['Location','halo orbit around L2'],['Survey','≈ 14,000 deg² in 6 years'],['Science link','K band (26 GHz), ≈ 55 Mbit/s'],['Volume','up to ≈ 850 Gbit per day']] }
+    ],
+    parts:{
+      sunshield:{ name:'Sunshield and solar panels', desc:"The large panel that always faces the Sun. It carries the solar cells on its lit side and keeps the whole telescope in shadow, which the thermal stability of the images depends on.", facts:['3 photovoltaic panels','≈ 1.8 to 2.4 kW depending on attitude'] },
+      baffle:{ name:'Telescope and external baffle', desc:"The insulated cylinder around the telescope. Inside, the mirrors and their structure are made entirely of silicon carbide, a ceramic that hardly changes shape when the temperature varies.", facts:['1.2 m primary mirror','All silicon carbide','≈ 130 K'] },
+      instr:{ name:'Instrument bay (VIS and NISP)', desc:"Under the telescope, the baseplate that carries the two instruments. A dichroic plate splits the light: the visible goes to VIS, the infrared passes through to NISP. Both therefore observe exactly the same field at the same time. The radiators shed heat to space.", facts:['VIS: 36 CCDs, ≈ 610 Mpx','NISP: 16 infrared detectors','Dichroic beam splitter'] },
+      svm:{ name:'Service module', desc:"The platform: computers, tanks, the instruments' warm electronics and the pointing system. Cold-nitrogen micro-thrusters hold the line of sight steady to a few hundredths of an arcsecond during exposures.", facts:['Cold-gas (nitrogen) micro-thrusters','Fine guidance sensor in the VIS focal plane'] },
+      hga:{ name:'High-gain antenna', desc:"The steerable K-band dish, which sends the compressed images to ESA's 35 m ground stations for about four hours every day.", facts:['K band, 26 GHz','≈ 55 Mbit/s','Up to ≈ 850 Gbit per day'] },
+      adapter:{ name:'Launch vehicle adapter ring', desc:"The ring by which the spacecraft was attached to the top of the Falcon 9 rocket. It has no use after separation.", facts:['Interface with Falcon 9'] }
+    }
+  },
+  gaia:{
+    agency:'ESA', launch:'Launched 19 December 2013, Soyuz-Fregat, Kourou',
+    sub:'Lagrange point L2 (2014–2025), astrometry in visible light', src:'Model: Toni Sagristà, Gaia Sky',
+    cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (sunshield)' },
+    desc:"Gaia measured the position, distance and motion of nearly two billion stars. The spacecraft spun once every six hours: its two telescopes, looking in directions 106.5° apart, swept the whole sky as it turned. Observations ended in January 2025.",
+    sourceNote:"Model created by Toni Sagristà for Gaia Sky, the mission's visualisation software. The parts correspond to the named objects in the original file.",
+    sections:[
+      { title:'Spacecraft', rows:[['Deployed sunshield','Ø ≈ 10 m'],['Height','≈ 3 m'],['Launch mass','≈ 2,030 kg'],['End of observations','15 January 2025'],['Retired','27 March 2025 (solar orbit)']] },
+      { title:'Optics', rows:[['Telescopes','2 three-mirror anastigmats'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Material','silicon carbide']] },
+      { title:'Focal plane', rows:[['Detectors','106 CCDs · ≈ 938 Mpx'],['Size','≈ 1.0 × 0.4 m'],['Readout','TDI, synchronised with the spin'],['Functions','astrometry, BP/RP photometry, RVS spectrometer']] },
+      { title:'Scanning law', rows:[['Spin','1 turn in 6 h (60″/s)'],['Spin axis','45° from the Sun'],['Precession','63 days'],['Orbit','Lissajous around L2']] },
+      { title:'Catalogues', rows:[['Gaia DR3 (2022)','≈ 1.8 billion sources'],['Precision (bright stars)','≈ 0.02 mas'],['Gaia DR4','expected late 2026 (5.5 years of data)']] }
+    ],
+    parts:{
+      sunshield:{ name:'Deployable sunshield', desc:"A skirt of twelve panels that opened like a parasol after launch. It keeps the telescopes in permanent shadow at a constant temperature: the slightest expansion would spoil angle measurements good to a millionth of a degree.", facts:['Ø ≈ 10 m','12 folding frames','Two layers of insulation'] },
+      solar:{ name:'Solar panels', desc:"The cells are on the sunlit face, underneath the spacecraft in this view. Because Gaia's axis keeps a fixed 45° angle to the Sun, the illumination never changes.", facts:['Gallium arsenide','≈ 1.9 kW'] },
+      svmbase:{ name:'Phased-array antenna', desc:"Under the spacecraft, facing the Earth. A steerable dish would have shaken Gaia, so the beam is steered electronically, with no moving parts, while the spacecraft spins.", facts:['X band','No moving parts'] },
+      svm:{ name:'Service module', desc:"The ring that carries the electronics, the tanks and a rubidium atomic clock to time-stamp every measurement. Cold-nitrogen micro-thrusters keep the spin extremely regular.", facts:['Rubidium atomic clock','Cold-gas micro-propulsion'] },
+      tent:{ name:'Thermal tent', desc:"The shell around the payload. It protects it from micrometeoroids and radiation, and leaves only two openings for the two telescopes to look through.", facts:['2 viewing apertures','Carbon-composite structure'] },
+      torus:{ name:'Optical bench (torus)', desc:"A silicon-carbide ring about 3 m across, assembled from 17 brazed segments. It carries the ten mirrors of the two telescopes and the focal plane, and keeps the angle between the two lines of sight fixed.", facts:['Ø ≈ 3 m','17 silicon-carbide segments','Carries 10 mirrors'] },
+      focal:{ name:'Focal plane and instruments', desc:"The largest camera sent into space at the time of its launch. The images from both telescopes land on the same CCD mosaic; stars cross it in a line as the spacecraft turns.", facts:['106 CCDs · ≈ 938 Mpx','≈ 1.0 × 0.4 m'] }
+    }
+  }
+};
+
+/* English text for the instrument pages (applied over src/data-inst.js by src/i18n.js).
+   Only translatable fields appear here; wavelengths, fields of view, filters and links stay in the French file. */
+var EN_INST = {};
+EN_INST.hubble = {
+  summary:"Five active science instruments, including two ultraviolet spectrographs and two cameras. The instruments can be swapped in orbit: most were installed during Space Shuttle servicing missions (1993–2009).",
+  archives:[["MAST, Hubble archive","Search, previews and downloads of HST observations; programmatic access through astroquery.mast."],["ESA, eHST","ESA's Hubble archive (European mirror)."],["Instrument handbooks","Instrument & Data Handbooks (WFC3, ACS, STIS, COS)."]],
+  instruments:{
+    wfc3:{ kind:"Wide-field camera",
+      summary:"A fourth-generation camera installed in 2009 (SM4). Two independent channels, only one of which can be used at a time, cover the near ultraviolet to the near infrared.",
+      specs:[["UVIS channel","200–1000 nm · 2 e2v 2k×4k CCDs · 0.040″/px · 162″×162″ · f/31"],["IR channel","800–1700 nm · 1k×1k HgCdTe (Teledyne) · 0.13″/px · 136″×123″ · f/11"],["Filters","UVIS: wide choice (wide, medium, narrow) · IR: 15"],["Grisms","G280 (UVIS) · G102 and G141 (IR)"],["Read noise","3 e⁻ (UVIS), against 4 e⁻ for ACS"],["Sensitivity (S/N=10, 10 h)","V = 29.2 (F606W) · H = 27.9 (F160W), AB mag, point source"]],
+      filtersTitle:"Filters (representative selection)",
+      products:[["_raw.fits","raw, uncalibrated exposure"],["_flt.fits","calibrated image (bias, dark, flat), not resampled; SCI / ERR / DQ extensions"],["_flc.fits","as _flt, with CTE correction (UVIS)"],["_drz / _drc.fits","combined products resampled by AstroDrizzle (_drc: CTE-corrected)"],["Naming","IPPPSSOOT: “i” = WFC3, then programme, visit, observation"]],
+      example:{ title:"FITS header of an _flt product (excerpt)", caption:"Real keywords of the format; the values are an example." },
+      code:{ title:"Retrieve WFC3/UVIS images (astroquery.mast)" },
+      notes:["UVIS: charge-transfer losses (CTE) grow with time. Prefer the _flc / _drc products.","IR: image persistence after exposure to bright sources; readout is up-the-ramp (several reads per exposure).","A channel-select mirror sends the light either to UVIS or to IR: no simultaneous exposures."] },
+    acs:{ kind:"Survey camera",
+      summary:"Installed in 2002 (SM3B). Its wide-field channel, WFC, was used for the large surveys (deep fields, galaxy clusters). An electronics failure in January 2007 took out WFC and HRC; WFC was repaired in 2009, HRC was not.",
+      specs:[["WFC","350–1100 nm · 202″×202″ · 0.05″/px"],["SBC","solar-blind far-ultraviolet imaging (MAMA) · ≈ 115–170 nm · 0.032″/px"],["HRC","out of service since 2007 (could not be repaired in SM4)"]],
+      filtersTitle:"WFC / SBC filters (selection)",
+      products:[["_flt / _flc.fits","calibrated images without / with CTE correction"],["_drz / _drc.fits","AstroDrizzle combined products"],["Naming","IPPPSSOOT: “j” = ACS"]],
+      example:{ title:"Structure of an ACS/WFC _flc product", caption:"Real extensions of a calibrated file; each CCD takes one set of extensions.", text:
+"HDU 0  PRIMARY       global header (TELESCOP, INSTRUME='ACS', DETECTOR='WFC', FILTER1/2, EXPTIME …)\nHDU 1  SCI  (1)      CCD WFC2 · image in e⁻  (4096 × 2048)\nHDU 2  ERR  (1)      per-pixel uncertainty\nHDU 3  DQ   (1)      data-quality mask (bits)\nHDU 4  SCI  (2)      CCD WFC1 · image in e⁻  (4096 × 2048)\nHDU 5  ERR  (2)\nHDU 6  DQ   (2)" },
+      code:{ title:"Retrieve ACS/WFC images (astroquery.mast)" },
+      notes:["The two WFC CCDs are stored in separate extensions (SCI,1 and SCI,2).","As for WFC3/UVIS, the _flc / _drc products include the CTE correction."] },
+    stis:{ kind:"Imaging spectrograph",
+      summary:"A long-slit spectrograph (up to 52″) installed in 1997, which failed in 2004 and was repaired in 2009 during SM4. It combines three detectors: two ultraviolet MAMAs and a CCD.",
+      specs:[["FUV-MAMA","115–170 nm · 0.024″/px · 25″×25″ field"],["NUV-MAMA","165–310 nm · 0.024″/px · 25″×25″ field"],["CCD","250–1100 nm · 0.05″/px · 52″×52″ field"],["Spectral resolution","R ≈ 500–1,000 (L gratings) · ≈ 10,000–20,000 (M) · ≈ 30,000–114,000 (echelles)"]],
+      filtersTitle:"Gratings (nominal ranges)",
+      products:[["_raw / _flt.fits","raw and calibrated exposures"],["_x1d.fits","extracted 1D spectrum (binary table)"],["_x2d.fits","rectified 2D spectrum (wavelength × position along the slit)"],["_crj.fits","combined CCD exposures with cosmic-ray rejection"]],
+      example:{ title:"Columns of the _x1d table (one row per spectral order)", caption:"Real layout of STIS products; each cell holds an array of NELEM points.", text:
+"SPORDER     spectral order\nNELEM       number of points in the spectrum\nWAVELENGTH  wavelength (Å)\nGROSS       gross count rate (c/s)\nBACKGROUND  estimated background (c/s)\nNET         net rate = GROSS − BACKGROUND\nFLUX        calibrated flux (erg/s/cm²/Å)\nERROR       uncertainty on FLUX\nDQ          data-quality flags" },
+      code:{ title:"Retrieve STIS spectra (astroquery.mast)" },
+      notes:["TIME-TAG mode is available for the MAMA detectors (event by event).","Power-supply failure in August 2004; returned to service during the SM4 mission (2009)."] },
+    cos:{ kind:"UV spectrograph",
+      summary:"A very sensitive slitless ultraviolet spectrograph, installed in 2009 (SM4) to study the intergalactic medium, quasars and the origin of the chemical elements.",
+      specs:[["FUV channel","≈ 90–215 nm · microchannel-plate detector (cross delay line readout)"],["NUV channel","≈ 170–320 nm · MAMA detector"],["Aperture","PSA, circular, Ø 2.5″ (slitless)"],["Resolution","R ≈ 1,500–4,000 (low) · ≈ 16,000–24,000 (medium)"]],
+      filtersTitle:"Gratings (approximate nominal ranges)",
+      products:[["_corrtag.fits","corrected photon-by-photon event list (TIME-TAG)"],["_x1d.fits / _x1dsum.fits","extracted 1D spectrum / sum of exposures"],["_flt.fits","calibrated image"]],
+      example:{ title:"Columns of the _corrtag table (one row per photon)", caption:"Layout of TIME-TAG events; units indicative.", text:
+"TIME        photon arrival time (s)\nRAWX, RAWY  raw position on the detector (pixels)\nXCORR, YCORR  corrected position (geometric distortion)\nXDOPP       position corrected for the orbital Doppler shift\nEPSILON     weight (efficiency / flat field)\nWAVELENGTH  assigned wavelength (Å)\nDQ          data-quality flags" },
+      code:{ title:"Retrieve COS spectra (astroquery.mast)" },
+      notes:["Slitless: the effective resolution depends on the angular size of the source.","TIME-TAG data let you re-slice the exposure time after the fact."] },
+    fgs:{ kind:"Guiding and astrometry",
+      summary:"Three fine guidance sensors that lock the telescope onto guide stars (pointing stability ≈ 0.007″). They also serve as a science instrument: high-precision astrometry and measurements of close binaries.",
+      specs:[["Number","3 (two for guiding, one available for science)"],["Principle","Koesters-prism interferometers"],["Pointing stability","≈ 0.007″"]],
+      products:[["Archive","FGS (astrometry) data are available at MAST under the instrument “FGS”"]],
+      notes:["The FGS delivered several Cepheid parallaxes before the Gaia era."], docs:["Hubble documentation (STScI)"] }
+  }
+};
+EN_INST.jwst = {
+  summary:"Four science instruments share the ISIM module, kept at very low temperature (≈ 40 K; ≈ 7 K for the MIRI detector), along with a fine guidance sensor. Together they cover 0.6 to 28.8 µm.",
+  archives:[["MAST, JWST archive","JWST observations, calibration levels 1 to 3; programmatic access through astroquery.mast."],["ESA, JWST archive","European access to JWST data."],["JDox, documentation","User documentation for each instrument."],["Calibration pipeline","Calibration steps and data product formats."]],
+  instruments:{
+    nircam:{ kind:"Near-IR camera",
+      summary:"JWST's main camera. Two identical modules observe the same field in two wavelength ranges at once, thanks to a dichroic. It also serves as the wavefront sensor used to align the 18 mirror segments.",
+      specs:[["Range","0.6–5.0 µm"],["Short-wavelength channel (SW)","0.6–2.3 µm · 0.031″/px"],["Long-wavelength channel (LW)","2.4–5.0 µm · 0.063″/px"],["Field","2 modules of 2.2′×2.2′ separated by ≈ 44″ · 9.7 arcmin² in total"],["Detectors","10 HgCdTe 2048×2048 arrays (8 SW + 2 LW)"],["Other modes","coronagraphy · slitless spectroscopy (LW grism, R ≈ 1,700) · time series"]],
+      filtersTitle:"Filters (representative selection)",
+      products:[["_uncal.fits","level 1b: raw, uncalibrated ramps"],["_rate.fits","level 2a: count rate per pixel"],["_cal.fits","level 2b: calibrated image (astrometry and photometry)"],["_i2d.fits","level 3: combined, resampled mosaic"],["_cat.ecsv","level 3: source catalogue"],["Naming","jwPPPPPOOOVVV_GGSAA_EEEEE_detector_suffix"]],
+      example:{ title:"FITS header of a _cal product (excerpt)", caption:"Real keywords of JWST products; the values are an example." },
+      code:{ title:"Retrieve NIRCam mosaics (astroquery.mast)" },
+      notes:["The two channels (SW and LW) observe the same field at the same time: one exposure yields images in two filters.","The _i2d.fits files hold the SCI, ERR and WHT extensions and the WCS (astrometry) of the combined product."] },
+    nirspec:{ kind:"Multi-object spectrograph",
+      summary:"A spectrograph supplied by ESA. Its micro-shutter array (MSA) can observe hundreds of galaxies at once. It also offers an integral field unit (IFU) and fixed slits.",
+      specs:[["Range","0.6–5.3 µm"],["Resolution","R ≈ 100 (prism) · ≈ 1,000 (M gratings) · ≈ 2,700 (H gratings)"],["Multi-object (MSA)","4 quadrants of 365×171 shutters · field ≈ 3.4′×3.4′"],["IFU","3″×3″ cut into 30 slices of 0.1″"],["Fixed slits","S200A1/A2, S400A1, S1600A1 and time-series mode (BOTS)"]],
+      filtersTitle:"Dispersers (nominal ranges)",
+      products:[["_cal.fits","level 2b: calibrated 2D image per slit or shutter"],["_s2d.fits","resampled 2D spectra"],["_x1d.fits","extracted 1D spectra (binary table)"],["_s3d.fits","IFU data cube (x, y, λ)"]],
+      example:{ title:"Columns of an _x1d file (1D spectrum)", caption:"Real layout of the JWST product; one row per spectral pixel.", text:
+"WAVELENGTH      wavelength (µm)\nFLUX            flux density (Jy)\nFLUX_ERROR      uncertainty on the flux\nFLUX_VAR_POISSON / _RNOISE / _FLAT   variance components\nSURF_BRIGHT     surface brightness (MJy/sr)\nDQ              data-quality flags\nBACKGROUND      subtracted background\nNPIXELS         number of pixels in the aperture" },
+      code:{ title:"Retrieve NIRSpec spectra (astroquery.mast)" },
+      notes:["An _x1d file can hold several sources (one spectrum per open MSA shutter).","MSA mode needs catalogues prepared with NIRCam to choose the sources."] },
+    miri:{ kind:"Mid-IR imager and spectrograph",
+      summary:"The only instrument working in the mid infrared, cooled to about 7 K by an active cryocooler. It observes warm dust, protoplanetary discs and distant, dust-enshrouded galaxies.",
+      specs:[["Imager","5.6–25.5 µm · 74″×113″ · 0.11″/px"],["Medium-resolution spectrometer (MRS)","4.9–28.8 µm · R ≈ 1,500–3,500 · 4 IFUs (3.9″×3.9″ to ≈ 7.7″×7.7″)"],["Low-resolution spectrometer (LRS)","≈ 5–12 µm · R ≈ 100 · 0.6″×5.5″ slit"],["Coronagraphs","4 · inner working angle 0.34″–2.16″ · contrast 10⁻⁶–10⁻⁵"],["Temperature","≈ 7 K (cryocooler)"]],
+      filtersTitle:"Imaging filters and coronagraphs",
+      products:[["_cal.fits","calibrated image (level 2b)"],["_i2d.fits","combined mosaic (level 3)"],["_s3d.fits","MRS cube (x, y, λ) per channel and sub-band"],["_x1d.fits","extracted 1D spectrum (MRS, LRS)"]],
+      example:{ title:"Layout of an MRS cube (_s3d)", caption:"Real structure of the product; dimensions indicative.", text:
+"HDU SCI       flux cube     (λ, y, x)   units MJy/sr\nHDU ERR       uncertainty   (λ, y, x)\nHDU DQ        quality       (λ, y, x)\nHDU WMAP      weight map\nWCS           3 axes: RA/Dec + wavelength (µm)\nchannels 1–4  4.9 → 28.8 µm  (each in 3 sub-bands A/B/C)" },
+      code:{ title:"Retrieve MIRI images (astroquery.mast)" },
+      notes:["At long wavelengths the background (zodiacal light, thermal emission) becomes large: subtracting it is a key processing step.","The cryocooler holds the detector at ≈ 7 K, far colder than the rest of ISIM (≈ 40 K)."] },
+    niriss:{ kind:"Imager and slitless spectrograph",
+      summary:"Supplied by the Canadian Space Agency. It specialises in spectra of transiting exoplanets (SOSS), wide-field slitless spectroscopy (WFSS) and aperture masking interferometry (AMI).",
+      specs:[["Imaging","0.8–5.0 µm · 2.2′×2.2′ · 0.065″/px"],["WFSS","R ≈ 150 · 0.8–2.2 µm"],["SOSS","0.6–2.8 µm · R ≈ 700 (single object, transits)"],["AMI","aperture masking interferometry · 2.8–4.8 µm (4 filters)"]],
+      filtersTitle:"Imaging filters",
+      products:[["_cal.fits","calibrated images (imaging)"],["_x1d.fits","1D spectra (SOSS, WFSS)"],["_i2d.fits","mosaics (imaging)"]],
+      example:{ title:"SOSS time series (exoplanet transit)", caption:"Typical structure of a SOSS observation; numbers indicative.", text:
+"_calints.fits  one calibrated image per integration  (n_int, 256, 2048)\n_x1dints.fits  one 1D spectrum per integration       (n_int, n_λ)\norder 1: 0.85–2.8 µm  ·  order 2: 0.6–1.4 µm\n→ spectroscopic light curve = flux(λ) as a function of time" },
+      code:{ title:"Retrieve NIRISS data (astroquery.mast)" },
+      notes:["SOSS mode measures the transmission spectrum of an exoplanet's atmosphere during its transit."] },
+    fgs:{ kind:"Fine guidance",
+      summary:"The fine guidance sensor that locks the observatory onto guide stars to hold the pointing to a few milliarcseconds.",
+      specs:[["Range","0.6–5.0 µm"],["Field","2.3′×2.3′ · ≈ 0.07″/px"],["Redundancy","2 guiding channels (FGS1, FGS2)"]],
+      products:[["Archive","guiding data are archived but are not a usual science product"]],
+      notes:["It shares its housing with NIRISS, but works as part of the pointing control system."] }
+  }
+};
+EN_INST.euclid = {
+  summary:"Two instruments share the same 1.2 m telescope through a dichroic: VIS (visible) and NISP (near infrared). The first major release, DR1, came out on 12 November 2026: about 1,900 deg² of the Wide Survey (14% of the goal), observed from spring 2024 to spring 2025, more than a billion objects. It adds to the Q1 “Quick Release” of March 2025, from which the examples on this page are taken.",
+  archives:[["ESA, Euclid Science Archive","Official archive: catalogues (ADQL), images, spectra."],["Euclid DR1 (12 November 2026)","First major release: Wide and Deep surveys, more than a billion objects, spectra of more than 160 million sources."],["Q1 contents","Description of the products published in Quick Release 1."],["NASA/IPAC, IRSA Euclid","NASA mirror: mosaics, catalogues, VO services."],["Product documentation (DPDD)","Data Product Description Document for Q1."],["astroquery.esa.euclid","Python access to the archive (TAP+)."]],
+  instruments:{
+    vis:{ kind:"Visible imager",
+      summary:"A camera built to measure galaxy shapes precisely (weak gravitational lensing). A single, very broad band, with no filter other than the dichroic.",
+      specs:[["Band","IE · 550–900 nm (edges ≈ 20 nm)"],["Detectors","36 thinned (40 µm) e2v CCD273-84 devices in a 6×6 array"],["Format","4096×4132 px per CCD · 12 µm pixels · 4 readout nodes"],["Mosaic","≈ 610 Mpx · sampling ≈ 0.1″/px"],["Field","≈ 0.53 deg² (common VIS/NISP field)"],["CCD temperature","≈ 150 K (best charge transfer) · electronics ≥ 250 K"],["Saturation","≈ 200,000 e⁻ · bright limit: IE(AB) ≈ 17.8 (nominal exposure)"],["Focal ratio","f/20.4 · 1.2 m pupil · 11% central obstruction"]],
+      filtersTitle:"Photometric band",
+      products:[["Calibrated images","multi-extension FITS files per exposure (level 2)"],["MER mosaics","stacks per sky tile, including ground-based data"],["MER catalogue","master source table (VIS + NISP + ground)"],["Cutouts","cutout service in the web archive and in ESA Datalabs"]],
+      example:{ title:"Real schema of the q1.mer_catalogue table (excerpt)", caption:"Columns of the public Q1 table, queryable in ADQL, with the names published by the ESA archive.", text:
+"object_id          long   unique Euclid identifier of the source\nright_ascension    deg    right ascension (source barycentre)\ndeclination        deg    declination\nsegmentation_area         area of the source in the segmentation map\nellipticity               ellipticity\nkron_radius        pix    semi-major axis of the Kron aperture\nflux_vis_psf              VIS flux (PSF fit) · mag_vis_psf: matching AB magnitude\nflux_h_templfit           NISP H-band flux (template fit) · mag_h_templfit: AB magnitude\n[≈ 30 million rows: fields EDF-North, EDF-Fornax, EDF-South and LDN 1641]" },
+      code:{ title:"Query the MER catalogue (astroquery.esa.euclid)" },
+      notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","Q1 covers ≈ 63 deg² (EDF-North 22.9 · EDF-Fornax 12.1 · EDF-South 28.1 deg²) plus the dark nebula LDN 1641, about 35 TB."],
+      docs:["Euclid Consortium, VIS","Q1, contents"] },
+    nisp:{ kind:"IR photometer and slitless spectrometer",
+      summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
+      specs:[["Range","0.92–2.0 µm"],["Detectors","16 HgCdTe H2RG arrays in 4×4 · 2040×2040 usable px · 18 µm pixels"],["Sampling","≈ 0.3″/px"],["Photometry","3 filters: Y (0.95–1.21), J (1.17–1.57), H (1.52–2.02 µm)"],["Spectroscopy","blue grism (BG) ≈ 0.92–1.37 µm · red grism (RG) ≈ 1.21–1.89 µm, 3 orientations"],["Mass and power","85.3 kg (instrument) + 40.7 kg (warm electronics) · ≤ 200 W"],["Temperature","detectors ≈ 95 K · optics ≈ 130 K"]],
+      filtersTitle:"Bands and grisms (nominal ranges)",
+      products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images; Q1: red grism only"],["SPE catalogue","13 tables of spectroscopic measurements (redshifts, quality)"],["PHZ catalogue","8 tables of photometric redshifts"]],
+      example:{ title:"Contents of the Q1 catalogue (number of tables per product)", caption:"Real organisation of the catalogues queryable in ADQL in the ESA archive.", text:
+"MER  (merged product)        3 tables   including q1.mer_catalogue\nPHZ  (photometric redshifts) 8 tables\nSPE  (spectroscopy)         13 tables   redshifts and quality from the SIR spectra\n\nJoin: all tables share the key  object_id" },
+      code:{ title:"List the available tables (astroquery.esa.euclid)" },
+      notes:["In Q1, only the red-grism spectra are published.","VIS and NISP receive light from the same field through the dichroic and can expose at the same time."],
+      docs:["Euclid Consortium, instruments"] }
+  }
+};
+EN_INST.gaia = {
+  summary:"Gaia has no separate instruments in the usual sense. A single focal plane of 106 CCDs, shared by the two telescopes, performs three functions that read the same stream of light as the spacecraft scans the sky.",
+  archives:[["ESA, Gaia Archive","Official archive: ADQL queries on Gaia DR3, downloads, XP and RVS spectra."],["Gaia DR3 documentation","Full description of the catalogue and its tables."],["VizieR, Gaia DR3 (I/355)","CDS access to the catalogue."],["astroquery.gaia","Python access to the archive."]],
+  instruments:{
+    astro:{ kind:"Astrometry and G photometry",
+      summary:"The sky mapper (SM) detects objects in real time; the astrometric field (AF) then measures their positions to a few tens of microarcseconds. Together they also give the white-light G magnitude.",
+      specs:[["Detectors","SM: 14 CCDs (7 per telescope) · AF: 62 CCDs"],["Pixels","4500×1966 px · 10 µm × 30 µm"],["Readout mode","TDI: integration synchronised with the spin (≈ 4.4 s per CCD)"],["G band","≈ 330–1050 nm (white light)"],["Magnitudes observed","G ≈ 3 to ≈ 21"],["Parallax precision (DR3)","≈ 0.02–0.03 mas (G < 15) · 0.07 mas (G = 17) · 0.5 mas (G = 20)"]],
+      filtersTitle:"Photometric band",
+      products:[["gaia_source","master table: astrometry, photometry, parameters, radial velocities (≈ 1.8 billion sources in DR3)"],["Astrometry","5 or 6 parameters: position, parallax, proper motion (± pseudo-colour)"],["RUWE","quality indicator of the astrometric fit (≈ 1 expected)"]],
+      example:{ title:"Excerpt from gaia_source, well-known stars", caption:"Values as published (Gaia EDR3 astrometry and photometry, identical in DR3). Epoch 2016.0.", text:
+"source_id             ra (°)       dec (°)       parallax (mas)    G (mag)  BP−RP  RUWE\n5853498713190525696   217.392321   −62.676075    768.067 ± 0.050   8.985    3.805  0.97   Proxima Cen\n5250032958818831360   146.311593   −62.507867      1.984 ± 0.110   3.471    1.503  2.39   ℓ Car\n5351161399793209984   161.136160   −57.565357      0.553 ± 0.017   7.338    1.511  0.92   VY Car\n5240441472232302848   165.566881   −64.262893      0.378 ± 0.014   8.941    1.549  1.07   XY Car\n\n→ ℓ Car (a very bright star) has a RUWE of 2.39: an astrometric solution to treat with caution." },
+      code:{ title:"ADQL query (astroquery.gaia)" },
+      notes:["Proxima Centauri (parallax 768 mas, i.e. 1.30 pc) is the nearest star to the Sun.","A RUWE well above 1.4 usually signals a poor fit (unresolved binary, extended source)."],
+      docs:["Gaia DR3 documentation"] },
+    bprp:{ kind:"Low-resolution spectrophotometry",
+      summary:"Two prisms spread the light of each star into a very low-resolution spectrum, blue (BP) and red (RP), which gives colours, temperature and extinction.",
+      specs:[["BP","≈ 330–680 nm · 7 CCDs"],["RP","≈ 640–1050 nm · 7 CCDs"],["Resolution","R ≈ 20–100 depending on wavelength"],["XP spectra published (DR3)","≈ 220 million"]],
+      filtersTitle:"Photometric bands",
+      products:[["phot_bp_mean_mag / phot_rp_mean_mag","magnitudes in gaia_source"],["XP continuous / sampled","XP spectra: basis coefficients (continuous) or sampled"]],
+      example:{ title:"Continuous representation of an XP spectrum", caption:"Structure of the product; the values are not reproduced here.", text:
+"source_id           identifier\nbp_n_parameters     number of BP coefficients\nbp_coefficients[]   coefficients of the expansion on a set of basis functions\nbp_coefficient_errors[]\n(same for RP)\n→ the spectrum is rebuilt with GaiaXPy (any sampling)" },
+      code:{ title:"BP − RP colour (ADQL)" },
+      notes:["The BP − RP difference is a colour index: the larger it is, the redder the star (Proxima: 3.8)."],
+      docs:["Gaia DR3 documentation"] },
+    rvs:{ kind:"Slitless spectrometer",
+      summary:"A slitless spectrometer centred on the ionised calcium (Ca II) triplet. It uses the Doppler effect to measure the radial velocities of tens of millions of stars.",
+      specs:[["Range","845–872 nm"],["Resolution","R ≈ 11,500"],["Detectors","12 CCDs"],["Radial velocities (DR3)","≈ 33.8 million stars"]],
+      filtersTitle:"Spectral range",
+      products:[["radial_velocity","radial velocity (km/s) in gaia_source"],["rv_nb_transits","number of transits used"]],
+      example:{ title:"Radial-velocity fields in gaia_source", caption:"Real columns of the table.", text:
+"radial_velocity          km/s   radial velocity\nradial_velocity_error    km/s   uncertainty\nrv_nb_transits           —      number of transits used\nrv_template_teff         K      temperature of the stellar template used" },
+      code:{ title:"Nearby stars with a radial velocity (ADQL)" },
+      notes:["Radial velocity, proper motion and parallax together give the star's 3D velocity in the Galaxy."],
+      docs:["Gaia DR3 documentation"] }
+  }
+};
+/* Short labels shared by several instruments: filter notes, band and field names, code comments. */
+var EN_WORDS = {
+  "coupure à 850 nm":"cut-on at 850 nm", "coupure à 115 nm":"cut-on at 115 nm", "FUV-MAMA, basse résolution":"FUV-MAMA, low resolution", "NUV-MAMA, basse résolution":"NUV-MAMA, low resolution",
+  "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
+  "NUV, moyenne résolution":"NUV, medium resolution", "NUV, basse résolution":"NUV, low resolution", "H₂ 2,12 µm":"H₂ 2.12 µm", "H₂ 4,7 µm":"H₂ 4.7 µm", "très large":"extra wide", "R ≈ 1 000 / 2 700":"R ≈ 1,000 / 2,700",
+  "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
+  "grisme bleu, non publié dans Q1":"blue grism, not released in Q1", "grisme rouge, spectres publiés dans Q1":"red grism, spectra released in Q1", "lumière blanche (SM + AF)":"white light (SM + AF)",
+  "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
+  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
+};
+var EN_CODE = [["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+  ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
+  ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
+
+/* English text for the light-path pages, the orbit pages and the real observations. */
+var EN_OPTICS = {
+  hubble:{ title:'A two-mirror Ritchey-Chrétien', scale:'Drawn to scale: the diameters, the mirror spacing and the position of the focus are exact. The dashed outline of the tube is indicative.',
+    steps:['Light enters at the front of the tube and travels almost its whole length to the 2.4 m concave primary mirror.','The primary sends it back forward as a beam converging on the 0.3 m convex secondary mirror, 4.9 m ahead.','The secondary sends it through the central hole in the primary. It comes to a focus 1.5 m behind, where the instruments are.','Both mirrors are hyperbolic: this combination corrects coma and gives a sharp image over a wider field than a classical Cassegrain.'],
+    specs:[['Design','Ritchey-Chrétien'],['Aperture','2.4 m'],['Primary focal ratio','f/2.3'],['Resulting focal length','57.6 m · f/24'],['Primary–secondary spacing','4.9 m'],['Plate scale at focus','3.58″ per mm']],
+    links:['primary mirror and instruments','secondary mirror'],
+    fp:{ labs:[['WFC3 / UVIS','2 CCDs of 4096 × 2051 px, 15 µm'],['ACS / WFC','2 CCDs of 4096 × 2048 px, 15 µm'],['WFC3 / IR','1014 × 1014 px, 18 µm']], note:'The three detectors do not sit side by side in the telescope: they are brought together here to compare their sizes.' } },
+  jwst:{ title:'A three-mirror anastigmat', scale:'The diameters of the first two mirrors and their spacing are to scale. The path through the aft optics and on to the focal plane is schematic.',
+    steps:['The 18 segments of the primary mirror behave as a single 6.5 m concave mirror.','The 0.74 m convex secondary mirror, held 7.2 m ahead by the tripod, sends the beam back towards the centre of the primary.','The beam enters the aft optics. There the tertiary mirror corrects the remaining aberrations; the flat fine steering mirror stabilises the image.','The light finally reaches the instrument module, behind the primary, where pick-off mirrors share it out among the four instruments.'],
+    specs:[['Design','three-mirror anastigmat (Korsch)'],['Aperture','6.5 m · 25.4 m² collecting area'],['Resulting focal length','131.4 m · f/20.2'],['Primary–secondary spacing','≈ 7.2 m'],['Mirrors','primary, secondary, tertiary, fine steering']],
+    links:['primary mirror','secondary mirror','aft optics','instrument module'],
+    fp:{ labs:[['NIRCam, short wavelength','2 modules of 2 × 2 detectors'],['NIRCam, long wavelength','1 detector per module'],['NIRSpec','2 detectors'],['NIRISS','1 detector'],['MIRI, imager','1024 × 1024 px, 25 µm']], note:'Near-infrared detectors: HgCdTe with 2040 × 2040 usable px, 18 µm pixels. Only one NIRCam module is drawn.' } },
+  euclid:{ title:'A wide-field Korsch', scale:'The diameters of the first two mirrors and their spacing are to scale. The path after the hole in the primary is schematic: in reality it folds under the telescope.',
+    steps:['The 1.2 m primary mirror and the 0.35 m secondary, 1.756 m apart, form a first image behind the primary.','Fold mirrors send the beam to the tertiary mirror, which corrects the aberrations across the whole 0.5 deg² field.','A dichroic plate then splits the light: the visible is reflected to VIS, the near infrared passes through to NISP.','The two instruments therefore see exactly the same field at the same moment.'],
+    specs:[['Design','three-mirror Korsch, off-axis field'],['Aperture','1.2 m'],['Resulting focal length','24.5 m · f/20.4'],['Primary–secondary spacing','1.756 m'],['Material','silicon carbide, mirrors and structure']],
+    links:['telescope','VIS and NISP'],
+    fp:{ labs:[['VIS','36 CCDs of 4096 × 4132 px, 12 µm'],['NISP','16 detectors of 2040 × 2040 px, 18 µm']], note:'VIS is about 30 cm on a side: one of the largest visible cameras ever sent into space.' } },
+  gaia:{ title:'Two telescopes, one focal plane', scale:'Schematic, seen from above. Only the angle between the two lines of sight is exact.',
+    steps:['Two identical telescopes, mounted on the same ring, look in two directions 106.5° apart.','Each has a rectangular 1.45 × 0.50 m primary mirror, then a secondary and a tertiary.','A beam combiner overlays the two images, and two final flat mirrors bring them to the same focal plane.','Measuring stars seen in two widely separated directions at the same time is what makes absolute parallaxes possible.'],
+    specs:[['Design','2 three-mirror anastigmats'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Mirrors','10 in all, in silicon carbide']],
+    links:['optical bench','focal plane','viewing apertures'],
+    fp:{ labs:[['Gaia focal plane','106 CCDs of 4500 × 1966 px, 10 × 30 µm']], key:['monitoring (basic angle, wavefront)','sky mapper','astrometric field','blue photometer','red photometer','RVS spectrometer'], note:'Stars cross the focal plane from left to right as the spacecraft turns: detection, then astrometry, photometry and finally spectroscopy.' } }
+};
+var EN_ORBITS = {
+  hubble:{ sum:'Hubble orbits about 530 km above the ground, once every 95 minutes. The Earth fills almost half its sky, and hides the Sun from it on every orbit.',
+    notes:['The Earth blocks most targets for part of every orbit: a long exposure is cut into chunks of fifty minutes or so.','Only two small regions of the sky, near the poles of the orbit, stay visible continuously. Hubble\'s deep fields were chosen there.','The day–night crossing every 95 minutes stresses the structure: that is what made the first solar arrays shake.','The orbit slowly sinks through drag on the upper atmosphere; the Space Shuttle used to raise it at each visit.'] },
+  jwst:{ sum:'Webb orbits the Lagrange point L2, 1.5 million km from the Earth, on an orbit wider than the Moon\'s. One circuit takes about six months.',
+    notes:['At L2 the Sun, the Earth and the Moon always stay on the same side: one sunshield is enough to block all three.','The orbit is wide enough never to pass through the shadow of the Earth or the Moon: the solar array is always lit.','The position is unstable. A small thruster burn, about every three weeks, keeps Webb from drifting away.'] },
+  euclid:{ sum:'Euclid also orbits L2, on a large orbit that takes about six months. It keeps its sunshield facing the Sun and scans the sky in strips.',
+    notes:['The thermal environment there is very stable, which is essential for measuring galaxy shapes to one part in a thousand.','The telescope always observes roughly at right angles to the direction of the Sun: the accessible zone sweeps round the sky in a year.','Station-keeping manoeuvres take place about every four weeks.'] },
+  gaia:{ sum:'From 2014 to 2025 Gaia traced a Lissajous curve around L2: a loop that never closes, chosen to stay out of the Earth\'s shadow for years.',
+    notes:['Observations stopped on 15 January 2025. The spacecraft was then moved away from L2 and retired on 27 March 2025.','The trajectory drawn here ends at that departure.','Gaia\'s position had to be known to within 150 m: telescopes on the ground photographed it among the stars every night.'] }
+};
+var EN_REAL = {
+  'hubble/wfc3':{ title:'Target MESSIER-083 (M83), WFC3/UVIS, filter F336W', caption:'Greyscale preview of a product calibrated by the archive pipeline, reduced for the site.' },
+  'hubble/acs':{ title:'The Whirlpool Galaxy (M51), ACS/WFC, filter F814W', caption:'A region of the Whirlpool Galaxy. Greyscale preview of a product calibrated by the archive pipeline, reduced for the site.' },
+  'hubble/stis':{ title:'STIS spectrum of the star HD 209458', caption:'Extracted spectrum of a Sun-like star, host of the first exoplanet seen in transit.' },
+  'hubble/cos':{ title:'COS ultraviolet spectrum of the quasar 3C 273', caption:'On the quasar continuum, the narrow absorption lines come from gas along the line of sight, in our Galaxy and between galaxies. The broad line on the right is the quasar\'s redshifted Lyman α emission.' },
+  'jwst/nircam':{ title:'SMACS 0723, NIRCam, filter F444W', caption:'The galaxy cluster SMACS 0723: the arcs are distant galaxies whose images are distorted by the cluster\'s gravity. Greyscale preview of a product calibrated by the archive pipeline, reduced for the site.' },
+  'jwst/miri':{ title:'SMACS 0723, MIRI, filter F1800W', caption:'The same cluster in the mid infrared. Greyscale preview of a product calibrated by the archive pipeline, reduced for the site.' },
+  'jwst/niriss':{ title:'SMACS 0723, NIRISS, filter CLEAR;F115W', caption:'Direct image of the same cluster taken by NIRISS. Greyscale preview of a product calibrated by the archive pipeline, reduced for the site.' },
+  'jwst/nirspec':{ title:'NIRSpec spectrum of a source in the SMACS 0723 field', caption:'Extracted spectrum of one of the sources observed through the micro-shutters, picked automatically for its signal-to-noise ratio.' },
+  'euclid/vis':{ title:'Source counts by magnitude in the VIS I_E band', caption:'The number of sources rises towards fainter magnitudes, then drops where the survey stops being complete: that is the depth reached in this field.' },
+  'euclid/nisp':{ title:'Visible − infrared colour of the sources, VIS and NISP combined', caption:'For each source, the difference between the VIS magnitude and the NISP H-band magnitude. This colour is one of the ingredients of photometric redshifts.' },
+  'euclid/vis:image':{ title:'VIS: the Cat\'s Eye Nebula (NGC 6543)', caption:'Cutout of a VIS mosaic, I_E band, at 0.1″ per pixel before reduction.' },
+  'euclid/nisp:image':{ title:'NISP: the Cat\'s Eye Nebula (NGC 6543), Y, J and H bands', caption:'Colour composite of the three NISP bands: H in red, J in green, Y in blue. Each band is stretched separately, so the colours are indicative.' },
+  'euclid/nisp:spectre':{ title:'NISP spectrum of a source in the Q1 survey', caption:'Slitless red-grism spectrum, extracted and combined by the pipeline (pixels flagged as doubtful removed).' },
+  'gaia/astro':{ title:'Hertzsprung-Russell diagram of nearby stars', caption:'Each point is a star within 100 parsecs. The absolute magnitude comes from the parallax measured by the astrometric field: M_G = G + 5 log10(parallax / 100 mas). The main sequence, the giants and the white dwarfs separate by themselves.' },
+  'gaia/bprp':{ title:'Colours of nearby stars, measured by the BP and RP photometers', caption:'Distribution of the BP − RP colour index for the same sample. Low-mass red stars dominate the solar neighbourhood by far.' },
+  'gaia/rvs':{ title:'Radial velocities of nearby stars, measured by the RVS', caption:'Speed of recession (positive) or approach (negative) of each star in the sample for which the spectrometer obtained a measurement.' },
+  'gaia/bprp:spectre':{ title:'BP/RP spectrum of a nearby Sun-like star', caption:'The low-resolution spectrum from the two photometers, joined into a single curve from 336 to 1,020 nm. The star\'s temperature and extinction are derived from this shape.' },
+  'gaia/rvs:spectre':{ title:'RVS spectrum of the same star', caption:'The three deep dips are the ionised calcium triplet. Their shift from their rest positions gives the star\'s radial velocity.' }
+};
+
+/* English for interface strings written in the code.
+   EN_UI   : exact French string → English.
+   EN_RULES: [pattern, replacement] applied in order to any string not found in EN_UI (fragments and strings with variable parts).
+   tools/i18n-scan.js lists what is still missing. */
+var EN_UI = {
+  /* header, 3D view, panel */
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "tailles":"sizes", "Passer au thème sombre":"Switch to dark theme", "Passer au thème clair":"Switch to light theme", "Lire en français":"Lire en français",
+  "Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier":"Drag to rotate, scroll to zoom, click a part to identify it",
+  "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
+  "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",
+  "Fiche":"Overview", "Pièces":"Parts", "Instruments et données":"Instruments and data", "Voir les instruments et les données":"See the instruments and data",
+  "Miroir primaire":"Primary mirror", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
+  "Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s'assemblent.":"Click a part in the 3D view or in the list. The “Explode” slider pulls them apart to show how they fit together.",
+  "Les pièces principales de l'observatoire.":"The main parts of the observatory.", "Voir le trajet de la lumière":"See the light path",
+  "Vue 3D indisponible":"3D view unavailable", "Ce navigateur n'a pas pu ouvrir WebGL. Les fiches et les instruments restent consultables.":"This browser could not start WebGL. The overviews and instrument pages still work.",
+  "La bibliothèque 3D n'a pas pu être chargée. Les fiches et les instruments restent consultables.":"The 3D library could not be loaded. The overviews and instrument pages still work.",
+  "Chargement des quatre maquettes":"Loading the four models", "Chargement interrompu":"Loading interrupted",
+  "Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.":"The graphics context was lost. Reload the page to get the 3D view back.",
+  /* orbit diagrams in the panel */
+  "≈ 530 km d'altitude":"≈ 530 km altitude", "Un tour toutes les 95 min.":"One orbit every 95 min.", "Terre et orbite dessinées":"Earth and orbit drawn", "à la même échelle.":"to the same scale.",
+  "Soleil":"Sun", "Terre":"Earth", "Lune, 384 000 km":"Moon, 384,000 km", "1,5 million de km":"1.5 million km", "150 M km":"150 M km",
+  "Position occupée de 2014 à 2025. Terre, Lune et L2 à l'échelle.":"Position held from 2014 to 2025. Earth, Moon and L2 to scale.", "Terre, Lune et L2 à l'échelle. Toujours à l'opposé du Soleil.":"Earth, Moon and L2 to scale. Always on the side away from the Sun.",
+  "Orbite basse terrestre, à l'échelle":"Low Earth orbit, to scale", "Position au point de Lagrange L2":"Position at the Lagrange point L2",
+  /* size comparison */
+  "À la même échelle":"To the same scale", "Hubble, JWST, Euclid et Gaia côte à côte, en taille réelle":"Hubble, JWST, Euclid and Gaia side by side, at true size", "Quatre observatoires, une seule échelle":"Four observatories, one scale",
+  "Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.":"The models stand side by side at their true size. Webb's sunshield covers roughly a tennis court; Euclid would fit in a bedroom.",
+  "Comparer les instruments":"Compare the instruments", "Couverture spectrale, champs de vue et tableau des 15 instruments sur les mêmes axes.":"Spectral coverage, fields of view and a table of the 15 instruments on the same axes.",
+  "Miroir":"Mirror", "Pour Gaia, la valeur de miroir est le grand côté de ses deux miroirs rectangulaires (1,45 × 0,50 m). Cliquer une maquette ou une ligne ouvre sa fiche.":"For Gaia, the mirror value is the long side of its two rectangular mirrors (1.45 × 0.50 m). Click a model or a row to open its overview.",
+  /* instrument pages */
+  "Retour à la vue 3D":"Back to the 3D view", "Vue d'ensemble":"Overview", "Spectre, champs de vue, archives":"Spectrum, fields of view, archives", "Trajet de la lumière":"Light path", "Schéma optique, plan focal":"Optical layout, focal plane",
+  "Orbite":"Orbit", "Trajectoire réelle, balayage":"Real trajectory, sky coverage", "Comparaison":"Comparison", "Spectre, champs de vue, tableau":"Spectrum, fields of view, table",
+  "Couverture spectrale":"Spectral coverage", "Champs de vue, à la même échelle":"Fields of view, to the same scale", "Champs de vue à l'échelle":"Fields of view to scale", "Champs de vue à la même échelle":"Fields of view to the same scale",
+  "Couverture spectrale des instruments":"Spectral coverage of the instruments", "Couverture spectrale de tous les instruments":"Spectral coverage of all the instruments", "Position des filtres en longueur d'onde":"Filter positions in wavelength",
+  "Empreinte de chaque instrument sur le ciel. Le disque en pointillé donne la taille apparente de la pleine Lune (31′).":"Footprint of each instrument on the sky. The dashed disc shows the apparent size of the full Moon (31′).",
+  "Empreinte de chaque instrument sur le ciel. À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.":"Footprint of each instrument on the sky. For reference, the full Moon is about 1,860″ across: it would spill far outside this frame.",
+  "pleine Lune":"full Moon", "visible":"visible", "ultraviolet":"ultraviolet", "proche infrarouge":"near infrared", "infrarouge moyen":"mid infrared", "longueur d'onde (µm), échelle logarithmique":"wavelength (µm), logarithmic scale", "guidage":"guiding",
+  "Archives et documentation":"Archives and documentation", "Archive et documentation":"Archive and documentation", "Caractéristiques":"Specifications", "Place dans le spectre":"Place in the spectrum", "Champ de vue":"Field of view",
+  "Produits de données":"Data products", "Exemple de données":"Data example", "Accéder aux données":"Getting the data", "À savoir":"Good to know", "Copier":"Copy", "Copié":"Copied", "Sélectionné":"Selected",
+  "données réelles":"real data", "structure réelle, valeurs illustratives":"real structure, illustrative values",
+  "Les largeurs dessinées sont schématiques : elles suivent la classe du filtre (W large, M moyenne, N étroite), pas sa courbe de transmission.":"The widths drawn are schematic: they follow the filter class (W wide, M medium, N narrow), not its transmission curve.",
+  "Observation réelle":"Real observation", "Observations réelles":"Real observations", "Chargement des mesures…":"Loading the measurements…", "Les mesures n'ont pas pu être chargées.":"The measurements could not be loaded.",
+  "Provenance et traitement":"Provenance and processing", "Voir le programme d'observation":"See the observing programme", "Ouvrir l'archive":"Open the archive",
+  /* provenance labels and fixed values */
+  "Archive":"Archive", "Avec vitesse radiale":"With a radial velocity", "Catalogue":"Catalogue", "Centre de la découpe":"Cutout centre", "Champ":"Field", "Choix de l'étoile":"Choice of star", "Choix de la source":"Choice of source", "Cible":"Target",
+  "Colonnes":"Columns", "Conversion":"Conversion", "Distance":"Distance", "Début d'observation":"Start of observation", "Détectées aussi en H":"Also detected in H", "Fichier d'origine":"Original file", "Fichiers d'origine":"Original files",
+  "Filtres ou réseau":"Filters or grating", "Grisme":"Grism", "Identifiant Euclid de la source":"Euclid source identifier", "Identifiant d'observation":"Observation identifier", "Identifiant de la source":"Source identifier",
+  "Magnitude G":"G magnitude", "Points":"Points", "Produit":"Product", "Programme":"Programme", "Publication":"Release", "Requête ADQL":"ADQL query", "Responsable du programme":"Principal investigator", "Sources":"Sources", "Sélection":"Selection",
+  "Table":"Table", "Temps de pose":"Exposure time", "Température estimée":"Estimated temperature", "Traitement":"Processing", "Vitesse radiale mesurée":"Measured radial velocity", "Étoiles":"Stars",
+  "NASA/IPAC IRSA, miroir des données Euclid":"NASA/IPAC IRSA, mirror of the Euclid data", "Quick Release Q1, mosaïques MER":"Quick Release Q1, MER mosaics", "Quick Release Q1, spectres 1D combinés (SIR)":"Quick Release Q1, combined 1D spectra (SIR)",
+  "découpe, étirement asinh, réduction pour le site":"cutout, asinh stretch, reduced for the site", "rouge (RG)":"red (RG)", "flux_vis_psf et flux_h_templfit":"flux_vis_psf and flux_h_templfit",
+  "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)":"Euclid Deep Field Fornax, disc of 0.08° around (52.93°; −28.09°)", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)":"AB magnitude = 23.9 − 2.5 log10(flux in µJy)",
+  "Gaia DR3, table gaiadr3.gaia_source":"Gaia DR3, table gaiadr3.gaia_source", "ESA Gaia Archive, service DataLink":"ESA Gaia Archive, DataLink service",
+  "parallaxe > 10 mas (moins de 100 pc), parallaxe/erreur > 20, RUWE < 1,4, G < 16":"parallax > 10 mas (within 100 pc), parallax/error > 20, RUWE < 1.4, G < 16",
+  "tirée au hasard parmi les étoiles proches de type solaire ayant les deux spectres publiés":"drawn at random among nearby Sun-like stars with both spectra published",
+  "XP_SAMPLED : spectre BP/RP calibré, échantillonné tous les 2 nm":"XP_SAMPLED: calibrated BP/RP spectrum, sampled every 2 nm", "RVS : spectre moyen normalisé, 846 à 870 nm":"RVS: normalised mean spectrum, 846 to 870 nm",
+  /* instrument comparison */
+  "Les quatre observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.":"The four observatories on the same axes. Click an instrument to open its page.",
+  "Hubble couvre l'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l'infrarouge moyen. Euclid et Gaia font l'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.":"Hubble covers the ultraviolet and the visible very sharply over a tiny field. Webb extends this into the mid infrared. Euclid and Gaia do the opposite: a narrow spectral range but a field hundreds of times larger, to map the whole sky.",
+  "Les quatre observatoires":"The four observatories", "Agrandissement : Hubble et Webb seuls":"Enlarged: Hubble and Webb only",
+  "À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d'Euclid. Les champs d'Euclid et de Gaia sont des valeurs approchées.":"On the left, the Hubble and Webb fields shrink to the small cluster of rectangles at the centre: each fits several hundred times into Euclid's. The Euclid and Gaia fields are approximate values.",
+  "Tableau comparatif":"Comparison table", "Instrument":"Instrument", "Type":"Type", "Domaine spectral":"Spectral range", "Échantillonnage par pixel":"Sampling per pixel", "Résolution spectrale R":"Spectral resolution R",
+  "R = λ/Δλ. « Imagerie seule » : l'instrument n'a pas de mode spectroscopique.":"R = λ/Δλ. “Imaging only”: the instrument has no spectroscopic mode.", "sans objet":"not applicable", "imagerie seule":"imaging only",
+  "0,040″ (UVIS)":"0.040″ (UVIS)", "0,13″ (IR)":"0.13″ (IR)", "0,05″ (WFC)":"0.05″ (WFC)", "0,024″ (MAMA)":"0.024″ (MAMA)", "0,05″ (CCD)":"0.05″ (CCD)", "0,031″ (SW)":"0.031″ (SW)", "0,063″ (LW)":"0.063″ (LW)",
+  "0,1″":"0.1″", "0,11″":"0.11″", "0,065″":"0.065″", "≈ 0,07″":"≈ 0.07″", "0,3″":"0.3″", "0,059″ × 0,177″":"0.059″ × 0.177″",
+  "130–210 (grismes IR)":"130–210 (IR grisms)", "500 à 114 000":"500 to 114,000", "1 500 à 24 000":"1,500 to 24,000", "≈ 1 700 (grisme)":"≈ 1,700 (grism)", "100 à 2 700":"100 to 2,700", "100 à 3 500":"100 to 3,500", "150 à 700":"150 to 700",
+  "> 380 (grisme rouge)":"> 380 (red grism)", "20 à 100":"20 to 100", "≈ 11 500":"≈ 11,500",
+  "Plans focaux, à la même échelle":"Focal planes, to the same scale", "Détecteurs des quatre observatoires à la même échelle":"Detectors of the four observatories to the same scale", "Gaia, 106 CCD":"Gaia, 106 CCDs",
+  "Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.":"True size of the detector mosaics. Gaia's focal plane is nearly a metre long; that of VIS, on Euclid, about 30 cm on a side; a Webb detector, less than 4 cm. Gaps between detectors are indicative; only one NIRCam module is drawn.",
+  /* light path */
+  "Schéma optique":"Optical layout", "Étape par étape":"Step by step", "Combinaison optique":"Optical design", "Plan focal, à l'échelle":"Focal plane, to scale", "Détecteurs, à l'échelle":"Detectors, to scale",
+  "Détecteurs du plan focal, à l'échelle":"Focal-plane detectors, to scale", "Voir dans la maquette 3D :":"See in the 3D model:", "lumière du ciel":"light from the sky",
+  "Schéma optique de Hubble, à l'échelle":"Hubble optical layout, to scale", "Schéma optique de JWST":"JWST optical layout", "Schéma optique d'Euclid":"Euclid optical layout", "Schéma optique de Gaia, vue de dessus":"Gaia optical layout, seen from above",
+  "Miroir primaire, 2,4 m":"Primary mirror, 2.4 m", "Miroir secondaire, 0,3 m":"Secondary mirror, 0.3 m", "Foyer":"Focus", "1,5 m derrière":"1.5 m behind", "le primaire":"the primary", "4,9 m":"4.9 m",
+  "Miroir primaire, 6,5 m":"Primary mirror, 6.5 m", "Miroir secondaire, 0,74 m":"Secondary mirror, 0.74 m", "Optique arrière":"Aft optics", "tertiaire et pointage fin":"tertiary and fine steering", "Module d'instruments":"Instrument module", "7,2 m":"7.2 m",
+  "Miroir primaire, 1,2 m":"Primary mirror, 1.2 m", "Miroir secondaire, 0,35 m":"Secondary mirror, 0.35 m", "lame dichroïque":"dichroic plate", "renvois et miroir tertiaire":"fold mirrors and tertiary", "1,756 m":"1.756 m",
+  "Télescope 1":"Telescope 1", "Télescope 2":"Telescope 2", "combineur de faisceaux":"beam combiner", "Plan focal commun, 106 CCD":"Shared focal plane, 106 CCDs", "angle entre les deux lignes de visée : 106,5°":"angle between the two lines of sight: 106.5°",
+  /* orbit pages */
+  "Une orbite, vue de dessus":"One orbit, seen from above", "Paramètres":"Parameters", "Vu depuis la Terre":"Seen from the Earth", "Vu de dessus":"Seen from above", "Mesuré sur la trajectoire":"Measured on the trajectory",
+  "La loi de balayage":"The scanning law", "Ce que cela change":"What difference it makes", "Lecture":"Play", "Pause":"Pause", "Chargement de la trajectoire…":"Loading the trajectory…", "La trajectoire n'a pas pu être chargée.":"The trajectory could not be loaded.",
+  "Chargement des pointés…":"Loading the pointings…", "Chargement des observations…":"Loading the observations…", "Chargement des trajectoires…":"Loading the trajectories…", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Les trajectoires n'ont pas pu être chargées.":"The trajectories could not be loaded.",
+  "Où il a pointé, année après année":"Where it has pointed, year after year", "L'avancée du relevé, mois après mois":"Progress of the survey, month by month",
+  "Altitude":"Altitude", "≈ 530 km, en lente décroissance":"≈ 530 km, slowly decaying", "Période":"Period", "Vitesse":"Speed", "≈ 7,6 km/s":"≈ 7.6 km/s", "Inclinaison":"Inclination", "28,5°":"28.5°", "Tours par jour":"Orbits per day", "Dans l'ombre de la Terre":"In the Earth's shadow", "au plus ≈ 36 min par tour":"at most ≈ 36 min per orbit",
+  "Terre et orbite à l'échelle. Le mouvement est calculé à partir de la période ; la durée de l'ombre est celle du cas où le Soleil est dans le plan de l'orbite, le plus défavorable.":"Earth and orbit to scale. The motion is computed from the period; the time in shadow is for the worst case, when the Sun lies in the plane of the orbit.",
+  "On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).":"Looking towards L2, with the Sun behind us. The dashed circle shows the size of the Moon's orbit to the same scale. Real trajectory (JPL Horizons ephemerides).",
+  "Le Soleil est à gauche, hors du cadre, à 150 millions de km. Le repère tourne avec la Terre autour du Soleil : la Terre et L2 y restent fixes.":"The Sun is to the left, out of the frame, 150 million km away. The frame rotates with the Earth around the Sun, so the Earth and L2 stay fixed in it.",
+  "Carte du ciel entier en coordonnées écliptiques. Chaque trait est le grand cercle balayé pendant un tour de 6 heures ; l'axe de rotation, incliné à 45° du Soleil, tourne autour de lui en 63 jours. Simulation de la loi nominale, pas l'historique réel des observations.":"Map of the whole sky in ecliptic coordinates. Each line is the great circle scanned during one 6-hour turn; the spin axis, tilted 45° from the Sun, circles around it in 63 days. A simulation of the nominal law, not the actual observing history.",
+  "Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de 0,5° où Euclid a commencé au moins une observation ce mois-là ; les mois s'accumulent. Ce sont les observations VIS réellement publiées dans DR1. Un télescope de relevé ne choisit pas des cibles : il pave le ciel par plaques contiguës, en restant à peu près perpendiculaire à la direction du Soleil.":"Map of the whole sky in equatorial coordinates. Each point is a 0.5° cell in which Euclid started at least one observation that month; the months add up. These are the VIS observations actually published in DR1. A survey telescope does not pick targets: it tiles the sky in adjoining patches, staying roughly at right angles to the direction of the Sun.",
+  "orbite de la Lune":"Moon's orbit", "ombre de la Terre":"Earth's shadow", "écliptique":"ecliptic", "plan de la Galaxie":"Galactic plane", "500 000 km":"500,000 km",
+  "Période couverte":"Period covered", "Distance à la Terre":"Distance from the Earth", "Écart latéral maximal":"Largest sideways excursion", "Écart maximal hors de l'écliptique":"Largest excursion out of the ecliptic", "Le long de l'axe Terre–L2":"Along the Earth–L2 axis", "Source":"Source",
+  "Orbite de Hubble autour de la Terre, à l'échelle":"Hubble's orbit around the Earth, to scale", "Trajectoire autour de L2 vue depuis la Terre":"Trajectory around L2 seen from the Earth", "Trajectoire autour de L2 vue du nord de l'écliptique":"Trajectory around L2 seen from north of the ecliptic",
+  "Couverture du ciel par la loi de balayage de Gaia":"Sky coverage from Gaia's scanning law", "Carte du ciel des pointés réels":"Sky map of the real pointings", "Carte du ciel des observations d'Euclid":"Sky map of Euclid's observations",
+  "Orbites autour de L2, à la même échelle":"Orbits around L2, to the same scale", "Les trois orbites vues depuis la Terre":"The three orbits seen from the Earth", "Les trois orbites vues de dessus":"The three orbits seen from above",
+  "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 530 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 530 km up, merges with the dot that stands for the Earth."
+};
+var EN_RULES = [
+  [/ Les zones blanches sont hors du champ observé\./g, " White areas lie outside the observed field."], [/Crédit : /g, "Credit: "], [/Récupéré dans l'archive le (\d\d)\/(\d\d)\/(\d{4})\./g, "Retrieved from the archive on $3-$2-$1."],
+  [/ Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu\./g, " Rays are drawn in orange, mirrors as thick lines, detectors in blue."],
+  [/ Taille des détecteurs à l'échelle ; les espaces entre détecteurs sont indicatifs\./g, " Detector sizes are to scale; the gaps between detectors are indicative."],
+  [/^centré vers /, "centred near "], [/^transmet au-delà de /, "passes beyond "], [/, filtre large/, ", wide filter"], [/, filtre à bande moyenne/, ", medium-band filter"], [/, filtre étroit/, ", narrow filter"],
+  [/, filtre passe-haut/, ", long-pass filter"], [/, filtre de coronographe/, ", coronagraph filter"], [/, élément dispersif/, ", dispersing element"], [/, bande photométrique/, ", photometric band"],
+  [/^minute (\d+) sur 95, au soleil$/, "minute $1 of 95, in sunlight"], [/^minute (\d+) sur 95, dans l'ombre$/, "minute $1 of 95, in shadow"],
+  [/^(\S+) : ([\d,.  ]+) observations depuis (\S+)$/, "$1: $2 observations since $3"], [/^jour (\d+) \(([\d.,]+) an\)$/, function(_, d, y){ return "day " + d + " (" + y.replace(",", ".") + " yr)"; }], [/^(\d{4}-\d\d-\d\d) au (\d{4}-\d\d-\d\d)$/, "$1 to $2"],
+  [/^Chargement de (.+)$/, "Loading $1"], [/^La maquette de (.+) n'a pas pu être chargée$/, "The $1 model could not be loaded"],
+  [/^Le fichier 3D est introuvable ou la connexion a été interrompue \((.+)\)\. La fiche et les instruments restent consultables\.$/, "The 3D file is missing or the connection dropped ($1). The overview and instrument pages still work."],
+  [/^Une maquette n'a pas pu être chargée \((.+)\)\.$/, "A model could not be loaded ($1)."], [/^Ouvrir (.+)$/, "Open $1"],
+  [/^(.+) : du ciel au détecteur$/, "$1: from the sky to the detector"], [/^(.+) : où il se trouve et comment il se déplace$/, "$1: where it is and how it moves"], [/^(.+) à L2$/, "$1 at L2"], [/^Instruments de (.+)$/, "$1 instruments"],
+  [/^(\d+) instruments ou fonctions\. Cliquer une ligne du graphique ou une case pour ouvrir le détail\.$/, "$1 instruments or functions. Click a row of the chart or a tile to open the details."],
+  [/^(.+)\. Trajet de la lumière, filtres, exemples de données, accès aux archives\.$/, "$1. Light path, filters, data examples, archive access."],
+  [/^JPL Horizons, objet (\S+), récupéré le (\d\d)\/(\d\d)\/(\d{4})$/, "JPL Horizons, object $1, retrieved $4-$3-$2"],
+  [/^(\d\d)\/(\d\d)\/(\d{4}) au (\d\d)\/(\d\d)\/(\d{4})$/, "$3-$2-$1 to $6-$5-$4"], [/^de ([\d,]+) à ([\d,]+) km$/, "from $1 to $2 km"],
+  [/^écart latéral ± (.+)$/, "sideways excursion ± $1"], [/^hors écliptique ± (.+)$/, "out of the ecliptic ± $1"],
+  [/^([\d.,\s]+) dans le fichier, ([\d.,\s]+) tracés( \(moyenne par paquets\))?$/, function(_, a, b, c){ return OBS_NUM(a) + " in the file, " + OBS_NUM(b) + " plotted" + (c ? " (binned average)" : ""); }],
+  [/^meilleur (?:rapport )?signal sur bruit parmi (?:les premières sources examinées|(\d+) sources examinées) \(≈ (\d+) par pixel\)$/, function(_, n, s){ return "best signal-to-noise ratio among " + (n ? n + " sources examined" : "the sources examined") + " (≈ " + s + " per pixel)"; }],
+  [/^([\d.,\s]+) sources tracées$/, function(_, a){ return OBS_NUM(a) + " sources plotted"; }], [/^([\d.,\s]+) étoiles$/, function(_, a){ return OBS_NUM(a) + " stars"; }],
+  [/^([\d.,\s]+) tirées au hasard \(random_index\)$/, function(_, a){ return OBS_NUM(a) + " drawn at random (random_index)"; }],
+  [/^Carte du ciel entier en coordonnées équatoriales\. Chaque point est une case de ([\d,]+)° où au moins une observation scientifique a commencé cette année-là ; les années s'accumulent\. Données réelles de l'archive MAST\. Contrairement à un télescope de relevé, (.+) va de cible en cible au gré des programmes acceptés\.$/, function(_, c, n){ return "Map of the whole sky in equatorial coordinates. Each point is a " + c.replace(",", ".") + "° cell in which at least one science observation started that year; the years add up. Real data from the MAST archive. Unlike a survey telescope, " + n + " moves from target to target as the accepted programmes dictate."; }],
+  [/ en fonction de /, " as a function of "], [/longueur d'onde/g, "wavelength"], [/nombre d'étoiles/, "number of stars"], [/nombre de sources/, "number of sources"], [/flux normalisé/, "normalised flux"], [/magnitude absolue/, "absolute magnitude"], [/couleur /g, "colour "], [/vitesse radiale/, "radial velocity"],
+  [/^(.+), filtre (\S+)$/, "$1, filter $2"]
+];
+
+/* =================================================================
+   ANGLAIS — applique les textes de src/en/ quand OBS_LANG vaut « en ».
+   1. Contenu structuré (fiches, pièces, instruments, optique, orbites) : remplacé champ par champ avant le premier rendu.
+   2. Textes d'interface écrits dans le code : traduits à l'affichage, par dictionnaire (EN_UI) et par règles (EN_RULES).
+      Toute chaîne absente du dictionnaire reste en français : tools/i18n-scan.js liste ce qui manque.
+================================================================= */
+var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; } };
+(function(){
+  if (OBS_LANG !== 'en') return;
+  function W(s){ return EN_WORDS[s] || s; }
+
+  TELESCOPES.forEach(function(t){
+    var e = EN_TELE[t.id]; if (!e) return;
+    ['agency','launch','sub','src','desc','sourceNote','sections'].forEach(function(k){ if (e[k]) t[k] = e[k]; });
+    t.cmp.tag = e.cmp.tag; t.cmp.dim = e.cmp.dim;
+    t.parts.forEach(function(p){ var q = e.parts[p.key]; if (q){ p.name = q.name; p.desc = q.desc; p.facts = q.facts; } });
+  });
+  Object.keys(INST_DATA).forEach(function(tid){
+    var d = INST_DATA[tid], e = EN_INST[tid]; if (!e) return;
+    d.summary = e.summary;
+    d.archives.forEach(function(a, i){ if (e.archives[i]){ a.label = e.archives[i][0]; a.desc = e.archives[i][1]; } });
+    d.instruments.forEach(function(it){
+      var q = e.instruments[it.id] || {};
+      ['kind','summary','specs','filtersTitle','products','notes'].forEach(function(k){ if (q[k]) it[k] = q[k]; });
+      if (it.example && q.example){ it.example.title = q.example.title; it.example.caption = q.example.caption; if (q.example.text) it.example.text = q.example.text; }
+      if (it.code){ if (q.code) it.code.title = q.code.title; EN_CODE.forEach(function(r){ it.code.text = it.code.text.split(r[0]).join(r[1]); }); }
+      if (q.docs) it.docs.forEach(function(x, i){ if (q.docs[i]) x.l = q.docs[i]; });
+      (it.filters || []).forEach(function(f){ f.note = W(f.note); f.g = W(f.g); });
+      (it.bands || []).forEach(function(b){ b.l = W(b.l); });
+      (it.fov || []).forEach(function(b){ b.l = W(b.l); });
+    });
+  });
+  Object.keys(EN_OPTICS).forEach(function(tid){
+    var e = EN_OPTICS[tid], t = Optics.TEXT[tid];
+    t.title = e.title; t.scale = e.scale; t.steps = e.steps; t.specs = e.specs;
+    Optics.LINK3D[tid].forEach(function(l, i){ l[1] = e.links[i]; });
+    var fp = Optics.FP[tid]; fp.note = e.fp.note; fp.groups.forEach(function(g, i){ if (e.fp.labs[i]) g.lab = e.fp.labs[i]; });
+    if (fp.key && e.fp.key) fp.key.forEach(function(k, i){ k[1] = e.fp.key[i]; });
+  });
+  Object.keys(EN_ORBITS).forEach(function(tid){ Orbits.TEXT[tid].sum = EN_ORBITS[tid].sum; Orbits.TEXT[tid].notes = EN_ORBITS[tid].notes; });
+
+  /* observations réelles : titres et légendes par clé ; les libellés de provenance passent par le dictionnaire */
+  OBS_I18N.real = function(m){
+    Object.keys(m).forEach(function(k){ var e = EN_REAL[k]; if (e){ m[k].title = e.title; m[k].caption = e.caption; }
+      m[k].meta.forEach(function(r){ r[0] = tr(r[0]); var v = String(r[1]), w = tr(v); r[1] = /^(SELECT|EUC_|jw|[a-z0-9_]+\.fits)/.test(v) ? v : (w !== v ? w : OBS_NUM(v)); }); });
+    return m;
+  };
+
+  /* ---------- traduction à l'affichage ---------- */
+  function tr(s){
+    var k = s.replace(/\s+/g, ' ').trim(); if (k.length < 2) return s;
+    var v = EN_UI[k];
+    if (v === undefined){ var o = k; for (var i=0;i<EN_RULES.length;i++) o = o.replace(EN_RULES[i][0], EN_RULES[i][1]); if (o !== k) v = o; }   /* les règles se cumulent : une chaîne peut en demander plusieurs */
+    if (v === undefined){ if (window.__i18nMiss) window.__i18nMiss[k] = 1; return s; }
+    var lead = /^\s*/.exec(s)[0], tail = /\s*$/.exec(s)[0];
+    return lead + v + tail;
+  }
+  OBS_T = tr;
+  var ATTRS = ['title', 'aria-label', 'alt'];
+  function walk(root){
+    if (root.nodeType === 3){ one(root); return; }
+    if (root.nodeType !== 1) return;
+    attrs(root);
+    var w = document.createTreeWalker(root, 5, null), n;   /* éléments et nœuds de texte */
+    while ((n = w.nextNode())){ if (n.nodeType === 3) one(n); else attrs(n); }
+  }
+  function one(n){ var p = n.parentNode; if (!p || /^(SCRIPT|STYLE|PRE)$/.test(p.nodeName)) return; var v = tr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+  function attrs(el){ for (var i=0;i<ATTRS.length;i++){ var a = el.getAttribute && el.getAttribute(ATTRS[i]); if (a){ var v = tr(a); if (v !== a) el.setAttribute(ATTRS[i], v); } } }
+  function boot(){
+    document.title = 'Observatories in orbit';
+    walk(document.body);
+    new MutationObserver(function(list){
+      for (var i=0;i<list.length;i++){ var m = list[i];
+        if (m.type === 'characterData') one(m.target);
+        else if (m.type === 'attributes') attrs(m.target);
+        else for (var j=0;j<m.addedNodes.length;j++) walk(m.addedNodes[j]); }
+    }).observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:ATTRS });
+  }
+  if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+
 /* =================================================================
    APPLICATION — vue 3D, pièces cliquables, comparaison, routage
 ================================================================= */
@@ -2017,7 +2557,7 @@ var InstrumentsUI = (function(){
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
-function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 
 function banner(msg){
   var b = $('err-banner'); if (!b){ b = document.createElement('div'); b.id = 'err-banner'; document.body.appendChild(b); }
@@ -2084,6 +2624,7 @@ function renderTabs(){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   }).join('');
   h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab lang" id="b-lang" title="' + (OBS_LANG === 'en' ? 'Lire en français' : 'Read in English') + '" aria-label="' + (OBS_LANG === 'en' ? 'Lire en français' : 'Read in English') + '" lang="' + (OBS_LANG === 'en' ? 'fr' : 'en') + '">' + (OBS_LANG === 'en' ? 'FR' : 'EN') + '</button>';
   var dk = isDark(), lab = dk ? 'Passer au thème clair' : 'Passer au thème sombre';
   h += '<button class="tab theme" id="b-theme" title="' + lab + '" aria-label="' + lab + '"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">' +
        (dk ? '<circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v2.2M10 16v2.2M1.8 10H4M16 10h2.2M4.2 4.2l1.6 1.6M14.2 14.2l1.6 1.6M4.2 15.8l1.6-1.6M14.2 5.8l1.6-1.6"/>'
@@ -2163,7 +2704,7 @@ function loadReal(){
       .catch(function(){ delete realCache[f]; el.innerHTML = '<div class="cap">Les mesures n\'ont pas pu être chargées.</div>'; });
   });
 }
-try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
+try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
   var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;
@@ -2188,8 +2729,9 @@ $('inst-page').addEventListener('click', function(e){
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
+  if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; location.hash = S.id + '-instruments'; return; }
@@ -2203,7 +2745,7 @@ document.addEventListener('keydown', function(e){
 });
 
 function route(){
-  var h = (location.hash || '').replace(/^#/, ''), inst = false, mode = 'tele', id = S.id;
+  var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
   if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;

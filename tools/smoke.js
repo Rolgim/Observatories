@@ -11,8 +11,8 @@ const srv = http.createServer((q, s) => { const f = path.join(ROOT, decodeURICom
 const errors = [], notes = [];
 const fail = m => { errors.push(m); console.log('ÉCHEC', m); };
 
-async function open(b, vp, dark){
-  const pg = await b.newPage({ viewport: vp, colorScheme: dark ? 'dark' : 'light' });
+async function open(b, vp, dark, lang){
+  const pg = await b.newPage({ viewport: vp, colorScheme: dark ? 'dark' : 'light', locale: lang === 'en' ? 'en-GB' : 'fr-FR' });
   pg.on('pageerror', e => fail('erreur JavaScript : ' + e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_|Failed to load resource/.test(m.text())) fail('console : ' + m.text().slice(0, 200)); });
   if (V) await pg.route('**/*', r => { const u = r.request().url();
@@ -75,6 +75,27 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   for (const id of ['optique', 'orbite', 'nircam']){ await go(pg, 'jwst-instruments'); await pg.click('#inst-nav .nav-i[data-inst="' + id + '"]'); await pg.waitForTimeout(500); await overflow(pg, 'jwst/' + id + ' (téléphone)'); }
   const bg = await pg.evaluate(() => getComputedStyle(document.body).backgroundColor);
   if (!/rgb\((2\d|3\d), /.test(bg)) fail('thème sombre non appliqué (fond ' + bg + ')');
+  await pg.close();
+
+  // ---- anglais : bureau puis téléphone
+  pg = await open(b, { width: 1360, height: 820 }, false, 'en');
+  await go(pg, 'jwst'); await loaded(pg); await pg.waitForTimeout(600);
+  const en = await pg.evaluate(() => ({ lang: document.documentElement.lang, tab: document.querySelector('.ptab.go').textContent, h: document.querySelector('.spec-section-title').textContent, launch: document.querySelector('.launch').textContent }));
+  if (en.lang !== 'en' || en.tab !== 'Instruments and data' || en.h !== 'Spacecraft' || !/Launched/.test(en.launch)) fail('anglais : la fiche n\'est pas traduite (' + JSON.stringify(en) + ')');
+  let left = 0;
+  for (const t of TELES){
+    await go(pg, t + '-instruments'); await pg.waitForTimeout(300);
+    const ids = await pg.evaluate(() => Array.from(document.querySelectorAll('#inst-nav .nav-i')).map(e => e.getAttribute('data-inst')));
+    for (const id of ids){
+      await pg.click('#inst-nav .nav-i[data-inst="' + id + '"]'); await pg.waitForTimeout(id === 'orbite' ? 900 : 250);
+      const fr = await pg.evaluate(() => { const out = [], w = document.createTreeWalker(document.getElementById('inst-main'), 4); let n; while ((n = w.nextNode())){ if (n.parentNode.nodeName === 'PRE') continue; const v = n.nodeValue.trim(); if (/[àâçèêîôùû]|\b(les|des|une|dans|pour|avec|sont)\b/.test(v) && !/Sagristà|Chrétien/.test(v)) out.push(v.slice(0, 70)); } return out; });
+      if (fr.length){ left += fr.length; fail('anglais, ' + t + '/' + (id || 'overview') + ' : texte resté en français : ' + fr.slice(0, 3).join(' | ')); }
+    }
+  }
+  notes.push('anglais : ' + (left ? left + ' textes restés en français' : 'aucun texte français détecté dans les pages d\'instruments'));
+  await pg.close();
+  pg = await open(b, { width: 400, height: 800 }, false, 'en');
+  for (const h of ['euclid', 'comparer', 'gaia-instruments', 'comparer-instruments']){ await go(pg, h); if (!/instruments/.test(h)) await loaded(pg); await pg.waitForTimeout(700); await overflow(pg, '#' + h + ' (téléphone, anglais)'); }
   await pg.close();
 
   await b.close(); srv.close();

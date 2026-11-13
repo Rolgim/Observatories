@@ -3,6 +3,7 @@
    Étapes : {go:"jwst"} ouvre #jwst · {wait:1} attend la fin du chargement de la maquette · {eval:"js"} affiche le résultat
             {click:[x,y]} · {sel:"css"} clique un élément · {ms:500} pause · {shot:"nom"} écrit shots/nom.png
    Dans une étape, l'ordre d'exécution est toujours : go, wait, eval, click, sel, ms, shot.
+   LANG_SITE=en affiche le site en anglais.
    Hors ligne : VENDOR=/chemin fournit three.min.js, GLTFLoader.js et archivo.woff2 à la place des CDN.
    window.__obs expose l'état de l'application (S, models, pick(x,y), current) pour les tests. */
 const { chromium } = require('playwright');
@@ -17,7 +18,7 @@ const srv = http.createServer((q, s) => {
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const steps = JSON.parse(process.argv[2]);
-  const pg = await b.newPage({ viewport: process.argv[3] === 'phone' ? { width: 400, height: 800 } : { width: 1360, height: 820 }, deviceScaleFactor: 1 });
+  const pg = await b.newPage({ viewport: process.argv[3] === 'phone' ? { width: 400, height: 800 } : { width: 1360, height: 820 }, deviceScaleFactor: 1, locale: process.env.LANG_SITE === 'en' ? 'en-GB' : 'fr-FR' });
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_/.test(m.text())) console.log('[error]', m.text().slice(0, 300)); });
   pg.on('pageerror', e => console.log('PAGEERR', e.message));
   if (V) await pg.route('**/*', r => {

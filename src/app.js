@@ -6,7 +6,7 @@
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
-function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' '); }
+function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 
 function banner(msg){
   var b = $('err-banner'); if (!b){ b = document.createElement('div'); b.id = 'err-banner'; document.body.appendChild(b); }
@@ -73,6 +73,7 @@ function renderTabs(){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   }).join('');
   h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab lang" id="b-lang" title="' + (OBS_LANG === 'en' ? 'Lire en français' : 'Read in English') + '" aria-label="' + (OBS_LANG === 'en' ? 'Lire en français' : 'Read in English') + '" lang="' + (OBS_LANG === 'en' ? 'fr' : 'en') + '">' + (OBS_LANG === 'en' ? 'FR' : 'EN') + '</button>';
   var dk = isDark(), lab = dk ? 'Passer au thème clair' : 'Passer au thème sombre';
   h += '<button class="tab theme" id="b-theme" title="' + lab + '" aria-label="' + lab + '"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">' +
        (dk ? '<circle cx="10" cy="10" r="3.6"/><path d="M10 1.8v2.2M10 16v2.2M1.8 10H4M16 10h2.2M4.2 4.2l1.6 1.6M14.2 14.2l1.6 1.6M4.2 15.8l1.6-1.6M14.2 5.8l1.6-1.6"/>'
@@ -152,7 +153,7 @@ function loadReal(){
       .catch(function(){ delete realCache[f]; el.innerHTML = '<div class="cap">Les mesures n\'ont pas pu être chargées.</div>'; });
   });
 }
-try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
+try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
   var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;
@@ -177,8 +178,9 @@ $('inst-page').addEventListener('click', function(e){
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
+  if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; location.hash = S.id + '-instruments'; return; }
@@ -192,7 +194,7 @@ document.addEventListener('keydown', function(e){
 });
 
 function route(){
-  var h = (location.hash || '').replace(/^#/, ''), inst = false, mode = 'tele', id = S.id;
+  var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
   if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;
