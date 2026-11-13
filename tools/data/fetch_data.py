@@ -405,7 +405,7 @@ def euclid_spectrum(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
-    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1").to_table()
+    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1 WHERE hdu IS NOT NULL AND hdu > 0").to_table()
     print("   candidats :", len(res), res.colnames, "· première ligne :", [str(v)[:120] for v in res[0]])
     pcol = [c for c in res.colnames if c.lower() in ("path", "uri", "access_url", "file_path")]
     pcol = pcol[0] if pcol else res.colnames[1]
