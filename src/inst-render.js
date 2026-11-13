@@ -151,6 +151,12 @@ var InstrumentsUI = (function(){
   }
   function plot(j){
     var W = 560, H = 330, L = 62, R = 12, Tp = 12, B = 42, n = j.x.length, i;
+    /* très petites ou très grandes valeurs : la puissance de dix passe dans le titre de l'axe */
+    var amax = 0; for (i=0;i<n;i++) amax = Math.max(amax, Math.abs(j.y[i])); if (j.ymax != null) amax = Math.abs(j.ymax);
+    var pw = (amax > 0 && (amax < 1e-2 || amax >= 1e5)) ? Math.floor(Math.log(amax)/Math.LN10) : 0, ylab = j.ylabel;
+    if (pw){ var sc = Math.pow(10, -pw), sup = String(pw).replace('-', '⁻').replace(/\d/g, function(d){ return '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]; }); j = { type:j.type, x:j.x, y:j.y.map(function(v){ return v*sc; }), ymin:j.ymin != null ? j.ymin*sc : null, ymax:j.ymax != null ? j.ymax*sc : null, invertY:j.invertY, binw:j.binw, xlabel:j.xlabel, ylabel:j.ylabel }; ylab = j.ylabel.replace(/^([^(]*)\(/, '$1(10' + sup + ' '); }
+    var xlab = j.xlabel, xs = j.x;
+    if (/µm\)/.test(xlab) && xs[n-1] < 1 && xs[0] < 1){ xs = xs.map(function(v){ return v*1000; }); xlab = xlab.replace('µm)', 'nm)'); j = { type:j.type, x:xs, y:j.y, ymin:j.ymin, ymax:j.ymax, invertY:j.invertY, binw:j.binw, xlabel:xlab, ylabel:j.ylabel }; }
     var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
     for (i=0;i<n;i++){ if (j.x[i] < x0) x0 = j.x[i]; if (j.x[i] > x1) x1 = j.x[i]; if (j.y[i] < y0) y0 = j.y[i]; if (j.y[i] > y1) y1 = j.y[i]; }
     if (j.type === 'hist'){ x0 -= j.binw/2; x1 += j.binw/2; y0 = 0; y1 *= 1.05; }
@@ -163,7 +169,7 @@ var InstrumentsUI = (function(){
     tx.v.forEach(function(v){ s += '<line class="cov-grid" x1="'+X(v)+'" y1="'+Tp+'" x2="'+X(v)+'" y2="'+(H-B)+'"/><text class="cov-tick" x="'+X(v)+'" y="'+(H-B+15)+'" text-anchor="middle">'+tl(v, tx.step)+'</text>'; });
     ty.v.forEach(function(v){ s += '<line class="cov-grid" x1="'+L+'" y1="'+Y(v)+'" x2="'+(W-R)+'" y2="'+Y(v)+'"/><text class="cov-tick" x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+tl(v, ty.step)+'</text>'; });
     s += '<line class="cov-axis" x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'"/><line class="cov-axis" x1="'+L+'" y1="'+Tp+'" x2="'+L+'" y2="'+(H-B)+'"/>';
-    s += '<text class="cov-unit" x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(j.xlabel)+'</text><text class="cov-unit" transform="translate(13 '+((Tp+H-B)/2)+') rotate(-90)" text-anchor="middle">'+esc(j.ylabel)+'</text>';
+    s += '<text class="cov-unit" x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(j.xlabel)+'</text><text class="cov-unit" transform="translate(13 '+((Tp+H-B)/2)+') rotate(-90)" text-anchor="middle">'+esc(ylab)+'</text>';
     if (j.type === 'line'){ var d = ''; for (i=0;i<n;i++) d += (i ? 'L' : 'M') + X(j.x[i]).toFixed(1) + ' ' + Y(j.y[i]).toFixed(1); s += '<path d="'+d+'" fill="none" stroke="#3D6BE0" stroke-width="1.1" stroke-linejoin="round"/>'; }
     else if (j.type === 'scatter'){ for (i=0;i<n;i++) s += '<circle cx="'+X(j.x[i]).toFixed(1)+'" cy="'+Y(j.y[i]).toFixed(1)+'" r="1.3" fill="#3D6BE0" fill-opacity="0.5"/>'; }
     else { var bw = (X(x0 + j.binw) - X(x0)); for (i=0;i<n;i++){ var yy = Y(j.y[i]); s += '<rect x="'+(X(j.x[i]) - bw/2 + 0.5).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+Math.max(1, bw-1).toFixed(1)+'" height="'+(H-B-yy).toFixed(1)+'" fill="#3D6BE0"/>'; } }
@@ -176,7 +182,7 @@ var InstrumentsUI = (function(){
       : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
     return '<div class="isec"><h4>Observation réelle</h4><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
       '<div class="cap">'+esc(m.caption)+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
-      '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">Retrouver cette observation dans l\'archive<em>'+esc(host(m.url))+'</em></a></div></div>';
+      '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></div>';
   }
 
   function overview(tid){
