@@ -421,9 +421,10 @@ var INST_DATA = (function(){
   /* ------------------------------------------------------------ EUCLID */
   euclid: {
     axis: { min:0.5, max:2.2 },
-    summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). Les données publiques actuelles sont celles de la « Quick Release » Q1 (19 mars 2025).",
+    summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). La première grande publication, DR1, date du 12 novembre 2026 : environ 1 900 deg² du relevé large (14 % de la cible), observés du printemps 2024 au printemps 2025, soit plus d'un milliard d'objets. Elle s'ajoute à la « Quick Release » Q1 de mars 2025, dont sont tirés les exemples de cette page.",
     archives: [
       { label:"ESA, Euclid Science Archive", url:"https://eas.esac.esa.int/", desc:"Archive officielle : catalogues (ADQL), images, spectres." },
+      { label:"Euclid DR1 (12 novembre 2026)", url:"https://www.cosmos.esa.int/web/euclid/euclid-dr1", desc:"Première grande publication : relevés large et profonds, plus d'un milliard d'objets, spectres de plus de 160 millions de sources." },
       { label:"Contenu de Q1", url:"https://www.cosmos.esa.int/web/euclid/q1-contents", desc:"Description des produits publiés dans la Quick Release 1." },
       { label:"NASA/IPAC, IRSA Euclid", url:"https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html", desc:"Miroir NASA : mosaïques, catalogues, services VO." },
       { label:"Documentation des produits (DPDD)", url:"https://euclid.esac.esa.int/dr/q1/dpdd/", desc:"Data Product Description Document de Q1." },

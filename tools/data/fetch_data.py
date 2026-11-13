@@ -2,7 +2,8 @@
 """Lot E : télécharge de vraies observations dans les archives et en tire des aperçus légers pour le site.
 
     pip install astroquery astropy numpy pillow requests
-    python tools/data/fetch_data.py            # tout
+    python tools/data/fetch_data.py            # les recettes pas encore dans le manifeste
+    python tools/data/fetch_data.py all        # tout refaire
     python tools/data/fetch_data.py jwst/miri  # une seule recette
 
 Écrit data/<observatoire>-<instrument>.(jpg|json) et data/manifest.json.
@@ -343,7 +344,9 @@ def main():
     os.makedirs(OUT, exist_ok=True); os.makedirs(TMP, exist_ok=True)
     mpath = os.path.join(OUT, "manifest.json")
     manifest = json.load(open(mpath, encoding="utf-8")) if os.path.exists(mpath) else {}
-    todo = sys.argv[1:] or list(RECIPES)
+    args = sys.argv[1:]
+    # sans argument : seulement les recettes absentes du manifeste, pour que le site ne change pas tout seul ; « all » refait tout
+    todo = list(RECIPES) if args == ["all"] else (args or [k for k in RECIPES if k not in manifest])
     failed = []
     for key in todo:
         print("==", key, flush=True)

@@ -22,6 +22,7 @@ jobs:
         with: { python-version: '3.12' }
       - run: pip install --quiet astroquery astropy numpy pillow requests
       - run: python tools/data/fetch_data.py ${{ github.event.inputs.recettes }}
+      - run: python tools/data/fetch_orbits.py
       - name: Commiter les données
         run: |
           git config user.name "github-actions[bot]"
