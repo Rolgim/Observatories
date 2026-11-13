@@ -181,7 +181,7 @@ var InstrumentsUI = (function(){
       ? '<img class="real-img" src="data/'+esc(m.file)+'" width="'+m.width+'" height="'+m.height+'" loading="lazy" alt="'+esc(m.title)+'">'
       : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
     return '<div class="isec"><h4>Observation réelle</h4><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
-      '<div class="cap">'+esc(m.caption)+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
+      '<div class="cap">'+esc(m.caption)+(m.type === 'image' ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
       '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></div>';
   }
 

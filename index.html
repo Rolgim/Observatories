@@ -1064,7 +1064,7 @@ var INST_DATA = (function(){
           ["Catalogue MER","table maîtresse de sources (VIS + NISP + sol)"],
           ["Découpes","service de cutouts dans l'archive web et dans ESA Datalabs"]
         ],
-        example:{ real:true, title:"Schéma réel de la table catalogue.mer_catalogue (extrait)", caption:"Colonnes de la table publique Q1 interrogeable en ADQL, avec les noms publiés par l'archive ESA.", text:
+        example:{ real:true, title:"Schéma réel de la table q1.mer_catalogue (extrait)", caption:"Colonnes de la table publique Q1 interrogeable en ADQL, avec les noms publiés par l'archive ESA.", text:
 "object_id          long   identifiant unique Euclid de la source\n" +
 "right_ascension    deg    ascension droite (barycentre de la source)\n" +
 "declination        deg    déclinaison\n" +
@@ -1079,7 +1079,7 @@ var INST_DATA = (function(){
 "query = \"\"\"\n" +
 "SELECT TOP 10 object_id, right_ascension, declination,\n" +
 "       flux_vis_psf, flux_h_templfit\n" +
-"FROM catalogue.mer_catalogue\n" +
+"FROM q1.mer_catalogue\n" +
 "WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination),\n" +
 "                 CIRCLE('ICRS', 53.1, -28.1, 0.05))\n" +
 "ORDER BY object_id\n" +
@@ -1120,8 +1120,8 @@ var INST_DATA = (function(){
           ["Catalogue PHZ","8 tables de redshifts photométriques"]
         ],
         example:{ real:true, title:"Contenu du catalogue de Q1 (nombre de tables par produit)", caption:"Organisation réelle des catalogues interrogeables en ADQL dans l'archive ESA.", text:
-"MER  (produit fusionné)      3 tables   catalogue.mer_catalogue · mer_morphology · mer_cutouts\n" +
-"PHZ  (redshifts photo.)      8 tables   dont catalogue.phz_classification\n" +
+"MER  (produit fusionné)      3 tables   dont q1.mer_catalogue\n" +
+"PHZ  (redshifts photo.)      8 tables\n" +
 "SPE  (spectroscopie)        13 tables   redshifts et qualité à partir des spectres SIR\n" +
 "\n" +
 "Jointure : toutes les tables partagent la clé  object_id" },
@@ -1129,7 +1129,7 @@ var INST_DATA = (function(){
 "from astroquery.esa.euclid import Euclid\n\n" +
 "tables = Euclid.load_tables(only_names=True)\n" +
 "for t in tables:\n" +
-"    print(t.name)          # ex. catalogue.mer_catalogue, catalogue.phz_classification, …" },
+"    print(t.name)          # ex. q1.mer_catalogue, …" },
         notes:[
           "Dans Q1, seuls les spectres du grisme rouge sont publiés.",
           "VIS et NISP reçoivent la lumière du même champ par le dichroïque et peuvent acquérir en même temps."
@@ -1607,7 +1607,7 @@ var InstrumentsUI = (function(){
       ? '<img class="real-img" src="data/'+esc(m.file)+'" width="'+m.width+'" height="'+m.height+'" loading="lazy" alt="'+esc(m.title)+'">'
       : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
     return '<div class="isec"><h4>Observation réelle</h4><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
-      '<div class="cap">'+esc(m.caption)+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
+      '<div class="cap">'+esc(m.caption)+(m.type === 'image' ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
       '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></div>';
   }
 

@@ -150,7 +150,7 @@ def read_spectrum(path):
                 return w, f, wu, fu
     raise RuntimeError("pas de colonnes WAVELENGTH / FLUX")
 
-def mast_spectrum(key, collection, instruments, ra, dec, radius=0.5, subgroups=("X1DSUM", "X1D"), extra=None, title="", caption="", best_of=1):
+def mast_spectrum(key, collection, instruments, ra, dec, radius=0.5, subgroups=("X1DSUM", "X1D"), extra=None, title="", caption="", best_of=1, product_level=None):
     """Télécharge jusqu'à best_of spectres candidats (un par observation) et garde celui au meilleur signal sur bruit."""
     from astroquery.mast import Observations
     inst, tab = mast_obs(collection, instruments, ra, dec, radius, "spectrum", extra)
@@ -164,7 +164,10 @@ def mast_spectrum(key, collection, instruments, ra, dec, radius=0.5, subgroups=(
         sub = np.array([str(x).upper() for x in prods["productSubGroupDescription"]])
         got = None
         for sg in subgroups:
-            cand = prods[sub == sg]
+            sel = sub == sg
+            if product_level is not None:  # ne garder que les produits combinés de ce niveau de calibration
+                sel &= np.array(prods["calib_level"], dtype=float) == product_level
+            cand = prods[sel]
             if len(cand) == 0:
                 continue
             cand = cand[np.argsort(-np.nan_to_num(np.array(cand["size"], dtype=float)))]
@@ -330,7 +333,7 @@ RECIPES = {
     "jwst/nircam": lambda k: mast_image(k, "JWST", ["NIRCAM/IMAGE"], *SMACS, extra=ERO, name="SMACS 0723", expect="SMACS", about=SM),
     "jwst/miri": lambda k: mast_image(k, "JWST", ["MIRI/IMAGE"], *SMACS, extra=ERO, name="SMACS 0723", expect="SMACS", about="Le même amas dans l'infrarouge moyen."),
     "jwst/niriss": lambda k: mast_image(k, "JWST", ["NIRISS/IMAGE"], *SMACS, extra=ERO, name="SMACS 0723", expect="SMACS", about="Image directe du même amas prise par NIRISS."),
-    "jwst/nirspec": lambda k: mast_spectrum(k, "JWST", ["NIRSPEC/MSA"], *SMACS, radius=3, subgroups=("X1D",), extra=dict(proposal_id="2736", calib_level=3), best_of=12,
+    "jwst/nirspec": lambda k: mast_spectrum(k, "JWST", ["NIRSPEC/MSA"], *SMACS, radius=3, subgroups=("X1D",), extra=dict(proposal_id="2736", calib_level=3), best_of=30, product_level=3,
                                             title="Spectre NIRSpec d'une source du champ de SMACS 0723", caption="Spectre extrait d'une des sources observées à travers les micro-volets, retenue automatiquement pour son rapport signal sur bruit."),
     "euclid/vis": euclid_vis, "euclid/nisp": euclid_nisp,
     "gaia/astro": gaia_astro, "gaia/bprp": gaia_bprp, "gaia/rvs": gaia_rvs,
