@@ -22,7 +22,7 @@ var EN_OPTICS = {
     fp:{ labs:[['Gaia focal plane','106 CCDs of 4500 × 1966 px, 10 × 30 µm']], key:['monitoring (basic angle, wavefront)','sky mapper','astrometric field','blue photometer','red photometer','RVS spectrometer'], note:'Stars cross the focal plane from left to right as the spacecraft turns: detection, then astrometry, photometry and finally spectroscopy.' } }
 };
 var EN_ORBITS = {
-  hubble:{ sum:'Hubble orbits about 530 km above the ground, once every 95 minutes. The Earth fills almost half its sky, and hides the Sun from it on every orbit.',
+  hubble:{ sum:'Hubble orbits about 480 km above the ground, once every 95 minutes. The Earth fills almost half its sky, and hides the Sun from it on every orbit.',
     notes:['The Earth blocks most targets for part of every orbit: a long exposure is cut into chunks of fifty minutes or so.','Only two small regions of the sky, near the poles of the orbit, stay visible continuously. Hubble\'s deep fields were chosen there.','The day–night crossing every 95 minutes stresses the structure: that is what made the first solar arrays shake.','The orbit slowly sinks through drag on the upper atmosphere; the Space Shuttle used to raise it at each visit.'] },
   jwst:{ sum:'Webb orbits the Lagrange point L2, 1.5 million km from the Earth, on an orbit wider than the Moon\'s. One circuit takes about six months.',
     notes:['At L2 the Sun, the Earth and the Moon always stay on the same side: one sunshield is enough to block all three.','The orbit is wide enough never to pass through the shadow of the Earth or the Moon: the solar array is always lit.','The position is unstable. A small thruster burn, about every three weeks, keeps Webb from drifting away.'] },

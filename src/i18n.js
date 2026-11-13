@@ -11,7 +11,10 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
 
   TELESCOPES.forEach(function(t){
     var e = EN_TELE[t.id]; if (!e) return;
+    var frSec = t.sections;
     ['agency','launch','sub','src','desc','sourceNote','sections'].forEach(function(k){ if (e[k]) t[k] = e[k]; });
+    t.sections.forEach(function(sec, i){ sec.rows.forEach(function(r, j){ var o = frSec[i] && frSec[i].rows[j]; if (o && o[2]) r[2] = o[2]; }); });
+    if (e.refs) Object.keys(e.refs).forEach(function(k){ if (t.refs[k]) t.refs[k].t = e.refs[k]; });
     t.cmp.tag = e.cmp.tag; t.cmp.dim = e.cmp.dim;
     t.parts.forEach(function(p){ var q = e.parts[p.key]; if (q){ p.name = q.name; p.desc = q.desc; p.facts = q.facts; } });
   });

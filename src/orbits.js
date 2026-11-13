@@ -15,7 +15,7 @@ var Orbits = (function(){
   function date(jd){ var d = new Date((jd - 2440587.5)*86400000); var dd = ('0'+d.getUTCDate()).slice(-2), mm = ('0'+(d.getUTCMonth()+1)).slice(-2); return OBS_LANG === 'en' ? d.getUTCFullYear()+'-'+mm+'-'+dd : dd+'/'+mm+'/'+d.getUTCFullYear(); }
 
   var TEXT = {
-    hubble:{ sum:'Hubble tourne à environ 530 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
+    hubble:{ sum:'Hubble tourne à environ 480 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
       notes:['La Terre masque la plupart des cibles pendant une partie de chaque orbite : une pose longue est découpée en tranches d\'une cinquantaine de minutes.',
              'Seules deux petites régions du ciel, près des pôles de l\'orbite, restent visibles en continu. Les champs profonds de Hubble y ont été choisis.',
              'Le passage jour–nuit toutes les 95 minutes fait travailler la structure : c\'est ce qui faisait vibrer les premiers panneaux solaires.',
@@ -39,7 +39,7 @@ var Orbits = (function(){
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
     if (tid === 'hubble'){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
-      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 530 km, en lente décroissance'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour']])+'</div>';
+      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 480 km, en baisse'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
     } else {
       s += '<div class="isec"><h4>Vu depuis la Terre</h4>'+cv('front', 560, 430, 'Trajectoire autour de L2 vue depuis la Terre')+ctl+'<div class="cap">On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l\'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).</div></div>';
       s += '<div class="isec"><h4>Vu de dessus</h4>'+cv('top', 560, 400, 'Trajectoire autour de L2 vue du nord de l\'écliptique')+'<div class="cap">Le Soleil est à gauche, hors du cadre, à 150 millions de km. Le repère tourne avec la Terre autour du Soleil : la Terre et L2 y restent fixes.</div></div>';
@@ -56,7 +56,7 @@ var Orbits = (function(){
   function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(OBS_T(s), x, y); }
 
   function drawLeo(c, tmin){
-    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6901, re = 6371*k, ro = 6901*k;
+    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6851, re = 6371*k, ro = 6851*k;
     var ink = css('--ink'), mute = css('--mute');
     g.clearRect(0, 0, W, H);
     g.fillStyle = css('--rule'); g.globalAlpha = 0.55; g.fillRect(cx, cy - re, W - cx, 2*re); g.globalAlpha = 1;
@@ -160,7 +160,7 @@ var Orbits = (function(){
     var key = '<ul class="orb-key">' + ['jwst','euclid','gaia'].map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     return '<div class="isec"><h4>Orbites autour de L2, à la même échelle</h4>' + key + '<div class="cmp-figs"><div><h5>Vu depuis la Terre</h5>'+cv('cfront', 560, 430, 'Les trois orbites vues depuis la Terre')+'</div><div><h5>Vu de dessus</h5>'+cv('ctop', 560, 400, 'Les trois orbites vues de dessus')+'</div></div>' +
       '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read>Chargement des trajectoires…</span></div>' +
-      '<div class="cap">Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l\'orbite de la Lune. Chaque observatoire apparaît à sa date d\'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n\'y figure pas : à cette échelle, son orbite à 530 km d\'altitude se confond avec le point qui représente la Terre.</div>' +
+      '<div class="cap">Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l\'orbite de la Lune. Chaque observatoire apparaît à sa date d\'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n\'y figure pas : à cette échelle, son orbite à 480 km d\'altitude se confond avec le point qui représente la Terre.</div>' +
       '<div data-orb-cmpstats></div></div>';
   }
   function startCompare(root, OBS, NAMES){

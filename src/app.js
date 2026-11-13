@@ -37,7 +37,7 @@ function orbitSvg(t){
       '<circle cx="138" cy="29" r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"/>' +
       '<path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>' +
       '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>Hubble</text>' +
-      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 530 km d\'altitude</text>' +
+      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 480 km d\'altitude</text>' +
       '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les 95 min.</text>' +
       '<text x="190" y="93" fill="#3A4147" font-size="12" ' + F + '>Terre et orbite dessinées</text>' +
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
@@ -68,6 +68,22 @@ function facts(t){
 /* thème : suit le système (ou l'hôte), sauf choix explicite mémorisé */
 function isDark(){ var a = document.documentElement.getAttribute('data-theme'); return a ? a === 'dark' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); }
 (function(){ try { var v = localStorage.getItem('obs-theme'); if ((v === 'dark' || v === 'light') && !document.documentElement.getAttribute('data-theme')) document.documentElement.setAttribute('data-theme', v); } catch(e){} })();
+/* ---------- sources (lots A et B des specs) ----------
+   Chaque ligne de caractéristique peut porter une clé de source (r[2], chaîne ou liste) qui renvoie à t.refs.
+   Les sources sont numérotées dans l'ordre d'apparition ; une valeur chiffrée sans source porte un « ? ». */
+function refNums(t){ var n = {}, k = 0; t.sections.forEach(function(sec){ sec.rows.forEach(function(r){ [].concat(r[2] || []).forEach(function(x){ if (!n[x]) n[x] = ++k; }); }); }); return n; }
+function refMark(r, nums){
+  var ks = [].concat(r[2] || []);
+  if (ks.length) return '<sup class="ref">' + ks.map(function(k){ return nums[k]; }).join(',') + '</sup>';
+  return /\d/.test(r[1]) ? '<sup class="ref nv" title="Valeur pas encore vérifiée face à une source primaire">?</sup>' : '';
+}
+function refList(t, nums){
+  var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }); if (!keys.length) return '';
+  var d = t.checked.split('-'), when = OBS_LANG === 'en' ? t.checked : d[2] + '/' + d[1] + '/' + d[0];
+  return '<div class="spec-section"><div class="spec-section-title">Sources</div><ol class="refs">' +
+    keys.map(function(k){ var x = t.refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a> <span>' + esc(x.p) + '</span></li>'; }).join('') +
+    '</ol><p class="source-note">Valeurs vérifiées le ' + when + ' face aux sources ci-dessus. Un « ? » signale une valeur pas encore confrontée à une source primaire.</p></div>';
+}
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -109,6 +125,7 @@ function renderPanel(){
     '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
+    var nums = refNums(t);
     h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + '<br>' + esc(t.launch) + '</div>' +
         '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
@@ -116,8 +133,9 @@ function renderPanel(){
         '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Trajet de la lumière, filtres, exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
-            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + '</div></div>'; }).join('') + '</div>';
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
+        refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
@@ -311,8 +329,8 @@ var sunDir = new THREE.Vector3(0.5, 0.6, 0.6).normalize(), sunSprite, earth = nu
   sunSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(cv), blending:THREE.AdditiveBlending, depthTest:false, depthWrite:false, transparent:true }));
   sunSprite.scale.set(30000, 30000, 1); sunSprite.renderOrder = -5; sunSprite.visible = false; bgScene.add(sunSprite);
 
-  /* Terre vue de l'orbite de Hubble : rayon 6 371 km, observateur à ≈ 530 km */
-  var RE = 6371, ALT = 530;
+  /* Terre vue de l'orbite de Hubble : rayon 6 371 km, observateur à ≈ 480 km (NASA) */
+  var RE = 6371, ALT = 480;
   var NOISE = 'float h3(vec3 p){ p = fract(p*0.3183099 + 0.1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }' +
     'float n3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f); return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x), mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x), f.y), mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x), mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x), f.y), f.z); }' +
     'float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i=0;i<6;i++){ s += a*n3(p); p = p*2.03 + 7.1; a *= 0.5; } return s; }';

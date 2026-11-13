@@ -23,7 +23,7 @@ Public visé : **de l'étudiant à l'expert**. Conséquences sur tout le contenu
 
 Limites connues :
 
-- Les fiches et les caractéristiques d'instruments ont été rédigées sans relecture systématique face aux sources. Valeurs les moins sûres : débits de télémesure d'Euclid, diamètre du pare-soleil de Gaia, résolution du grisme rouge de NISP, champs de vue d'Euclid et de Gaia.
+- Les fiches des observatoires sont sourcées depuis le 13 novembre 2026. Les pages d'instruments, les descriptions des pièces et les textes d'optique et d'orbite ne le sont pas encore (seules les valeurs d'Euclid contredites par l'article de référence y ont été corrigées).
 - Licence de la maquette Euclid (ESA SciFleet) non établie.
 - Vérifications faites en local uniquement (Chromium, bureau et téléphone émulé) ; aucun test automatique dans le dépôt en dehors de `tools/shot.js`.
 - Pas d'accès clavier aux pièces dans la vue 3D (la liste « Pièces » sert d'équivalent).
@@ -38,7 +38,8 @@ Limites connues :
 | E. Vraies données | E1 et E2 livrés : image ou spectre réel pour 13 instruments sur 15 ; E3 non commencé |
 | F. Orbites et temps | F1 et F2 livrés (orbites réelles, comparaison, pointés réels) ; F3 et F4 à faire |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
-| A, B, C, G, autres H | plus tard |
+| A et B (fiches) | fiches des quatre observatoires vérifiées et sourcées le 13 novembre 2026 ; pages d'instruments et pièces à faire |
+| C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
 
@@ -53,14 +54,39 @@ Limites connues :
 
 **Acceptation.** Chaque ligne de données porte une référence (voir B) ; la liste « valeurs les moins sûres » de la section 2 est vide.
 
+**Fait le 13 novembre 2026 : fiches des quatre observatoires.** Chaque valeur chiffrée a été confrontée à une source primaire (fiches NASA et ESA, article de référence de la mission, documentation des archives) ou retirée.
+
+Corrections apportées :
+
+| Observatoire | Avant | Après | Source |
+|---|---|---|---|
+| Hubble | masse 11 110 kg | ≈ 10 800 kg au lancement, ≈ 12 200 kg après SM4 | NASA |
+| Hubble | diamètre 4,2 m | 4,3 m | NASA |
+| Hubble | panneaux 7,1 × 2,6 m, ≈ 5 kW | 7,54 × 2,44 m, ≈ 5 500 W | NASA |
+| Hubble | altitude ≈ 500–540 km | ≈ 480 km, sous 500 km en 2026 | NASA, The Register |
+| JWST | domaine 0,6–28,8 µm | 0,6–28,5 µm | NASA |
+| JWST | f/20,2 | f/20 | McElwain et al. 2023 |
+| JWST | hauteur ≈ 8 m, atténuation ≈ 1 million, 2 contacts de 4 h | retirés (non confirmés) | |
+| Euclid | 4,7 m × 3,7 m, ≈ 2 000 kg | 4,8 m × 3,74 m, 1 988 kg | Euclid I (Mellier et al.) |
+| Euclid | bande VIS 550–900 nm, CCD ≈ 150 K | 530–920 nm, 153 K | Euclid I |
+| Euclid | champ ≈ 0,53 deg² | ≈ 0,54 deg² | Euclid I |
+| Euclid | grisme rouge R > 380 | R ≳ 480 (bleu R ≳ 400) | Euclid I |
+| Euclid | ≈ 850 Gbit par jour | ≈ 826 Gbit (ESA indiquait 850) | Euclid I |
+| Gaia | plan focal ≈ 1,0 × 0,4 m | 0,42 × 0,92 m | ESA |
+| Gaia | DR4 « fin 2026 » | 2 décembre 2026 | ESA Cosmos |
+
+Les périodes des orbites de halo (≈ 175 jours pour JWST, ≈ 170 pour Euclid) sont mesurées sur les éphémérides JPL Horizons déjà utilisées par la page « Orbite ».
+
+Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m), diamètre du pare-soleil de Gaia (≈ 10 m), nombre de sources de Gaia DR3.
+
 ### B. Sources visibles
 
 **Besoin.** L'étudiant veut aller plus loin, l'expert veut vérifier.
 
 **Exigences**
 
-- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation).
-- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument.
+- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation). **Livré pour les fiches** (`refs` et `checked` dans `src/data-tele.js`).
+- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument. **Livré pour les fiches** : numéro en exposant, « ? » orangé pour une valeur chiffrée sans source, liste numérotée et date de vérification.
 - B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source.
 
 **Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.

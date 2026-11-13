@@ -239,7 +239,7 @@ var INST_DATA = (function(){
   /* -------------------------------------------------------------- JWST */
   jwst: {
     axis: { min:0.5, max:30 },
-    summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,8 µm.",
+    summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,5 µm.",
     archives: [
       { label:"MAST, archive JWST", url:"https://archive.stsci.edu/missions-and-data/jwst", desc:"Observations JWST, niveaux de calibration 1 à 3 ; accès par programme via astroquery.mast." },
       { label:"ESA, archive JWST", url:"https://jwst.esac.esa.int/archive/", desc:"Accès européen aux données JWST." },
@@ -432,20 +432,20 @@ var INST_DATA = (function(){
     ],
     instruments: [
       { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
-        bands:[ {l:"IE",lo:0.55,hi:0.90} ],
+        bands:[ {l:"IE",lo:0.53,hi:0.92} ],
         summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
         specs:[
-          ["Bande","IE · 550–900 nm (bords ≈ 20 nm)"],
-          ["Détecteurs","36 CCD e2v CCD273-84 amincis (40 µm), disposés en 6×6"],
+          ["Bande","IE · 530–920 nm"],
+          ["Détecteurs","36 CCD e2v amincis (40 µm), disposés en 6×6"],
           ["Format","4096×4132 px par CCD · pixels de 12 µm · 4 nœuds de lecture"],
-          ["Mosaïque","≈ 610 Mpx · échantillonnage ≈ 0,1″/px"],
-          ["Champ","≈ 0,53 deg² (champ commun VIS/NISP)"],
-          ["Température des CCD","≈ 150 K (transfert de charge optimal) · électronique ≥ 250 K"],
+          ["Mosaïque","≈ 609 Mpx · échantillonnage 0,1″/px"],
+          ["Champ","≈ 0,54 deg² (champ commun VIS/NISP)"],
+          ["Température des CCD","153 K"],
           ["Saturation","≈ 200 000 e⁻ · limite brillante : IE(AB) ≈ 17,8 (pose nominale)"],
           ["Nombre focal","f/20,4 · pupille 1,2 m · obstruction centrale 11 %"]
         ],
         filtersTitle:"Bande photométrique",
-        filters:[ R("IE",0.55,0.90,"B","bande large unique") ],
+        filters:[ R("IE",0.53,0.92,"B","bande large unique") ],
         products:[
           ["Images calibrées","fichiers FITS multi-extensions par exposition (niveau 2)"],
           ["Mosaïques MER","empilements par tuile du ciel, incluant des données sol"],
@@ -487,9 +487,9 @@ var INST_DATA = (function(){
         specs:[
           ["Domaine","0,92–2,0 µm"],
           ["Détecteurs","16 matrices HgCdTe H2RG en 4×4 · 2040×2040 px utiles · pixels de 18 µm"],
-          ["Échantillonnage","≈ 0,3″/px"],
+          ["Échantillonnage","0,298″/px"],
           ["Photométrie","3 filtres : Y (0,95–1,21), J (1,17–1,57), H (1,52–2,02 µm)"],
-          ["Spectroscopie","grisme bleu (BG) ≈ 0,92–1,37 µm · grisme rouge (RG) ≈ 1,21–1,89 µm, 3 orientations"],
+          ["Spectroscopie","grisme bleu (BG) 926–1366 nm, R ≳ 400 · grisme rouge (RG) 1206–1892 nm, R ≳ 480"],
           ["Masse et puissance","85,3 kg (instrument) + 40,7 kg (électronique chaude) · ≤ 200 W"],
           ["Température","détecteurs ≈ 95 K · optique ≈ 130 K"]
         ],

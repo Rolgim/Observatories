@@ -12,29 +12,35 @@ var TELESCOPES = [
     file:'models/hubble.txt', bytes:4466940, axis:'z', size:13.2,
     view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
-    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:11110, len:13.2 },
+    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, len:13.2 },
     desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
     sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
+    checked:'2026-11-13',
+    refs:{
+      nasa:{ t:'Hubble Space Telescope, Facts', p:'NASA Science', u:'https://science.nasa.gov/mission/hubble/overview/' },
+      gyro:{ t:'NASA to Change How It Points Hubble Space Telescope (communiqué 2024-023, 4 juin 2024)', p:'STScI', u:'https://www.stsci.edu/contents/news-releases/2024/news-2024-023' },
+      reg:{ t:'Hubble\'s orbit is decaying (25 février 2026)', p:'The Register', u:'https://www.theregister.com/2026/02/25/hubble_orbit_decay/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Longueur','13,2 m'], ['Diamètre max.','4,2 m'],
-        ['Masse au lancement','≈ 11 110 kg'],
-        ['Missions d\'entretien','5 (1993, 1997, 1999, 2002, 2009)'],
-        ['Pointage','1 gyroscope en service depuis 2024 (mode économe)'] ]},
+        ['Longueur','13,2 m','nasa'], ['Diamètre max.','4,3 m','nasa'],
+        ['Masse','≈ 10 800 kg au lancement · ≈ 12 200 kg après la dernière mission d\'entretien','nasa'],
+        ['Missions d\'entretien','5 (1993, 1997, 1999, 2002, 2009)','nasa'],
+        ['Pointage','sur 1 gyroscope depuis juin 2024 ; 3 des 6 encore en état','gyro'] ]},
       { title:'Optique', rows:[
-        ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · verre ULE · 828 kg'],
-        ['Miroir secondaire','0,3 m'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
-        ['Stabilité de pointage','0,007″'] ]},
+        ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · 828 kg','nasa'],
+        ['Miroir secondaire','0,3 m · 12,4 kg','nasa'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
+        ['Précision de pointage','0,007″','nasa'] ]},
       { title:'Instruments actifs', rows:[
-        ['WFC3','caméra grand champ, UV à proche IR (2009)'], ['ACS','caméra de relevés (2002)'],
-        ['STIS','spectrographe imageur (1997)'], ['COS','spectrographe ultraviolet (2009)'],
-        ['FGS','3 capteurs de guidage fin'] ]},
+        ['WFC3','caméra grand champ, ultraviolet à proche infrarouge'], ['ACS','caméra de relevés'],
+        ['STIS','spectrographe imageur'], ['COS','spectrographe ultraviolet'],
+        ['FGS','capteurs de guidage fin'] ]},
       { title:'Orbite', rows:[
-        ['Altitude','≈ 500–540 km, en lente décroissance'], ['Inclinaison','28,5°'],
-        ['Période','≈ 95 min (≈ 15 orbites par jour)'], ['Vitesse','≈ 27 000 km/h'] ]},
+        ['Altitude','≈ 480 km','nasa'], ['Évolution','sous 500 km en 2026 et en baisse ; rentrée possible dès 2028 sans remontée d\'orbite','reg'],
+        ['Inclinaison','28,5°','nasa'], ['Période','≈ 95 min','nasa'], ['Vitesse','≈ 27 000 km/h','nasa'] ]},
       { title:'Énergie et données', rows:[
-        ['Panneaux solaires','2 ailes rigides de 7,1 × 2,6 m'], ['Puissance','≈ 5 kW produits'],
-        ['Batteries','6, nickel-hydrogène'], ['Liaison','bande S, relais par satellites TDRS'] ]}
+        ['Panneaux solaires','2 panneaux de 7,54 × 2,44 m, arséniure de gallium','nasa'], ['Puissance','≈ 5 500 W au soleil','nasa'],
+        ['Batteries','6, nickel-hydrogène','nasa'], ['Liaison','bande S, relais par les satellites TDRS'] ]}
     ],
     parts:[
       { key:'door', name:"Porte d'ouverture et pare-lumière", explode:[0,0,1,3.4],
@@ -42,7 +48,7 @@ var TELESCOPES = [
         facts:['Volet ≈ 3 m de diamètre','Fermeture automatique de sécurité'] },
       { key:'ota', name:'Coque avant (miroir secondaire)', explode:[0,0,1,1.5],
         desc:"Le tube qui prolonge le télescope vers l'avant. Il contient les déflecteurs internes et, à l'intérieur, le miroir secondaire de 0,3 m, tenu à 4,9 m en avant du miroir primaire par une structure en graphite-époxy presque insensible à la température.",
-        facts:['Miroir secondaire : 0,3 m','Écart primaire–secondaire : 4,9 m'] },
+        facts:['Miroir secondaire : 0,3 m, 12,4 kg','Écart primaire–secondaire : 4,9 m'] },
       { key:'ssm', name:"Section d'équipements", explode:[0,0,0,0],
         desc:"L'anneau de baies qui ceinture le télescope. On y trouve les ordinateurs de bord, les batteries, les roues de réaction qui orientent le satellite et les équipements de communication. Les portes s'ouvrent pour que les astronautes puissent remplacer les boîtiers.",
         facts:['10 baies d\'équipements','4 roues de réaction','6 batteries nickel-hydrogène'] },
@@ -51,10 +57,10 @@ var TELESCOPES = [
         facts:['Miroir primaire : 2,4 m, 828 kg','4 instruments axiaux + 1 radial','3 capteurs de guidage fin'] },
       { key:'array_stbd', name:'Panneau solaire (+V2)', explode:[1,0,0,3.2],
         desc:"L'une des deux ailes solaires rigides à l'arséniure de gallium, posées en 2002. Plus petites que les panneaux souples d'origine, elles produisent pourtant davantage et vibrent moins au passage jour/nuit.",
-        facts:['7,1 × 2,6 m','Arséniure de gallium','Installé en 2002 (SM3B)'] },
+        facts:['7,54 × 2,44 m','Arséniure de gallium','Installé en 2002 (SM3B)'] },
       { key:'array_port', name:'Panneau solaire (−V2)', explode:[-1,0,0,3.2],
         desc:"La seconde aile solaire, identique à la première. Les deux pivotent autour de leur mât pour rester face au Soleil quelle que soit la direction visée par le télescope.",
-        facts:['7,1 × 2,6 m','≈ 5 kW pour les deux ailes'] },
+        facts:['7,54 × 2,44 m','≈ 5 500 W pour les deux panneaux'] },
       { key:'hga_top', name:'Antenne grand gain', explode:[0,1,0,2.4],
         desc:"Parabole orientable au bout d'un mât. Hubble ne parle pas directement au sol : il envoie ses données vers les satellites relais TDRS en orbite géostationnaire, qui les retransmettent à White Sands (Nouveau-Mexique).",
         facts:['Parabole de 1,3 m','Bande S, via TDRS'] },
@@ -74,31 +80,39 @@ var TELESCOPES = [
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
+    checked:'2026-11-13',
+    refs:{
+      fs:{ t:'Webb Fact Sheet', p:'NASA Science', u:'https://science.nasa.gov/mission/webb/fact-sheet' },
+      mc:{ t:'McElwain et al. 2023, The James Webb Space Telescope Mission: Optical Telescope Element Design, Development, and Performance, PASP 135, 058001', p:'NASA NTRS', u:'https://ntrs.nasa.gov/api/citations/20230010809/downloads/9_McElwain_2023_PASP_135_058001.pdf' },
+      sh:{ t:'The Complex Material Engineering of NASA\'s Webb Telescope Sunshield', p:'NASA', u:'https://www.nasa.gov/universe/the-complex-material-engineering-of-nasas-webb-telescope-sunshield' },
+      ie:{ t:'The Webb Space Telescope\'s Profound Data Challenges', p:'IEEE Spectrum', u:'https://spectrum.ieee.org/james-webb-telescope-communications' },
+      hz:{ t:'Éphémérides JPL Horizons (objet -170), mesure faite sur ce site', p:'NASA JPL', u:'https://ssd.jpl.nasa.gov/horizons/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Bouclier thermique','21,2 × 14,2 m'], ['Hauteur','≈ 8 m'], ['Masse au lancement','≈ 6 200 kg'],
-        ['Durée de vie','5 ans requis ; ergols pour plus de 20 ans'] ]},
+        ['Bouclier thermique','21,197 × 14,162 m','fs'], ['Masse au lancement','≈ 6 200 kg','fs'],
+        ['Durée de mission','5 à 10 ans prévus','fs'], ['Ergols','pour plus de 20 ans','mc'] ]},
       { title:'Optique', rows:[
-        ['Type','anastigmat à trois miroirs (Korsch)'], ['Miroir primaire','6,5 m · 18 segments en béryllium doré'],
-        ['Surface collectrice','25,4 m²'], ['Longueur focale','131,4 m'], ['Rapport focal','f/20,2'],
-        ['Domaine spectral','0,6 à 28,8 µm'] ]},
+        ['Type','anastigmat à trois miroirs (Korsch)'], ['Miroir primaire','6,5 m · 18 segments hexagonaux de 1,32 m · béryllium doré','mc'],
+        ['Surface collectrice','25,44 m² (mesurée)','mc'], ['Miroir secondaire','0,738 m, à 7,17 m du primaire','mc'],
+        ['Longueur focale','131,4 m · f/20','mc'], ['Domaine spectral','0,6 à 28,5 µm','fs'], ['Résolution','≈ 0,1″','fs'] ]},
       { title:'Thermique', rows:[
-        ['Côté froid','≈ 40 K (−233 °C)'], ['Détecteur de MIRI','≈ 7 K (cryo-refroidisseur)'],
-        ['Côté chaud','jusqu\'à ≈ 85 °C'], ['Atténuation du bouclier','≈ 1 million (200 kW reçus, < 1 W transmis)'] ]},
+        ['Côté froid','≈ −233 °C ; télescope et instruments vers 40 K',['fs','mc']], ['Détecteurs de MIRI','< 7 K (cryo-refroidisseur)','fs'],
+        ['Côté chaud','≈ 85 °C','fs'], ['Bouclier','5 couches de Kapton aluminisé · 0,05 mm (couche 1), 0,025 mm (les autres)','sh'] ]},
       { title:'Instruments', rows:[
         ['NIRCam','caméra proche infrarouge'], ['NIRSpec','spectrographe multi-objets (ESA)'],
         ['MIRI','imageur et spectrographe moyen infrarouge'], ['NIRISS / FGS','imageur, spectro sans fente et guidage (ASC)'] ]},
       { title:'Orbite et communications', rows:[
-        ['Position','halo autour de L2, à ≈ 1,5 million de km'], ['Période du halo','≈ 6 mois'],
-        ['Liaison science','bande Ka, jusqu\'à 28 Mbit/s'], ['Volume','≈ 57 Go par jour (2 contacts de 4 h)'] ]}
+        ['Position','orbite de halo autour de L2, à ≈ 1,5 million de km','fs'], ['Période du halo','≈ 175 jours','hz'],
+        ['Liaison science','bande Ka, jusqu\'à 28 Mbit/s','ie'], ['Volume','jusqu\'à 57 Go par jour · enregistreur de 68 Go','ie'] ]}
     ],
     parts:[
       { key:'primary', name:'Miroir primaire', explode:[0,0.25,1,3.0],
         desc:"Dix-huit hexagones de béryllium, un métal léger et stable au froid, recouverts d'une couche d'or de 100 nanomètres qui réfléchit très bien l'infrarouge. Chaque segment est positionné au nanomètre près par sept actionneurs pour que l'ensemble se comporte comme un seul miroir.",
-        facts:['18 segments de 1,32 m','≈ 20 kg par segment','Or : 100 nm d\'épaisseur','25,4 m² de surface collectrice'] },
+        facts:['18 segments de 1,32 m','20,1 kg de béryllium par segment','Or : 100 nm d\'épaisseur','25,44 m² de surface collectrice'] },
       { key:'secondary', name:'Miroir secondaire et trépied', explode:[0,0.2,1,6.0],
         desc:"Un miroir convexe de 74 cm tenu devant le primaire par trois longs bras qui se sont dépliés après le lancement. Il renvoie la lumière collectée vers l'ouverture au centre du miroir primaire.",
-        facts:['Miroir convexe de 0,74 m','Bras d\'environ 7,6 m'] },
+        facts:['Miroir convexe de 0,738 m','À 7,17 m du primaire'] },
       { key:'aos', name:'Optique arrière (AOS)', explode:[0,0,1,4.4],
         desc:"La tourelle noire au centre du miroir. Elle renferme le miroir tertiaire, qui corrige l'image, et le petit miroir de pointage fin qui compense plusieurs fois par seconde les minuscules mouvements de l'observatoire.",
         facts:['Miroir tertiaire fixe','Miroir de pointage fin'] },
@@ -107,7 +121,7 @@ var TELESCOPES = [
         facts:['NIRCam, NIRSpec, MIRI, NIRISS/FGS','≈ 40 K ; MIRI à ≈ 7 K'] },
       { key:'sunshield', name:'Bouclier thermique', explode:[0,0,0,0],
         desc:"Cinq feuilles de Kapton plus fines qu'un cheveu, aluminisées, séparées par du vide. Chaque couche est plus froide que la précédente et la chaleur s'échappe par les côtés. Les deux couches côté Soleil portent un revêtement de silicium dopé, d'où leur teinte rosée.",
-        facts:['21,2 × 14,2 m','5 couches de Kapton E','Couche 1 : 0,05 mm ; autres : 0,025 mm'] },
+        facts:['21,197 × 14,162 m','5 couches de Kapton aluminisé','Couche 1 : 0,05 mm ; autres : 0,025 mm'] },
       { key:'flap', name:"Volet d'équilibrage", explode:[0,0,-1,2.6],
         desc:"La pression de la lumière solaire sur le grand bouclier fait lentement tourner l'observatoire. Ce volet à l'arrière rééquilibre cette poussée, ce qui économise le carburant nécessaire pour décharger les roues de réaction.",
         facts:['Compense la pression de radiation solaire'] },
@@ -122,7 +136,7 @@ var TELESCOPES = [
         facts:['5 panneaux, ≈ 6 m de long','≈ 2 kW'] },
       { key:'hga', name:'Antenne grand gain', explode:[0,-1,0.5,4.6],
         desc:"Sous la plateforme, tournée vers la Terre. La petite parabole en bande Ka envoie les données scientifiques vers le réseau Deep Space Network lors de deux contacts quotidiens ; une antenne plus petite en bande S sert aux commandes.",
-        facts:['Parabole Ka de 0,6 m','Jusqu\'à 28 Mbit/s','≈ 57 Go par jour'] }
+        facts:['Bande Ka, jusqu\'à 28 Mbit/s','Jusqu\'à 57 Go par jour'] }
     ]
   },
   {
@@ -130,29 +144,39 @@ var TELESCOPES = [
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
     sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
-    file:'models/euclid.txt', bytes:7970528, axis:'y', size:4.7,
+    file:'models/euclid.txt', bytes:7970528, axis:'y', size:4.8,
     view:{ az:0.75, el:0.26, dist:1.6 }, sun:[-0.44,0.12,0.89], orbit:'l2',
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
-    cmp:{ tag:'4,7 m', dim:'4,7 m de haut, Ø 3,7 m', mirror:1.2, mass:2000, len:4.7 },
+    cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
+    checked:'2026-11-13',
+    refs:{
+      e1:{ t:'Euclid Collaboration, Mellier et al. 2025, Euclid. I. Overview of the Euclid mission, A&A (arXiv:2405.13491)', p:'arXiv', u:'https://arxiv.org/abs/2405.13491' },
+      ops:{ t:'Euclid : Mission operations', p:'ESA', u:'https://sci.esa.int/web/euclid/-/46661-mission-operations' },
+      dr1:{ t:'Euclid Data Release 1', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/euclid/euclid-dr1' },
+      hz:{ t:'Éphémérides JPL Horizons (objet -680), mesure faite sur ce site', p:'NASA JPL', u:'https://ssd.jpl.nasa.gov/horizons/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Hauteur','4,7 m'], ['Diamètre','3,7 m'], ['Masse au lancement','≈ 2 000 kg'],
-        ['Mission nominale','6 ans'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
+        ['Hauteur','≈ 4,8 m','e1'], ['Diamètre','≈ 3,74 m','e1'], ['Masse au lancement','1 988 kg','e1'],
+        ['Mission nominale','≈ 6 ans','e1'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
       { title:'Optique', rows:[
-        ['Type','Korsch à trois miroirs, hors axe de champ'], ['Miroir primaire','1,2 m · carbure de silicium'],
-        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,53 deg²'],
-        ['Température du télescope','≈ 130 K, refroidissement passif'] ]},
+        ['Type','Korsch à trois miroirs'], ['Miroir primaire','1,2 m · carbure de silicium','e1'],
+        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,54 deg²','e1'],
+        ['Température','≈ 126 K (miroir primaire) · 130 à 135 K (plaque de base)','e1'] ]},
       { title:'VIS (visible)', rows:[
-        ['Détecteurs','36 CCD (6 × 6) · ≈ 610 Mpx'], ['Bande','550–900 nm'],
-        ['Échantillonnage','0,1″ par pixel'], ['Température des CCD','≈ 150 K (−123 °C)'] ]},
+        ['Détecteurs','36 CCD de 4132 × 4096 px (6 × 6) · ≈ 609 Mpx','e1'], ['Bande','530–920 nm','e1'],
+        ['Échantillonnage','0,1″ par pixel','e1'], ['Température des CCD','153 K','e1'] ]},
       { title:'NISP (proche infrarouge)', rows:[
-        ['Détecteurs','16 matrices HgCdTe H2RG'], ['Photométrie','Y, J, H (0,95–2,02 µm)'],
-        ['Spectroscopie','grismes sans fente (bleu et rouge)'], ['Température des détecteurs','≈ 95 K (−180 °C)'] ]},
+        ['Détecteurs','16 matrices H2RG de 2048 × 2048 px (4 × 4)','e1'], ['Photométrie','Y 950–1212 nm · J 1168–1567 nm · H 1522–2021 nm','e1'],
+        ['Spectroscopie','grisme bleu 926–1366 nm (R ≳ 400) · grisme rouge 1206–1892 nm (R ≳ 480)','e1'],
+        ['Échantillonnage','0,298″ par pixel','e1'], ['Température des détecteurs','≈ 95 K','e1'] ]},
       { title:'Orbite et données', rows:[
-        ['Position','halo autour de L2'], ['Relevé','≈ 14 000 deg² en 6 ans'],
-        ['Liaison science','bande K (26 GHz), ≈ 55 Mbit/s'], ['Volume','jusqu\'à ≈ 850 Gbit par jour'] ]}
+        ['Position','orbite de halo autour de L2, amplitude ≈ 1 million de km','ops'], ['Période du halo','≈ 170 jours','hz'],
+        ['Relevé','≈ 14 000 deg² en ≈ 6 ans · champs profonds 53 deg²','e1'],
+        ['Liaison science','bande K, 55 Mbit/s, 4 h par jour','ops'], ['Volume','≈ 826 Gbit compressés par jour','e1'],
+        ['DR1','12 novembre 2026 · ≈ 1 900 deg² · plus d\'un milliard d\'objets','dr1'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil et panneaux solaires', explode:[-0.44,0,0.9,2.2],
@@ -160,16 +184,16 @@ var TELESCOPES = [
         facts:['3 panneaux photovoltaïques','≈ 1,8 à 2,4 kW selon l\'orientation'] },
       { key:'baffle', name:'Télescope et baffle externe', explode:[0,1,0,2.2],
         desc:"Le cylindre couvert d'isolant qui entoure le télescope. À l'intérieur, les miroirs et leur structure sont entièrement en carbure de silicium, une céramique qui ne se déforme presque pas quand la température varie.",
-        facts:['Miroir primaire de 1,2 m','Tout en carbure de silicium','≈ 130 K'] },
+        facts:['Miroir primaire de 1,2 m','Tout en carbure de silicium','≈ 126 K au miroir primaire'] },
       { key:'instr', name:"Baie d'instruments (VIS et NISP)", explode:[0,1,0,0.9],
         desc:"Sous le télescope, le plateau qui porte les deux instruments. Une lame dichroïque partage la lumière : le visible part vers VIS, l'infrarouge traverse vers NISP. Les deux observent donc exactement le même champ en même temps. Les radiateurs évacuent la chaleur vers l'espace.",
-        facts:['VIS : 36 CCD, ≈ 610 Mpx','NISP : 16 détecteurs infrarouges','Lame dichroïque de partage'] },
+        facts:['VIS : 36 CCD, ≈ 609 Mpx','NISP : 16 détecteurs infrarouges','Lame dichroïque de partage'] },
       { key:'svm', name:'Module de service', explode:[0,0,0,0],
         desc:"La plateforme : ordinateurs, réservoirs, électronique chaude des instruments et système de pointage. Des micro-propulseurs à azote froid tiennent la visée avec une stabilité de quelques centièmes de seconde d'arc pendant les poses.",
         facts:['Micro-propulseurs à gaz froid (azote)','Capteur de guidage fin dans le plan focal VIS'] },
       { key:'hga', name:'Antenne grand gain', explode:[0.9,-0.3,-0.44,1.8],
         desc:"La parabole orientable en bande K, qui transmet chaque jour pendant environ quatre heures les images compressées vers les stations de 35 m de l'ESA.",
-        facts:['Bande K, 26 GHz','≈ 55 Mbit/s','Jusqu\'à ≈ 850 Gbit par jour'] },
+        facts:['Bande K, 25,5 à 27 GHz','55 Mbit/s, 4 h par jour','≈ 826 Gbit compressés par jour'] },
       { key:'adapter', name:"Anneau d'interface lanceur", explode:[0,-1,0,1.4],
         desc:"L'anneau par lequel le satellite était fixé au sommet de la fusée Falcon 9. Il ne sert plus après la séparation.",
         facts:['Interface avec Falcon 9'] }
@@ -186,22 +210,30 @@ var TELESCOPES = [
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
+    checked:'2026-11-13',
+    refs:{
+      fs:{ t:'Gaia Fact Sheet', p:'ESA', u:'https://sci.esa.int/web/gaia/47354-fact-sheet' },
+      sc:{ t:'Gaia : Spacecraft', p:'ESA', u:'https://sci.esa.int/web/gaia/-/39993-spacecraft' },
+      doc:{ t:'Gaia DR2 documentation, 1.2 Spacecraft', p:'ESA Gaia Archive', u:'https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html' },
+      scan:{ t:'Gaia scanning the sky', p:'ESA', u:'https://sci.esa.int/web/gaia/-/51976-gaia-scanning-the-sky' },
+      end:{ t:'Gaia passivation (27 mars 2025)', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/home/-/asset_publisher/wEXKCCPdRxv0/content/2025-03-27-gaia-passivation' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Pare-soleil déployé','Ø ≈ 10 m'], ['Hauteur','≈ 3 m'], ['Masse au lancement','≈ 2 030 kg'],
-        ['Fin des observations','15 janvier 2025'], ['Mise hors service','27 mars 2025 (orbite solaire)'] ]},
+        ['Pare-soleil déployé','Ø ≈ 10 m'], ['Masse au lancement','2 030 kg, dont 710 kg de charge utile et 400 kg d\'ergols','fs'],
+        ['Fin des observations','15 janvier 2025','end'], ['Mise hors service','27 mars 2025, sur une orbite autour du Soleil','end'] ]},
       { title:'Optique', rows:[
-        ['Télescopes','2 anastigmats à trois miroirs'], ['Miroirs primaires','1,45 × 0,50 m chacun'],
-        ['Longueur focale','35 m'], ['Angle de base','106,5°'], ['Matériau','carbure de silicium'] ]},
+        ['Télescopes','2 anastigmats à trois miroirs, 10 miroirs au total','doc'], ['Miroirs primaires','1,45 × 0,50 m chacun','doc'],
+        ['Longueur focale','35 m','doc'], ['Angle de base','106,5°','doc'], ['Matériau','carbure de silicium'] ]},
       { title:'Plan focal', rows:[
-        ['Détecteurs','106 CCD · ≈ 938 Mpx'], ['Dimensions','≈ 1,0 × 0,4 m'],
-        ['Lecture','TDI, synchronisée sur la rotation'], ['Fonctions','astrométrie, photométrie BP/RP, spectromètre RVS'] ]},
+        ['Détecteurs','106 CCD · près d\'un milliard de pixels','sc'], ['Dimensions','0,42 × 0,92 m','sc'], ['Température','170 K, refroidissement passif','sc'],
+        ['Répartition','62 astrométrie · 14 cartographe · 14 BP/RP · 12 RVS · 4 de contrôle','doc'], ['Échelle','58,9 × 176,8 mas par pixel','doc'] ]},
       { title:'Loi de balayage', rows:[
-        ['Rotation','1 tour en 6 h (60″/s)'], ['Axe de rotation','à 45° du Soleil'],
-        ['Précession','63 jours'], ['Orbite','Lissajous autour de L2'] ]},
-      { title:'Catalogues', rows:[
-        ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Précision (étoiles brillantes)','≈ 0,02 mas'],
-        ['Gaia DR4','attendu fin 2026 (5,5 ans de données)'] ]}
+        ['Rotation','1 tour en 6 h','scan'], ['Axe de rotation','à 45° du Soleil','scan'],
+        ['Précession','≈ 63 jours','scan'], ['Orbite','Lissajous autour de L2, période ≈ 180 jours','fs'] ]},
+      { title:'Énergie et catalogues', rows:[
+        ['Panneaux solaires','12,8 m², jusqu\'à 1 910 W en fin de vie','sc'], ['Horloge','rubidium, 10 MHz','sc'],
+        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],
@@ -224,7 +256,7 @@ var TELESCOPES = [
         facts:['Ø ≈ 3 m','17 segments en carbure de silicium','Porte 10 miroirs'] },
       { key:'focal', name:'Plan focal et instruments', nodes:['FocalPlane_Cube','Instr1_Cube','Instr2_Cube','InstrBG_Plane','Plane'], explode:[0,1,0,1.9],
         desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
-        facts:['106 CCD · ≈ 938 Mpx','≈ 1,0 × 0,4 m'] }
+        facts:['106 CCD · près d\'un milliard de pixels','0,42 × 0,92 m'] }
     ]
   }
 ];

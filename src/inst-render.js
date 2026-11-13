@@ -238,7 +238,7 @@ var InstrumentsUI = (function(){
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' } };
   var RES = { hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 700 (grisme)', nirspec:'100 à 2 700', miri:'100 à 3 500', niriss:'150 à 700' },
-              euclid:{ nisp:'> 380 (grisme rouge)' }, gaia:{ bprp:'20 à 100', rvs:'≈ 11 500' } };
+              euclid:{ nisp:'≳ 480 (grisme rouge)' }, gaia:{ bprp:'20 à 100', rvs:'≈ 11 500' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 

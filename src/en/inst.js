@@ -48,7 +48,7 @@ EN_INST.hubble = {
   }
 };
 EN_INST.jwst = {
-  summary:"Four science instruments share the ISIM module, kept at very low temperature (≈ 40 K; ≈ 7 K for the MIRI detector), along with a fine guidance sensor. Together they cover 0.6 to 28.8 µm.",
+  summary:"Four science instruments share the ISIM module, kept at very low temperature (≈ 40 K; ≈ 7 K for the MIRI detector), along with a fine guidance sensor. Together they cover 0.6 to 28.5 µm.",
   archives:[["MAST, JWST archive","JWST observations, calibration levels 1 to 3; programmatic access through astroquery.mast."],["ESA, JWST archive","European access to JWST data."],["JDox, documentation","User documentation for each instrument."],["Calibration pipeline","Calibration steps and data product formats."]],
   instruments:{
     nircam:{ kind:"Near-IR camera",
@@ -99,7 +99,7 @@ EN_INST.euclid = {
   instruments:{
     vis:{ kind:"Visible imager",
       summary:"A camera built to measure galaxy shapes precisely (weak gravitational lensing). A single, very broad band, with no filter other than the dichroic.",
-      specs:[["Band","IE · 550–900 nm (edges ≈ 20 nm)"],["Detectors","36 thinned (40 µm) e2v CCD273-84 devices in a 6×6 array"],["Format","4096×4132 px per CCD · 12 µm pixels · 4 readout nodes"],["Mosaic","≈ 610 Mpx · sampling ≈ 0.1″/px"],["Field","≈ 0.53 deg² (common VIS/NISP field)"],["CCD temperature","≈ 150 K (best charge transfer) · electronics ≥ 250 K"],["Saturation","≈ 200,000 e⁻ · bright limit: IE(AB) ≈ 17.8 (nominal exposure)"],["Focal ratio","f/20.4 · 1.2 m pupil · 11% central obstruction"]],
+      specs:[["Band","IE · 530–920 nm"],["Detectors","36 thinned (40 µm) e2v CCDs in a 6×6 array"],["Format","4096×4132 px per CCD · 12 µm pixels · 4 readout nodes"],["Mosaic","≈ 609 Mpx · sampling 0.1″/px"],["Field","≈ 0.54 deg² (common VIS/NISP field)"],["CCD temperature","153 K"],["Saturation","≈ 200,000 e⁻ · bright limit: IE(AB) ≈ 17.8 (nominal exposure)"],["Focal ratio","f/20.4 · 1.2 m pupil · 11% central obstruction"]],
       filtersTitle:"Photometric band",
       products:[["Calibrated images","multi-extension FITS files per exposure (level 2)"],["MER mosaics","stacks per sky tile, including ground-based data"],["MER catalogue","master source table (VIS + NISP + ground)"],["Cutouts","cutout service in the web archive and in ESA Datalabs"]],
       example:{ title:"Real schema of the q1.mer_catalogue table (excerpt)", caption:"Columns of the public Q1 table, queryable in ADQL, with the names published by the ESA archive.", text:
@@ -109,7 +109,7 @@ EN_INST.euclid = {
       docs:["Euclid Consortium, VIS","Q1, contents"] },
     nisp:{ kind:"IR photometer and slitless spectrometer",
       summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
-      specs:[["Range","0.92–2.0 µm"],["Detectors","16 HgCdTe H2RG arrays in 4×4 · 2040×2040 usable px · 18 µm pixels"],["Sampling","≈ 0.3″/px"],["Photometry","3 filters: Y (0.95–1.21), J (1.17–1.57), H (1.52–2.02 µm)"],["Spectroscopy","blue grism (BG) ≈ 0.92–1.37 µm · red grism (RG) ≈ 1.21–1.89 µm, 3 orientations"],["Mass and power","85.3 kg (instrument) + 40.7 kg (warm electronics) · ≤ 200 W"],["Temperature","detectors ≈ 95 K · optics ≈ 130 K"]],
+      specs:[["Range","0.92–2.0 µm"],["Detectors","16 HgCdTe H2RG arrays in 4×4 · 2040×2040 usable px · 18 µm pixels"],["Sampling","0.298″/px"],["Photometry","3 filters: Y (0.95–1.21), J (1.17–1.57), H (1.52–2.02 µm)"],["Spectroscopy","blue grism (BG) 926–1366 nm, R ≳ 400 · red grism (RG) 1206–1892 nm, R ≳ 480"],["Mass and power","85.3 kg (instrument) + 40.7 kg (warm electronics) · ≤ 200 W"],["Temperature","detectors ≈ 95 K · optics ≈ 130 K"]],
       filtersTitle:"Bands and grisms (nominal ranges)",
       products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images; Q1: red grism only"],["SPE catalogue","13 tables of spectroscopic measurements (redshifts, quality)"],["PHZ catalogue","8 tables of photometric redshifts"]],
       example:{ title:"Contents of the Q1 catalogue (number of tables per product)", caption:"Real organisation of the catalogues queryable in ADQL in the ESA archive.", text:

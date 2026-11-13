@@ -171,3 +171,11 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #top{ position:relative; }
 .tab.util svg{ width:18px; height:18px; display:block; }
 .tab.util span{ font-size:11.5px; font-weight:700; letter-spacing:.4px; }
+
+/* appels de source et liste des sources */
+sup.ref{ font-size:10px; font-weight:600; color:var(--mute); margin-left:3px; vertical-align:super; line-height:0; }
+sup.ref.nv{ color:var(--warn); cursor:help; }
+ol.refs{ margin:8px 0 0; padding-left:20px; font-size:12px; line-height:1.5; color:var(--ink-2); }
+ol.refs li{ margin-bottom:6px; overflow-wrap:anywhere; }
+ol.refs a{ color:var(--ink); text-underline-offset:2px; }
+ol.refs span{ color:var(--mute); }

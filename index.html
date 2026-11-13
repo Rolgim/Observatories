@@ -182,6 +182,14 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .tab.util svg{ width:18px; height:18px; display:block; }
 .tab.util span{ font-size:11.5px; font-weight:700; letter-spacing:.4px; }
 
+/* appels de source et liste des sources */
+sup.ref{ font-size:10px; font-weight:600; color:var(--mute); margin-left:3px; vertical-align:super; line-height:0; }
+sup.ref.nv{ color:var(--warn); cursor:help; }
+ol.refs{ margin:8px 0 0; padding-left:20px; font-size:12px; line-height:1.5; color:var(--ink-2); }
+ol.refs li{ margin-bottom:6px; overflow-wrap:anywhere; }
+ol.refs a{ color:var(--ink); text-underline-offset:2px; }
+ol.refs span{ color:var(--mute); }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -429,29 +437,35 @@ var TELESCOPES = [
     file:'models/hubble.glb', bytes:3350204, axis:'z', size:13.2,
     view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
-    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:11110, len:13.2 },
+    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, len:13.2 },
     desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
     sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
+    checked:'2026-11-13',
+    refs:{
+      nasa:{ t:'Hubble Space Telescope, Facts', p:'NASA Science', u:'https://science.nasa.gov/mission/hubble/overview/' },
+      gyro:{ t:'NASA to Change How It Points Hubble Space Telescope (communiqué 2024-023, 4 juin 2024)', p:'STScI', u:'https://www.stsci.edu/contents/news-releases/2024/news-2024-023' },
+      reg:{ t:'Hubble\'s orbit is decaying (25 février 2026)', p:'The Register', u:'https://www.theregister.com/2026/02/25/hubble_orbit_decay/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Longueur','13,2 m'], ['Diamètre max.','4,2 m'],
-        ['Masse au lancement','≈ 11 110 kg'],
-        ['Missions d\'entretien','5 (1993, 1997, 1999, 2002, 2009)'],
-        ['Pointage','1 gyroscope en service depuis 2024 (mode économe)'] ]},
+        ['Longueur','13,2 m','nasa'], ['Diamètre max.','4,3 m','nasa'],
+        ['Masse','≈ 10 800 kg au lancement · ≈ 12 200 kg après la dernière mission d\'entretien','nasa'],
+        ['Missions d\'entretien','5 (1993, 1997, 1999, 2002, 2009)','nasa'],
+        ['Pointage','sur 1 gyroscope depuis juin 2024 ; 3 des 6 encore en état','gyro'] ]},
       { title:'Optique', rows:[
-        ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · verre ULE · 828 kg'],
-        ['Miroir secondaire','0,3 m'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
-        ['Stabilité de pointage','0,007″'] ]},
+        ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · 828 kg','nasa'],
+        ['Miroir secondaire','0,3 m · 12,4 kg','nasa'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
+        ['Précision de pointage','0,007″','nasa'] ]},
       { title:'Instruments actifs', rows:[
-        ['WFC3','caméra grand champ, UV à proche IR (2009)'], ['ACS','caméra de relevés (2002)'],
-        ['STIS','spectrographe imageur (1997)'], ['COS','spectrographe ultraviolet (2009)'],
-        ['FGS','3 capteurs de guidage fin'] ]},
+        ['WFC3','caméra grand champ, ultraviolet à proche infrarouge'], ['ACS','caméra de relevés'],
+        ['STIS','spectrographe imageur'], ['COS','spectrographe ultraviolet'],
+        ['FGS','capteurs de guidage fin'] ]},
       { title:'Orbite', rows:[
-        ['Altitude','≈ 500–540 km, en lente décroissance'], ['Inclinaison','28,5°'],
-        ['Période','≈ 95 min (≈ 15 orbites par jour)'], ['Vitesse','≈ 27 000 km/h'] ]},
+        ['Altitude','≈ 480 km','nasa'], ['Évolution','sous 500 km en 2026 et en baisse ; rentrée possible dès 2028 sans remontée d\'orbite','reg'],
+        ['Inclinaison','28,5°','nasa'], ['Période','≈ 95 min','nasa'], ['Vitesse','≈ 27 000 km/h','nasa'] ]},
       { title:'Énergie et données', rows:[
-        ['Panneaux solaires','2 ailes rigides de 7,1 × 2,6 m'], ['Puissance','≈ 5 kW produits'],
-        ['Batteries','6, nickel-hydrogène'], ['Liaison','bande S, relais par satellites TDRS'] ]}
+        ['Panneaux solaires','2 panneaux de 7,54 × 2,44 m, arséniure de gallium','nasa'], ['Puissance','≈ 5 500 W au soleil','nasa'],
+        ['Batteries','6, nickel-hydrogène','nasa'], ['Liaison','bande S, relais par les satellites TDRS'] ]}
     ],
     parts:[
       { key:'door', name:"Porte d'ouverture et pare-lumière", explode:[0,0,1,3.4],
@@ -459,7 +473,7 @@ var TELESCOPES = [
         facts:['Volet ≈ 3 m de diamètre','Fermeture automatique de sécurité'] },
       { key:'ota', name:'Coque avant (miroir secondaire)', explode:[0,0,1,1.5],
         desc:"Le tube qui prolonge le télescope vers l'avant. Il contient les déflecteurs internes et, à l'intérieur, le miroir secondaire de 0,3 m, tenu à 4,9 m en avant du miroir primaire par une structure en graphite-époxy presque insensible à la température.",
-        facts:['Miroir secondaire : 0,3 m','Écart primaire–secondaire : 4,9 m'] },
+        facts:['Miroir secondaire : 0,3 m, 12,4 kg','Écart primaire–secondaire : 4,9 m'] },
       { key:'ssm', name:"Section d'équipements", explode:[0,0,0,0],
         desc:"L'anneau de baies qui ceinture le télescope. On y trouve les ordinateurs de bord, les batteries, les roues de réaction qui orientent le satellite et les équipements de communication. Les portes s'ouvrent pour que les astronautes puissent remplacer les boîtiers.",
         facts:['10 baies d\'équipements','4 roues de réaction','6 batteries nickel-hydrogène'] },
@@ -468,10 +482,10 @@ var TELESCOPES = [
         facts:['Miroir primaire : 2,4 m, 828 kg','4 instruments axiaux + 1 radial','3 capteurs de guidage fin'] },
       { key:'array_stbd', name:'Panneau solaire (+V2)', explode:[1,0,0,3.2],
         desc:"L'une des deux ailes solaires rigides à l'arséniure de gallium, posées en 2002. Plus petites que les panneaux souples d'origine, elles produisent pourtant davantage et vibrent moins au passage jour/nuit.",
-        facts:['7,1 × 2,6 m','Arséniure de gallium','Installé en 2002 (SM3B)'] },
+        facts:['7,54 × 2,44 m','Arséniure de gallium','Installé en 2002 (SM3B)'] },
       { key:'array_port', name:'Panneau solaire (−V2)', explode:[-1,0,0,3.2],
         desc:"La seconde aile solaire, identique à la première. Les deux pivotent autour de leur mât pour rester face au Soleil quelle que soit la direction visée par le télescope.",
-        facts:['7,1 × 2,6 m','≈ 5 kW pour les deux ailes'] },
+        facts:['7,54 × 2,44 m','≈ 5 500 W pour les deux panneaux'] },
       { key:'hga_top', name:'Antenne grand gain', explode:[0,1,0,2.4],
         desc:"Parabole orientable au bout d'un mât. Hubble ne parle pas directement au sol : il envoie ses données vers les satellites relais TDRS en orbite géostationnaire, qui les retransmettent à White Sands (Nouveau-Mexique).",
         facts:['Parabole de 1,3 m','Bande S, via TDRS'] },
@@ -491,31 +505,39 @@ var TELESCOPES = [
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
+    checked:'2026-11-13',
+    refs:{
+      fs:{ t:'Webb Fact Sheet', p:'NASA Science', u:'https://science.nasa.gov/mission/webb/fact-sheet' },
+      mc:{ t:'McElwain et al. 2023, The James Webb Space Telescope Mission: Optical Telescope Element Design, Development, and Performance, PASP 135, 058001', p:'NASA NTRS', u:'https://ntrs.nasa.gov/api/citations/20230010809/downloads/9_McElwain_2023_PASP_135_058001.pdf' },
+      sh:{ t:'The Complex Material Engineering of NASA\'s Webb Telescope Sunshield', p:'NASA', u:'https://www.nasa.gov/universe/the-complex-material-engineering-of-nasas-webb-telescope-sunshield' },
+      ie:{ t:'The Webb Space Telescope\'s Profound Data Challenges', p:'IEEE Spectrum', u:'https://spectrum.ieee.org/james-webb-telescope-communications' },
+      hz:{ t:'Éphémérides JPL Horizons (objet -170), mesure faite sur ce site', p:'NASA JPL', u:'https://ssd.jpl.nasa.gov/horizons/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Bouclier thermique','21,2 × 14,2 m'], ['Hauteur','≈ 8 m'], ['Masse au lancement','≈ 6 200 kg'],
-        ['Durée de vie','5 ans requis ; ergols pour plus de 20 ans'] ]},
+        ['Bouclier thermique','21,197 × 14,162 m','fs'], ['Masse au lancement','≈ 6 200 kg','fs'],
+        ['Durée de mission','5 à 10 ans prévus','fs'], ['Ergols','pour plus de 20 ans','mc'] ]},
       { title:'Optique', rows:[
-        ['Type','anastigmat à trois miroirs (Korsch)'], ['Miroir primaire','6,5 m · 18 segments en béryllium doré'],
-        ['Surface collectrice','25,4 m²'], ['Longueur focale','131,4 m'], ['Rapport focal','f/20,2'],
-        ['Domaine spectral','0,6 à 28,8 µm'] ]},
+        ['Type','anastigmat à trois miroirs (Korsch)'], ['Miroir primaire','6,5 m · 18 segments hexagonaux de 1,32 m · béryllium doré','mc'],
+        ['Surface collectrice','25,44 m² (mesurée)','mc'], ['Miroir secondaire','0,738 m, à 7,17 m du primaire','mc'],
+        ['Longueur focale','131,4 m · f/20','mc'], ['Domaine spectral','0,6 à 28,5 µm','fs'], ['Résolution','≈ 0,1″','fs'] ]},
       { title:'Thermique', rows:[
-        ['Côté froid','≈ 40 K (−233 °C)'], ['Détecteur de MIRI','≈ 7 K (cryo-refroidisseur)'],
-        ['Côté chaud','jusqu\'à ≈ 85 °C'], ['Atténuation du bouclier','≈ 1 million (200 kW reçus, < 1 W transmis)'] ]},
+        ['Côté froid','≈ −233 °C ; télescope et instruments vers 40 K',['fs','mc']], ['Détecteurs de MIRI','< 7 K (cryo-refroidisseur)','fs'],
+        ['Côté chaud','≈ 85 °C','fs'], ['Bouclier','5 couches de Kapton aluminisé · 0,05 mm (couche 1), 0,025 mm (les autres)','sh'] ]},
       { title:'Instruments', rows:[
         ['NIRCam','caméra proche infrarouge'], ['NIRSpec','spectrographe multi-objets (ESA)'],
         ['MIRI','imageur et spectrographe moyen infrarouge'], ['NIRISS / FGS','imageur, spectro sans fente et guidage (ASC)'] ]},
       { title:'Orbite et communications', rows:[
-        ['Position','halo autour de L2, à ≈ 1,5 million de km'], ['Période du halo','≈ 6 mois'],
-        ['Liaison science','bande Ka, jusqu\'à 28 Mbit/s'], ['Volume','≈ 57 Go par jour (2 contacts de 4 h)'] ]}
+        ['Position','orbite de halo autour de L2, à ≈ 1,5 million de km','fs'], ['Période du halo','≈ 175 jours','hz'],
+        ['Liaison science','bande Ka, jusqu\'à 28 Mbit/s','ie'], ['Volume','jusqu\'à 57 Go par jour · enregistreur de 68 Go','ie'] ]}
     ],
     parts:[
       { key:'primary', name:'Miroir primaire', explode:[0,0.25,1,3.0],
         desc:"Dix-huit hexagones de béryllium, un métal léger et stable au froid, recouverts d'une couche d'or de 100 nanomètres qui réfléchit très bien l'infrarouge. Chaque segment est positionné au nanomètre près par sept actionneurs pour que l'ensemble se comporte comme un seul miroir.",
-        facts:['18 segments de 1,32 m','≈ 20 kg par segment','Or : 100 nm d\'épaisseur','25,4 m² de surface collectrice'] },
+        facts:['18 segments de 1,32 m','20,1 kg de béryllium par segment','Or : 100 nm d\'épaisseur','25,44 m² de surface collectrice'] },
       { key:'secondary', name:'Miroir secondaire et trépied', explode:[0,0.2,1,6.0],
         desc:"Un miroir convexe de 74 cm tenu devant le primaire par trois longs bras qui se sont dépliés après le lancement. Il renvoie la lumière collectée vers l'ouverture au centre du miroir primaire.",
-        facts:['Miroir convexe de 0,74 m','Bras d\'environ 7,6 m'] },
+        facts:['Miroir convexe de 0,738 m','À 7,17 m du primaire'] },
       { key:'aos', name:'Optique arrière (AOS)', explode:[0,0,1,4.4],
         desc:"La tourelle noire au centre du miroir. Elle renferme le miroir tertiaire, qui corrige l'image, et le petit miroir de pointage fin qui compense plusieurs fois par seconde les minuscules mouvements de l'observatoire.",
         facts:['Miroir tertiaire fixe','Miroir de pointage fin'] },
@@ -524,7 +546,7 @@ var TELESCOPES = [
         facts:['NIRCam, NIRSpec, MIRI, NIRISS/FGS','≈ 40 K ; MIRI à ≈ 7 K'] },
       { key:'sunshield', name:'Bouclier thermique', explode:[0,0,0,0],
         desc:"Cinq feuilles de Kapton plus fines qu'un cheveu, aluminisées, séparées par du vide. Chaque couche est plus froide que la précédente et la chaleur s'échappe par les côtés. Les deux couches côté Soleil portent un revêtement de silicium dopé, d'où leur teinte rosée.",
-        facts:['21,2 × 14,2 m','5 couches de Kapton E','Couche 1 : 0,05 mm ; autres : 0,025 mm'] },
+        facts:['21,197 × 14,162 m','5 couches de Kapton aluminisé','Couche 1 : 0,05 mm ; autres : 0,025 mm'] },
       { key:'flap', name:"Volet d'équilibrage", explode:[0,0,-1,2.6],
         desc:"La pression de la lumière solaire sur le grand bouclier fait lentement tourner l'observatoire. Ce volet à l'arrière rééquilibre cette poussée, ce qui économise le carburant nécessaire pour décharger les roues de réaction.",
         facts:['Compense la pression de radiation solaire'] },
@@ -539,7 +561,7 @@ var TELESCOPES = [
         facts:['5 panneaux, ≈ 6 m de long','≈ 2 kW'] },
       { key:'hga', name:'Antenne grand gain', explode:[0,-1,0.5,4.6],
         desc:"Sous la plateforme, tournée vers la Terre. La petite parabole en bande Ka envoie les données scientifiques vers le réseau Deep Space Network lors de deux contacts quotidiens ; une antenne plus petite en bande S sert aux commandes.",
-        facts:['Parabole Ka de 0,6 m','Jusqu\'à 28 Mbit/s','≈ 57 Go par jour'] }
+        facts:['Bande Ka, jusqu\'à 28 Mbit/s','Jusqu\'à 57 Go par jour'] }
     ]
   },
   {
@@ -547,29 +569,39 @@ var TELESCOPES = [
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
     sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
-    file:'models/euclid.glb', bytes:5977896, axis:'y', size:4.7,
+    file:'models/euclid.glb', bytes:5977896, axis:'y', size:4.8,
     view:{ az:0.75, el:0.26, dist:1.6 }, sun:[-0.44,0.12,0.89], orbit:'l2',
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
-    cmp:{ tag:'4,7 m', dim:'4,7 m de haut, Ø 3,7 m', mirror:1.2, mass:2000, len:4.7 },
+    cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
+    checked:'2026-11-13',
+    refs:{
+      e1:{ t:'Euclid Collaboration, Mellier et al. 2025, Euclid. I. Overview of the Euclid mission, A&A (arXiv:2405.13491)', p:'arXiv', u:'https://arxiv.org/abs/2405.13491' },
+      ops:{ t:'Euclid : Mission operations', p:'ESA', u:'https://sci.esa.int/web/euclid/-/46661-mission-operations' },
+      dr1:{ t:'Euclid Data Release 1', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/euclid/euclid-dr1' },
+      hz:{ t:'Éphémérides JPL Horizons (objet -680), mesure faite sur ce site', p:'NASA JPL', u:'https://ssd.jpl.nasa.gov/horizons/' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Hauteur','4,7 m'], ['Diamètre','3,7 m'], ['Masse au lancement','≈ 2 000 kg'],
-        ['Mission nominale','6 ans'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
+        ['Hauteur','≈ 4,8 m','e1'], ['Diamètre','≈ 3,74 m','e1'], ['Masse au lancement','1 988 kg','e1'],
+        ['Mission nominale','≈ 6 ans','e1'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
       { title:'Optique', rows:[
-        ['Type','Korsch à trois miroirs, hors axe de champ'], ['Miroir primaire','1,2 m · carbure de silicium'],
-        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,53 deg²'],
-        ['Température du télescope','≈ 130 K, refroidissement passif'] ]},
+        ['Type','Korsch à trois miroirs'], ['Miroir primaire','1,2 m · carbure de silicium','e1'],
+        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,54 deg²','e1'],
+        ['Température','≈ 126 K (miroir primaire) · 130 à 135 K (plaque de base)','e1'] ]},
       { title:'VIS (visible)', rows:[
-        ['Détecteurs','36 CCD (6 × 6) · ≈ 610 Mpx'], ['Bande','550–900 nm'],
-        ['Échantillonnage','0,1″ par pixel'], ['Température des CCD','≈ 150 K (−123 °C)'] ]},
+        ['Détecteurs','36 CCD de 4132 × 4096 px (6 × 6) · ≈ 609 Mpx','e1'], ['Bande','530–920 nm','e1'],
+        ['Échantillonnage','0,1″ par pixel','e1'], ['Température des CCD','153 K','e1'] ]},
       { title:'NISP (proche infrarouge)', rows:[
-        ['Détecteurs','16 matrices HgCdTe H2RG'], ['Photométrie','Y, J, H (0,95–2,02 µm)'],
-        ['Spectroscopie','grismes sans fente (bleu et rouge)'], ['Température des détecteurs','≈ 95 K (−180 °C)'] ]},
+        ['Détecteurs','16 matrices H2RG de 2048 × 2048 px (4 × 4)','e1'], ['Photométrie','Y 950–1212 nm · J 1168–1567 nm · H 1522–2021 nm','e1'],
+        ['Spectroscopie','grisme bleu 926–1366 nm (R ≳ 400) · grisme rouge 1206–1892 nm (R ≳ 480)','e1'],
+        ['Échantillonnage','0,298″ par pixel','e1'], ['Température des détecteurs','≈ 95 K','e1'] ]},
       { title:'Orbite et données', rows:[
-        ['Position','halo autour de L2'], ['Relevé','≈ 14 000 deg² en 6 ans'],
-        ['Liaison science','bande K (26 GHz), ≈ 55 Mbit/s'], ['Volume','jusqu\'à ≈ 850 Gbit par jour'] ]}
+        ['Position','orbite de halo autour de L2, amplitude ≈ 1 million de km','ops'], ['Période du halo','≈ 170 jours','hz'],
+        ['Relevé','≈ 14 000 deg² en ≈ 6 ans · champs profonds 53 deg²','e1'],
+        ['Liaison science','bande K, 55 Mbit/s, 4 h par jour','ops'], ['Volume','≈ 826 Gbit compressés par jour','e1'],
+        ['DR1','12 novembre 2026 · ≈ 1 900 deg² · plus d\'un milliard d\'objets','dr1'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil et panneaux solaires', explode:[-0.44,0,0.9,2.2],
@@ -577,16 +609,16 @@ var TELESCOPES = [
         facts:['3 panneaux photovoltaïques','≈ 1,8 à 2,4 kW selon l\'orientation'] },
       { key:'baffle', name:'Télescope et baffle externe', explode:[0,1,0,2.2],
         desc:"Le cylindre couvert d'isolant qui entoure le télescope. À l'intérieur, les miroirs et leur structure sont entièrement en carbure de silicium, une céramique qui ne se déforme presque pas quand la température varie.",
-        facts:['Miroir primaire de 1,2 m','Tout en carbure de silicium','≈ 130 K'] },
+        facts:['Miroir primaire de 1,2 m','Tout en carbure de silicium','≈ 126 K au miroir primaire'] },
       { key:'instr', name:"Baie d'instruments (VIS et NISP)", explode:[0,1,0,0.9],
         desc:"Sous le télescope, le plateau qui porte les deux instruments. Une lame dichroïque partage la lumière : le visible part vers VIS, l'infrarouge traverse vers NISP. Les deux observent donc exactement le même champ en même temps. Les radiateurs évacuent la chaleur vers l'espace.",
-        facts:['VIS : 36 CCD, ≈ 610 Mpx','NISP : 16 détecteurs infrarouges','Lame dichroïque de partage'] },
+        facts:['VIS : 36 CCD, ≈ 609 Mpx','NISP : 16 détecteurs infrarouges','Lame dichroïque de partage'] },
       { key:'svm', name:'Module de service', explode:[0,0,0,0],
         desc:"La plateforme : ordinateurs, réservoirs, électronique chaude des instruments et système de pointage. Des micro-propulseurs à azote froid tiennent la visée avec une stabilité de quelques centièmes de seconde d'arc pendant les poses.",
         facts:['Micro-propulseurs à gaz froid (azote)','Capteur de guidage fin dans le plan focal VIS'] },
       { key:'hga', name:'Antenne grand gain', explode:[0.9,-0.3,-0.44,1.8],
         desc:"La parabole orientable en bande K, qui transmet chaque jour pendant environ quatre heures les images compressées vers les stations de 35 m de l'ESA.",
-        facts:['Bande K, 26 GHz','≈ 55 Mbit/s','Jusqu\'à ≈ 850 Gbit par jour'] },
+        facts:['Bande K, 25,5 à 27 GHz','55 Mbit/s, 4 h par jour','≈ 826 Gbit compressés par jour'] },
       { key:'adapter', name:"Anneau d'interface lanceur", explode:[0,-1,0,1.4],
         desc:"L'anneau par lequel le satellite était fixé au sommet de la fusée Falcon 9. Il ne sert plus après la séparation.",
         facts:['Interface avec Falcon 9'] }
@@ -603,22 +635,30 @@ var TELESCOPES = [
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
+    checked:'2026-11-13',
+    refs:{
+      fs:{ t:'Gaia Fact Sheet', p:'ESA', u:'https://sci.esa.int/web/gaia/47354-fact-sheet' },
+      sc:{ t:'Gaia : Spacecraft', p:'ESA', u:'https://sci.esa.int/web/gaia/-/39993-spacecraft' },
+      doc:{ t:'Gaia DR2 documentation, 1.2 Spacecraft', p:'ESA Gaia Archive', u:'https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html' },
+      scan:{ t:'Gaia scanning the sky', p:'ESA', u:'https://sci.esa.int/web/gaia/-/51976-gaia-scanning-the-sky' },
+      end:{ t:'Gaia passivation (27 mars 2025)', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/home/-/asset_publisher/wEXKCCPdRxv0/content/2025-03-27-gaia-passivation' }
+    },
     sections:[
       { title:'Véhicule', rows:[
-        ['Pare-soleil déployé','Ø ≈ 10 m'], ['Hauteur','≈ 3 m'], ['Masse au lancement','≈ 2 030 kg'],
-        ['Fin des observations','15 janvier 2025'], ['Mise hors service','27 mars 2025 (orbite solaire)'] ]},
+        ['Pare-soleil déployé','Ø ≈ 10 m'], ['Masse au lancement','2 030 kg, dont 710 kg de charge utile et 400 kg d\'ergols','fs'],
+        ['Fin des observations','15 janvier 2025','end'], ['Mise hors service','27 mars 2025, sur une orbite autour du Soleil','end'] ]},
       { title:'Optique', rows:[
-        ['Télescopes','2 anastigmats à trois miroirs'], ['Miroirs primaires','1,45 × 0,50 m chacun'],
-        ['Longueur focale','35 m'], ['Angle de base','106,5°'], ['Matériau','carbure de silicium'] ]},
+        ['Télescopes','2 anastigmats à trois miroirs, 10 miroirs au total','doc'], ['Miroirs primaires','1,45 × 0,50 m chacun','doc'],
+        ['Longueur focale','35 m','doc'], ['Angle de base','106,5°','doc'], ['Matériau','carbure de silicium'] ]},
       { title:'Plan focal', rows:[
-        ['Détecteurs','106 CCD · ≈ 938 Mpx'], ['Dimensions','≈ 1,0 × 0,4 m'],
-        ['Lecture','TDI, synchronisée sur la rotation'], ['Fonctions','astrométrie, photométrie BP/RP, spectromètre RVS'] ]},
+        ['Détecteurs','106 CCD · près d\'un milliard de pixels','sc'], ['Dimensions','0,42 × 0,92 m','sc'], ['Température','170 K, refroidissement passif','sc'],
+        ['Répartition','62 astrométrie · 14 cartographe · 14 BP/RP · 12 RVS · 4 de contrôle','doc'], ['Échelle','58,9 × 176,8 mas par pixel','doc'] ]},
       { title:'Loi de balayage', rows:[
-        ['Rotation','1 tour en 6 h (60″/s)'], ['Axe de rotation','à 45° du Soleil'],
-        ['Précession','63 jours'], ['Orbite','Lissajous autour de L2'] ]},
-      { title:'Catalogues', rows:[
-        ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Précision (étoiles brillantes)','≈ 0,02 mas'],
-        ['Gaia DR4','attendu fin 2026 (5,5 ans de données)'] ]}
+        ['Rotation','1 tour en 6 h','scan'], ['Axe de rotation','à 45° du Soleil','scan'],
+        ['Précession','≈ 63 jours','scan'], ['Orbite','Lissajous autour de L2, période ≈ 180 jours','fs'] ]},
+      { title:'Énergie et catalogues', rows:[
+        ['Panneaux solaires','12,8 m², jusqu\'à 1 910 W en fin de vie','sc'], ['Horloge','rubidium, 10 MHz','sc'],
+        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],
@@ -641,7 +681,7 @@ var TELESCOPES = [
         facts:['Ø ≈ 3 m','17 segments en carbure de silicium','Porte 10 miroirs'] },
       { key:'focal', name:'Plan focal et instruments', nodes:['FocalPlane_Cube','Instr1_Cube','Instr2_Cube','InstrBG_Plane','Plane'], explode:[0,1,0,1.9],
         desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
-        facts:['106 CCD · ≈ 938 Mpx','≈ 1,0 × 0,4 m'] }
+        facts:['106 CCD · près d\'un milliard de pixels','0,42 × 0,92 m'] }
     ]
   }
 ];
@@ -887,7 +927,7 @@ var INST_DATA = (function(){
   /* -------------------------------------------------------------- JWST */
   jwst: {
     axis: { min:0.5, max:30 },
-    summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,8 µm.",
+    summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,5 µm.",
     archives: [
       { label:"MAST, archive JWST", url:"https://archive.stsci.edu/missions-and-data/jwst", desc:"Observations JWST, niveaux de calibration 1 à 3 ; accès par programme via astroquery.mast." },
       { label:"ESA, archive JWST", url:"https://jwst.esac.esa.int/archive/", desc:"Accès européen aux données JWST." },
@@ -1080,20 +1120,20 @@ var INST_DATA = (function(){
     ],
     instruments: [
       { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
-        bands:[ {l:"IE",lo:0.55,hi:0.90} ],
+        bands:[ {l:"IE",lo:0.53,hi:0.92} ],
         summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
         specs:[
-          ["Bande","IE · 550–900 nm (bords ≈ 20 nm)"],
-          ["Détecteurs","36 CCD e2v CCD273-84 amincis (40 µm), disposés en 6×6"],
+          ["Bande","IE · 530–920 nm"],
+          ["Détecteurs","36 CCD e2v amincis (40 µm), disposés en 6×6"],
           ["Format","4096×4132 px par CCD · pixels de 12 µm · 4 nœuds de lecture"],
-          ["Mosaïque","≈ 610 Mpx · échantillonnage ≈ 0,1″/px"],
-          ["Champ","≈ 0,53 deg² (champ commun VIS/NISP)"],
-          ["Température des CCD","≈ 150 K (transfert de charge optimal) · électronique ≥ 250 K"],
+          ["Mosaïque","≈ 609 Mpx · échantillonnage 0,1″/px"],
+          ["Champ","≈ 0,54 deg² (champ commun VIS/NISP)"],
+          ["Température des CCD","153 K"],
           ["Saturation","≈ 200 000 e⁻ · limite brillante : IE(AB) ≈ 17,8 (pose nominale)"],
           ["Nombre focal","f/20,4 · pupille 1,2 m · obstruction centrale 11 %"]
         ],
         filtersTitle:"Bande photométrique",
-        filters:[ R("IE",0.55,0.90,"B","bande large unique") ],
+        filters:[ R("IE",0.53,0.92,"B","bande large unique") ],
         products:[
           ["Images calibrées","fichiers FITS multi-extensions par exposition (niveau 2)"],
           ["Mosaïques MER","empilements par tuile du ciel, incluant des données sol"],
@@ -1135,9 +1175,9 @@ var INST_DATA = (function(){
         specs:[
           ["Domaine","0,92–2,0 µm"],
           ["Détecteurs","16 matrices HgCdTe H2RG en 4×4 · 2040×2040 px utiles · pixels de 18 µm"],
-          ["Échantillonnage","≈ 0,3″/px"],
+          ["Échantillonnage","0,298″/px"],
           ["Photométrie","3 filtres : Y (0,95–1,21), J (1,17–1,57), H (1,52–2,02 µm)"],
-          ["Spectroscopie","grisme bleu (BG) ≈ 0,92–1,37 µm · grisme rouge (RG) ≈ 1,21–1,89 µm, 3 orientations"],
+          ["Spectroscopie","grisme bleu (BG) 926–1366 nm, R ≳ 400 · grisme rouge (RG) 1206–1892 nm, R ≳ 480"],
           ["Masse et puissance","85,3 kg (instrument) + 40,7 kg (électronique chaude) · ≤ 200 W"],
           ["Température","détecteurs ≈ 95 K · optique ≈ 130 K"]
         ],
@@ -1502,7 +1542,7 @@ var Orbits = (function(){
   function date(jd){ var d = new Date((jd - 2440587.5)*86400000); var dd = ('0'+d.getUTCDate()).slice(-2), mm = ('0'+(d.getUTCMonth()+1)).slice(-2); return OBS_LANG === 'en' ? d.getUTCFullYear()+'-'+mm+'-'+dd : dd+'/'+mm+'/'+d.getUTCFullYear(); }
 
   var TEXT = {
-    hubble:{ sum:'Hubble tourne à environ 530 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
+    hubble:{ sum:'Hubble tourne à environ 480 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
       notes:['La Terre masque la plupart des cibles pendant une partie de chaque orbite : une pose longue est découpée en tranches d\'une cinquantaine de minutes.',
              'Seules deux petites régions du ciel, près des pôles de l\'orbite, restent visibles en continu. Les champs profonds de Hubble y ont été choisis.',
              'Le passage jour–nuit toutes les 95 minutes fait travailler la structure : c\'est ce qui faisait vibrer les premiers panneaux solaires.',
@@ -1526,7 +1566,7 @@ var Orbits = (function(){
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
     if (tid === 'hubble'){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
-      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 530 km, en lente décroissance'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour']])+'</div>';
+      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 480 km, en baisse'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
     } else {
       s += '<div class="isec"><h4>Vu depuis la Terre</h4>'+cv('front', 560, 430, 'Trajectoire autour de L2 vue depuis la Terre')+ctl+'<div class="cap">On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l\'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).</div></div>';
       s += '<div class="isec"><h4>Vu de dessus</h4>'+cv('top', 560, 400, 'Trajectoire autour de L2 vue du nord de l\'écliptique')+'<div class="cap">Le Soleil est à gauche, hors du cadre, à 150 millions de km. Le repère tourne avec la Terre autour du Soleil : la Terre et L2 y restent fixes.</div></div>';
@@ -1543,7 +1583,7 @@ var Orbits = (function(){
   function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(OBS_T(s), x, y); }
 
   function drawLeo(c, tmin){
-    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6901, re = 6371*k, ro = 6901*k;
+    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6851, re = 6371*k, ro = 6851*k;
     var ink = css('--ink'), mute = css('--mute');
     g.clearRect(0, 0, W, H);
     g.fillStyle = css('--rule'); g.globalAlpha = 0.55; g.fillRect(cx, cy - re, W - cx, 2*re); g.globalAlpha = 1;
@@ -1647,7 +1687,7 @@ var Orbits = (function(){
     var key = '<ul class="orb-key">' + ['jwst','euclid','gaia'].map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     return '<div class="isec"><h4>Orbites autour de L2, à la même échelle</h4>' + key + '<div class="cmp-figs"><div><h5>Vu depuis la Terre</h5>'+cv('cfront', 560, 430, 'Les trois orbites vues depuis la Terre')+'</div><div><h5>Vu de dessus</h5>'+cv('ctop', 560, 400, 'Les trois orbites vues de dessus')+'</div></div>' +
       '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read>Chargement des trajectoires…</span></div>' +
-      '<div class="cap">Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l\'orbite de la Lune. Chaque observatoire apparaît à sa date d\'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n\'y figure pas : à cette échelle, son orbite à 530 km d\'altitude se confond avec le point qui représente la Terre.</div>' +
+      '<div class="cap">Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l\'orbite de la Lune. Chaque observatoire apparaît à sa date d\'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n\'y figure pas : à cette échelle, son orbite à 480 km d\'altitude se confond avec le point qui représente la Terre.</div>' +
       '<div data-orb-cmpstats></div></div>';
   }
   function startCompare(root, OBS, NAMES){
@@ -1926,7 +1966,7 @@ var InstrumentsUI = (function(){
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' } };
   var RES = { hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 700 (grisme)', nirspec:'100 à 2 700', miri:'100 à 3 500', niriss:'150 à 700' },
-              euclid:{ nisp:'> 380 (grisme rouge)' }, gaia:{ bprp:'20 à 100', rvs:'≈ 11 500' } };
+              euclid:{ nisp:'≳ 480 (grisme rouge)' }, gaia:{ bprp:'20 à 100', rvs:'≈ 11 500' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 
@@ -2038,20 +2078,21 @@ var EN_TELE = {
     cmp:{ tag:'13.2 m', dim:'13.2 m long' },
     desc:"The first of NASA's Great Observatories, Hubble has circled the Earth since 1990. Five Space Shuttle missions repaired and upgraded it in orbit: almost all of its current instruments date from those visits. Its silver tube houses a Ritchey-Chrétien telescope and a bay of replaceable instruments.",
     sourceNote:"Model created by NASA Visualization Technology Applications and Development (VTAD), distributed with Gaia Sky. The original file is split by texture; it has been re-cut here into physical parts so that a click picks the right piece.",
+refs:{ gyro:'NASA to Change How It Points Hubble Space Telescope (release 2024-023, 4 June 2024)', reg:'Hubble\'s orbit is decaying (25 February 2026)' },
     sections:[
-      { title:'Spacecraft', rows:[['Length','13.2 m'],['Maximum diameter','4.2 m'],['Launch mass','≈ 11,110 kg'],['Servicing missions','5 (1993, 1997, 1999, 2002, 2009)'],['Pointing','1 gyroscope in use since 2024 (one-gyro mode)']] },
-      { title:'Optics', rows:[['Design','Ritchey-Chrétien'],['Primary mirror','2.4 m · ULE glass · 828 kg'],['Secondary mirror','0.3 m'],['Focal length','57.6 m'],['Focal ratio','f/24'],['Pointing stability','0.007″']] },
-      { title:'Active instruments', rows:[['WFC3','wide-field camera, UV to near IR (2009)'],['ACS','survey camera (2002)'],['STIS','imaging spectrograph (1997)'],['COS','ultraviolet spectrograph (2009)'],['FGS','3 fine guidance sensors']] },
-      { title:'Orbit', rows:[['Altitude','≈ 500–540 km, slowly decaying'],['Inclination','28.5°'],['Period','≈ 95 min (≈ 15 orbits per day)'],['Speed','≈ 27,000 km/h']] },
-      { title:'Power and data', rows:[['Solar arrays','2 rigid wings, 7.1 × 2.6 m each'],['Power','≈ 5 kW generated'],['Batteries','6, nickel-hydrogen'],['Link','S band, relayed by TDRS satellites']] }
+      { title:'Spacecraft', rows:[['Length','13.2 m'],['Maximum diameter','4.3 m'],['Mass','≈ 10,800 kg at launch · ≈ 12,200 kg after the last servicing mission'],['Servicing missions','5 (1993, 1997, 1999, 2002, 2009)'],['Pointing','on 1 gyroscope since June 2024; 3 of the 6 still working']] },
+      { title:'Optics', rows:[['Design','Ritchey-Chrétien'],['Primary mirror','2.4 m · 828 kg'],['Secondary mirror','0.3 m · 12.4 kg'],['Focal length','57.6 m'],['Focal ratio','f/24'],['Pointing accuracy','0.007″']] },
+      { title:'Active instruments', rows:[['WFC3','wide-field camera, ultraviolet to near infrared'],['ACS','survey camera'],['STIS','imaging spectrograph'],['COS','ultraviolet spectrograph'],['FGS','fine guidance sensors']] },
+      { title:'Orbit', rows:[['Altitude','≈ 480 km'],['Trend','below 500 km in 2026 and falling; re-entry possible from 2028 without a reboost'],['Inclination','28.5°'],['Period','≈ 95 min'],['Speed','≈ 27,000 km/h']] },
+      { title:'Power and data', rows:[['Solar arrays','2 panels of 7.54 × 2.44 m, gallium arsenide'],['Power','≈ 5,500 W in sunlight'],['Batteries','6, nickel-hydrogen'],['Link','S band, relayed by the TDRS satellites']] }
     ],
     parts:{
       door:{ name:'Aperture door and light shield', desc:"The entrance to the telescope. The door closes automatically if the line of sight strays too close to the Sun, to protect the optics. Behind it, the light shield blocks stray light from the Earth and the Moon.", facts:['Door ≈ 3 m across','Automatic safety closure'] },
-      ota:{ name:'Forward shell (secondary mirror)', desc:"The tube that extends the telescope forward. It holds the internal baffles and, inside, the 0.3 m secondary mirror, held 4.9 m in front of the primary by a graphite-epoxy truss that barely reacts to temperature.", facts:['Secondary mirror: 0.3 m','Primary–secondary spacing: 4.9 m'] },
+      ota:{ name:'Forward shell (secondary mirror)', desc:"The tube that extends the telescope forward. It holds the internal baffles and, inside, the 0.3 m secondary mirror, held 4.9 m in front of the primary by a graphite-epoxy truss that barely reacts to temperature.", facts:['Secondary mirror: 0.3 m, 12.4 kg','Primary–secondary spacing: 4.9 m'] },
       ssm:{ name:'Equipment section', desc:"The ring of bays around the telescope. It holds the flight computers, the batteries, the reaction wheels that turn the spacecraft and the communications equipment. The doors open so that astronauts could swap the units.", facts:['10 equipment bays','4 reaction wheels','6 nickel-hydrogen batteries'] },
       aft:{ name:'Aft shroud (instruments)', desc:"The widest section. The 2.4 m primary mirror sits just ahead of it; behind the mirror, at the focus, are the science instruments: four axial bays, one radial bay occupied by WFC3, and the three fine guidance sensors. The yellow handrails were for the astronauts.", facts:['Primary mirror: 2.4 m, 828 kg','4 axial instruments + 1 radial','3 fine guidance sensors'] },
-      array_stbd:{ name:'Solar array (+V2)', desc:"One of the two rigid gallium-arsenide solar wings fitted in 2002. Smaller than the original flexible arrays, they nevertheless produce more power and shake less at each day–night crossing.", facts:['7.1 × 2.6 m','Gallium arsenide','Installed in 2002 (SM3B)'] },
-      array_port:{ name:'Solar array (−V2)', desc:"The second solar wing, identical to the first. Both rotate about their mast to stay face-on to the Sun whatever direction the telescope is pointing.", facts:['7.1 × 2.6 m','≈ 5 kW for the two wings'] },
+      array_stbd:{ name:'Solar array (+V2)', desc:"One of the two rigid gallium-arsenide solar wings fitted in 2002. Smaller than the original flexible arrays, they nevertheless produce more power and shake less at each day–night crossing.", facts:['7.54 × 2.44 m','Gallium arsenide','Installed in 2002 (SM3B)'] },
+      array_port:{ name:'Solar array (−V2)', desc:"The second solar wing, identical to the first. Both rotate about their mast to stay face-on to the Sun whatever direction the telescope is pointing.", facts:['7.54 × 2.44 m','≈ 5,500 W for the two panels'] },
       hga_top:{ name:'High-gain antenna', desc:"A steerable dish at the end of a mast. Hubble does not talk to the ground directly: it sends its data to the TDRS relay satellites in geostationary orbit, which pass them on to White Sands, New Mexico.", facts:['1.3 m dish','S band, via TDRS'] },
       hga_bottom:{ name:'High-gain antenna (second)', desc:"The second dish, on the opposite side. Two antennas keep a relay satellite in view whatever the telescope's orientation.", facts:['1.3 m dish','Redundancy and coverage'] }
     }
@@ -2062,45 +2103,47 @@ var EN_TELE = {
     cmp:{ tag:'21.2 × 14.2 m', dim:'21.2 × 14.2 m (sunshield)' },
     desc:"Built for the infrared, Webb has to stay very cold so that it is not blinded by its own heat. A five-layer sunshield the size of a tennis court splits the observatory in two: a hot side facing the Sun, and a cold side at about −233 °C that holds the mirror and the instruments.",
     sourceNote:"Official model published by NASA (NASA 3D Resources). The parts are identified from the file's materials and their position; the pinkish tint on the underside of the sunshield is that of the real doped-silicon coating.",
+refs:{ hz:'JPL Horizons ephemerides (object -170), measured on this site' },
     sections:[
-      { title:'Spacecraft', rows:[['Sunshield','21.2 × 14.2 m'],['Height','≈ 8 m'],['Launch mass','≈ 6,200 kg'],['Lifetime','5 years required; propellant for more than 20']] },
-      { title:'Optics', rows:[['Design','three-mirror anastigmat (Korsch)'],['Primary mirror','6.5 m · 18 gold-coated beryllium segments'],['Collecting area','25.4 m²'],['Focal length','131.4 m'],['Focal ratio','f/20.2'],['Wavelength range','0.6 to 28.8 µm']] },
-      { title:'Thermal', rows:[['Cold side','≈ 40 K (−233 °C)'],['MIRI detector','≈ 7 K (cryocooler)'],['Hot side','up to ≈ 85 °C'],['Sunshield attenuation','≈ 1 million (200 kW in, < 1 W through)']] },
+      { title:'Spacecraft', rows:[['Sunshield','21.197 × 14.162 m'],['Launch mass','≈ 6,200 kg'],['Mission duration','5 to 10 years planned'],['Propellant','for more than 20 years']] },
+      { title:'Optics', rows:[['Design','three-mirror anastigmat (Korsch)'],['Primary mirror','6.5 m · 18 hexagonal segments of 1.32 m · gold-coated beryllium'],['Collecting area','25.44 m² (measured)'],['Secondary mirror','0.738 m, 7.17 m from the primary'],['Focal length','131.4 m · f/20'],['Wavelength range','0.6 to 28.5 µm'],['Resolution','≈ 0.1″']] },
+      { title:'Thermal', rows:[['Cold side','≈ −233 °C; telescope and instruments near 40 K'],['MIRI detectors','< 7 K (cryocooler)'],['Hot side','≈ 85 °C'],['Sunshield','5 layers of aluminised Kapton · 0.05 mm (layer 1), 0.025 mm (the others)']] },
       { title:'Instruments', rows:[['NIRCam','near-infrared camera'],['NIRSpec','multi-object spectrograph (ESA)'],['MIRI','mid-infrared imager and spectrograph'],['NIRISS / FGS','imager, slitless spectrograph and guider (CSA)']] },
-      { title:'Orbit and communications', rows:[['Location','halo orbit around L2, ≈ 1.5 million km away'],['Halo period','≈ 6 months'],['Science link','Ka band, up to 28 Mbit/s'],['Volume','≈ 57 GB per day (2 contacts of 4 h)']] }
+      { title:'Orbit and communications', rows:[['Location','halo orbit around L2, ≈ 1.5 million km away'],['Halo period','≈ 175 days'],['Science link','Ka band, up to 28 Mbit/s'],['Volume','up to 57 GB per day · 68 GB recorder']] }
     ],
     parts:{
-      primary:{ name:'Primary mirror', desc:"Eighteen hexagons of beryllium, a light metal that stays stable in the cold, coated with 100 nanometres of gold, which reflects infrared light very well. Seven actuators position each segment to the nanometre so that together they behave as a single mirror.", facts:['18 segments, 1.32 m each','≈ 20 kg per segment','Gold: 100 nm thick','25.4 m² of collecting area'] },
-      secondary:{ name:'Secondary mirror and tripod', desc:"A 74 cm convex mirror held in front of the primary by three long struts that unfolded after launch. It sends the collected light back towards the opening at the centre of the primary mirror.", facts:['0.74 m convex mirror','Struts about 7.6 m long'] },
+      primary:{ name:'Primary mirror', desc:"Eighteen hexagons of beryllium, a light metal that stays stable in the cold, coated with 100 nanometres of gold, which reflects infrared light very well. Seven actuators position each segment to the nanometre so that together they behave as a single mirror.", facts:['18 segments, 1.32 m each','20.1 kg of beryllium per segment','Gold: 100 nm thick','25.44 m² of collecting area'] },
+      secondary:{ name:'Secondary mirror and tripod', desc:"A 74 cm convex mirror held in front of the primary by three long struts that unfolded after launch. It sends the collected light back towards the opening at the centre of the primary mirror.", facts:['0.738 m convex mirror','7.17 m from the primary'] },
       aos:{ name:'Aft optics subsystem (AOS)', desc:"The black tower at the centre of the mirror. It holds the tertiary mirror, which corrects the image, and the small fine steering mirror, which cancels the observatory's tiny motions several times a second.", facts:['Fixed tertiary mirror','Fine steering mirror'] },
       isim:{ name:'Instrument module (ISIM)', desc:"Behind the mirror, the structure that carries the four science instruments. It sits at about 40 K in the shadow of the sunshield; MIRI, which observes at longer wavelengths, is cooled to 7 K by a helium refrigerator.", facts:['NIRCam, NIRSpec, MIRI, NIRISS/FGS','≈ 40 K; MIRI at ≈ 7 K'] },
-      sunshield:{ name:'Sunshield', desc:"Five sheets of aluminised Kapton, thinner than a hair, separated by vacuum. Each layer is colder than the one before, and the heat escapes sideways. The two Sun-facing layers carry a doped-silicon coating, hence their pinkish tint.", facts:['21.2 × 14.2 m','5 layers of Kapton E','Layer 1: 0.05 mm; others: 0.025 mm'] },
+      sunshield:{ name:'Sunshield', desc:"Five sheets of aluminised Kapton, thinner than a hair, separated by vacuum. Each layer is colder than the one before, and the heat escapes sideways. The two Sun-facing layers carry a doped-silicon coating, hence their pinkish tint.", facts:['21.197 × 14.162 m','5 layers of aluminised Kapton','Layer 1: 0.05 mm; others: 0.025 mm'] },
       flap:{ name:'Momentum flap', desc:"Sunlight pressing on the large sunshield slowly turns the observatory. This flap at the back balances that push, which saves the propellant needed to unload the reaction wheels.", facts:['Offsets solar radiation pressure'] },
       tower:{ name:'Deployable tower', desc:"A telescoping mast that lifted the telescope a little over a metre above the spacecraft bus after launch. The gap leaves room for the sunshield to unfold and isolates the cold side from the warm equipment.", facts:['Extends by ≈ 1.2 m'] },
       bus:{ name:'Spacecraft bus', desc:"The hot side. This carbon-composite box, always in sunlight, holds the flight computer, the reaction wheels, the tanks and thrusters, the power system and the compressor of MIRI's refrigerator.", facts:['Close to room temperature','Propulsion, pointing, computing, power'] },
       solar:{ name:'Solar array', desc:"Five hinged panels, unfolded half an hour after launch. Because Webb always keeps its back to the Sun, the array is fixed: it is lit all the time.", facts:['5 panels, ≈ 6 m long','≈ 2 kW'] },
-      hga:{ name:'High-gain antenna', desc:"Under the bus, facing the Earth. The small Ka-band dish sends the science data to the Deep Space Network during two daily contacts; a smaller S-band antenna handles commanding.", facts:['0.6 m Ka-band dish','Up to 28 Mbit/s','≈ 57 GB per day'] }
+      hga:{ name:'High-gain antenna', desc:"Under the bus, facing the Earth. The small Ka-band dish sends the science data to the Deep Space Network during two daily contacts; a smaller S-band antenna handles commanding.", facts:['Ka band, up to 28 Mbit/s','Up to 57 GB per day'] }
     }
   },
   euclid:{
     agency:'ESA (with NASA)', launch:'Launched 1 July 2023, Falcon 9, Cape Canaveral',
     sub:'Lagrange point L2, visible and near infrared', src:'Model: ESA SciFleet, via Gaia Sky',
-    cmp:{ tag:'4.7 m', dim:'4.7 m tall, Ø 3.7 m' },
+    cmp:{ tag:'4.8 m', dim:'4.8 m tall, Ø 3.74 m' },
     desc:"Euclid is mapping a third of the sky to understand dark energy and dark matter. In a single exposure its telescope sees a field more than twice the size of the full Moon, almost as sharply as Hubble. It measures the shapes and distances of billions of galaxies.",
     sourceNote:"Model by ESA's SciFleet team, distributed with Gaia Sky. The original file is a single block: it has been re-cut here into six assemblies from their geometry.",
+refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
     sections:[
-      { title:'Spacecraft', rows:[['Height','4.7 m'],['Diameter','3.7 m'],['Launch mass','≈ 2,000 kg'],['Nominal mission','6 years'],['Prime contractor','Thales Alenia Space; payload by Airbus']] },
-      { title:'Optics', rows:[['Design','three-mirror Korsch, off-axis field'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m'],['Common field','≈ 0.53 deg²'],['Telescope temperature','≈ 130 K, passively cooled']] },
-      { title:'VIS (visible)', rows:[['Detectors','36 CCDs (6 × 6) · ≈ 610 Mpx'],['Band','550–900 nm'],['Sampling','0.1″ per pixel'],['CCD temperature','≈ 150 K (−123 °C)']] },
-      { title:'NISP (near infrared)', rows:[['Detectors','16 HgCdTe H2RG arrays'],['Photometry','Y, J, H (0.95–2.02 µm)'],['Spectroscopy','slitless grisms (blue and red)'],['Detector temperature','≈ 95 K (−180 °C)']] },
-      { title:'Orbit and data', rows:[['Location','halo orbit around L2'],['Survey','≈ 14,000 deg² in 6 years'],['Science link','K band (26 GHz), ≈ 55 Mbit/s'],['Volume','up to ≈ 850 Gbit per day']] }
+      { title:'Spacecraft', rows:[['Height','≈ 4.8 m'],['Diameter','≈ 3.74 m'],['Launch mass','1,988 kg'],['Nominal mission','≈ 6 years'],['Prime contractor','Thales Alenia Space; payload by Airbus']] },
+      { title:'Optics', rows:[['Design','three-mirror Korsch'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m'],['Common field','≈ 0.54 deg²'],['Temperature','≈ 126 K (primary mirror) · 130 to 135 K (baseplate)']] },
+      { title:'VIS (visible)', rows:[['Detectors','36 CCDs of 4132 × 4096 px (6 × 6) · ≈ 609 Mpx'],['Band','530–920 nm'],['Sampling','0.1″ per pixel'],['CCD temperature','153 K']] },
+      { title:'NISP (near infrared)', rows:[['Detectors','16 H2RG arrays of 2048 × 2048 px (4 × 4)'],['Photometry','Y 950–1212 nm · J 1168–1567 nm · H 1522–2021 nm'],['Spectroscopy','blue grism 926–1366 nm (R ≳ 400) · red grism 1206–1892 nm (R ≳ 480)'],['Sampling','0.298″ per pixel'],['Detector temperature','≈ 95 K']] },
+      { title:'Orbit and data', rows:[['Location','halo orbit around L2, amplitude ≈ 1 million km'],['Halo period','≈ 170 days'],['Survey','≈ 14,000 deg² in ≈ 6 years · deep fields 53 deg²'],['Science link','K band, 55 Mbit/s, 4 h per day'],['Volume','≈ 826 Gbit compressed per day'],['DR1','12 November 2026 · ≈ 1,900 deg² · more than a billion objects']] }
     ],
     parts:{
       sunshield:{ name:'Sunshield and solar panels', desc:"The large panel that always faces the Sun. It carries the solar cells on its lit side and keeps the whole telescope in shadow, which the thermal stability of the images depends on.", facts:['3 photovoltaic panels','≈ 1.8 to 2.4 kW depending on attitude'] },
-      baffle:{ name:'Telescope and external baffle', desc:"The insulated cylinder around the telescope. Inside, the mirrors and their structure are made entirely of silicon carbide, a ceramic that hardly changes shape when the temperature varies.", facts:['1.2 m primary mirror','All silicon carbide','≈ 130 K'] },
-      instr:{ name:'Instrument bay (VIS and NISP)', desc:"Under the telescope, the baseplate that carries the two instruments. A dichroic plate splits the light: the visible goes to VIS, the infrared passes through to NISP. Both therefore observe exactly the same field at the same time. The radiators shed heat to space.", facts:['VIS: 36 CCDs, ≈ 610 Mpx','NISP: 16 infrared detectors','Dichroic beam splitter'] },
+      baffle:{ name:'Telescope and external baffle', desc:"The insulated cylinder around the telescope. Inside, the mirrors and their structure are made entirely of silicon carbide, a ceramic that hardly changes shape when the temperature varies.", facts:['1.2 m primary mirror','All silicon carbide','≈ 126 K at the primary mirror'] },
+      instr:{ name:'Instrument bay (VIS and NISP)', desc:"Under the telescope, the baseplate that carries the two instruments. A dichroic plate splits the light: the visible goes to VIS, the infrared passes through to NISP. Both therefore observe exactly the same field at the same time. The radiators shed heat to space.", facts:['VIS: 36 CCDs, ≈ 609 Mpx','NISP: 16 infrared detectors','Dichroic beam splitter'] },
       svm:{ name:'Service module', desc:"The platform: computers, tanks, the instruments' warm electronics and the pointing system. Cold-nitrogen micro-thrusters hold the line of sight steady to a few hundredths of an arcsecond during exposures.", facts:['Cold-gas (nitrogen) micro-thrusters','Fine guidance sensor in the VIS focal plane'] },
-      hga:{ name:'High-gain antenna', desc:"The steerable K-band dish, which sends the compressed images to ESA's 35 m ground stations for about four hours every day.", facts:['K band, 26 GHz','≈ 55 Mbit/s','Up to ≈ 850 Gbit per day'] },
+      hga:{ name:'High-gain antenna', desc:"The steerable K-band dish, which sends the compressed images to ESA's 35 m ground stations for about four hours every day.", facts:['K band, 25.5 to 27 GHz','55 Mbit/s, 4 h per day','≈ 826 Gbit compressed per day'] },
       adapter:{ name:'Launch vehicle adapter ring', desc:"The ring by which the spacecraft was attached to the top of the Falcon 9 rocket. It has no use after separation.", facts:['Interface with Falcon 9'] }
     }
   },
@@ -2110,12 +2153,13 @@ var EN_TELE = {
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (sunshield)' },
     desc:"Gaia measured the position, distance and motion of nearly two billion stars. The spacecraft spun once every six hours: its two telescopes, looking in directions 106.5° apart, swept the whole sky as it turned. Observations ended in January 2025.",
     sourceNote:"Model created by Toni Sagristà for Gaia Sky, the mission's visualisation software. The parts correspond to the named objects in the original file.",
+refs:{ end:'Gaia passivation (27 March 2025)' },
     sections:[
-      { title:'Spacecraft', rows:[['Deployed sunshield','Ø ≈ 10 m'],['Height','≈ 3 m'],['Launch mass','≈ 2,030 kg'],['End of observations','15 January 2025'],['Retired','27 March 2025 (solar orbit)']] },
-      { title:'Optics', rows:[['Telescopes','2 three-mirror anastigmats'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Material','silicon carbide']] },
-      { title:'Focal plane', rows:[['Detectors','106 CCDs · ≈ 938 Mpx'],['Size','≈ 1.0 × 0.4 m'],['Readout','TDI, synchronised with the spin'],['Functions','astrometry, BP/RP photometry, RVS spectrometer']] },
-      { title:'Scanning law', rows:[['Spin','1 turn in 6 h (60″/s)'],['Spin axis','45° from the Sun'],['Precession','63 days'],['Orbit','Lissajous around L2']] },
-      { title:'Catalogues', rows:[['Gaia DR3 (2022)','≈ 1.8 billion sources'],['Precision (bright stars)','≈ 0.02 mas'],['Gaia DR4','expected late 2026 (5.5 years of data)']] }
+      { title:'Spacecraft', rows:[['Deployed sunshield','Ø ≈ 10 m'],['Launch mass','2,030 kg, including 710 kg of payload and 400 kg of propellant'],['End of observations','15 January 2025'],['Retired','27 March 2025, on an orbit around the Sun']] },
+      { title:'Optics', rows:[['Telescopes','2 three-mirror anastigmats, 10 mirrors in all'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Material','silicon carbide']] },
+      { title:'Focal plane', rows:[['Detectors','106 CCDs · nearly a billion pixels'],['Size','0.42 × 0.92 m'],['Temperature','170 K, passively cooled'],['Breakdown','62 astrometry · 14 sky mapper · 14 BP/RP · 12 RVS · 4 monitoring'],['Plate scale','58.9 × 176.8 mas per pixel']] },
+      { title:'Scanning law', rows:[['Spin','1 turn in 6 h'],['Spin axis','45° from the Sun'],['Precession','≈ 63 days'],['Orbit','Lissajous around L2, period ≈ 180 days']] },
+      { title:'Power and catalogues', rows:[['Solar arrays','12.8 m², up to 1,910 W at end of life'],['Clock','rubidium, 10 MHz'],['Target precision','down to 24 µas'],['Gaia DR3 (2022)','≈ 1.8 billion sources'],['Gaia DR4','planned for 2 December 2026']] }
     ],
     parts:{
       sunshield:{ name:'Deployable sunshield', desc:"A skirt of twelve panels that opened like a parasol after launch. It keeps the telescopes in permanent shadow at a constant temperature: the slightest expansion would spoil angle measurements good to a millionth of a degree.", facts:['Ø ≈ 10 m','12 folding frames','Two layers of insulation'] },
@@ -2124,7 +2168,7 @@ var EN_TELE = {
       svm:{ name:'Service module', desc:"The ring that carries the electronics, the tanks and a rubidium atomic clock to time-stamp every measurement. Cold-nitrogen micro-thrusters keep the spin extremely regular.", facts:['Rubidium atomic clock','Cold-gas micro-propulsion'] },
       tent:{ name:'Thermal tent', desc:"The shell around the payload. It protects it from micrometeoroids and radiation, and leaves only two openings for the two telescopes to look through.", facts:['2 viewing apertures','Carbon-composite structure'] },
       torus:{ name:'Optical bench (torus)', desc:"A silicon-carbide ring about 3 m across, assembled from 17 brazed segments. It carries the ten mirrors of the two telescopes and the focal plane, and keeps the angle between the two lines of sight fixed.", facts:['Ø ≈ 3 m','17 silicon-carbide segments','Carries 10 mirrors'] },
-      focal:{ name:'Focal plane and instruments', desc:"The largest camera sent into space at the time of its launch. The images from both telescopes land on the same CCD mosaic; stars cross it in a line as the spacecraft turns.", facts:['106 CCDs · ≈ 938 Mpx','≈ 1.0 × 0.4 m'] }
+      focal:{ name:'Focal plane and instruments', desc:"The largest camera sent into space at the time of its launch. The images from both telescopes land on the same CCD mosaic; stars cross it in a line as the spacecraft turns.", facts:['106 CCDs · nearly a billion pixels','0.42 × 0.92 m'] }
     }
   }
 };
@@ -2179,7 +2223,7 @@ EN_INST.hubble = {
   }
 };
 EN_INST.jwst = {
-  summary:"Four science instruments share the ISIM module, kept at very low temperature (≈ 40 K; ≈ 7 K for the MIRI detector), along with a fine guidance sensor. Together they cover 0.6 to 28.8 µm.",
+  summary:"Four science instruments share the ISIM module, kept at very low temperature (≈ 40 K; ≈ 7 K for the MIRI detector), along with a fine guidance sensor. Together they cover 0.6 to 28.5 µm.",
   archives:[["MAST, JWST archive","JWST observations, calibration levels 1 to 3; programmatic access through astroquery.mast."],["ESA, JWST archive","European access to JWST data."],["JDox, documentation","User documentation for each instrument."],["Calibration pipeline","Calibration steps and data product formats."]],
   instruments:{
     nircam:{ kind:"Near-IR camera",
@@ -2230,7 +2274,7 @@ EN_INST.euclid = {
   instruments:{
     vis:{ kind:"Visible imager",
       summary:"A camera built to measure galaxy shapes precisely (weak gravitational lensing). A single, very broad band, with no filter other than the dichroic.",
-      specs:[["Band","IE · 550–900 nm (edges ≈ 20 nm)"],["Detectors","36 thinned (40 µm) e2v CCD273-84 devices in a 6×6 array"],["Format","4096×4132 px per CCD · 12 µm pixels · 4 readout nodes"],["Mosaic","≈ 610 Mpx · sampling ≈ 0.1″/px"],["Field","≈ 0.53 deg² (common VIS/NISP field)"],["CCD temperature","≈ 150 K (best charge transfer) · electronics ≥ 250 K"],["Saturation","≈ 200,000 e⁻ · bright limit: IE(AB) ≈ 17.8 (nominal exposure)"],["Focal ratio","f/20.4 · 1.2 m pupil · 11% central obstruction"]],
+      specs:[["Band","IE · 530–920 nm"],["Detectors","36 thinned (40 µm) e2v CCDs in a 6×6 array"],["Format","4096×4132 px per CCD · 12 µm pixels · 4 readout nodes"],["Mosaic","≈ 609 Mpx · sampling 0.1″/px"],["Field","≈ 0.54 deg² (common VIS/NISP field)"],["CCD temperature","153 K"],["Saturation","≈ 200,000 e⁻ · bright limit: IE(AB) ≈ 17.8 (nominal exposure)"],["Focal ratio","f/20.4 · 1.2 m pupil · 11% central obstruction"]],
       filtersTitle:"Photometric band",
       products:[["Calibrated images","multi-extension FITS files per exposure (level 2)"],["MER mosaics","stacks per sky tile, including ground-based data"],["MER catalogue","master source table (VIS + NISP + ground)"],["Cutouts","cutout service in the web archive and in ESA Datalabs"]],
       example:{ title:"Real schema of the q1.mer_catalogue table (excerpt)", caption:"Columns of the public Q1 table, queryable in ADQL, with the names published by the ESA archive.", text:
@@ -2240,7 +2284,7 @@ EN_INST.euclid = {
       docs:["Euclid Consortium, VIS","Q1, contents"] },
     nisp:{ kind:"IR photometer and slitless spectrometer",
       summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
-      specs:[["Range","0.92–2.0 µm"],["Detectors","16 HgCdTe H2RG arrays in 4×4 · 2040×2040 usable px · 18 µm pixels"],["Sampling","≈ 0.3″/px"],["Photometry","3 filters: Y (0.95–1.21), J (1.17–1.57), H (1.52–2.02 µm)"],["Spectroscopy","blue grism (BG) ≈ 0.92–1.37 µm · red grism (RG) ≈ 1.21–1.89 µm, 3 orientations"],["Mass and power","85.3 kg (instrument) + 40.7 kg (warm electronics) · ≤ 200 W"],["Temperature","detectors ≈ 95 K · optics ≈ 130 K"]],
+      specs:[["Range","0.92–2.0 µm"],["Detectors","16 HgCdTe H2RG arrays in 4×4 · 2040×2040 usable px · 18 µm pixels"],["Sampling","0.298″/px"],["Photometry","3 filters: Y (0.95–1.21), J (1.17–1.57), H (1.52–2.02 µm)"],["Spectroscopy","blue grism (BG) 926–1366 nm, R ≳ 400 · red grism (RG) 1206–1892 nm, R ≳ 480"],["Mass and power","85.3 kg (instrument) + 40.7 kg (warm electronics) · ≤ 200 W"],["Temperature","detectors ≈ 95 K · optics ≈ 130 K"]],
       filtersTitle:"Bands and grisms (nominal ranges)",
       products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images; Q1: red grism only"],["SPE catalogue","13 tables of spectroscopic measurements (redshifts, quality)"],["PHZ catalogue","8 tables of photometric redshifts"]],
       example:{ title:"Contents of the Q1 catalogue (number of tables per product)", caption:"Real organisation of the catalogues queryable in ADQL in the ESA archive.", text:
@@ -2324,7 +2368,7 @@ var EN_OPTICS = {
     fp:{ labs:[['Gaia focal plane','106 CCDs of 4500 × 1966 px, 10 × 30 µm']], key:['monitoring (basic angle, wavefront)','sky mapper','astrometric field','blue photometer','red photometer','RVS spectrometer'], note:'Stars cross the focal plane from left to right as the spacecraft turns: detection, then astrometry, photometry and finally spectroscopy.' } }
 };
 var EN_ORBITS = {
-  hubble:{ sum:'Hubble orbits about 530 km above the ground, once every 95 minutes. The Earth fills almost half its sky, and hides the Sun from it on every orbit.',
+  hubble:{ sum:'Hubble orbits about 480 km above the ground, once every 95 minutes. The Earth fills almost half its sky, and hides the Sun from it on every orbit.',
     notes:['The Earth blocks most targets for part of every orbit: a long exposure is cut into chunks of fifty minutes or so.','Only two small regions of the sky, near the poles of the orbit, stay visible continuously. Hubble\'s deep fields were chosen there.','The day–night crossing every 95 minutes stresses the structure: that is what made the first solar arrays shake.','The orbit slowly sinks through drag on the upper atmosphere; the Space Shuttle used to raise it at each visit.'] },
   jwst:{ sum:'Webb orbits the Lagrange point L2, 1.5 million km from the Earth, on an orbit wider than the Moon\'s. One circuit takes about six months.',
     notes:['At L2 the Sun, the Earth and the Moon always stay on the same side: one sunshield is enough to block all three.','The orbit is wide enough never to pass through the shadow of the Earth or the Moon: the solar array is always lit.','The position is unstable. A small thruster burn, about every three weeks, keeps Webb from drifting away.'] },
@@ -2373,7 +2417,7 @@ var EN_UI = {
   "Chargement des quatre maquettes":"Loading the four models", "Chargement interrompu":"Loading interrupted",
   "Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.":"The graphics context was lost. Reload the page to get the 3D view back.",
   /* orbit diagrams in the panel */
-  "≈ 530 km d'altitude":"≈ 530 km altitude", "Un tour toutes les 95 min.":"One orbit every 95 min.", "Terre et orbite dessinées":"Earth and orbit drawn", "à la même échelle.":"to the same scale.",
+  "≈ 480 km d'altitude":"≈ 480 km altitude", "Un tour toutes les 95 min.":"One orbit every 95 min.", "Terre et orbite dessinées":"Earth and orbit drawn", "à la même échelle.":"to the same scale.",
   "Soleil":"Sun", "Terre":"Earth", "Lune, 384 000 km":"Moon, 384,000 km", "1,5 million de km":"1.5 million km", "150 M km":"150 M km",
   "Position occupée de 2014 à 2025. Terre, Lune et L2 à l'échelle.":"Position held from 2014 to 2025. Earth, Moon and L2 to scale.", "Terre, Lune et L2 à l'échelle. Toujours à l'opposé du Soleil.":"Earth, Moon and L2 to scale. Always on the side away from the Sun.",
   "Orbite basse terrestre, à l'échelle":"Low Earth orbit, to scale", "Position au point de Lagrange L2":"Position at the Lagrange point L2",
@@ -2419,7 +2463,7 @@ var EN_UI = {
   "0,040″ (UVIS)":"0.040″ (UVIS)", "0,13″ (IR)":"0.13″ (IR)", "0,05″ (WFC)":"0.05″ (WFC)", "0,024″ (MAMA)":"0.024″ (MAMA)", "0,05″ (CCD)":"0.05″ (CCD)", "0,031″ (SW)":"0.031″ (SW)", "0,063″ (LW)":"0.063″ (LW)",
   "0,1″":"0.1″", "0,11″":"0.11″", "0,065″":"0.065″", "≈ 0,07″":"≈ 0.07″", "0,3″":"0.3″", "0,059″ × 0,177″":"0.059″ × 0.177″",
   "130–210 (grismes IR)":"130–210 (IR grisms)", "500 à 114 000":"500 to 114,000", "1 500 à 24 000":"1,500 to 24,000", "≈ 1 700 (grisme)":"≈ 1,700 (grism)", "100 à 2 700":"100 to 2,700", "100 à 3 500":"100 to 3,500", "150 à 700":"150 to 700",
-  "> 380 (grisme rouge)":"> 380 (red grism)", "20 à 100":"20 to 100", "≈ 11 500":"≈ 11,500",
+  "≳ 480 (grisme rouge)":"≳ 480 (red grism)", "Sources":"Sources", "Valeur pas encore vérifiée face à une source primaire":"Value not yet checked against a primary source", "20 à 100":"20 to 100", "≈ 11 500":"≈ 11,500",
   "Plans focaux, à la même échelle":"Focal planes, to the same scale", "Détecteurs des quatre observatoires à la même échelle":"Detectors of the four observatories to the same scale", "Gaia, 106 CCD":"Gaia, 106 CCDs",
   "Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.":"True size of the detector mosaics. Gaia's focal plane is nearly a metre long; that of VIS, on Euclid, about 30 cm on a side; a Webb detector, less than 4 cm. Gaps between detectors are indicative; only one NIRCam module is drawn.",
   /* light path */
@@ -2435,7 +2479,7 @@ var EN_UI = {
   "La loi de balayage":"The scanning law", "Ce que cela change":"What difference it makes", "Lecture":"Play", "Pause":"Pause", "Chargement de la trajectoire…":"Loading the trajectory…", "La trajectoire n'a pas pu être chargée.":"The trajectory could not be loaded.",
   "Chargement des pointés…":"Loading the pointings…", "Chargement des observations…":"Loading the observations…", "Chargement des trajectoires…":"Loading the trajectories…", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Les trajectoires n'ont pas pu être chargées.":"The trajectories could not be loaded.",
   "Où il a pointé, année après année":"Where it has pointed, year after year", "L'avancée du relevé, mois après mois":"Progress of the survey, month by month",
-  "Altitude":"Altitude", "≈ 530 km, en lente décroissance":"≈ 530 km, slowly decaying", "Période":"Period", "Vitesse":"Speed", "≈ 7,6 km/s":"≈ 7.6 km/s", "Inclinaison":"Inclination", "28,5°":"28.5°", "Tours par jour":"Orbits per day", "Dans l'ombre de la Terre":"In the Earth's shadow", "au plus ≈ 36 min par tour":"at most ≈ 36 min per orbit",
+  "Altitude":"Altitude", "≈ 480 km, en baisse":"≈ 480 km, falling", "au plus ≈ 36 min par tour (calculé)":"at most ≈ 36 min per orbit (computed)", "Période":"Period", "Vitesse":"Speed", "≈ 7,6 km/s":"≈ 7.6 km/s", "Inclinaison":"Inclination", "28,5°":"28.5°", "Tours par jour":"Orbits per day", "Dans l'ombre de la Terre":"In the Earth's shadow", "au plus ≈ 36 min par tour":"at most ≈ 36 min per orbit",
   "Terre et orbite à l'échelle. Le mouvement est calculé à partir de la période ; la durée de l'ombre est celle du cas où le Soleil est dans le plan de l'orbite, le plus défavorable.":"Earth and orbit to scale. The motion is computed from the period; the time in shadow is for the worst case, when the Sun lies in the plane of the orbit.",
   "On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).":"Looking towards L2, with the Sun behind us. The dashed circle shows the size of the Moon's orbit to the same scale. Real trajectory (JPL Horizons ephemerides).",
   "Le Soleil est à gauche, hors du cadre, à 150 millions de km. Le repère tourne avec la Terre autour du Soleil : la Terre et L2 y restent fixes.":"The Sun is to the left, out of the frame, 150 million km away. The frame rotates with the Earth around the Sun, so the Earth and L2 stay fixed in it.",
@@ -2446,9 +2490,10 @@ var EN_UI = {
   "Orbite de Hubble autour de la Terre, à l'échelle":"Hubble's orbit around the Earth, to scale", "Trajectoire autour de L2 vue depuis la Terre":"Trajectory around L2 seen from the Earth", "Trajectoire autour de L2 vue du nord de l'écliptique":"Trajectory around L2 seen from north of the ecliptic",
   "Couverture du ciel par la loi de balayage de Gaia":"Sky coverage from Gaia's scanning law", "Carte du ciel des pointés réels":"Sky map of the real pointings", "Carte du ciel des observations d'Euclid":"Sky map of Euclid's observations",
   "Orbites autour de L2, à la même échelle":"Orbits around L2, to the same scale", "Les trois orbites vues depuis la Terre":"The three orbits seen from the Earth", "Les trois orbites vues de dessus":"The three orbits seen from above",
-  "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 530 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 530 km up, merges with the dot that stands for the Earth."
+  "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^Valeurs vérifiées le (\S+) face aux sources ci-dessus\. Un «\s\?\s» signale une valeur pas encore confrontée à une source primaire\.$/, "Values checked on $1 against the sources above. A “?” marks a value not yet checked against a primary source."],
   [/ Les zones blanches sont hors du champ observé\./g, " White areas lie outside the observed field."], [/Crédit : /g, "Credit: "], [/Récupéré dans l'archive le (\d\d)\/(\d\d)\/(\d{4})\./g, "Retrieved from the archive on $3-$2-$1."],
   [/ Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu\./g, " Rays are drawn in orange, mirrors as thick lines, detectors in blue."],
   [/ Taille des détecteurs à l'échelle ; les espaces entre détecteurs sont indicatifs\./g, " Detector sizes are to scale; the gaps between detectors are indicative."],
@@ -2487,7 +2532,10 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
 
   TELESCOPES.forEach(function(t){
     var e = EN_TELE[t.id]; if (!e) return;
+    var frSec = t.sections;
     ['agency','launch','sub','src','desc','sourceNote','sections'].forEach(function(k){ if (e[k]) t[k] = e[k]; });
+    t.sections.forEach(function(sec, i){ sec.rows.forEach(function(r, j){ var o = frSec[i] && frSec[i].rows[j]; if (o && o[2]) r[2] = o[2]; }); });
+    if (e.refs) Object.keys(e.refs).forEach(function(k){ if (t.refs[k]) t.refs[k].t = e.refs[k]; });
     t.cmp.tag = e.cmp.tag; t.cmp.dim = e.cmp.dim;
     t.parts.forEach(function(p){ var q = e.parts[p.key]; if (q){ p.name = q.name; p.desc = q.desc; p.facts = q.facts; } });
   });
@@ -2594,7 +2642,7 @@ function orbitSvg(t){
       '<circle cx="138" cy="29" r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"/>' +
       '<path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>' +
       '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>Hubble</text>' +
-      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 530 km d\'altitude</text>' +
+      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 480 km d\'altitude</text>' +
       '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les 95 min.</text>' +
       '<text x="190" y="93" fill="#3A4147" font-size="12" ' + F + '>Terre et orbite dessinées</text>' +
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
@@ -2625,6 +2673,22 @@ function facts(t){
 /* thème : suit le système (ou l'hôte), sauf choix explicite mémorisé */
 function isDark(){ var a = document.documentElement.getAttribute('data-theme'); return a ? a === 'dark' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); }
 (function(){ try { var v = localStorage.getItem('obs-theme'); if ((v === 'dark' || v === 'light') && !document.documentElement.getAttribute('data-theme')) document.documentElement.setAttribute('data-theme', v); } catch(e){} })();
+/* ---------- sources (lots A et B des specs) ----------
+   Chaque ligne de caractéristique peut porter une clé de source (r[2], chaîne ou liste) qui renvoie à t.refs.
+   Les sources sont numérotées dans l'ordre d'apparition ; une valeur chiffrée sans source porte un « ? ». */
+function refNums(t){ var n = {}, k = 0; t.sections.forEach(function(sec){ sec.rows.forEach(function(r){ [].concat(r[2] || []).forEach(function(x){ if (!n[x]) n[x] = ++k; }); }); }); return n; }
+function refMark(r, nums){
+  var ks = [].concat(r[2] || []);
+  if (ks.length) return '<sup class="ref">' + ks.map(function(k){ return nums[k]; }).join(',') + '</sup>';
+  return /\d/.test(r[1]) ? '<sup class="ref nv" title="Valeur pas encore vérifiée face à une source primaire">?</sup>' : '';
+}
+function refList(t, nums){
+  var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }); if (!keys.length) return '';
+  var d = t.checked.split('-'), when = OBS_LANG === 'en' ? t.checked : d[2] + '/' + d[1] + '/' + d[0];
+  return '<div class="spec-section"><div class="spec-section-title">Sources</div><ol class="refs">' +
+    keys.map(function(k){ var x = t.refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a> <span>' + esc(x.p) + '</span></li>'; }).join('') +
+    '</ol><p class="source-note">Valeurs vérifiées le ' + when + ' face aux sources ci-dessus. Un « ? » signale une valeur pas encore confrontée à une source primaire.</p></div>';
+}
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -2666,6 +2730,7 @@ function renderPanel(){
     '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
+    var nums = refNums(t);
     h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + '<br>' + esc(t.launch) + '</div>' +
         '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
@@ -2673,8 +2738,9 @@ function renderPanel(){
         '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Trajet de la lumière, filtres, exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
-            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + '</div></div>'; }).join('') + '</div>';
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
+        refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
@@ -2868,8 +2934,8 @@ var sunDir = new THREE.Vector3(0.5, 0.6, 0.6).normalize(), sunSprite, earth = nu
   sunSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(cv), blending:THREE.AdditiveBlending, depthTest:false, depthWrite:false, transparent:true }));
   sunSprite.scale.set(30000, 30000, 1); sunSprite.renderOrder = -5; sunSprite.visible = false; bgScene.add(sunSprite);
 
-  /* Terre vue de l'orbite de Hubble : rayon 6 371 km, observateur à ≈ 530 km */
-  var RE = 6371, ALT = 530;
+  /* Terre vue de l'orbite de Hubble : rayon 6 371 km, observateur à ≈ 480 km (NASA) */
+  var RE = 6371, ALT = 480;
   var NOISE = 'float h3(vec3 p){ p = fract(p*0.3183099 + 0.1); p *= 17.0; return fract(p.x*p.y*p.z*(p.x+p.y+p.z)); }' +
     'float n3(vec3 x){ vec3 i = floor(x), f = fract(x); f = f*f*(3.0-2.0*f); return mix(mix(mix(h3(i),h3(i+vec3(1,0,0)),f.x), mix(h3(i+vec3(0,1,0)),h3(i+vec3(1,1,0)),f.x), f.y), mix(mix(h3(i+vec3(0,0,1)),h3(i+vec3(1,0,1)),f.x), mix(h3(i+vec3(0,1,1)),h3(i+vec3(1,1,1)),f.x), f.y), f.z); }' +
     'float fbm(vec3 p){ float a = 0.5, s = 0.0; for (int i=0;i<6;i++){ s += a*n3(p); p = p*2.03 + 7.1; a *= 0.5; } return s; }';
