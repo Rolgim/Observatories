@@ -325,7 +325,17 @@ def euclid_nisp(key):
 # ---------------------------------------------------------------- Euclid : images et spectre (IRSA, données Q1 publiques)
 def stretch(d, hi_pct=99.7):
     """Étirement asinh : fond ramené à zéro, hautes lumières compressées."""
-    d = np.nan_to_num(np.asarray(d, dtype=float))
+    d = np.asarray(d, dtype=float)
+    # cœurs saturés : la chaîne y laisse des pixels sans valeur (NaN ou 0) au milieu d'une zone très brillante ; on les rend blancs
+    bad = ~np.isfinite(d) | (d == 0)
+    if bad.any():
+        good = np.where(bad, np.nan, d); n = 24; h, w = (d.shape[0] // n) * n, (d.shape[1] // n) * n
+        with np.errstate(all="ignore"):
+            blk = np.nanmean(good[:h, :w].reshape(h // n, n, w // n, n), axis=(1, 3))
+        thr = np.nanpercentile(good, 99.5)
+        hot = np.kron(np.nan_to_num(blk, nan=np.inf) > thr, np.ones((n, n), dtype=bool))
+        fill = np.zeros_like(bad); fill[:h, :w] = hot
+        d = np.where(bad & fill, np.nanmax(good), np.where(bad, np.nanmedian(good), d))
     bg = np.median(d); sig = 1.4826 * np.median(np.abs(d - bg)) + 1e-12; hi = np.percentile(d, hi_pct)
     v = np.arcsinh((d - bg) / (3 * sig)) / np.arcsinh(max(hi - bg, 3 * sig) / (3 * sig))
     return np.clip(v, 0, 1)
@@ -397,14 +407,25 @@ def euclid_spectrum(key):
     from astropy.table import Table
     res = Irsa.query_tap("SELECT TOP 60 objectid, path, hdu FROM euclid.objectid_spectrafile_association_q1").to_table()
     print("   candidats :", len(res), res.colnames)
-    best = None
+    best, shown, shown2 = None, False, False
     for r in res:
         try:
             url = "https://irsa.ipac.caltech.edu/" + str(r["path"]).lstrip("/")
-            with fits.open(url) as hdul:
-                h = hdul[int(r["hdu"])]
-                t = Table(h.data); cols = [c.upper() for c in t.colnames]
-                fscale = float(h.header.get("FSCALE", 1.0))
+            raw = requests.get(url, timeout=300).content
+            if not shown:
+                shown = True; print("   première réponse :", url, len(raw), "octets, début :", raw[:80])
+            if raw[:6] == b"SIMPLE":
+                with fits.open(io.BytesIO(raw)) as hdul:
+                    h = hdul[int(r["hdu"])] if len(hdul) > int(r["hdu"]) else hdul[1]
+                    t = Table(h.data); fscale = float(h.header.get("FSCALE", 1.0))
+            else:  # service de conversion : le spectre arrive déjà extrait, en VOTable
+                t = Table.read(io.BytesIO(raw), format="votable"); fscale = float(t.meta.get("FSCALE", 1.0))
+                if not shown2:
+                    shown2 = True; print("   colonnes VOTable :", t.colnames, {k: str(v)[:40] for k, v in list(t.meta.items())[:12]})
+            if True:
+                cols = [c.upper() for c in t.colnames]
+                if "SIGNAL" not in cols and "FLUX" in cols:
+                    t.rename_column(t.colnames[cols.index("FLUX")], "SIGNAL"); cols = [c.upper() for c in t.colnames]
                 w = np.array(t[t.colnames[cols.index("WAVELENGTH")]], dtype=float); f = np.array(t[t.colnames[cols.index("SIGNAL")]], dtype=float) * fscale
                 ok = np.isfinite(w) & np.isfinite(f) & (f != 0)
                 if "MASK" in cols:
@@ -417,7 +438,9 @@ def euclid_spectrum(key):
                 if best is None or snr > best[0]:
                     best = (snr, r, w, f, url)
         except Exception as e:
-            print("   illisible :", repr(e))
+            nerr = locals().get("nerr", 0) + 1
+            if nerr <= 2:
+                print("   illisible :", repr(e)[:300])
     if best is None:
         raise RuntimeError("aucun spectre Euclid lisible")
     snr, r, w, f, url = best
@@ -441,7 +464,7 @@ def gaia_star():
 
 def gaia_datalink(source_id, kind):
     from astroquery.gaia import Gaia
-    res = Gaia.load_data(ids=[int(source_id)], data_release="Gaia DR3", retrieval_type=kind, data_structure="INDIVIDUAL")
+    res = Gaia.load_data(ids=[int(source_id)], data_release="Gaia DR3", retrieval_type=kind, data_structure="DATAMODEL_STANDARD")
     print("   DataLink", kind, ":", list(res.keys()))
     item = list(res.values())[0]
     item = item[0] if isinstance(item, (list, tuple)) else item
