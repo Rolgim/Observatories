@@ -595,5 +595,79 @@
   "caption": "Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.",
   "credit": "ESA/Euclid/Euclid Consortium",
   "fetched": "2026-11-13"
+ },
+ "euclid/vis:image": {
+  "type": "image",
+  "file": "euclid-vis-image.jpg",
+  "width": 1100,
+  "height": 1100,
+  "title": "VIS : la nébuleuse de l'Œil de chat (NGC 6543)",
+  "meta": [
+   [
+    "Archive",
+    "NASA/IPAC IRSA, miroir des données Euclid"
+   ],
+   [
+    "Publication",
+    "Quick Release Q1, mosaïques MER"
+   ],
+   [
+    "Centre de la découpe",
+    "269,6392° ; 66,6331°"
+   ],
+   [
+    "Champ",
+    "4′ × 4′"
+   ],
+   [
+    "Fichiers d'origine",
+    "EUC_MER_BGSUB-MOSAIC-VIS_TILE102159486-467D36_20241025T011029.446661Z_00.00.fits"
+   ],
+   [
+    "Traitement",
+    "découpe, étirement asinh, réduction pour le site"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+  "caption": "Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.",
+  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "fetched": "2026-11-13"
+ },
+ "euclid/nisp:image": {
+  "type": "image",
+  "file": "euclid-nisp-image.jpg",
+  "width": 1100,
+  "height": 1100,
+  "title": "NISP : la nébuleuse de l'Œil de chat (NGC 6543), bandes Y, J et H",
+  "meta": [
+   [
+    "Archive",
+    "NASA/IPAC IRSA, miroir des données Euclid"
+   ],
+   [
+    "Publication",
+    "Quick Release Q1, mosaïques MER"
+   ],
+   [
+    "Centre de la découpe",
+    "269,6392° ; 66,6331°"
+   ],
+   [
+    "Champ",
+    "4′ × 4′"
+   ],
+   [
+    "Fichiers d'origine",
+    "EUC_MER_BGSUB-MOSAIC-NIR-Y_TILE102159486-D8AA36_20241024T215508.276320Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-J_TILE102159486-FEA83F_20241024T215821.130299Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-H_TILE102159486-5FB4D4_20241024T215012.624096Z_00.00.fits"
+   ],
+   [
+    "Traitement",
+    "découpe, étirement asinh, réduction pour le site"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+  "caption": "Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.",
+  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "fetched": "2026-11-13"
  }
 }
