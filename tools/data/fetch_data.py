@@ -405,27 +405,34 @@ def euclid_spectrum(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
-    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1 WHERE hdu IS NOT NULL AND hdu > 0").to_table()
+    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1 WHERE hdu IS NOT NULL AND hdu > 0 AND hdu < 40").to_table()
     print("   candidats :", len(res), res.colnames, "· première ligne :", [str(v)[:120] for v in res[0]])
     pcol = [c for c in res.colnames if c.lower() in ("path", "uri", "access_url", "file_path")]
     pcol = pcol[0] if pcol else res.colnames[1]
     res = res[[len(str(v).strip()) > 3 and str(v).strip() != "--" for v in res[pcol]]]
     print("   colonne de chemin :", pcol, "· lignes avec chemin :", len(res))
-    best, shown, shown2 = None, False, False
+    best, base = None, None
     for r in res:
         try:
-            pth = str(r[pcol]).strip(); url = pth if pth.startswith("http") else "https://irsa.ipac.caltech.edu/" + pth.lstrip("/")
-            raw = requests.get(url, timeout=300).content
-            if not shown:
-                shown = True; print("   première réponse :", url, len(raw), "octets, début :", raw[:80])
-            if raw[:6] == b"SIMPLE":
-                with fits.open(io.BytesIO(raw)) as hdul:
-                    h = hdul[int(r["hdu"])] if len(hdul) > int(r["hdu"]) else hdul[1]
-                    t = Table(h.data); fscale = float(h.header.get("FSCALE", 1.0))
-            else:  # service de conversion : le spectre arrive déjà extrait, en VOTable
-                t = Table.read(io.BytesIO(raw), format="votable"); fscale = float(t.meta.get("FSCALE", 1.0))
-                if not shown2:
-                    shown2 = True; print("   colonnes VOTable :", t.colnames, {k: str(v)[:40] for k, v in list(t.meta.items())[:12]})
+            pth = str(r[pcol]).strip().lstrip("/")
+            if base is None:  # où les fichiers sont-ils servis ? on essaie les emplacements connus, une fois
+                for b in ("https://irsa.ipac.caltech.edu/ibe/data/", "https://irsa.ipac.caltech.edu/data/", "https://nasa-irsa-euclid-q1.s3.us-east-1.amazonaws.com/", "https://irsa.ipac.caltech.edu/"):
+                    for q in (pth, pth.replace("euclid/q1/", "q1/", 1), pth.replace("euclid/", "", 1)):
+                        try:
+                            rr = requests.get(b + q, headers={"Range": "bytes=0-79"}, timeout=60)
+                            print("   essai", b + q[:30], "→", rr.status_code, rr.content[:12])
+                            if rr.status_code in (200, 206) and rr.content[:6] == b"SIMPLE":
+                                base = (b, pth[: len(pth) - len(q)]); break
+                        except Exception as e:
+                            print("   essai", b, "→", repr(e)[:80])
+                    if base:
+                        break
+                if base is None:
+                    raise RuntimeError("fichiers de spectres introuvables")
+            url = base[0] + pth[len(base[1]):]
+            with fits.open(url, use_fsspec=True, lazy_load_hdus=True) as hdul:
+                h = hdul[int(r["hdu"])]
+                t = Table(h.data); fscale = float(h.header.get("FSCALE", 1.0))
             if True:
                 cols = [c.upper() for c in t.colnames]
                 if "SIGNAL" not in cols and "FLUX" in cols:
