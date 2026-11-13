@@ -127,3 +127,6 @@ svg.cov.big{ min-width:640px; }
 .ctable tr[data-jump]{ cursor:pointer; }
 .ctable tr[data-jump]:hover td{ background:var(--sheet); }
 .ctable tr.first td{ border-top:1px solid var(--ink); }
+
+/* observations réelles */
+.real-img{ display:block; width:100%; height:auto; background:#000; }

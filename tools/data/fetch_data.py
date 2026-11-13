@@ -100,6 +100,7 @@ def mast_meta(row, collection, inst):
 def mast_image(key, collection, instruments, ra, dec, radius=3, title="", caption=""):
     from astroquery.mast import Observations
     from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None  # les aperçus de mosaïques Hubble dépassent la limite par défaut de Pillow
     inst, tab = mast_obs(collection, instruments, ra, dec, radius, "image")
     if tab is None:
         raise RuntimeError("aucune observation trouvée")
@@ -116,7 +117,9 @@ def mast_image(key, collection, instruments, ra, dec, radius=3, title="", captio
             st = Observations.download_file(p["dataURI"], local_path=local)
             if st[0] != "COMPLETE":
                 continue
-            im = Image.open(local).convert("RGB")
+            im = Image.open(local)
+            im.draft("RGB", (2200, 2200))  # JPEG : décodage direct à échelle réduite
+            im = im.convert("RGB")
             if min(im.size) < 300:
                 continue
             im.thumbnail((1100, 1100))
@@ -194,6 +197,8 @@ def mast_spectrum(key, collection, instruments, ra, dec, radius=0.5, subgroups=(
 # ---------------------------------------------------------------- TAP (Gaia, Euclid)
 def tap(url, adql):
     r = requests.post(url, data=dict(REQUEST="doQuery", LANG="ADQL", FORMAT="json", QUERY=adql), timeout=300)
+    if not r.ok:
+        print("   réponse du service TAP :", r.status_code, r.text[:1500].replace("\n", " "))
     r.raise_for_status()
     j = r.json()
     names = [m["name"] for m in j["metadata"]]

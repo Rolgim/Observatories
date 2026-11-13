@@ -303,6 +303,9 @@ svg.cov.big{ min-width:640px; }
 .ctable tr[data-jump]:hover td{ background:var(--sheet); }
 .ctable tr.first td{ border-top:1px solid var(--ink); }
 
+/* observations réelles */
+.real-img{ display:block; width:100%; height:auto; background:#000; }
+
 </style>
 </head>
 <body>
@@ -1561,6 +1564,47 @@ var InstrumentsUI = (function(){
   function table(rows){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+'</div></div>'; }).join('') + '</div>'; }
   function host(u){ return u.replace(/^https?:\/\//,'').replace(/\/.*$/,''); }
 
+  /* ---------- observations réelles (lot E) : data/manifest.json est produit par tools/data/fetch_data.py ---------- */
+  function ticks(lo, hi, n){
+    var span = hi - lo, step = Math.pow(10, Math.floor(Math.log(span/n)/Math.LN10)), e = span/n/step;
+    step *= e >= 5 ? 5 : e >= 2 ? 2 : 1;
+    var out = []; for (var v = Math.ceil(lo/step)*step; v <= hi + step*1e-6; v += step) out.push(Math.abs(v) < step*1e-6 ? 0 : v);
+    return { v:out, step:step };
+  }
+  function tl(v, step){
+    var a = Math.abs(v); if (a !== 0 && (a < 1e-3 || a >= 1e5)) return v.toExponential(1).replace('.', ',').replace('e', '·10^').replace('^+', '^');
+    var d = Math.max(0, -Math.floor(Math.log(step)/Math.LN10 + 1e-9)); return num(v, Math.min(d, 4)).replace('-', '−');
+  }
+  function plot(j){
+    var W = 560, H = 330, L = 62, R = 12, Tp = 12, B = 42, n = j.x.length, i;
+    var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    for (i=0;i<n;i++){ if (j.x[i] < x0) x0 = j.x[i]; if (j.x[i] > x1) x1 = j.x[i]; if (j.y[i] < y0) y0 = j.y[i]; if (j.y[i] > y1) y1 = j.y[i]; }
+    if (j.type === 'hist'){ x0 -= j.binw/2; x1 += j.binw/2; y0 = 0; y1 *= 1.05; }
+    else if (j.type === 'scatter'){ var px = (x1-x0)*0.03, py = (y1-y0)*0.03; x0 -= px; x1 += px; y0 -= py; y1 += py; }
+    if (j.ymin != null) y0 = j.ymin; if (j.ymax != null) y1 = j.ymax;
+    function X(v){ return L + (v-x0)/(x1-x0)*(W-L-R); }
+    function Y(v){ var t = (v-y0)/(y1-y0); if (j.invertY) t = 1-t; return H - B - Math.max(-0.02, Math.min(1.02, t))*(H-B-Tp); }
+    var s = '<svg class="optic" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(j.ylabel+' en fonction de '+j.xlabel)+'">';
+    var tx = ticks(x0, x1, 6), ty = ticks(y0, y1, 5);
+    tx.v.forEach(function(v){ s += '<line class="cov-grid" x1="'+X(v)+'" y1="'+Tp+'" x2="'+X(v)+'" y2="'+(H-B)+'"/><text class="cov-tick" x="'+X(v)+'" y="'+(H-B+15)+'" text-anchor="middle">'+tl(v, tx.step)+'</text>'; });
+    ty.v.forEach(function(v){ s += '<line class="cov-grid" x1="'+L+'" y1="'+Y(v)+'" x2="'+(W-R)+'" y2="'+Y(v)+'"/><text class="cov-tick" x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+tl(v, ty.step)+'</text>'; });
+    s += '<line class="cov-axis" x1="'+L+'" y1="'+(H-B)+'" x2="'+(W-R)+'" y2="'+(H-B)+'"/><line class="cov-axis" x1="'+L+'" y1="'+Tp+'" x2="'+L+'" y2="'+(H-B)+'"/>';
+    s += '<text class="cov-unit" x="'+((L+W-R)/2)+'" y="'+(H-8)+'" text-anchor="middle">'+esc(j.xlabel)+'</text><text class="cov-unit" transform="translate(13 '+((Tp+H-B)/2)+') rotate(-90)" text-anchor="middle">'+esc(j.ylabel)+'</text>';
+    if (j.type === 'line'){ var d = ''; for (i=0;i<n;i++) d += (i ? 'L' : 'M') + X(j.x[i]).toFixed(1) + ' ' + Y(j.y[i]).toFixed(1); s += '<path d="'+d+'" fill="none" stroke="#3D6BE0" stroke-width="1.1" stroke-linejoin="round"/>'; }
+    else if (j.type === 'scatter'){ for (i=0;i<n;i++) s += '<circle cx="'+X(j.x[i]).toFixed(1)+'" cy="'+Y(j.y[i]).toFixed(1)+'" r="1.3" fill="#3D6BE0" fill-opacity="0.5"/>'; }
+    else { var bw = (X(x0 + j.binw) - X(x0)); for (i=0;i<n;i++){ var yy = Y(j.y[i]); s += '<rect x="'+(X(j.x[i]) - bw/2 + 0.5).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+Math.max(1, bw-1).toFixed(1)+'" height="'+(H-B-yy).toFixed(1)+'" fill="#3D6BE0"/>'; } }
+    return '<div class="svgwrap">' + s + '</svg></div>';
+  }
+  function real(tid, iid){
+    var m = (window.OBS_DATA || {})[tid + '/' + iid]; if (!m) return '';
+    var body = m.type === 'image'
+      ? '<img class="real-img" src="data/'+esc(m.file)+'" width="'+m.width+'" height="'+m.height+'" loading="lazy" alt="'+esc(m.title)+'">'
+      : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
+    return '<div class="isec"><h4>Observation réelle</h4><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
+      '<div class="cap">'+esc(m.caption)+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' + table(m.meta) +
+      '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">Retrouver cette observation dans l\'archive<em>'+esc(host(m.url))+'</em></a></div></div>';
+  }
+
   function overview(tid){
     var d = INST_DATA[tid], s = '';
     s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions. Cliquer une ligne du graphique ou une case pour ouvrir le détail.</div></div><p class="inst-sum">'+esc(d.summary)+'</p></div>';
@@ -1588,6 +1632,7 @@ var InstrumentsUI = (function(){
     if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
     var f = fovBlock(tid, iid);
     if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+'</div>';
+    s += real(tid, iid);
     if (it.products) s += '<div class="isec"><h4>Produits de données</h4>'+table(it.products)+'</div>';
     if (it.example){
       s += '<div class="isec"><h4>Exemple de données</h4><div class="ex-head"><span class="ex-title">'+esc(it.example.title)+'</span><span class="tag '+(it.example.real?'real':'illus')+'">'+(it.example.real?'données réelles':'structure réelle, valeurs illustratives')+'</span></div>'+code(it.example.text)+'<div class="cap">'+esc(it.example.caption)+'</div></div>';
@@ -1704,7 +1749,7 @@ var InstrumentsUI = (function(){
     return { pills:pills, nav:nav, main: sel === 'optique' ? Optics.render(tid, NAMES[tid]) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
-  return { ORDER:ORDER, NAMES:NAMES, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+  return { ORDER:ORDER, NAMES:NAMES, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
 })();
 
 /* =================================================================
@@ -1844,8 +1889,21 @@ function renderInst(keepScroll){
   S.instSel = r.sel;
   $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
+  loadReal();
   var on = $('inst-nav').querySelector('.on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){}
 }
+/* observations réelles : manifeste chargé une fois, mesures chargées à l'ouverture de la fiche */
+var realCache = {};
+function loadReal(){
+  var els = $('inst-main').querySelectorAll('[data-real-plot]');
+  Array.prototype.forEach.call(els, function(el){
+    var f = el.getAttribute('data-real-plot');
+    (realCache[f] = realCache[f] || fetch('data/' + f).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }))
+      .then(function(j){ if (el.isConnected !== false) el.innerHTML = InstrumentsUI.plot(j); })
+      .catch(function(){ delete realCache[f]; el.innerHTML = '<div class="cap">Les mesures n\'ont pas pu être chargées.</div>'; });
+  });
+}
+try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
   var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;

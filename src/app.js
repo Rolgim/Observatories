@@ -135,8 +135,21 @@ function renderInst(keepScroll){
   S.instSel = r.sel;
   $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
+  loadReal();
   var on = $('inst-nav').querySelector('.on'); if (on && on.scrollIntoView) try { on.scrollIntoView({ block:'nearest', inline:'nearest' }); } catch(e){}
 }
+/* observations réelles : manifeste chargé une fois, mesures chargées à l'ouverture de la fiche */
+var realCache = {};
+function loadReal(){
+  var els = $('inst-main').querySelectorAll('[data-real-plot]');
+  Array.prototype.forEach.call(els, function(el){
+    var f = el.getAttribute('data-real-plot');
+    (realCache[f] = realCache[f] || fetch('data/' + f).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }))
+      .then(function(j){ if (el.isConnected !== false) el.innerHTML = InstrumentsUI.plot(j); })
+      .catch(function(){ delete realCache[f]; el.innerHTML = '<div class="cap">Les mesures n\'ont pas pu être chargées.</div>'; });
+  });
+}
+try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = j; if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
   var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump],[data-inst],[data-tele],#inst-close') : null;
   if (!el) return;
