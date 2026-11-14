@@ -24,6 +24,9 @@
 .inst-full{ color:var(--ink-2); font-size:14px; margin-top:8px; }
 .kind{ display:inline-block; font-size:12.5px; font-weight:600; border:1.5px solid var(--ink); padding:1px 8px; margin-top:10px; }
 .inst-sum{ font-size:15px; line-height:1.6; margin:0; max-width:72ch; }
+.inst-use{ font-size:16px; line-height:1.55; margin:0 0 12px; max-width:68ch; padding-left:12px; border-left:4px solid var(--mark); }
+.inst-use b{ display:block; font-size:13px; font-weight:700; color:var(--ink-2); margin-bottom:2px; }
+.inst-use + .inst-sum{ font-size:14px; color:var(--ink-2); }
 .inst-range{ display:flex; gap:6px 18px; flex-wrap:wrap; margin-top:12px; }
 .rng{ font-size:13px; padding-left:8px; border-left:6px solid var(--c); color:var(--ink-2); font-variant-numeric:tabular-nums; }
 .rng b{ color:var(--ink); font-weight:700; }

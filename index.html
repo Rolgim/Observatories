@@ -190,6 +190,12 @@ ol.refs li{ margin-bottom:6px; overflow-wrap:anywhere; }
 ol.refs a{ color:var(--ink); text-underline-offset:2px; }
 ol.refs span{ color:var(--mute); }
 
+/* ---------- glossaire (lot C1) ---------- */
+abbr.gl{ text-decoration:underline dotted; text-decoration-color:var(--mute); text-underline-offset:3px; text-decoration-thickness:1px; cursor:help; border-radius:2px; }
+abbr.gl:hover, abbr.gl:focus-visible{ text-decoration-color:var(--ink); background:color-mix(in srgb, var(--mark) 35%, transparent); outline:none; }
+#gloss-tip{ position:fixed; z-index:60; padding:10px 12px; background:var(--sheet); color:var(--ink); border:1px solid var(--ink); box-shadow:3px 3px 0 var(--mark); font-size:13px; line-height:1.5; pointer-events:none; }
+#gloss-tip b{ display:block; font-weight:700; margin-bottom:3px; }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -216,6 +222,9 @@ ol.refs span{ color:var(--mute); }
 .inst-full{ color:var(--ink-2); font-size:14px; margin-top:8px; }
 .kind{ display:inline-block; font-size:12.5px; font-weight:600; border:1.5px solid var(--ink); padding:1px 8px; margin-top:10px; }
 .inst-sum{ font-size:15px; line-height:1.6; margin:0; max-width:72ch; }
+.inst-use{ font-size:16px; line-height:1.55; margin:0 0 12px; max-width:68ch; padding-left:12px; border-left:4px solid var(--mark); }
+.inst-use b{ display:block; font-size:13px; font-weight:700; color:var(--ink-2); margin-bottom:2px; }
+.inst-use + .inst-sum{ font-size:14px; color:var(--ink-2); }
 .inst-range{ display:flex; gap:6px 18px; flex-wrap:wrap; margin-top:12px; }
 .rng{ font-size:13px; padding-left:8px; border-left:6px solid var(--c); color:var(--ink-2); font-variant-numeric:tabular-nums; }
 .rng b{ color:var(--ink); font-weight:700; }
@@ -754,6 +763,8 @@ var INST_DATA = (function(){
       { id:"wfc3", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
         bands:[ {l:"UVIS",lo:0.2,hi:1.0}, {l:"IR",lo:0.8,hi:1.7} ],
         fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
+        use:"Prendre des images très nettes du ciel, de l'ultraviolet à l'infrarouge proche : galaxies lointaines, nébuleuses, étoiles des amas. C'est aujourd'hui l'appareil photo le plus utilisé de Hubble.",
+
         summary:"Caméra de quatrième génération installée en 2009 (SM4). Deux canaux indépendants, dont un seul est utilisable à la fois, couvrent de l'ultraviolet proche à l'infrarouge proche.",
         specs:[
           ["Canal UVIS", "200–1000 nm · 2 CCD 2k×4k · 0,04″/px · 162″×162″", "wfc3"],
@@ -789,6 +800,8 @@ var INST_DATA = (function(){
       { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
         bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
         fov:[ {l:"WFC",w:202,h:202}, {l:"SBC",w:34.6,h:30.5} ],
+        use:"Photographier en lumière visible de grandes zones du ciel avec beaucoup de détails. Les célèbres champs profonds de Hubble et les cartes de matière noire des amas de galaxies doivent beaucoup à cette caméra.",
+
         summary:"Installée en 2002 (SM3B). Son canal grand champ WFC a servi aux grands relevés (champs profonds, amas de galaxies). Une panne électronique en janvier 2007 a mis hors service WFC et HRC ; le WFC a été réparé en 2009, pas le HRC.",
         specs:[
           ["WFC", "350–1100 nm · 2 CCD 2048×4096 · pixels de 15 µm · 0,05″/px · 202″×202″", "acs"],
@@ -824,6 +837,8 @@ var INST_DATA = (function(){
       { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
         bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.2,hi:1.03} ],
         fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
+        use:"Décomposer la lumière d'un objet en ses couleurs, son spectre, pour connaître sa composition, sa température et sa vitesse. Sa fente montre aussi comment ces propriétés changent le long d'un objet étendu, par exemple le gaz qui tourne autour d'un trou noir.",
+
         summary:"Spectrographe à longue fente (jusqu'à 52″) installé en 1997, tombé en panne en 2004 et réparé en 2009 lors de SM4. Il combine trois détecteurs : deux MAMA ultraviolets et un CCD.",
         specs:[
           ["FUV-MAMA", "115–170 nm · 0,025″/px · champ 25″×25″", "stis"],
@@ -873,6 +888,8 @@ var INST_DATA = (function(){
       { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
         bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.165,hi:0.32} ],
         fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
+        use:"Recueillir le spectre ultraviolet de sources très faibles, surtout de quasars lointains. Leur lumière traverse le gaz situé entre les galaxies, qui y laisse son empreinte : COS lit ces empreintes pour analyser ce gaz invisible.",
+
         summary:"Spectrographe ultraviolet sans fente à très haute sensibilité, installé en 2009 (SM4) pour étudier le milieu intergalactique, les quasars et la formation des éléments chimiques.",
         specs:[
           ["Voie FUV", "≈ 90–215 nm · détecteur à galettes de microcanaux (lecture par lignes à retard croisées)", "cos"],
@@ -920,7 +937,9 @@ var INST_DATA = (function(){
 
       { id:"fgs", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
         bands:null,
-        summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (stabilité de pointage ≈ 0,007″). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
+        use:"Garder le télescope pointé sans bouger pendant les poses, en suivant des étoiles guides. Utilisé comme instrument, il mesure aussi la position des étoiles avec une grande précision.",
+
+        summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (précision ≈ 1 mas). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
         specs:[
           ["Nombre", "3 (deux pour le guidage, un utilisé pour la science : FGS1R)", "primer"],
           ["Principe", "interféromètres à prismes de Koesters"],
@@ -955,6 +974,8 @@ var INST_DATA = (function(){
       { id:"nircam", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
         bands:[ {l:"SW",lo:0.6,hi:2.3}, {l:"LW",lo:2.4,hi:5.0} ],
         fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
+        use:"Photographier le ciel dans l'infrarouge proche, là où arrive la lumière des toutes premières galaxies, étirée par l'expansion de l'Univers. C'est la caméra principale de Webb ; elle sert aussi à régler l'alignement de son miroir.",
+
         summary:"Caméra principale de JWST. Deux modules identiques observent le même champ dans deux plages de longueur d'onde à la fois grâce à un dichroïque. Elle sert aussi de capteur de front d'onde pour aligner les 18 segments du miroir.",
         specs:[
           ["Domaine", "0,6–5,0 µm", "nircam"],
@@ -1004,6 +1025,8 @@ var INST_DATA = (function(){
       { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
         bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
         fov:[ {l:"MSA",w:216,h:204}, {l:"IFU",w:3,h:3} ],
+        use:"Obtenir en même temps le spectre de nombreuses galaxies lointaines, pour mesurer leur distance et leur composition. De minuscules volets ne s'ouvrent que devant les objets visés.",
+
         summary:"Spectrographe fourni par l'ESA. Sa matrice de micro-volets (MSA) permet d'observer des centaines de galaxies à la fois. Il offre aussi une unité à champ intégral (IFU) et des fentes fixes.",
         specs:[
           ["Domaine", "0,6–5,3 µm", "modes"],
@@ -1045,6 +1068,8 @@ var INST_DATA = (function(){
       { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
         bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:27.9} ],
         fov:[ {l:"Imageur",w:74,h:113} ],
+        use:"Voir l'infrarouge moyen, émis par les objets tièdes : poussière, disques où se forment les planètes, galaxies cachées par leur propre poussière. Il doit être bien plus froid que le reste du télescope pour ne pas être aveuglé par sa propre chaleur.",
+
         summary:"Seul instrument opérant dans l'infrarouge moyen, refroidi à environ 7 K par un cryo-refroidisseur actif. Il observe la poussière tiède, les disques protoplanétaires et les galaxies lointaines enfouies.",
         specs:[
           ["Imageur", "5,6–25,5 µm · 9 filtres · 74″×113″ · 0,11″/px", "miri"],
@@ -1083,6 +1108,8 @@ var INST_DATA = (function(){
       { id:"niriss", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
         bands:[ {l:"0,6–5,0 µm",lo:0.6,hi:5.0} ],
         fov:[ {l:"Imageur",w:132,h:132} ],
+        use:"Étudier l'atmosphère des exoplanètes quand elles passent devant leur étoile, chercher des galaxies lointaines dans de grands champs, et séparer des objets très proches les uns des autres grâce à un masque percé de trous.",
+
         summary:"Fourni par l'Agence spatiale canadienne. Spécialisé dans les spectres d'exoplanètes en transit (SOSS), la spectroscopie sans fente grand champ (WFSS) et l'interférométrie à masque d'ouverture (AMI).",
         specs:[
           ["Imagerie", "0,6–5,0 µm · 2,2′×2,2′ · 0,066″/px", "niriss"],
@@ -1111,6 +1138,8 @@ var INST_DATA = (function(){
 
       { id:"fgs", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
         bands:null, fov:[ {l:"Guider",w:138,h:138} ],
+        use:"Repérer des étoiles guides et indiquer au télescope comment corriger son pointage, plusieurs fois par seconde, pour que les images restent nettes.",
+
         summary:"Capteur de guidage fin qui verrouille l'observatoire sur des étoiles guides pour tenir le pointage à quelques millisecondes d'arc.",
         specs:[
           ["Domaine", "0,6–5,0 µm", "fgs"],
@@ -1144,6 +1173,8 @@ var INST_DATA = (function(){
     instruments: [
       { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
         bands:[ {l:"IE",lo:0.53,hi:0.92} ],
+        use:"Photographier des milliards de galaxies avec assez de netteté pour mesurer leur forme. Les petites déformations que ces formes ont en commun révèlent la matière noire située sur le trajet de leur lumière.",
+
         summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
         specs:[
           ["Bande", "IE · 530–920 nm", "e1"],
@@ -1193,6 +1224,8 @@ var INST_DATA = (function(){
 
       { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
         bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
+        use:"Mesurer les couleurs infrarouges et les spectres de millions de galaxies pour savoir à quelle distance elles se trouvent. Avec VIS, il permet de cartographier l'Univers en trois dimensions sur les dix derniers milliards d'années.",
+
         summary:"Il mesure les couleurs infrarouges (pour les décalages vers le rouge photométriques) et fournit une spectroscopie sans fente par grismes, qui donne les décalages spectroscopiques de millions de galaxies.",
         specs:[
           ["Domaine", "0,95–2,02 µm", "nisp"],
@@ -1256,6 +1289,8 @@ var INST_DATA = (function(){
     instruments: [
       { id:"astro", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
         bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
+        use:"Mesurer la position des étoiles avec une précision extrême, de nombreuses fois en plusieurs années. On en tire leur distance, par la parallaxe, et leur mouvement dans la Galaxie.",
+
         summary:"Le cartographe de ciel (SM) détecte les objets en temps réel ; le champ astrométrique (AF) mesure ensuite leur position avec une précision de quelques dizaines de micro-secondes d'arc. L'ensemble fournit aussi la magnitude G en lumière blanche.",
         specs:[
           ["Détecteurs", "SM : 14 CCD (7 par télescope) · AF : 62 CCD", "doc"],
@@ -1299,6 +1334,8 @@ var INST_DATA = (function(){
 
       { id:"bprp", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
         bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
+        use:"Mesurer la couleur de chaque étoile observée à partir d'un spectre très grossier. On en déduit sa température et la quantité de poussière qui l'atténue.",
+
         summary:"Deux prismes dispersent la lumière de chaque étoile en un spectre de très basse résolution, bleu (BP) et rouge (RP), qui donne couleurs, température et extinction.",
         specs:[
           ["BP", "330–680 nm · 7 CCD", ["phot", "doc"]],
@@ -1329,6 +1366,8 @@ var INST_DATA = (function(){
 
       { id:"rvs", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
         bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
+        use:"Mesurer à quelle vitesse les étoiles s'approchent ou s'éloignent de nous. Ajoutée à leur déplacement sur le ciel, cette vitesse donne leur mouvement complet dans l'espace.",
+
         summary:"Spectromètre sans fente centré sur le triplet du calcium ionisé (Ca II). Il mesure par effet Doppler les vitesses radiales de dizaines de millions d'étoiles.",
         specs:[
           ["Domaine", "845–872 nm (triplet du Ca II)", "prusti"],
@@ -1965,7 +2004,7 @@ var InstrumentsUI = (function(){
     var d = INST_DATA[tid], s = '';
     s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions. Cliquer une ligne du graphique ou une case pour ouvrir le détail.</div></div><p class="inst-sum">'+esc(d.summary)+'</p></div>';
     s += '<div class="inst-cols">';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'</div>';
+    s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'<div class="cap">Plages tirées des pages d\'instruments, où chaque valeur renvoie à sa source.</div></div>';
     var f = fovBlock(tid, null);
     if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(tid==='euclid'||tid==='gaia' ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
     s += '<div class="isec wide"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
@@ -1980,15 +2019,16 @@ var InstrumentsUI = (function(){
 
   function detail(tid, iid, fidx){
     var d = INST_DATA[tid], it = get(tid, iid), s = '';
-    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div><p class="inst-sum">'+esc(it.summary)+'</p>';
+    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div>'+(it.use ? '<p class="inst-use"><b>À quoi ça sert</b>'+esc(it.use)+'</p>' : '')+'<p class="inst-sum">'+esc(it.summary)+'</p>';
     if (it.bands) s += '<div class="inst-range">' + it.bands.map(function(b){ return '<span class="rng" style="--c:'+it.color+'"><b>'+esc(b.l)+'</b> '+wl(b.lo)+' – '+wl(b.hi)+'</span>'; }).join('') + '</div>';
     s += '</div></div><div class="inst-cols">';
     var nums = {}, nk = 0; it.specs.forEach(function(r){ [].concat(r[2] || []).forEach(function(x){ if (!nums[x]) nums[x] = ++nk; }); });
     s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs, nums)+'</div>';
-    if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+'</div>';
+    var srcCap = nk ? '<div class="cap">Plages et champs repris des caractéristiques ci-dessus ; sources en bas de page.</div>' : '';
+    if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+srcCap+'</div>';
     if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
     var f = fovBlock(tid, iid);
-    if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+'</div>';
+    if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+srcCap+'</div>';
     s += real(tid, iid);
     if (it.products) s += '<div class="isec"><h4>Produits de données</h4>'+table(it.products)+'</div>';
     if (it.example){
@@ -2224,6 +2264,8 @@ EN_INST.hubble = {
   archives:[["MAST, Hubble archive","Search, previews and downloads of HST observations; programmatic access through astroquery.mast."],["ESA, eHST","ESA's Hubble archive (European mirror)."],["Instrument handbooks","Instrument & Data Handbooks (WFC3, ACS, STIS, COS)."]],
   instruments:{
     wfc3:{ kind:"Wide-field camera",
+      use:"Taking very sharp images of the sky, from the ultraviolet to the near infrared: distant galaxies, nebulae, stars in clusters. It is now Hubble's most used camera.",
+
       summary:"A fourth-generation camera installed in 2009 (SM4). Two independent channels, only one of which can be used at a time, cover the near ultraviolet to the near infrared.",
       specs:[["UVIS channel", "200–1000 nm · 2 2k×4k CCDs · 0.04″/px · 162″×162″"], ["IR channel", "800–1700 nm · 1k×1k HgCdTe · 0.13″/px · 136″×123″"], ["Filters", "62 (UVIS) · 15 (IR)"], ["Grisms", "G280 (UVIS) · G102 and G141 (IR)"], ["Read noise", "3 e⁻ (UVIS) · 12 e⁻ (IR, 16 reads) · versus 4 e⁻ for ACS/WFC"]],
       filtersTitle:"Filters (representative selection)",
@@ -2232,6 +2274,8 @@ EN_INST.hubble = {
       code:{ title:"Retrieve WFC3/UVIS images (astroquery.mast)" },
       notes:["UVIS: charge-transfer losses (CTE) grow with time. Prefer the _flc / _drc products.","IR: image persistence after exposure to bright sources; readout is up-the-ramp (several reads per exposure).","A channel-select mirror sends the light either to UVIS or to IR: no simultaneous exposures."] },
     acs:{ kind:"Survey camera",
+      use:"Photographing large areas of the sky in visible light with great detail. Hubble's famous deep fields and the dark-matter maps of galaxy clusters owe a lot to this camera.",
+
       summary:"Installed in 2002 (SM3B). Its wide-field channel, WFC, was used for the large surveys (deep fields, galaxy clusters). An electronics failure in January 2007 took out WFC and HRC; WFC was repaired in 2009, HRC was not.",
       specs:[["WFC", "350–1100 nm · 2 2048×4096 CCDs · 15 µm pixels · 0.05″/px · 202″×202″"], ["SBC", "solar-blind far ultraviolet (1024×1024 MAMA) · 115–170 nm · ≈ 0.034″×0.030″/px · 34.6″×30.5″"], ["HRC", "29″×26″ · out of service since January 2007"]],
       filtersTitle:"WFC / SBC filters (selection)",
@@ -2241,6 +2285,8 @@ EN_INST.hubble = {
       code:{ title:"Retrieve ACS/WFC images (astroquery.mast)" },
       notes:["The two WFC CCDs are stored in separate extensions (SCI,1 and SCI,2).","As for WFC3/UVIS, the _flc / _drc products include the CTE correction."] },
     stis:{ kind:"Imaging spectrograph",
+      use:"Splitting the light of an object into its colours, its spectrum, to learn its composition, temperature and speed. Its slit also shows how these properties change along an extended object, such as gas orbiting a black hole.",
+
       summary:"A long-slit spectrograph (up to 52″) installed in 1997, which failed in 2004 and was repaired in 2009 during SM4. It combines three detectors: two ultraviolet MAMAs and a CCD.",
       specs:[["FUV-MAMA", "115–170 nm · 0.025″/px · 25″×25″ field"], ["NUV-MAMA", "165–310 nm · 0.025″/px · 25″×25″ field"], ["CCD", "≈ 200–1030 nm · 0.05″/px · 52″×52″ field"], ["Spectral resolution", "R ≈ 500–1,440 (L gratings) · ≈ 4,900–17,400 (M) · ≈ 30,000–114,000 (echelles)"]],
       filtersTitle:"Gratings (nominal ranges)",
@@ -2250,6 +2296,8 @@ EN_INST.hubble = {
       code:{ title:"Retrieve STIS spectra (astroquery.mast)" },
       notes:["TIME-TAG mode is available for the MAMA detectors (event by event).","Power-supply failure in August 2004; returned to service during the SM4 mission (2009)."] },
     cos:{ kind:"UV spectrograph",
+      use:"Collecting the ultraviolet spectrum of very faint sources, mostly distant quasars. Their light crosses the gas between galaxies, which leaves its imprint: COS reads these imprints to analyse this invisible gas.",
+
       summary:"A very sensitive slitless ultraviolet spectrograph, installed in 2009 (SM4) to study the intergalactic medium, quasars and the origin of the chemical elements.",
       specs:[["FUV channel", "≈ 90–215 nm · microchannel-plate detector (cross delay line readout)"], ["NUV channel", "≈ 165–320 nm · MAMA detector"], ["Aperture", "PSA, circular, Ø 2.5″ (slitless)"], ["Resolution", "R ≈ 1,500–4,000 (low) · ≈ 12,000–24,000 (medium)"]],
       filtersTitle:"Gratings (approximate nominal ranges)",
@@ -2259,7 +2307,9 @@ EN_INST.hubble = {
       code:{ title:"Retrieve COS spectra (astroquery.mast)" },
       notes:["Slitless: the effective resolution depends on the angular size of the source.","TIME-TAG data let you re-slice the exposure time after the fact."] },
     fgs:{ kind:"Guiding and astrometry",
-      summary:"Three fine guidance sensors that lock the telescope onto guide stars (pointing stability ≈ 0.007″). They also serve as a science instrument: high-precision astrometry and measurements of close binaries.",
+      use:"Keeping the telescope pointed perfectly still during exposures by tracking guide stars. Used as an instrument, it also measures star positions very precisely.",
+
+      summary:"Three fine guidance sensors that lock the telescope onto guide stars (precision ≈ 1 mas). They also serve as a science instrument: high-precision astrometry and measurements of close binaries.",
       specs:[["Number", "3 (two for guiding, one used for science: FGS1R)"], ["Principle", "Koesters prism interferometers"], ["Astrometric precision", "≈ 1 mas (3 < V < 16.8) · parallaxes down to ≈ 0.2 mas"]],
       products:[["Archive","FGS (astrometry) data are available at MAST under the instrument “FGS”"]],
       notes:["The FGS delivered several Cepheid parallaxes before the Gaia era."], docs:["Hubble documentation (STScI)"] }
@@ -2270,6 +2320,8 @@ EN_INST.jwst = {
   archives:[["MAST, JWST archive","JWST observations, calibration levels 1 to 3; programmatic access through astroquery.mast."],["ESA, JWST archive","European access to JWST data."],["JDox, documentation","User documentation for each instrument."],["Calibration pipeline","Calibration steps and data product formats."]],
   instruments:{
     nircam:{ kind:"Near-IR camera",
+      use:"Photographing the sky in the near infrared, where the light of the very first galaxies arrives, stretched by the expansion of the Universe. It is Webb's main camera; it is also used to align its mirror.",
+
       summary:"JWST's main camera. Two identical modules observe the same field in two wavelength ranges at once, thanks to a dichroic. It also serves as the wavefront sensor used to align the 18 mirror segments.",
       specs:[["Range", "0.6–5.0 µm"], ["Short-wavelength channel (SW)", "0.6–2.3 µm · 0.031″/px"], ["Long-wavelength channel (LW)", "2.4–5.0 µm · 0.063″/px"], ["Field", "2 modules of 2.2′×2.2′ separated by ≈ 44″ · 9.7 arcmin² in total"], ["Detectors", "10 HgCdTe arrays, 2040×2040 active pixels (8 SW + 2 LW)"], ["Other modes", "coronagraphy · slitless spectroscopy (LW grism, R ≈ 1,600 at 4 µm) · time series"]],
       filtersTitle:"Filters (representative selection)",
@@ -2278,6 +2330,8 @@ EN_INST.jwst = {
       code:{ title:"Retrieve NIRCam mosaics (astroquery.mast)" },
       notes:["The two channels (SW and LW) observe the same field at the same time: one exposure yields images in two filters.","The _i2d.fits files hold the SCI, ERR and WHT extensions and the WCS (astrometry) of the combined product."] },
     nirspec:{ kind:"Multi-object spectrograph",
+      use:"Taking the spectra of many distant galaxies at once, to measure their distance and composition. Tiny shutters open only in front of the chosen targets.",
+
       summary:"A spectrograph supplied by ESA. Its micro-shutter array (MSA) can observe hundreds of galaxies at once. It also offers an integral field unit (IFU) and fixed slits.",
       specs:[["Range", "0.6–5.3 µm"], ["Resolution", "R ≈ 100 (prism) · ≈ 1,000 (M gratings) · ≈ 2,700 (H gratings)"], ["Multi-object (MSA)", "4 quadrants of 365×171 shutters of 0.20″×0.46″ · field ≈ 3.6′×3.4′"], ["IFU", "3″×3″ cut into 30 slices of 0.1″"], ["Fixed slits", "S200A1/A2, S400A1, S1600A1 (1.6″) and time-series mode (BOTS)"]],
       filtersTitle:"Dispersers (nominal ranges)",
@@ -2287,6 +2341,8 @@ EN_INST.jwst = {
       code:{ title:"Retrieve NIRSpec spectra (astroquery.mast)" },
       notes:["An _x1d file can hold several sources (one spectrum per open MSA shutter).","MSA mode needs catalogues prepared with NIRCam to choose the sources."] },
     miri:{ kind:"Mid-IR imager and spectrograph",
+      use:"Seeing the mid infrared, emitted by warm objects: dust, discs where planets form, galaxies hidden by their own dust. It must be much colder than the rest of the telescope so that its own heat does not blind it.",
+
       summary:"The only instrument working in the mid infrared, cooled to about 7 K by an active cryocooler. It observes warm dust, protoplanetary discs and distant, dust-enshrouded galaxies.",
       specs:[["Imager", "5.6–25.5 µm · 9 filters · 74″×113″ · 0.11″/px"], ["Medium-resolution spectrometer (MRS)", "4.9–27.9 µm · R ≈ 1,550–3,250 · 4 IFUs (3.7″ to 7.7″ across)"], ["Low-resolution spectrometer (LRS)", "≈ 5–14 µm · R ≈ 100 at 7.5 µm · 0.51″×4.7″ slit"], ["Coronagraphs", "3 four-quadrant phase masks (10.65, 11.4 and 15.5 µm; 24″×24″) · 1 Lyot mask (23 µm; 30″×30″)"], ["Temperature", "≈ 7 K (cryocooler)"]],
       filtersTitle:"Imaging filters and coronagraphs",
@@ -2296,6 +2352,8 @@ EN_INST.jwst = {
       code:{ title:"Retrieve MIRI images (astroquery.mast)" },
       notes:["At long wavelengths the background (zodiacal light, thermal emission) becomes large: subtracting it is a key processing step.","The cryocooler holds the detector at ≈ 7 K, far colder than the rest of ISIM (≈ 40 K)."] },
     niriss:{ kind:"Imager and slitless spectrograph",
+      use:"Studying the atmospheres of exoplanets as they pass in front of their star, finding distant galaxies over wide fields, and separating objects very close to each other with a mask drilled with holes.",
+
       summary:"Supplied by the Canadian Space Agency. It specialises in spectra of transiting exoplanets (SOSS), wide-field slitless spectroscopy (WFSS) and aperture masking interferometry (AMI).",
       specs:[["Imaging", "0.6–5.0 µm · 2.2′×2.2′ · 0.066″/px"], ["WFSS", "0.8–2.2 µm · R ≈ 150 at 1.4 µm · 133″×133″ field"], ["SOSS", "0.6–2.8 µm · R ≈ 700 at 1.4 µm (single object, transits)"], ["AMI", "7-hole aperture mask · 2.8–4.8 µm (F277W, F380M, F430M, F480M)"]],
       filtersTitle:"Imaging filters",
@@ -2305,6 +2363,8 @@ EN_INST.jwst = {
       code:{ title:"Retrieve NIRISS data (astroquery.mast)" },
       notes:["SOSS mode measures the transmission spectrum of an exoplanet's atmosphere during its transit."] },
     fgs:{ kind:"Fine guidance",
+      use:"Finding guide stars and telling the telescope how to correct its pointing several times per second, so that images stay sharp.",
+
       summary:"The fine guidance sensor that locks the observatory onto guide stars to hold the pointing to a few milliarcseconds.",
       specs:[["Range", "0.6–5.0 µm"], ["Field", "2.3′×2.3′ per channel · ≈ 0.069″/px"], ["Detectors", "2 channels (Guider 1 and 2) · 2048×2048 HgCdTe (2040 active) · 18 µm pixels"]],
       products:[["Archive","guiding data are archived but are not a usual science product"]],
@@ -2316,6 +2376,8 @@ EN_INST.euclid = {
   archives:[["ESA, Euclid Science Archive","Official archive: catalogues (ADQL), images, spectra."],["Euclid DR1 (12 November 2026)","First major release: Wide and Deep surveys, more than a billion objects, spectra of more than 160 million sources."],["Q1 contents","Description of the products published in Quick Release 1."],["NASA/IPAC, IRSA Euclid","NASA mirror: mosaics, catalogues, VO services."],["Product documentation (DPDD)","Data Product Description Document for Q1."],["astroquery.esa.euclid","Python access to the archive (TAP+)."]],
   instruments:{
     vis:{ kind:"Visible imager",
+      use:"Photographing billions of galaxies sharply enough to measure their shapes. The small distortions these shapes share reveal the dark matter lying along the path of their light.",
+
       summary:"A camera built to measure galaxy shapes precisely (weak gravitational lensing). A single, very broad band, with no filter other than the dichroic.",
       specs:[["Band", "IE · 530–920 nm"], ["Detectors", "36 thinned e2v CCD273-84 (40 µm), in a 6×6 array"], ["Format", "4096×4132 px per CCD · 12 µm pixels · 4 quadrants, each read by its own node (144 channels)"], ["Mosaic", "≈ 609 Mpx · 0.1″/px sampling"], ["Field", "≈ 0.54 deg² · active area 0.775°×0.697°"], ["CCD temperature", "153 K"], ["Beam", "f/20 delivered by the telescope · 1.2 m pupil"]],
       filtersTitle:"Photometric band",
@@ -2326,6 +2388,8 @@ EN_INST.euclid = {
       notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","Q1 covers ≈ 63 deg² (EDF-North 22.9 · EDF-Fornax 12.1 · EDF-South 28.1 deg²) plus the dark nebula LDN 1641, about 35 TB."],
       docs:["Euclid Consortium, VIS","Q1, contents"] },
     nisp:{ kind:"IR photometer and slitless spectrometer",
+      use:"Measuring the infrared colours and spectra of millions of galaxies to find out how far away they are. Together with VIS, it maps the Universe in three dimensions over the last ten billion years.",
+
       summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
       specs:[["Range", "0.95–2.02 µm"], ["Detectors", "16 HgCdTe H2RG arrays in 4×4 · 2040×2040 active px · 18 µm pixels"], ["Sampling", "0.3″/px · 0.57 deg² field"], ["Photometry", "3 filters: YE (0.95–1.21), JE (1.17–1.57), HE (1.52–2.02 µm)"], ["Spectroscopy", "blue grism (BG) 926–1366 nm, R > 400 · red grisms (RG) 1206–1892 nm, R > 480"], ["Mass and power", "≈ 85.3 kg (instrument) + 40.7 kg (warm electronics) · power capped at 200 W"], ["Temperature", "detectors ≈ 95 K · optics ≈ 135 K"]],
       filtersTitle:"Bands and grisms (nominal ranges)",
@@ -2342,6 +2406,8 @@ EN_INST.gaia = {
   archives:[["ESA, Gaia Archive","Official archive: ADQL queries on Gaia DR3, downloads, XP and RVS spectra."],["Gaia DR3 documentation","Full description of the catalogue and its tables."],["VizieR, Gaia DR3 (I/355)","CDS access to the catalogue."],["astroquery.gaia","Python access to the archive."]],
   instruments:{
     astro:{ kind:"Astrometry and G photometry",
+      use:"Measuring star positions with extreme precision, many times over several years. This gives their distance, through parallax, and their motion through the Galaxy.",
+
       summary:"The sky mapper (SM) detects objects in real time; the astrometric field (AF) then measures their positions to a few tens of microarcseconds. Together they also give the white-light G magnitude.",
       specs:[["Detectors", "SM: 14 CCDs (7 per telescope) · AF: 62 CCDs"], ["Pixels", "4500×1966 px per CCD · 10 µm × 30 µm"], ["Readout mode", "TDI: integration synchronised with the spin (4.42 s per CCD)"], ["G band", "≈ 330–1050 nm (white light)"], ["Magnitudes observed", "G ≈ 3 to ≈ 21"], ["Parallax precision (DR3)", "≈ 0.02–0.03 mas (G < 15) · 0.07 mas (G = 17) · 0.5 mas (G = 20) · 1.3 mas (G = 21)"]],
       filtersTitle:"Photometric band",
@@ -2352,6 +2418,8 @@ EN_INST.gaia = {
       notes:["Proxima Centauri (parallax 768 mas, i.e. 1.30 pc) is the nearest star to the Sun.","A RUWE well above 1.4 usually signals a poor fit (unresolved binary, extended source)."],
       docs:["Gaia DR3 documentation"] },
     bprp:{ kind:"Low-resolution spectrophotometry",
+      use:"Measuring the colour of every star observed from a very coarse spectrum. This gives its temperature and the amount of dust dimming it.",
+
       summary:"Two prisms spread the light of each star into a very low-resolution spectrum, blue (BP) and red (RP), which gives colours, temperature and extinction.",
       specs:[["BP", "330–680 nm · 7 CCDs"], ["RP", "640–1050 nm · 7 CCDs"], ["Dispersion", "prisms: 3–27 nm/px (BP) · 7–15 nm/px (RP)"], ["XP spectra published (DR3)", "≈ 219 million"]],
       filtersTitle:"Photometric bands",
@@ -2362,6 +2430,8 @@ EN_INST.gaia = {
       notes:["The BP − RP difference is a colour index: the larger it is, the redder the star (Proxima: 3.8)."],
       docs:["Gaia DR3 documentation"] },
     rvs:{ kind:"Slitless spectrometer",
+      use:"Measuring how fast stars are moving towards or away from us. Added to their drift across the sky, this speed gives their full motion through space.",
+
       summary:"A slitless spectrometer centred on the ionised calcium (Ca II) triplet. It uses the Doppler effect to measure the radial velocities of tens of millions of stars.",
       specs:[["Range", "845–872 nm (Ca II triplet)"], ["Resolution", "R ≈ 11,700"], ["Detectors", "12 CCDs"], ["Radial velocities (DR3)", "≈ 33.8 million stars · ≈ 1 million mean RVS spectra"]],
       filtersTitle:"Spectral range",
@@ -2477,7 +2547,7 @@ var EN_UI = {
   "Empreinte de chaque instrument sur le ciel. Le disque en pointillé donne la taille apparente de la pleine Lune (31′).":"Footprint of each instrument on the sky. The dashed disc shows the apparent size of the full Moon (31′).",
   "Empreinte de chaque instrument sur le ciel. À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.":"Footprint of each instrument on the sky. For reference, the full Moon is about 1,860″ across: it would spill far outside this frame.",
   "pleine Lune":"full Moon", "visible":"visible", "ultraviolet":"ultraviolet", "proche infrarouge":"near infrared", "infrarouge moyen":"mid infrared", "longueur d'onde (µm), échelle logarithmique":"wavelength (µm), logarithmic scale", "guidage":"guiding",
-  "Archives et documentation":"Archives and documentation", "Archive et documentation":"Archive and documentation", "Caractéristiques":"Specifications", "Place dans le spectre":"Place in the spectrum", "Champ de vue":"Field of view",
+  "Archives et documentation":"Archives and documentation", "Archive et documentation":"Archive and documentation", "Caractéristiques":"Specifications", "À quoi ça sert":"What it is for", "Plages et champs repris des caractéristiques ci-dessus ; sources en bas de page.":"Ranges and fields taken from the specifications above; sources at the bottom of the page.", "Plages tirées des pages d'instruments, où chaque valeur renvoie à sa source.":"Ranges taken from the instrument pages, where every value links to its source.", "Place dans le spectre":"Place in the spectrum", "Champ de vue":"Field of view",
   "Produits de données":"Data products", "Exemple de données":"Data example", "Accéder aux données":"Getting the data", "À savoir":"Good to know", "Copier":"Copy", "Copié":"Copied", "Sélectionné":"Selected",
   "données réelles":"real data", "structure réelle, valeurs illustratives":"real structure, illustrative values",
   "Les largeurs dessinées sont schématiques : elles suivent la classe du filtre (W large, M moyenne, N étroite), pas sa courbe de transmission.":"The widths drawn are schematic: they follow the filter class (W wide, M medium, N narrow), not its transmission curve.",
@@ -2589,7 +2659,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
     d.instruments.forEach(function(it){
       var q = e.instruments[it.id] || {};
       var frSpecs = it.specs;
-      ['kind','summary','specs','filtersTitle','products','notes'].forEach(function(k){ if (q[k]) it[k] = q[k]; });
+      ['kind','use','summary','specs','filtersTitle','products','notes'].forEach(function(k){ if (q[k]) it[k] = q[k]; });
       if (q.specs) it.specs.forEach(function(r, j){ var o = frSpecs[j]; if (o && o[2]) r[2] = o[2]; });
       if (it.example && q.example){ it.example.title = q.example.title; it.example.caption = q.example.caption; if (q.example.text) it.example.text = q.example.text; }
       if (it.code){ if (q.code) it.code.title = q.code.title; EN_CODE.forEach(function(r){ it.code.text = it.code.text.split(r[0]).join(r[1]); }); }
@@ -2646,6 +2716,143 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
     }).observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:ATTRS });
   }
   if (document.body) boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+
+/* =================================================================
+   GLOSSAIRE (lot C1 des specs)
+   Chaque terme technique est défini une fois ici. Dans les fiches et les pages
+   d'instruments, sa première apparition dans chaque bloc est soulignée en pointillé ;
+   le survol, le focus clavier ou un toucher affichent la définition.
+   Entrée : [clé, motif FR, motif EN, insensible à la casse, terme FR, terme EN, définition FR, définition EN]
+================================================================= */
+var Glossary = (function(){
+  var G = [
+    ['tdi', 'TDI', 'TDI', 0, 'TDI', 'TDI',
+     "Time Delay Integration : les charges sont décalées d'une ligne à l'autre du CCD au rythme où l'image défile, si bien que la lumière d'une étoile s'accumule pendant toute sa traversée du détecteur.",
+     "Time Delay Integration: charges are shifted from row to row of the CCD at the rate the image drifts across it, so a star's light builds up during its whole crossing of the detector."],
+    ['grism', 'grismes?', 'grisms?', 1, 'Grisme', 'Grism',
+     "Prisme dont une face porte un réseau de diffraction. Placé dans le faisceau comme un filtre, il étale chaque source du champ en un petit spectre, sans fente.",
+     "A prism with a diffraction grating on one face. Placed in the beam like a filter, it spreads every source in the field into a short spectrum, with no slit."],
+    ['ifu', 'IFU', 'IFUs?', 0, 'IFU', 'IFU',
+     "Unité à champ intégral : un découpeur d'image donne un spectre pour chaque point d'un petit champ. On obtient un cube : deux dimensions sur le ciel, une en longueur d'onde.",
+     "Integral field unit: an image slicer gives a spectrum for every point of a small field. The result is a cube: two dimensions on the sky, one in wavelength."],
+    ['res', 'résolution spectrale', 'spectral resolution', 1, 'Résolution spectrale', 'Spectral resolution',
+     "R = λ/Δλ : rapport entre la longueur d'onde et le plus petit écart de longueur d'onde que l'instrument sépare. R ≈ 100 distingue des bandes larges, R ≈ 100 000 des raies très fines.",
+     "R = λ/Δλ: the wavelength divided by the smallest wavelength difference the instrument can separate. R ≈ 100 separates broad bands, R ≈ 100,000 very narrow lines."],
+    ['ab', 'magnitudes? AB|mag(?:nitude)?s? AB', 'AB magnitudes?|AB mag', 0, 'Magnitude AB', 'AB magnitude',
+     "Échelle logarithmique de luminosité fondée sur le flux par unité de fréquence : 5 magnitudes de plus, c'est 100 fois moins de lumière. AB = 0 correspond à 3 631 jansky.",
+     "A logarithmic brightness scale based on flux per unit frequency: 5 magnitudes more means 100 times less light. AB = 0 corresponds to 3,631 jansky."],
+    ['cte', 'CTE', 'CTE', 0, 'CTE', 'CTE',
+     "Charge Transfer Efficiency : part de la charge conservée à chaque transfert d'un pixel au suivant pendant la lecture d'un CCD. Les dégâts dus aux radiations la font baisser avec les années ; les traînées qui en résultent sont corrigées par logiciel.",
+     "Charge Transfer Efficiency: the fraction of charge kept at each pixel-to-pixel transfer during CCD readout. Radiation damage lowers it over the years; the resulting trails are corrected in software."],
+    ['mama', 'MAMA', 'MAMAs?', 0, 'MAMA', 'MAMA',
+     "Multi-Anode Microchannel Array : détecteur ultraviolet qui compte les photons un par un et reste quasi insensible à la lumière visible.",
+     "Multi-Anode Microchannel Array: an ultraviolet detector that counts photons one by one and is nearly blind to visible light."],
+    ['ccd', 'CCD', 'CCDs?', 0, 'CCD', 'CCD',
+     "Capteur au silicium : la lumière crée des charges électriques qui s'accumulent dans chaque pixel, puis sont transférées et lues ligne par ligne.",
+     "A silicon sensor: light creates electric charges that build up in each pixel, then are shifted out and read row by row."],
+    ['hgcdte', 'HgCdTe|H2RG', 'HgCdTe|H2RG', 0, 'HgCdTe, H2RG', 'HgCdTe, H2RG',
+     "Tellurure de mercure-cadmium, semi-conducteur dont la composition fixe la limite de sensibilité infrarouge. Les détecteurs H2RG de Teledyne en sont faits ; ils équipent JWST et NISP.",
+     "Mercury cadmium telluride, a semiconductor whose composition sets its infrared cut-off. Teledyne's H2RG detectors are made of it; they equip JWST and NISP."],
+    ['coro', 'coronographes?|coronographie', 'coronagraphs?|coronagraphy', 1, 'Coronographe', 'Coronagraph',
+     "Dispositif qui masque la lumière d'une étoile brillante pour observer ce qui l'entoure de près : planètes, disques de poussière.",
+     "A device that blocks the light of a bright star to reveal what lies close to it: planets, dust discs."],
+    ['plx', 'parallaxes?', 'parallax(?:es)?', 1, 'Parallaxe', 'Parallax',
+     "Petit déplacement apparent d'une étoile pendant que la Terre fait le tour du Soleil. Il est inversement proportionnel à la distance : 1 mas correspond à 1 000 parsecs, soit environ 3 260 années-lumière.",
+     "The small apparent shift of a star as the Earth goes round the Sun. It is inversely proportional to distance: 1 mas corresponds to 1,000 parsecs, about 3,260 light years."],
+    ['dich', 'dichroïques?', 'dichroics?', 1, 'Dichroïque', 'Dichroic',
+     "Lame qui réfléchit une partie du spectre et laisse passer le reste : elle envoie deux plages de longueur d'onde vers deux voies ou deux instruments.",
+     "A plate that reflects part of the spectrum and transmits the rest, sending two wavelength ranges to two channels or two instruments."],
+    ['l2', 'point de Lagrange(?: L2)?|L2', 'Lagrange point(?: L2)?|L2', 0, 'Point de Lagrange L2', 'Lagrange point L2',
+     "Point d'équilibre du système Soleil-Terre, à environ 1,5 million de km de la Terre, à l'opposé du Soleil. Un télescope y garde le Soleil, la Terre et la Lune du même côté.",
+     "An equilibrium point of the Sun-Earth system, about 1.5 million km from Earth on the side away from the Sun. A telescope there keeps the Sun, Earth and Moon on the same side."],
+    ['halo', 'orbites? de halo', 'halo orbits?', 1, 'Orbite de halo', 'Halo orbit',
+     "Orbite autour du point L2, et non autour d'un astre : le télescope décrit une grande boucle de plusieurs centaines de milliers de km en six mois environ, entretenue par de petites corrections.",
+     "An orbit around the L2 point rather than around a body: the telescope traces a large loop several hundred thousand km across in about six months, kept up by small corrections."],
+    ['korsch', 'Korsch', 'Korsch', 0, 'Korsch', 'Korsch',
+     "Télescope à trois miroirs courbes : le troisième corrige les aberrations des deux premiers, ce qui donne un grand champ net. Formule de JWST et d'Euclid.",
+     "A telescope with three curved mirrors: the third corrects the aberrations of the first two, giving a wide sharp field. The design of JWST and Euclid."],
+    ['rc', 'Ritchey-Chrétien', 'Ritchey-Chrétien', 0, 'Ritchey-Chrétien', 'Ritchey-Chrétien',
+     "Télescope à deux miroirs hyperboliques, sans coma sur un champ assez large. C'est la formule de Hubble et de la plupart des grands télescopes.",
+     "A telescope with two hyperbolic mirrors, free of coma over a fairly wide field. It is the design of Hubble and of most large telescopes."],
+    ['fits', 'FITS', 'FITS', 0, 'FITS', 'FITS',
+     "Format de fichier standard de l'astronomie : des en-têtes en texte (mots-clés) suivis d'images ou de tables.",
+     "The standard file format of astronomy: text headers (keywords) followed by images or tables."],
+    ['msa', 'MSA|micro-volets', 'MSA|micro-shutters?', 0, 'MSA', 'MSA',
+     "Micro-Shutter Assembly de NIRSpec : environ 250 000 volets de 0,20″ × 0,46″ que l'on ouvre un par un pour placer une petite fente devant chaque cible.",
+     "NIRSpec's Micro-Shutter Assembly: about 250,000 shutters of 0.20″ × 0.46″ opened one by one to put a small slit in front of each target."],
+    ['pm', 'mouvements? propres?', 'proper motions?', 1, 'Mouvement propre', 'Proper motion',
+     "Déplacement angulaire d'une étoile sur le ciel au fil des années, dû à son mouvement réel dans la Galaxie.",
+     "The angular drift of a star across the sky over the years, caused by its real motion through the Galaxy."],
+    ['rv', 'vitesses? radiales?', 'radial velocit(?:y|ies)', 1, 'Vitesse radiale', 'Radial velocity',
+     "Vitesse d'approche ou d'éloignement le long de la ligne de visée, mesurée par le décalage Doppler des raies du spectre.",
+     "The speed towards or away from us along the line of sight, measured from the Doppler shift of spectral lines."],
+    ['z', 'décalages? vers le rouge', 'redshifts?', 1, 'Décalage vers le rouge', 'Redshift',
+     "Allongement de la longueur d'onde de la lumière d'une galaxie dû à l'expansion de l'Univers ; il indique sa distance. Il est photométrique s'il est estimé d'après les couleurs, spectroscopique s'il est mesuré sur les raies.",
+     "The stretching of a galaxy's light by the expansion of the Universe; it tells its distance. Photometric when estimated from colours, spectroscopic when measured from lines."],
+    ['wl', 'cisaillement gravitationnel faible', 'weak (?:gravitational )?lensing', 1, 'Cisaillement gravitationnel faible', 'Weak lensing',
+     "Légère déformation commune des images de galaxies lointaines par la masse, visible et noire, située sur le trajet de leur lumière. On la mesure statistiquement sur des millions de galaxies.",
+     "A slight shared distortion of distant galaxy images by the mass, visible and dark, along the path of their light. It is measured statistically over millions of galaxies."]
+  ];
+  var SKIP = /^(A|BUTTON|ABBR|PRE|CODE|SVG|svg|TEXT|text|H1|H2|H3|H4|LABEL|SUP|SCRIPT|STYLE|CANVAS|SUMMARY|SELECT|OPTION|TEXTAREA)$/;
+  var BLOCK = '.isec, .spec-section, .inst-head, .desc, .pd, .facts, .parts-intro';
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var res = null, lang = null;
+  function build(){
+    lang = OBS_LANG; var en = lang === 'en';
+    res = G.map(function(g){ return { k:g[0], re:new RegExp('(^|[^\\p{L}\\p{N}_-])(' + (en ? g[2] : g[1]) + ')(?![\\p{L}\\p{N}_])', 'u' + (g[3] ? 'i' : '')), t:en ? g[5] : g[4], d:en ? g[7] : g[6] }; });
+  }
+  function skipped(n, root){ for (var p = n.parentNode; p && p !== root; p = p.parentNode){ if (SKIP.test(p.nodeName) || (p.classList && p.classList.contains('nogloss'))) return true; } return false; }
+  /* idempotent : un terme déjà souligné dans un bloc ne l'est pas une seconde fois */
+  function apply(root){
+    if (!root || root.hidden) return; if (!res || lang !== OBS_LANG) build();
+    var blocks = [].slice.call(root.querySelectorAll(BLOCK)); if (!blocks.length) blocks = [root];
+    blocks.forEach(function(b){
+      if (b.parentNode && b.parentNode.closest && b.parentNode.closest(BLOCK) && blocks.indexOf(b.parentNode.closest(BLOCK)) >= 0) return;
+      var done = {}; [].forEach.call(b.querySelectorAll('abbr.gl'), function(a){ done[a.getAttribute('data-k')] = 1; });
+      var w = document.createTreeWalker(b, 4, null), nodes = [], n; while ((n = w.nextNode())) if (n.nodeValue.trim().length > 1 && !skipped(n, b)) nodes.push(n);
+      nodes.forEach(function(node){
+        res.forEach(function(r){
+          if (done[r.k] || !node.parentNode) return;
+          var m = r.re.exec(node.nodeValue); if (!m) return;
+          var at = m.index + m[1].length, word = m[2];
+          var rest = node.splitText(at); rest.nodeValue = rest.nodeValue.slice(word.length);
+          var a = document.createElement('abbr'); a.className = 'gl'; a.tabIndex = 0; a.setAttribute('data-k', r.k); a.textContent = word;
+          rest.parentNode.insertBefore(a, rest); done[r.k] = 1;
+          node = rest;   /* on poursuit la recherche dans la suite du texte */
+        });
+      });
+    });
+  }
+  /* bulle de définition, partagée */
+  var tip = null, cur = null;
+  function show(a){
+    if (!res) build(); var r = res.filter(function(x){ return x.k === a.getAttribute('data-k'); })[0]; if (!r) return;
+    if (!tip){ tip = document.createElement('div'); tip.id = 'gloss-tip'; tip.setAttribute('role', 'tooltip'); tip.className = 'nogloss'; document.body.appendChild(tip); }
+    tip.innerHTML = '<b>' + esc(r.t) + '</b>' + esc(r.d); tip.hidden = false; cur = a; a.setAttribute('aria-describedby', 'gloss-tip');
+    var b = a.getBoundingClientRect(), W = Math.min(320, window.innerWidth - 32); tip.style.width = W + 'px';
+    var x = Math.max(16, Math.min(b.left, window.innerWidth - W - 16)), h = tip.offsetHeight, y = b.bottom + 8;
+    if (y + h > window.innerHeight - 8) y = Math.max(8, b.top - h - 8);
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function hide(){ if (tip) tip.hidden = true; if (cur) cur.removeAttribute('aria-describedby'); cur = null; }
+  function on(ev, f){ document.addEventListener(ev, f, true); }
+  function gl(e){ return e.target && e.target.closest ? e.target.closest('abbr.gl') : null; }
+  on('mouseover', function(e){ var a = gl(e); if (a) show(a); });
+  on('mouseout', function(e){ var a = gl(e); if (a && a === cur && !(e.relatedTarget && a.contains(e.relatedTarget))) hide(); });
+  on('focusin', function(e){ var a = gl(e); if (a) show(a); });
+  on('focusout', function(e){ if (gl(e)) hide(); });
+  on('click', function(e){ var a = gl(e); if (a){ if (cur === a && !tip.hidden) hide(); else show(a); } else if (cur) hide(); });
+  on('keydown', function(e){ if (e.key === 'Escape') hide(); });
+  window.addEventListener('scroll', hide, true);
+  function watch(id){
+    var el = document.getElementById(id), t = 0; if (!el) return;
+    new MutationObserver(function(){ clearTimeout(t); t = setTimeout(function(){ apply(el); }, 40); }).observe(el, { childList:true, subtree:true });
+    apply(el);
+  }
+  function boot(){ watch('inst-main'); watch('pbody'); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else setTimeout(boot, 0);
+  return { apply:apply, TERMS:G };
 })();
 
 /* =================================================================

@@ -208,7 +208,7 @@ var InstrumentsUI = (function(){
     var d = INST_DATA[tid], s = '';
     s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">Instruments de '+NAMES[tid]+'</div><div class="inst-full">'+d.instruments.length+' instruments ou fonctions. Cliquer une ligne du graphique ou une case pour ouvrir le détail.</div></div><p class="inst-sum">'+esc(d.summary)+'</p></div>';
     s += '<div class="inst-cols">';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'</div>';
+    s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'<div class="cap">Plages tirées des pages d\'instruments, où chaque valeur renvoie à sa source.</div></div>';
     var f = fovBlock(tid, null);
     if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(tid==='euclid'||tid==='gaia' ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
     s += '<div class="isec wide"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
@@ -223,15 +223,16 @@ var InstrumentsUI = (function(){
 
   function detail(tid, iid, fidx){
     var d = INST_DATA[tid], it = get(tid, iid), s = '';
-    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div><p class="inst-sum">'+esc(it.summary)+'</p>';
+    s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div>'+(it.use ? '<p class="inst-use"><b>À quoi ça sert</b>'+esc(it.use)+'</p>' : '')+'<p class="inst-sum">'+esc(it.summary)+'</p>';
     if (it.bands) s += '<div class="inst-range">' + it.bands.map(function(b){ return '<span class="rng" style="--c:'+it.color+'"><b>'+esc(b.l)+'</b> '+wl(b.lo)+' – '+wl(b.hi)+'</span>'; }).join('') + '</div>';
     s += '</div></div><div class="inst-cols">';
     var nums = {}, nk = 0; it.specs.forEach(function(r){ [].concat(r[2] || []).forEach(function(x){ if (!nums[x]) nums[x] = ++nk; }); });
     s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs, nums)+'</div>';
-    if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+'</div>';
+    var srcCap = nk ? '<div class="cap">Plages et champs repris des caractéristiques ci-dessus ; sources en bas de page.</div>' : '';
+    if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+srcCap+'</div>';
     if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
     var f = fovBlock(tid, iid);
-    if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+'</div>';
+    if (f) s += '<div class="isec"><h4>Champ de vue</h4>'+f+srcCap+'</div>';
     s += real(tid, iid);
     if (it.products) s += '<div class="isec"><h4>Produits de données</h4>'+table(it.products)+'</div>';
     if (it.example){

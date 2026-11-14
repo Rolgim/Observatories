@@ -109,7 +109,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 
 - B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation). **Livré pour les fiches et les instruments** (`refs` et `checked` dans `src/data-tele.js` et par observatoire dans `src/data-inst.js`).
 - B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument. **Livré pour les fiches et les instruments** : numéro en exposant, « ? » orangé pour une valeur chiffrée sans source, liste numérotée et date de vérification.
-- B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source.
+- B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source. **Livré** : légende sous les schémas des pages d'instruments, qui renvoie aux sources de la page (les schémas sont tracés à partir des valeurs sourcées).
 
 **Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.
 
@@ -119,8 +119,8 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 
 **Exigences**
 
-- C1. Glossaire : les termes techniques (TDI, grisme, point de Lagrange, R = λ/Δλ, magnitude AB, CTE, IFU…) sont définis une fois, et consultables au survol ou au toucher partout où ils apparaissent.
-- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux.
+- C1. Glossaire : les termes techniques (TDI, grisme, point de Lagrange, R = λ/Δλ, magnitude AB, CTE, IFU…) sont définis une fois, et consultables au survol ou au toucher partout où ils apparaissent. **Livré** : `src/glossary.js`, 22 termes en français et en anglais. La première apparition d'un terme dans chaque bloc (fiche, section d'instrument) est soulignée en pointillé ; survol, focus clavier ou toucher affichent la définition, Échap la ferme. Ajouter un terme : une ligne dans `Glossary`, motif et définition dans les deux langues.
+- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux. **Livré** : champ `use` des 15 instruments (`src/data-inst.js`, traduit dans `src/en/inst.js`), affiché en tête, avant le résumé technique.
 - C3. Pas de bascule « mode débutant / mode expert » : un seul contenu, ordonné du plus accessible au plus pointu.
 
 **Acceptation.** Un lecteur de licence scientifique comprend le premier écran de chaque fiche sans recherche extérieure ; aucune valeur experte n'a été retirée pour y parvenir.

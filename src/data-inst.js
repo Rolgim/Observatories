@@ -65,6 +65,8 @@ var INST_DATA = (function(){
       { id:"wfc3", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
         bands:[ {l:"UVIS",lo:0.2,hi:1.0}, {l:"IR",lo:0.8,hi:1.7} ],
         fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
+        use:"Prendre des images très nettes du ciel, de l'ultraviolet à l'infrarouge proche : galaxies lointaines, nébuleuses, étoiles des amas. C'est aujourd'hui l'appareil photo le plus utilisé de Hubble.",
+
         summary:"Caméra de quatrième génération installée en 2009 (SM4). Deux canaux indépendants, dont un seul est utilisable à la fois, couvrent de l'ultraviolet proche à l'infrarouge proche.",
         specs:[
           ["Canal UVIS", "200–1000 nm · 2 CCD 2k×4k · 0,04″/px · 162″×162″", "wfc3"],
@@ -100,6 +102,8 @@ var INST_DATA = (function(){
       { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
         bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
         fov:[ {l:"WFC",w:202,h:202}, {l:"SBC",w:34.6,h:30.5} ],
+        use:"Photographier en lumière visible de grandes zones du ciel avec beaucoup de détails. Les célèbres champs profonds de Hubble et les cartes de matière noire des amas de galaxies doivent beaucoup à cette caméra.",
+
         summary:"Installée en 2002 (SM3B). Son canal grand champ WFC a servi aux grands relevés (champs profonds, amas de galaxies). Une panne électronique en janvier 2007 a mis hors service WFC et HRC ; le WFC a été réparé en 2009, pas le HRC.",
         specs:[
           ["WFC", "350–1100 nm · 2 CCD 2048×4096 · pixels de 15 µm · 0,05″/px · 202″×202″", "acs"],
@@ -135,6 +139,8 @@ var INST_DATA = (function(){
       { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
         bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.2,hi:1.03} ],
         fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
+        use:"Décomposer la lumière d'un objet en ses couleurs, son spectre, pour connaître sa composition, sa température et sa vitesse. Sa fente montre aussi comment ces propriétés changent le long d'un objet étendu, par exemple le gaz qui tourne autour d'un trou noir.",
+
         summary:"Spectrographe à longue fente (jusqu'à 52″) installé en 1997, tombé en panne en 2004 et réparé en 2009 lors de SM4. Il combine trois détecteurs : deux MAMA ultraviolets et un CCD.",
         specs:[
           ["FUV-MAMA", "115–170 nm · 0,025″/px · champ 25″×25″", "stis"],
@@ -184,6 +190,8 @@ var INST_DATA = (function(){
       { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
         bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.165,hi:0.32} ],
         fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
+        use:"Recueillir le spectre ultraviolet de sources très faibles, surtout de quasars lointains. Leur lumière traverse le gaz situé entre les galaxies, qui y laisse son empreinte : COS lit ces empreintes pour analyser ce gaz invisible.",
+
         summary:"Spectrographe ultraviolet sans fente à très haute sensibilité, installé en 2009 (SM4) pour étudier le milieu intergalactique, les quasars et la formation des éléments chimiques.",
         specs:[
           ["Voie FUV", "≈ 90–215 nm · détecteur à galettes de microcanaux (lecture par lignes à retard croisées)", "cos"],
@@ -231,7 +239,9 @@ var INST_DATA = (function(){
 
       { id:"fgs", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
         bands:null,
-        summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (stabilité de pointage ≈ 0,007″). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
+        use:"Garder le télescope pointé sans bouger pendant les poses, en suivant des étoiles guides. Utilisé comme instrument, il mesure aussi la position des étoiles avec une grande précision.",
+
+        summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (précision ≈ 1 mas). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
         specs:[
           ["Nombre", "3 (deux pour le guidage, un utilisé pour la science : FGS1R)", "primer"],
           ["Principe", "interféromètres à prismes de Koesters"],
@@ -266,6 +276,8 @@ var INST_DATA = (function(){
       { id:"nircam", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
         bands:[ {l:"SW",lo:0.6,hi:2.3}, {l:"LW",lo:2.4,hi:5.0} ],
         fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
+        use:"Photographier le ciel dans l'infrarouge proche, là où arrive la lumière des toutes premières galaxies, étirée par l'expansion de l'Univers. C'est la caméra principale de Webb ; elle sert aussi à régler l'alignement de son miroir.",
+
         summary:"Caméra principale de JWST. Deux modules identiques observent le même champ dans deux plages de longueur d'onde à la fois grâce à un dichroïque. Elle sert aussi de capteur de front d'onde pour aligner les 18 segments du miroir.",
         specs:[
           ["Domaine", "0,6–5,0 µm", "nircam"],
@@ -315,6 +327,8 @@ var INST_DATA = (function(){
       { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
         bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
         fov:[ {l:"MSA",w:216,h:204}, {l:"IFU",w:3,h:3} ],
+        use:"Obtenir en même temps le spectre de nombreuses galaxies lointaines, pour mesurer leur distance et leur composition. De minuscules volets ne s'ouvrent que devant les objets visés.",
+
         summary:"Spectrographe fourni par l'ESA. Sa matrice de micro-volets (MSA) permet d'observer des centaines de galaxies à la fois. Il offre aussi une unité à champ intégral (IFU) et des fentes fixes.",
         specs:[
           ["Domaine", "0,6–5,3 µm", "modes"],
@@ -356,6 +370,8 @@ var INST_DATA = (function(){
       { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
         bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:27.9} ],
         fov:[ {l:"Imageur",w:74,h:113} ],
+        use:"Voir l'infrarouge moyen, émis par les objets tièdes : poussière, disques où se forment les planètes, galaxies cachées par leur propre poussière. Il doit être bien plus froid que le reste du télescope pour ne pas être aveuglé par sa propre chaleur.",
+
         summary:"Seul instrument opérant dans l'infrarouge moyen, refroidi à environ 7 K par un cryo-refroidisseur actif. Il observe la poussière tiède, les disques protoplanétaires et les galaxies lointaines enfouies.",
         specs:[
           ["Imageur", "5,6–25,5 µm · 9 filtres · 74″×113″ · 0,11″/px", "miri"],
@@ -394,6 +410,8 @@ var INST_DATA = (function(){
       { id:"niriss", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
         bands:[ {l:"0,6–5,0 µm",lo:0.6,hi:5.0} ],
         fov:[ {l:"Imageur",w:132,h:132} ],
+        use:"Étudier l'atmosphère des exoplanètes quand elles passent devant leur étoile, chercher des galaxies lointaines dans de grands champs, et séparer des objets très proches les uns des autres grâce à un masque percé de trous.",
+
         summary:"Fourni par l'Agence spatiale canadienne. Spécialisé dans les spectres d'exoplanètes en transit (SOSS), la spectroscopie sans fente grand champ (WFSS) et l'interférométrie à masque d'ouverture (AMI).",
         specs:[
           ["Imagerie", "0,6–5,0 µm · 2,2′×2,2′ · 0,066″/px", "niriss"],
@@ -422,6 +440,8 @@ var INST_DATA = (function(){
 
       { id:"fgs", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
         bands:null, fov:[ {l:"Guider",w:138,h:138} ],
+        use:"Repérer des étoiles guides et indiquer au télescope comment corriger son pointage, plusieurs fois par seconde, pour que les images restent nettes.",
+
         summary:"Capteur de guidage fin qui verrouille l'observatoire sur des étoiles guides pour tenir le pointage à quelques millisecondes d'arc.",
         specs:[
           ["Domaine", "0,6–5,0 µm", "fgs"],
@@ -455,6 +475,8 @@ var INST_DATA = (function(){
     instruments: [
       { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
         bands:[ {l:"IE",lo:0.53,hi:0.92} ],
+        use:"Photographier des milliards de galaxies avec assez de netteté pour mesurer leur forme. Les petites déformations que ces formes ont en commun révèlent la matière noire située sur le trajet de leur lumière.",
+
         summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
         specs:[
           ["Bande", "IE · 530–920 nm", "e1"],
@@ -504,6 +526,8 @@ var INST_DATA = (function(){
 
       { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
         bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
+        use:"Mesurer les couleurs infrarouges et les spectres de millions de galaxies pour savoir à quelle distance elles se trouvent. Avec VIS, il permet de cartographier l'Univers en trois dimensions sur les dix derniers milliards d'années.",
+
         summary:"Il mesure les couleurs infrarouges (pour les décalages vers le rouge photométriques) et fournit une spectroscopie sans fente par grismes, qui donne les décalages spectroscopiques de millions de galaxies.",
         specs:[
           ["Domaine", "0,95–2,02 µm", "nisp"],
@@ -567,6 +591,8 @@ var INST_DATA = (function(){
     instruments: [
       { id:"astro", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
         bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
+        use:"Mesurer la position des étoiles avec une précision extrême, de nombreuses fois en plusieurs années. On en tire leur distance, par la parallaxe, et leur mouvement dans la Galaxie.",
+
         summary:"Le cartographe de ciel (SM) détecte les objets en temps réel ; le champ astrométrique (AF) mesure ensuite leur position avec une précision de quelques dizaines de micro-secondes d'arc. L'ensemble fournit aussi la magnitude G en lumière blanche.",
         specs:[
           ["Détecteurs", "SM : 14 CCD (7 par télescope) · AF : 62 CCD", "doc"],
@@ -610,6 +636,8 @@ var INST_DATA = (function(){
 
       { id:"bprp", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
         bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
+        use:"Mesurer la couleur de chaque étoile observée à partir d'un spectre très grossier. On en déduit sa température et la quantité de poussière qui l'atténue.",
+
         summary:"Deux prismes dispersent la lumière de chaque étoile en un spectre de très basse résolution, bleu (BP) et rouge (RP), qui donne couleurs, température et extinction.",
         specs:[
           ["BP", "330–680 nm · 7 CCD", ["phot", "doc"]],
@@ -640,6 +668,8 @@ var INST_DATA = (function(){
 
       { id:"rvs", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
         bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
+        use:"Mesurer à quelle vitesse les étoiles s'approchent ou s'éloignent de nous. Ajoutée à leur déplacement sur le ciel, cette vitesse donne leur mouvement complet dans l'espace.",
+
         summary:"Spectromètre sans fente centré sur le triplet du calcium ionisé (Ca II). Il mesure par effet Doppler les vitesses radiales de dizaines de millions d'étoiles.",
         specs:[
           ["Domaine", "845–872 nm (triplet du Ca II)", "prusti"],

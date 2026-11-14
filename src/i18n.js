@@ -25,7 +25,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
     d.instruments.forEach(function(it){
       var q = e.instruments[it.id] || {};
       var frSpecs = it.specs;
-      ['kind','summary','specs','filtersTitle','products','notes'].forEach(function(k){ if (q[k]) it[k] = q[k]; });
+      ['kind','use','summary','specs','filtersTitle','products','notes'].forEach(function(k){ if (q[k]) it[k] = q[k]; });
       if (q.specs) it.specs.forEach(function(r, j){ var o = frSpecs[j]; if (o && o[2]) r[2] = o[2]; });
       if (it.example && q.example){ it.example.title = q.example.title; it.example.caption = q.example.caption; if (q.example.text) it.example.text = q.example.text; }
       if (it.code){ if (q.code) it.code.title = q.code.title; EN_CODE.forEach(function(r){ it.code.text = it.code.text.split(r[0]).join(r[1]); }); }
