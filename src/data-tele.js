@@ -216,6 +216,7 @@ var TELESCOPES = [
       sc:{ t:'Gaia : Spacecraft', p:'ESA', u:'https://sci.esa.int/web/gaia/-/39993-spacecraft' },
       doc:{ t:'Gaia DR2 documentation, 1.2 Spacecraft', p:'ESA Gaia Archive', u:'https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html' },
       scan:{ t:'Gaia scanning the sky', p:'ESA', u:'https://sci.esa.int/web/gaia/-/51976-gaia-scanning-the-sky' },
+      dr3:{ t:'Gaia Data Release 3', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/dr3' },
       end:{ t:'Gaia passivation (27 mars 2025)', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/home/-/asset_publisher/wEXKCCPdRxv0/content/2025-03-27-gaia-passivation' }
     },
     sections:[
@@ -233,7 +234,7 @@ var TELESCOPES = [
         ['Précession','≈ 63 jours','scan'], ['Orbite','Lissajous autour de L2, période ≈ 180 jours','fs'] ]},
       { title:'Énergie et catalogues', rows:[
         ['Panneaux solaires','12,8 m², jusqu\'à 1 910 W en fin de vie','sc'], ['Horloge','rubidium, 10 MHz','sc'],
-        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
+        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources','dr3'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],

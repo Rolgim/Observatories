@@ -46,6 +46,14 @@ var INST_DATA = (function(){
 
   /* ------------------------------------------------------------ HUBBLE */
   hubble: {
+    checked:'2026-11-14',
+    refs:{
+      wfc3:{ t:"WFC3 Instrument Handbook, 1.3 Key Features of WFC3", p:"STScI", u:"https://hst-docs.stsci.edu/wfc3ihb/chapter-1-introduction-to-wfc3/1-3-key-features-of-wfc3" },
+      acs:{ t:"ACS Instrument Handbook, 3.5 ACS Quick Reference Guide", p:"STScI", u:"https://hst-docs.stsci.edu/acsihb/chapter-3-acs-capabilities-design-and-operations/3-5-acs-quick-reference-guide" },
+      stis:{ t:"STIS Data Handbook, 1.1 Instrument Capabilities and Design", p:"STScI", u:"https://hst-docs.stsci.edu/stisdhb/chapter-1-stis-overview/1-1-instrument-capabilities-and-design" },
+      cos:{ t:"COS Data Handbook, 1.1 Instrument Capabilities and Design", p:"STScI", u:"https://hst-docs.stsci.edu/cosdhb/chapter-1-cos-overview/1-1-instrument-capabilities-and-design" },
+      primer:{ t:"HST Primer for Cycle 34, Scientific Instruments: ACS, WFC3 and FGS", p:"STScI", u:"https://hst-docs.stsci.edu/hsp/the-hubble-space-telescope-primer-for-cycle-34/hst-primer-scientific-instruments-acs-wfc3-and-fgs" }
+    },
     axis: { min:0.09, max:2.0 },
     summary: "Cinq instruments scientifiques actifs, dont deux spectrographes ultraviolets et deux caméras. Les instruments sont interchangeables en orbite : la plupart ont été installés lors de missions d'entretien en navette (1993–2009).",
     archives: [
@@ -59,12 +67,11 @@ var INST_DATA = (function(){
         fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
         summary:"Caméra de quatrième génération installée en 2009 (SM4). Deux canaux indépendants, dont un seul est utilisable à la fois, couvrent de l'ultraviolet proche à l'infrarouge proche.",
         specs:[
-          ["Canal UVIS","200–1000 nm · 2 CCD e2v 2k×4k · 0,040″/px · 162″×162″ · f/31"],
-          ["Canal IR","800–1700 nm · HgCdTe 1k×1k (Teledyne) · 0,13″/px · 136″×123″ · f/11"],
-          ["Filtres","UVIS : large choix (large, moyenne, étroite) · IR : 15"],
-          ["Grismes","G280 (UVIS) · G102 et G141 (IR)"],
-          ["Bruit de lecture","3 e⁻ (UVIS), contre 4 e⁻ pour l'ACS"],
-          ["Sensibilité (S/N=10, 10 h)","V = 29,2 (F606W) · H = 27,9 (F160W), mag AB, source ponctuelle"]
+          ["Canal UVIS", "200–1000 nm · 2 CCD 2k×4k · 0,04″/px · 162″×162″", "wfc3"],
+          ["Canal IR", "800–1700 nm · HgCdTe 1k×1k · 0,13″/px · 136″×123″", "wfc3"],
+          ["Filtres", "62 (UVIS) · 15 (IR)", "wfc3"],
+          ["Grismes", "G280 (UVIS) · G102 et G141 (IR)", "wfc3"],
+          ["Bruit de lecture", "3 e⁻ (UVIS) · 12 e⁻ (IR, 16 lectures) · contre 4 e⁻ pour l'ACS/WFC", "primer"]
         ],
         filtersTitle:"Filtres (sélection représentative)",
         filters:[
@@ -92,12 +99,12 @@ var INST_DATA = (function(){
 
       { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
         bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
-        fov:[ {l:"WFC",w:202,h:202} ],
+        fov:[ {l:"WFC",w:202,h:202}, {l:"SBC",w:34.6,h:30.5} ],
         summary:"Installée en 2002 (SM3B). Son canal grand champ WFC a servi aux grands relevés (champs profonds, amas de galaxies). Une panne électronique en janvier 2007 a mis hors service WFC et HRC ; le WFC a été réparé en 2009, pas le HRC.",
         specs:[
-          ["WFC","350–1100 nm · 202″×202″ · 0,05″/px"],
-          ["SBC","imagerie ultraviolette lointaine « solar-blind » (MAMA) · ≈ 115–170 nm · 0,032″/px"],
-          ["HRC","hors service depuis 2007 (non réparable en SM4)"]
+          ["WFC", "350–1100 nm · 2 CCD 2048×4096 · pixels de 15 µm · 0,05″/px · 202″×202″", "acs"],
+          ["SBC", "ultraviolet lointain « solar-blind » (MAMA 1024×1024) · 115–170 nm · ≈ 0,034″×0,030″/px · 34,6″×30,5″", "acs"],
+          ["HRC", "29″×26″ · hors service depuis janvier 2007", "acs"]
         ],
         filtersTitle:"Filtres WFC / SBC (sélection)",
         filters:[
@@ -126,14 +133,14 @@ var INST_DATA = (function(){
         docs:[ {l:"ACS Instrument Handbook",u:"https://hst-docs.stsci.edu/acsihb"} ] },
 
       { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
-        bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.25,hi:1.1} ],
+        bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.2,hi:1.03} ],
         fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
         summary:"Spectrographe à longue fente (jusqu'à 52″) installé en 1997, tombé en panne en 2004 et réparé en 2009 lors de SM4. Il combine trois détecteurs : deux MAMA ultraviolets et un CCD.",
         specs:[
-          ["FUV-MAMA","115–170 nm · 0,024″/px · champ 25″×25″"],
-          ["NUV-MAMA","165–310 nm · 0,024″/px · champ 25″×25″"],
-          ["CCD","250–1100 nm · 0,05″/px · champ 52″×52″"],
-          ["Résolution spectrale","R ≈ 500–1 000 (réseaux L) · ≈ 10 000–20 000 (M) · ≈ 30 000–114 000 (échelles)"]
+          ["FUV-MAMA", "115–170 nm · 0,025″/px · champ 25″×25″", "stis"],
+          ["NUV-MAMA", "165–310 nm · 0,025″/px · champ 25″×25″", "stis"],
+          ["CCD", "≈ 200–1030 nm · 0,05″/px · champ 52″×52″", "stis"],
+          ["Résolution spectrale", "R ≈ 500–1 440 (réseaux L) · ≈ 4 900–17 400 (M) · ≈ 30 000–114 000 (échelles)", "stis"]
         ],
         filtersTitle:"Réseaux de dispersion (plages nominales)",
         filters:[
@@ -141,7 +148,7 @@ var INST_DATA = (function(){
           R("G230L",0.157,0.318,"G","NUV-MAMA, basse résolution"),
           R("G430L",0.29,0.57,"G","CCD, basse résolution"),
           R("G750L",0.524,1.027,"G","CCD, basse résolution"),
-          R("E140M",0.114,0.171,"G","échelle FUV, R ≈ 45 000")
+          R("E140M",0.114,0.171,"G","échelle FUV, R ≈ 45 800")
         ],
         products:[
           ["_raw / _flt.fits","poses brutes et calibrées"],
@@ -175,24 +182,24 @@ var INST_DATA = (function(){
         docs:[ {l:"STIS Instrument Handbook",u:"https://hst-docs.stsci.edu/stisihb"} ] },
 
       { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
-        bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.17,hi:0.32} ],
+        bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.165,hi:0.32} ],
         fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
         summary:"Spectrographe ultraviolet sans fente à très haute sensibilité, installé en 2009 (SM4) pour étudier le milieu intergalactique, les quasars et la formation des éléments chimiques.",
         specs:[
-          ["Voie FUV","≈ 90–215 nm · détecteur à galettes de microcanaux (lecture par lignes à retard croisées)"],
-          ["Voie NUV","≈ 170–320 nm · détecteur MAMA"],
-          ["Ouverture","PSA, circulaire, Ø 2,5″ (sans fente)"],
-          ["Résolution","R ≈ 1 500–4 000 (basse) · ≈ 16 000–24 000 (moyenne)"]
+          ["Voie FUV", "≈ 90–215 nm · détecteur à galettes de microcanaux (lecture par lignes à retard croisées)", "cos"],
+          ["Voie NUV", "≈ 165–320 nm · détecteur MAMA", "cos"],
+          ["Ouverture", "PSA, circulaire, Ø 2,5″ (sans fente)", "cos"],
+          ["Résolution", "R ≈ 1 500–4 000 (basse) · ≈ 12 000–24 000 (moyenne)", "cos"]
         ],
         filtersTitle:"Réseaux (plages nominales approximatives)",
         filters:[
           R("G140L",0.090,0.215,"G","FUV, basse résolution"),
           R("G130M",0.090,0.145,"G","FUV, moyenne résolution"),
-          R("G160M",0.1405,0.1775,"G","FUV, moyenne résolution"),
-          R("G185M",0.167,0.210,"G","NUV, moyenne résolution"),
-          R("G225M",0.207,0.250,"G","NUV, moyenne résolution"),
-          R("G285M",0.248,0.322,"G","NUV, moyenne résolution"),
-          R("G230L",0.170,0.320,"G","NUV, basse résolution")
+          R("G160M",0.136,0.1775,"G","FUV, moyenne résolution"),
+          R("G185M",0.170,0.210,"G","NUV, moyenne résolution"),
+          R("G225M",0.210,0.250,"G","NUV, moyenne résolution"),
+          R("G285M",0.250,0.320,"G","NUV, moyenne résolution"),
+          R("G230L",0.165,0.320,"G","NUV, basse résolution")
         ],
         products:[
           ["_corrtag.fits","liste d'événements photon par photon (TIME-TAG) corrigée"],
@@ -226,9 +233,9 @@ var INST_DATA = (function(){
         bands:null,
         summary:"Trois capteurs de guidage fin qui verrouillent le télescope sur des étoiles guides (stabilité de pointage ≈ 0,007″). Ils servent aussi d'instrument scientifique : astrométrie de haute précision et mesure de binaires serrées.",
         specs:[
-          ["Nombre","3 (deux pour le guidage, un disponible pour la science)"],
-          ["Principe","interféromètres à prismes de Koesters"],
-          ["Stabilité de pointage","≈ 0,007″"]
+          ["Nombre", "3 (deux pour le guidage, un utilisé pour la science : FGS1R)", "primer"],
+          ["Principe", "interféromètres à prismes de Koesters"],
+          ["Précision astrométrique", "≈ 1 mas (3 < V < 16,8) · parallaxes jusqu'à ≈ 0,2 mas", "primer"]
         ],
         products:[ ["Archive","données FGS (astrométrie) disponibles au MAST sous l'instrument « FGS »"] ],
         notes:["Les FGS ont fourni plusieurs parallaxes d'étoiles céphéides avant l'ère Gaia."],
@@ -238,6 +245,15 @@ var INST_DATA = (function(){
 
   /* -------------------------------------------------------------- JWST */
   jwst: {
+    checked:'2026-11-14',
+    refs:{
+      nircam:{ t:"Near Infrared Camera (NIRCam)", p:"JWST User Documentation (JDox)", u:"https://jwst-docs.stsci.edu/jwst-near-infrared-camera" },
+      msa:{ t:"NIRSpec Micro-Shutter Assembly", p:"JDox", u:"https://jwst-docs.stsci.edu/jwst-near-infrared-spectrograph/nirspec-instrumentation/nirspec-micro-shutter-assembly" },
+      modes:{ t:"JWST Spectroscopic Modes", p:"STScI", u:"https://www.stsci.edu/jwst/instrumentation/spectroscopic-modes" },
+      miri:{ t:"Mid-Infrared Instrument (MIRI)", p:"JDox", u:"https://jwst-docs.stsci.edu/jwst-mid-infrared-instrument" },
+      niriss:{ t:"Near Infrared Imager and Slitless Spectrograph (NIRISS)", p:"JDox", u:"https://jwst-docs.stsci.edu/jwst-near-infrared-imager-and-slitless-spectrograph" },
+      fgs:{ t:"JWST Fine Guidance Sensor", p:"JDox", u:"https://jwst-docs.stsci.edu/jwst-observatory-hardware/jwst-fine-guidance-sensor" }
+    },
     axis: { min:0.5, max:30 },
     summary: "Quatre instruments scientifiques partagent le module ISIM, maintenu à très basse température (≈ 40 K ; ≈ 7 K pour le détecteur de MIRI), avec un capteur de guidage fin. Ensemble ils couvrent 0,6 à 28,5 µm.",
     archives: [
@@ -252,12 +268,12 @@ var INST_DATA = (function(){
         fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
         summary:"Caméra principale de JWST. Deux modules identiques observent le même champ dans deux plages de longueur d'onde à la fois grâce à un dichroïque. Elle sert aussi de capteur de front d'onde pour aligner les 18 segments du miroir.",
         specs:[
-          ["Domaine","0,6–5,0 µm"],
-          ["Voie courte (SW)","0,6–2,3 µm · 0,031″/px"],
-          ["Voie longue (LW)","2,4–5,0 µm · 0,063″/px"],
-          ["Champ","2 modules de 2,2′×2,2′ séparés de ≈ 44″ · 9,7 arcmin² au total"],
-          ["Détecteurs","10 matrices HgCdTe 2048×2048 (8 SW + 2 LW)"],
-          ["Autres modes","coronographie · spectroscopie sans fente (grisme LW, R ≈ 1 700) · séries temporelles"]
+          ["Domaine", "0,6–5,0 µm", "nircam"],
+          ["Voie courte (SW)", "0,6–2,3 µm · 0,031″/px", "nircam"],
+          ["Voie longue (LW)", "2,4–5,0 µm · 0,063″/px", "nircam"],
+          ["Champ", "2 modules de 2,2′×2,2′ séparés de ≈ 44″ · 9,7 arcmin² au total", "nircam"],
+          ["Détecteurs", "10 matrices HgCdTe 2040×2040 px utiles (8 SW + 2 LW)", "nircam"],
+          ["Autres modes", "coronographie · spectroscopie sans fente (grisme LW, R ≈ 1 600 à 4 µm) · séries temporelles", "nircam"]
         ],
         filtersTitle:"Filtres (sélection représentative)",
         filters:[
@@ -298,14 +314,14 @@ var INST_DATA = (function(){
 
       { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
         bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
-        fov:[ {l:"MSA",w:204,h:204}, {l:"IFU",w:3,h:3} ],
+        fov:[ {l:"MSA",w:216,h:204}, {l:"IFU",w:3,h:3} ],
         summary:"Spectrographe fourni par l'ESA. Sa matrice de micro-volets (MSA) permet d'observer des centaines de galaxies à la fois. Il offre aussi une unité à champ intégral (IFU) et des fentes fixes.",
         specs:[
-          ["Domaine","0,6–5,3 µm"],
-          ["Résolution","R ≈ 100 (prisme) · ≈ 1 000 (réseaux M) · ≈ 2 700 (réseaux H)"],
-          ["Multi-objets (MSA)","4 quadrants de 365×171 volets · champ ≈ 3,4′×3,4′"],
-          ["IFU","3″×3″ découpé en 30 tranches de 0,1″"],
-          ["Fentes fixes","S200A1/A2, S400A1, S1600A1 et mode séries temporelles (BOTS)"]
+          ["Domaine", "0,6–5,3 µm", "modes"],
+          ["Résolution", "R ≈ 100 (prisme) · ≈ 1 000 (réseaux M) · ≈ 2 700 (réseaux H)", "modes"],
+          ["Multi-objets (MSA)", "4 quadrants de 365×171 volets de 0,20″×0,46″ · champ ≈ 3,6′×3,4′", "msa"],
+          ["IFU", "3″×3″ découpé en 30 tranches de 0,1″", "modes"],
+          ["Fentes fixes", "S200A1/A2, S400A1, S1600A1 (1,6″) et mode séries temporelles (BOTS)", "modes"]
         ],
         filtersTitle:"Dispersions (plages nominales)",
         filters:[
@@ -338,15 +354,15 @@ var INST_DATA = (function(){
         docs:[ {l:"JDox, NIRSpec",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-spectrograph"} ] },
 
       { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
-        bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:28.8} ],
+        bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:27.9} ],
         fov:[ {l:"Imageur",w:74,h:113} ],
         summary:"Seul instrument opérant dans l'infrarouge moyen, refroidi à environ 7 K par un cryo-refroidisseur actif. Il observe la poussière tiède, les disques protoplanétaires et les galaxies lointaines enfouies.",
         specs:[
-          ["Imageur","5,6–25,5 µm · 74″×113″ · 0,11″/px"],
-          ["Spectro. moyenne résolution (MRS)","4,9–28,8 µm · R ≈ 1 500–3 500 · 4 IFU (3,9″×3,9″ à ≈ 7,7″×7,7″)"],
-          ["Spectro. basse résolution (LRS)","≈ 5–12 µm · R ≈ 100 · fente 0,6″×5,5″"],
-          ["Coronographes","4 · rayon interne 0,34″–2,16″ · contraste 10⁻⁶–10⁻⁵"],
-          ["Température","≈ 7 K (cryo-refroidisseur)"]
+          ["Imageur", "5,6–25,5 µm · 9 filtres · 74″×113″ · 0,11″/px", "miri"],
+          ["Spectro. moyenne résolution (MRS)", "4,9–27,9 µm · R ≈ 1 550–3 250 · 4 IFU (de 3,7″ à 7,7″ de côté)", "miri"],
+          ["Spectro. basse résolution (LRS)", "≈ 5–14 µm · R ≈ 100 à 7,5 µm · fente 0,51″×4,7″", "miri"],
+          ["Coronographes", "3 masques de phase à quatre quadrants (10,65, 11,4 et 15,5 µm ; 24″×24″) · 1 masque de Lyot (23 µm ; 30″×30″)", "miri"],
+          ["Température", "≈ 7 K (cryo-refroidisseur)", "miri"]
         ],
         filtersTitle:"Filtres d'imagerie et coronographes",
         filters:[
@@ -380,10 +396,10 @@ var INST_DATA = (function(){
         fov:[ {l:"Imageur",w:132,h:132} ],
         summary:"Fourni par l'Agence spatiale canadienne. Spécialisé dans les spectres d'exoplanètes en transit (SOSS), la spectroscopie sans fente grand champ (WFSS) et l'interférométrie à masque d'ouverture (AMI).",
         specs:[
-          ["Imagerie","0,8–5,0 µm · 2,2′×2,2′ · 0,065″/px"],
-          ["WFSS","R ≈ 150 · 0,8–2,2 µm"],
-          ["SOSS","0,6–2,8 µm · R ≈ 700 (objet unique, transits)"],
-          ["AMI","interférométrie à masque d'ouverture · 2,8–4,8 µm (4 filtres)"]
+          ["Imagerie", "0,6–5,0 µm · 2,2′×2,2′ · 0,066″/px", "niriss"],
+          ["WFSS", "0,8–2,2 µm · R ≈ 150 à 1,4 µm · champ 133″×133″", "niriss"],
+          ["SOSS", "0,6–2,8 µm · R ≈ 700 à 1,4 µm (objet unique, transits)", "niriss"],
+          ["AMI", "masque à 7 sous-pupilles · 2,8–4,8 µm (F277W, F380M, F430M, F480M)", "niriss"]
         ],
         filtersTitle:"Filtres d'imagerie",
         filters:[
@@ -408,9 +424,9 @@ var INST_DATA = (function(){
         bands:null, fov:[ {l:"Guider",w:138,h:138} ],
         summary:"Capteur de guidage fin qui verrouille l'observatoire sur des étoiles guides pour tenir le pointage à quelques millisecondes d'arc.",
         specs:[
-          ["Domaine","0,6–5,0 µm"],
-          ["Champ","2,3′×2,3′ · ≈ 0,07″/px"],
-          ["Redondance","2 voies de guidage (FGS1, FGS2)"]
+          ["Domaine", "0,6–5,0 µm", "fgs"],
+          ["Champ", "2,3′×2,3′ par voie · ≈ 0,069″/px", "fgs"],
+          ["Détecteurs", "2 voies (Guider 1 et 2) · HgCdTe 2048×2048 (2040 actifs) · pixels de 18 µm", "fgs"]
         ],
         products:[ ["Archive","les données de guidage sont archivées mais ne constituent pas un produit scientifique usuel"] ],
         notes:["Il partage son boîtier avec NIRISS, mais fonctionne comme sous-système de contrôle de pointage."],
@@ -420,6 +436,12 @@ var INST_DATA = (function(){
 
   /* ------------------------------------------------------------ EUCLID */
   euclid: {
+    checked:'2026-11-14',
+    refs:{
+      e1:{ t:"Euclid Collaboration, Mellier et al. 2025, Euclid. I. Overview of the Euclid mission, A&A 697, A1", p:"arXiv", u:"https://arxiv.org/abs/2405.13491" },
+      vis:{ t:"Euclid Collaboration, Cropper et al. 2025, Euclid. II. The VIS instrument, A&A 697, A2", p:"A&A", u:"https://doi.org/10.1051/0004-6361/202450996" },
+      nisp:{ t:"Euclid Collaboration, Jahnke et al. 2025, Euclid. III. The NISP instrument, A&A 697, A3", p:"A&A", u:"https://doi.org/10.1051/0004-6361/202450786" }
+    },
     axis: { min:0.5, max:2.2 },
     summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). La première grande publication, DR1, date du 12 novembre 2026 : environ 1 900 deg² du relevé large (14 % de la cible), observés du printemps 2024 au printemps 2025, soit plus d'un milliard d'objets. Elle s'ajoute à la « Quick Release » Q1 de mars 2025, dont sont tirés les exemples de cette page.",
     archives: [
@@ -435,14 +457,13 @@ var INST_DATA = (function(){
         bands:[ {l:"IE",lo:0.53,hi:0.92} ],
         summary:"Caméra optimisée pour mesurer avec précision la forme des galaxies (cisaillement gravitationnel faible). Une seule bande très large, sans autre filtre que le dichroïque.",
         specs:[
-          ["Bande","IE · 530–920 nm"],
-          ["Détecteurs","36 CCD e2v amincis (40 µm), disposés en 6×6"],
-          ["Format","4096×4132 px par CCD · pixels de 12 µm · 4 nœuds de lecture"],
-          ["Mosaïque","≈ 609 Mpx · échantillonnage 0,1″/px"],
-          ["Champ","≈ 0,54 deg² (champ commun VIS/NISP)"],
-          ["Température des CCD","153 K"],
-          ["Saturation","≈ 200 000 e⁻ · limite brillante : IE(AB) ≈ 17,8 (pose nominale)"],
-          ["Nombre focal","f/20,4 · pupille 1,2 m · obstruction centrale 11 %"]
+          ["Bande", "IE · 530–920 nm", "e1"],
+          ["Détecteurs", "36 CCD e2v CCD273-84 amincis (40 µm), disposés en 6×6", "vis"],
+          ["Format", "4096×4132 px par CCD · pixels de 12 µm · 4 quadrants lus chacun par son nœud (144 voies)", "vis"],
+          ["Mosaïque", "≈ 609 Mpx · échantillonnage 0,1″/px", "vis"],
+          ["Champ", "≈ 0,54 deg² · zone active 0,775°×0,697°", "vis"],
+          ["Température des CCD", "153 K", "vis"],
+          ["Faisceau", "f/20 fourni par le télescope · pupille 1,2 m", ["vis", "e1"]]
         ],
         filtersTitle:"Bande photométrique",
         filters:[ R("IE",0.53,0.92,"B","bande large unique") ],
@@ -482,22 +503,22 @@ var INST_DATA = (function(){
         docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Q1, contenu",u:"https://www.cosmos.esa.int/web/euclid/q1-contents"} ] },
 
       { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
-        bands:[ {l:"Y",lo:0.95,hi:1.21}, {l:"J",lo:1.17,hi:1.57}, {l:"H",lo:1.52,hi:2.02} ],
+        bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
         summary:"Il mesure les couleurs infrarouges (pour les décalages vers le rouge photométriques) et fournit une spectroscopie sans fente par grismes, qui donne les décalages spectroscopiques de millions de galaxies.",
         specs:[
-          ["Domaine","0,92–2,0 µm"],
-          ["Détecteurs","16 matrices HgCdTe H2RG en 4×4 · 2040×2040 px utiles · pixels de 18 µm"],
-          ["Échantillonnage","0,298″/px"],
-          ["Photométrie","3 filtres : Y (0,95–1,21), J (1,17–1,57), H (1,52–2,02 µm)"],
-          ["Spectroscopie","grisme bleu (BG) 926–1366 nm, R ≳ 400 · grisme rouge (RG) 1206–1892 nm, R ≳ 480"],
-          ["Masse et puissance","85,3 kg (instrument) + 40,7 kg (électronique chaude) · ≤ 200 W"],
-          ["Température","détecteurs ≈ 95 K · optique ≈ 130 K"]
+          ["Domaine", "0,95–2,02 µm", "nisp"],
+          ["Détecteurs", "16 matrices HgCdTe H2RG en 4×4 · 2040×2040 px utiles · pixels de 18 µm", "nisp"],
+          ["Échantillonnage", "0,3″/px · champ 0,57 deg²", "nisp"],
+          ["Photométrie", "3 filtres : YE (0,95–1,21), JE (1,17–1,57), HE (1,52–2,02 µm)", "nisp"],
+          ["Spectroscopie", "grisme bleu (BG) 926–1366 nm, R > 400 · grismes rouges (RG) 1206–1892 nm, R > 480", "nisp"],
+          ["Masse et puissance", "≈ 85,3 kg (instrument) + 40,7 kg (électronique chaude) · puissance plafonnée à 200 W", "nisp"],
+          ["Température", "détecteurs ≈ 95 K · optique ≈ 135 K", "nisp"]
         ],
         filtersTitle:"Bandes et grismes (plages nominales)",
         filters:[
-          R("Y",0.95,1.21,"B","photométrie"),
-          R("J",1.17,1.57,"B","photométrie"),
-          R("H",1.52,2.02,"B","photométrie"),
+          R("YE",0.95,1.21,"B","photométrie"),
+          R("JE",1.17,1.57,"B","photométrie"),
+          R("HE",1.52,2.02,"B","photométrie"),
           R("BG",0.92,1.37,"G","grisme bleu, non publié dans Q1"),
           R("RG",1.21,1.89,"G","grisme rouge, spectres publiés dans Q1")
         ],
@@ -528,6 +549,13 @@ var INST_DATA = (function(){
 
   /* -------------------------------------------------------------- GAIA */
   gaia: {
+    checked:'2026-11-14',
+    refs:{
+      dr3:{ t:"Gaia Data Release 3", p:"ESA Cosmos", u:"https://www.cosmos.esa.int/web/gaia/dr3" },
+      phot:{ t:"Gaia photometric instrument", p:"ESA Cosmos", u:"https://www.cosmos.esa.int/web/gaia/photometric-instrument" },
+      doc:{ t:"Gaia DR2 documentation, 1.2 Spacecraft", p:"ESA Gaia Archive", u:"https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html" },
+      prusti:{ t:"Gaia Collaboration, Prusti et al. 2016, The Gaia mission, A&A 595, A1", p:"A&A", u:"https://doi.org/10.1051/0004-6361/201629272" }
+    },
     axis: { min:0.3, max:1.1 },
     summary: "Gaia n'a pas d'instruments séparés au sens habituel. Un unique plan focal de 106 CCD, partagé par les deux télescopes, remplit trois fonctions qui lisent le même flux de lumière pendant que le satellite balaie le ciel.",
     archives: [
@@ -541,12 +569,12 @@ var INST_DATA = (function(){
         bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
         summary:"Le cartographe de ciel (SM) détecte les objets en temps réel ; le champ astrométrique (AF) mesure ensuite leur position avec une précision de quelques dizaines de micro-secondes d'arc. L'ensemble fournit aussi la magnitude G en lumière blanche.",
         specs:[
-          ["Détecteurs","SM : 14 CCD (7 par télescope) · AF : 62 CCD"],
-          ["Pixels","4500×1966 px · 10 µm × 30 µm"],
-          ["Mode de lecture","TDI : intégration synchronisée sur la rotation (≈ 4,4 s par CCD)"],
-          ["Bande G","≈ 330–1050 nm (lumière blanche)"],
-          ["Magnitudes observées","G ≈ 3 à ≈ 21"],
-          ["Précision parallaxe (DR3)","≈ 0,02–0,03 mas (G < 15) · 0,07 mas (G = 17) · 0,5 mas (G = 20)"]
+          ["Détecteurs", "SM : 14 CCD (7 par télescope) · AF : 62 CCD", "doc"],
+          ["Pixels", "4500×1966 px par CCD · 10 µm × 30 µm", "prusti"],
+          ["Mode de lecture", "TDI : intégration synchronisée sur la rotation (4,42 s par CCD)", "prusti"],
+          ["Bande G", "≈ 330–1050 nm (lumière blanche)"],
+          ["Magnitudes observées", "G ≈ 3 à ≈ 21", "dr3"],
+          ["Précision parallaxe (DR3)", "≈ 0,02–0,03 mas (G < 15) · 0,07 mas (G = 17) · 0,5 mas (G = 20) · 1,3 mas (G = 21)", "dr3"]
         ],
         filtersTitle:"Bande photométrique",
         filters:[ R("G",0.33,1.05,"B","lumière blanche (SM + AF)") ],
@@ -584,10 +612,10 @@ var INST_DATA = (function(){
         bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
         summary:"Deux prismes dispersent la lumière de chaque étoile en un spectre de très basse résolution, bleu (BP) et rouge (RP), qui donne couleurs, température et extinction.",
         specs:[
-          ["BP","≈ 330–680 nm · 7 CCD"],
-          ["RP","≈ 640–1050 nm · 7 CCD"],
-          ["Résolution","R ≈ 20–100 selon la longueur d'onde"],
-          ["Spectres XP publiés (DR3)","≈ 220 millions"]
+          ["BP", "330–680 nm · 7 CCD", ["phot", "doc"]],
+          ["RP", "640–1050 nm · 7 CCD", ["phot", "doc"]],
+          ["Dispersion", "prismes : 3–27 nm/px (BP) · 7–15 nm/px (RP)", "phot"],
+          ["Spectres XP publiés (DR3)", "≈ 219 millions", "dr3"]
         ],
         filtersTitle:"Bandes photométriques",
         filters:[ R("BP",0.33,0.68,"B","bande bleue"), R("RP",0.64,1.05,"B","bande rouge") ],
@@ -614,10 +642,10 @@ var INST_DATA = (function(){
         bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
         summary:"Spectromètre sans fente centré sur le triplet du calcium ionisé (Ca II). Il mesure par effet Doppler les vitesses radiales de dizaines de millions d'étoiles.",
         specs:[
-          ["Domaine","845–872 nm"],
-          ["Résolution","R ≈ 11 500"],
-          ["Détecteurs","12 CCD"],
-          ["Vitesses radiales (DR3)","≈ 33,8 millions d'étoiles"]
+          ["Domaine", "845–872 nm (triplet du Ca II)", "prusti"],
+          ["Résolution", "R ≈ 11 700", ["prusti", "doc"]],
+          ["Détecteurs", "12 CCD", "doc"],
+          ["Vitesses radiales (DR3)", "≈ 33,8 millions d'étoiles · ≈ 1 million de spectres RVS moyens", "dr3"]
         ],
         filtersTitle:"Plage spectrale",
         filters:[ R("RVS",0.845,0.872,"G","triplet du Ca II") ],

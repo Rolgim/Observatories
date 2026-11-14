@@ -135,7 +135,19 @@ var InstrumentsUI = (function(){
   }
 
   function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
-  function table(rows){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+'</div></div>'; }).join('') + '</div>'; }
+  function table(rows, nums){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+(nums ? mark(r, nums) : '')+'</div></div>'; }).join('') + '</div>'; }
+  function mark(r, nums){
+    var ks = [].concat(r[2] || []);
+    if (ks.length) return '<sup class="ref">' + ks.map(function(k){ return nums[k]; }).join(',') + '</sup>';
+    return /\d/.test(r[1]) ? '<sup class="ref nv" title="Valeur pas encore vérifiée face à une source primaire">?</sup>' : '';
+  }
+  /* sources des caractéristiques (même principe que les fiches : numéros dans l'ordre d'apparition, « ? » sans source) */
+  function srcList(d, nums){
+    var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; });
+    var c = d.checked.split('-'), when = OBS_LANG === 'en' ? d.checked : c[2] + '/' + c[1] + '/' + c[0];
+    return '<ol class="refs">' + keys.map(function(k){ var x = d.refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a> <span>' + esc(x.p) + '</span></li>'; }).join('') +
+      '</ol><p class="source-note">Valeurs vérifiées le ' + when + ' face aux sources ci-dessus. Un « ? » signale une valeur pas encore confrontée à une source primaire.</p>';
+  }
   function host(u){ return u.replace(/^https?:\/\//,'').replace(/\/.*$/,''); }
 
   /* ---------- observations réelles (lot E) : data/manifest.json est produit par tools/data/fetch_data.py ---------- */
@@ -214,7 +226,8 @@ var InstrumentsUI = (function(){
     s += '<div class="inst-head"><div class="inst-h"><div class="inst-name">'+esc(it.name)+'</div><div class="inst-full">'+esc(it.full)+'</div><span class="kind">'+esc(it.kind)+'</span></div><div><p class="inst-sum">'+esc(it.summary)+'</p>';
     if (it.bands) s += '<div class="inst-range">' + it.bands.map(function(b){ return '<span class="rng" style="--c:'+it.color+'"><b>'+esc(b.l)+'</b> '+wl(b.lo)+' – '+wl(b.hi)+'</span>'; }).join('') + '</div>';
     s += '</div></div><div class="inst-cols">';
-    s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs)+'</div>';
+    var nums = {}, nk = 0; it.specs.forEach(function(r){ [].concat(r[2] || []).forEach(function(x){ if (!nums[x]) nums[x] = ++nk; }); });
+    s += '<div class="isec"><h4>Caractéristiques</h4>'+table(it.specs, nums)+'</div>';
     if (it.bands) s += '<div class="isec"><h4>Place dans le spectre</h4>'+coverage(tid, iid)+'</div>';
     if (it.filters && it.filters.length) s += '<div class="isec"><h4>'+esc(it.filtersTitle||'Filtres')+'</h4><div id="fsec">'+filterPanel(tid, iid, fidx||0)+'</div></div>';
     var f = fovBlock(tid, iid);
@@ -226,6 +239,7 @@ var InstrumentsUI = (function(){
     }
     if (it.code) s += '<div class="isec"><h4>Accéder aux données</h4><div class="ex-head"><span class="ex-title">'+esc(it.code.title)+'</span></div>'+code(it.code.text)+'</div>';
     if (it.notes && it.notes.length) s += '<div class="isec"><h4>À savoir</h4><ul class="notes">'+it.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join('')+'</ul></div>';
+    if (nk) s += '<div class="isec"><h4>Sources</h4>'+srcList(d, nums)+'</div>';
     s += '<div class="isec"><h4>Archive et documentation</h4><div class="lnks">' +
       [{l:d.archives[0].label, u:d.archives[0].url}].concat(it.docs||[]).map(function(l){ return '<a class="lnk" href="'+esc(l.u)+'" target="_blank" rel="noopener">'+esc(l.l)+'<em>'+esc(host(l.u))+'</em></a>'; }).join('') + '</div></div></div>';
     return s;
@@ -233,12 +247,12 @@ var InstrumentsUI = (function(){
 
   /* ---------- comparaison entre observatoires ---------- */
   var OBS = { hubble:'#3D6BE0', jwst:'#DB5A14', euclid:'#0F987A', gaia:'#9A52D6' };
-  var SAMP = { hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,024″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
-               jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,065″', fgs:'≈ 0,07″' },
+  var SAMP = { hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
+               jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' } };
   var RES = { hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
-              jwst:{ nircam:'≈ 1 700 (grisme)', nirspec:'100 à 2 700', miri:'100 à 3 500', niriss:'150 à 700' },
-              euclid:{ nisp:'≳ 480 (grisme rouge)' }, gaia:{ bprp:'20 à 100', rvs:'≈ 11 500' } };
+              jwst:{ nircam:'≈ 1 600 (grisme LW)', nirspec:'100 à 2 700', miri:'100 à 3 250', niriss:'150 à 700' },
+              euclid:{ nisp:'> 480 (grismes rouges)' }, gaia:{ bprp:'prisme, 3–27 nm/px', rvs:'≈ 11 700' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 

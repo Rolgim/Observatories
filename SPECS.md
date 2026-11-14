@@ -77,7 +77,29 @@ Corrections apportées :
 
 Les périodes des orbites de halo (≈ 175 jours pour JWST, ≈ 170 pour Euclid) sont mesurées sur les éphémérides JPL Horizons déjà utilisées par la page « Orbite ».
 
-Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m), diamètre du pare-soleil de Gaia (≈ 10 m), nombre de sources de Gaia DR3.
+Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m), diamètre du pare-soleil de Gaia (≈ 10 m). Le nombre de sources de Gaia DR3 est sourcé depuis le 14 novembre.
+
+**Fait le 14 novembre 2026 : pages des 15 instruments.** Sources : manuels STScI (WFC3 IHB, ACS IHB, STIS et COS Data Handbooks, HST Primer cycle 34), JDox et page STScI des modes spectroscopiques, articles Euclid I, II (VIS, Cropper et al.) et III (NISP, Jahnke et al.), page ESA Gaia DR3, page ESA de l'instrument photométrique, documentation Gaia DR2 et Prusti et al. 2016.
+
+| Instrument | Avant | Après | Source |
+|---|---|---|---|
+| WFC3 | f/31 et f/11 ; sensibilité S/N = 10 en 10 h | retirés (non confirmés) ; 62 filtres UVIS, 15 IR ; bruit IR 12 e⁻ | WFC3 IHB, HST Primer |
+| ACS | SBC 0,032″/px | ≈ 0,034″ × 0,030″/px, champ SBC 34,6″ × 30,5″ ajouté | ACS IHB |
+| STIS | CCD 250–1100 nm ; MAMA 0,024″/px ; R (M) 10 000–20 000 | ≈ 200–1030 nm ; 0,025″/px ; 4 900–17 400 ; E140M R ≈ 45 800 | STIS DHB |
+| COS | NUV 170–320 nm ; R moyenne 16 000–24 000 ; plages G160M, G185M, G225M, G285M, G230L | 165–320 nm ; 12 000–24 000 ; plages du manuel | COS DHB |
+| FGS (HST) | stabilité ≈ 0,007″ | retirée ; précision ≈ 1 mas, parallaxes ≈ 0,2 mas | HST Primer |
+| NIRCam | 2048 × 2048 px ; grisme R ≈ 1 700 | 2040 × 2040 utiles ; R ≈ 1 600 à 4 µm | JDox |
+| NIRSpec | champ MSA 3,4′ × 3,4′ | 3,6′ × 3,4′, volets 0,20″ × 0,46″ | JDox |
+| MIRI | MRS 4,9–28,8 µm, R 1 500–3 500 ; LRS 5–12 µm, fente 0,6″ × 5,5″ ; coronographes : rayon interne et contraste | 4,9–27,9 µm, R 1 550–3 250 ; 5–14 µm, fente 0,51″ × 4,7″ ; 3 masques de phase et 1 Lyot avec leurs champs | JDox |
+| NIRISS | imagerie 0,8–5,0 µm, 0,065″/px | 0,6–5,0 µm, 0,066″/px | JDox |
+| FGS (JWST) | ≈ 0,07″/px | ≈ 0,069″/px, détecteurs 2048 × 2048 (2040 actifs) | JDox |
+| VIS | saturation ≈ 200 000 e⁻ et limite brillante 17,8 ; f/20,4 ; obstruction 11 % | retirés ; faisceau f/20 | Euclid II |
+| NISP | 0,92–2,0 µm ; 0,298″/px ; optique ≈ 130 K ; « ≤ 200 W » | 0,95–2,02 µm ; 0,3″/px ; ≈ 135 K ; plafond de conception 200 W | Euclid III |
+| Gaia astrométrie | TDI ≈ 4,4 s | 4,42 s ; parallaxe 1,3 mas à G = 21 ajoutée | Prusti et al., DR3 |
+| Gaia BP/RP | R ≈ 20–100 ; ≈ 220 millions de spectres XP | dispersion 3–27 nm/px (BP), 7–15 nm/px (RP) ; ≈ 219 millions | ESA, DR3 |
+| Gaia RVS | R ≈ 11 500 | R ≈ 11 700 | Prusti et al., doc. DR2 |
+
+Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). Les tableaux de comparaison (échantillonnage, résolution) reprennent les valeurs sourcées des pages, sans appel de note.
 
 ### B. Sources visibles
 
@@ -85,8 +107,8 @@ Valeurs encore sans source, marquées « ? » sur le site : longueur focale et r
 
 **Exigences**
 
-- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation). **Livré pour les fiches** (`refs` et `checked` dans `src/data-tele.js`).
-- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument. **Livré pour les fiches** : numéro en exposant, « ? » orangé pour une valeur chiffrée sans source, liste numérotée et date de vérification.
+- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation). **Livré pour les fiches et les instruments** (`refs` et `checked` dans `src/data-tele.js` et par observatoire dans `src/data-inst.js`).
+- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument. **Livré pour les fiches et les instruments** : numéro en exposant, « ? » orangé pour une valeur chiffrée sans source, liste numérotée et date de vérification.
 - B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source.
 
 **Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.
