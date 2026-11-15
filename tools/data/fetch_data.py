@@ -272,45 +272,57 @@ def gaia_rvs(key):
     return dict(type="plot", file="gaia-rvs.json", title="Vitesses radiales des étoiles proches, mesurées par le RVS", meta=meta, url="https://gea.esac.esa.int/archive/",
                 caption="Vitesse d'éloignement (positive) ou de rapprochement (négative) de chaque étoile de l'échantillon pour laquelle le spectromètre a obtenu une mesure.", credit="ESA/Gaia/DPAC", fetched=TODAY)
 
-EUCLID_TAP = "https://eas.esac.esa.int/tap-server/tap/sync"
+# Euclid : DR1 (12 novembre 2026), lu sur le miroir IRSA, qui expose catalogues, mosaïques et spectres.
+# Champ : COSMOS, couvert par les champs profonds de DR1 ; replis sur les champs profonds Nord et Sud.
+EUCLID_FIELDS = (("le champ COSMOS", 150.12, 2.21), ("le champ profond Euclid Nord", 269.73, 66.02), ("le champ profond Euclid Sud", 61.24, -48.42))
+EUCLID_DR1_URL = "https://irsa.ipac.caltech.edu/Missions/euclid.html"
+def irsa_tap(adql, tries=4):
+    from astroquery.ipac.irsa import Irsa
+    last = None
+    for i in range(tries):  # IRSA est très sollicité depuis la sortie de DR1 : on réessaie
+        try:
+            return Irsa.query_tap(adql).to_table()
+        except Exception as e:
+            last = e; print("   IRSA TAP, essai", i + 1, ":", repr(e)[:160], flush=True); time.sleep(30 * (i + 1))
+    raise RuntimeError(f"IRSA TAP indisponible ({last!r})")
+
 _euclid = {}
 def euclid_rows():
-    """Les noms de table de l'archive Euclid changent d'une publication à l'autre : on les lit dans TAP_SCHEMA."""
     if "rows" in _euclid:
         return _euclid["rows"]
-    _, tabs = tap(EUCLID_TAP, "SELECT table_name FROM tap_schema.tables WHERE table_name LIKE '%mer_catalogue%'")
-    tabs = [t[0] for t in tabs]
-    print("   tables candidates :", tabs)
-    if not tabs:
-        raise RuntimeError("aucune table mer_catalogue dans l'archive")
-    table = sorted(tabs, key=lambda t: (0 if "q1" in t.lower() else 1, len(t)))[0]
-    _, cols = tap(EUCLID_TAP, f"SELECT column_name FROM tap_schema.columns WHERE table_name = '{table}'")
-    cols = [c[0] for c in cols]
+    table = "euclid_dr1_mer_catalogue_deep_survey"
+    cols = [str(c) for c in irsa_tap(f"SELECT column_name FROM TAP_SCHEMA.columns WHERE table_name = '{table}'")["column_name"]]
     def pick(*names):
         for n in names:
             if n in cols:
                 return n
-        raise RuntimeError(f"colonne introuvable parmi {names} ; colonnes : {cols[:60]}")
-    ra, dec = pick("right_ascension", "ra"), pick("declination", "dec")
-    fv, fh = pick("flux_vis_psf", "flux_vis_1fwhm_aper", "flux_vis_sersic"), pick("flux_h_templfit", "flux_h_1fwhm_aper", "flux_h_sersic")
-    adql = (f"SELECT TOP 6000 {fv}, {fh} FROM {table} "
-            f"WHERE 1=CONTAINS(POINT('ICRS', {ra}, {dec}), CIRCLE('ICRS', 52.93, -28.09, 0.08)) AND {fv} > 0")
-    _, data = tap(EUCLID_TAP, adql)
-    if not data:
-        raise RuntimeError("requête vide")
-    _euclid.update(table=table, adql=adql, cols=(fv, fh))
-    _euclid["rows"] = np.array([[np.nan if x is None else float(x) for x in r] for r in data])
-    return _euclid["rows"]
+        raise RuntimeError(f"colonne introuvable parmi {names}")
+    fv = pick("flux_vis_psf", "flux_vis_sersic", "flux_vis_2fwhm_aper")
+    fh = pick("flux_h_templfit", "flux_h_sersic", "flux_h_2fwhm_aper")
+    last = None
+    for label, ra0, dec0 in EUCLID_FIELDS:
+        adql = (f"SELECT TOP 6000 {fv}, {fh} FROM {table} "
+                f"WHERE 1=CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', {ra0}, {dec0}, 0.08)) AND {fv} > 0")
+        try:
+            t = irsa_tap(adql)
+        except Exception as e:
+            last = e; continue
+        if len(t) > 500:
+            _euclid.update(table=table, adql=adql, cols=(fv, fh), field=f"{label[0].upper()}{label[1:]}, disque de 0,08° autour de ({fr(ra0, 2)}° ; {fr(dec0, 2)}°)".replace("-", "−"))
+            _euclid["rows"] = np.array([[np.nan if np.ma.is_masked(x) else float(x) for x in r] for r in t])
+            return _euclid["rows"]
+        print("   trop peu de sources dans", label, ":", len(t))
+    raise RuntimeError(f"aucun champ DR1 exploitable ({last!r})")
 
 def euclid_meta(n):
-    return [["Archive", "ESA Euclid Science Archive"], ["Table", _euclid["table"]], ["Colonnes", " et ".join(_euclid["cols"])], ["Champ", "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)"],
-            ["Sources", fr(n)], ["Conversion", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"], ["Requête ADQL", _euclid["adql"]]]
+    return [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), catalogue MER des champs profonds"], ["Table", _euclid["table"]], ["Colonnes", " et ".join(_euclid["cols"])],
+            ["Champ", _euclid["field"]], ["Sources", fr(n)], ["Conversion", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"], ["Requête ADQL", _euclid["adql"]]]
 
 def euclid_vis(key):
     a = euclid_rows(); mag = 23.9 - 2.5 * np.log10(a[:, 0])
     x, y, w = histogram(mag[np.isfinite(mag)], 16, 28, 48)
     save_json("euclid-vis.json", dict(type="hist", x=x, y=y, binw=w, xlabel="magnitude I_E (AB)", ylabel="nombre de sources"))
-    return dict(type="plot", file="euclid-vis.json", title="Comptage des sources par magnitude dans la bande I_E de VIS", meta=euclid_meta(len(a)), url="https://eas.esac.esa.int/",
+    return dict(type="plot", file="euclid-vis.json", title="Comptage des sources par magnitude dans la bande I_E de VIS", meta=euclid_meta(len(a)), url=EUCLID_DR1_URL,
                 caption="Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
 
 def euclid_nisp(key):
@@ -319,10 +331,10 @@ def euclid_nisp(key):
     keep = np.isfinite(mv) & np.isfinite(mh) & (mv < 26)
     meta = euclid_meta(len(a)); meta.insert(5, ["Détectées aussi en H", fr(int(keep.sum())) + " sources tracées"])
     save_json("euclid-nisp.json", dict(type="scatter", x=rnd(mv[keep], 4), y=rnd((mv - mh)[keep], 4), xlabel="magnitude I_E (AB)", ylabel="couleur I_E − H (mag)"))
-    return dict(type="plot", file="euclid-nisp.json", title="Couleur visible − infrarouge des sources, VIS et NISP combinés", meta=meta, url="https://eas.esac.esa.int/",
+    return dict(type="plot", file="euclid-nisp.json", title="Couleur visible − infrarouge des sources, VIS et NISP combinés", meta=meta, url=EUCLID_DR1_URL,
                 caption="Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
 
-# ---------------------------------------------------------------- Euclid : images et spectre (IRSA, données Q1 publiques)
+# ---------------------------------------------------------------- Euclid : images et spectre (IRSA, DR1)
 def stretch(d, hi_pct=99.7):
     """Étirement asinh : fond ramené à zéro, hautes lumières compressées."""
     d = np.asarray(d, dtype=float)
@@ -351,35 +363,37 @@ def euclid_cutouts(size_arcmin=4.0):
     from astropy.wcs import WCS
     import astropy.units as u
     last = None
-    for label, ra, dec in (("la nébuleuse de l'Œil de chat (NGC 6543)", 269.6392, 66.6331), ("un champ du Euclid Deep Field Fornax", 52.93, -28.09)):
-        try:
-            coord = SkyCoord(ra, dec, unit="deg")
-            tab = Irsa.query_sia(pos=(coord, 5 * u.arcsec), collection="euclid_DpdMerBksMosaic")
-            print("   SIA :", len(tab), "lignes ; colonnes :", tab.colnames[:40])
-            sci = tab[np.array([str(x).strip().lower() == "science" for x in tab["dataproduct_subtype"]])]
-            bands = {}
-            for r in sci:
-                b = str(r["energy_bandpassname"]).strip().upper()
-                if b in ("VIS", "Y", "J", "H") and b not in bands:
-                    bands[b] = r
-            print("   bandes Euclid trouvées :", sorted(bands))
-            cut = {}
-            for b, r in bands.items():
-                with fits.open(str(r["access_url"]), use_fsspec=True) as hdul:
-                    c = Cutout2D(hdul[0].section, position=coord, size=size_arcmin * u.arcmin, wcs=WCS(hdul[0].header))
-                    cut[b] = np.array(c.data, dtype=float)[::-1]  # nord en haut
-                    print("   découpe", b, cut[b].shape, str(r["access_url"]).split("/")[-1])
-                    cut[b + "_file"] = str(r["access_url"]).split("/")[-1]
-            if "VIS" in cut:
-                _emos["cut"] = (label, ra, dec, size_arcmin, cut)
-                return _emos["cut"]
-        except Exception as e:
-            last = e
-            print("   échec sur", label, ":", repr(e))
-    raise RuntimeError(f"aucune mosaïque Euclid accessible ({last!r})")
+    for label, ra, dec in EUCLID_FIELDS:
+        for attempt in range(3):
+            try:
+                coord = SkyCoord(ra, dec, unit="deg")
+                tab = Irsa.query_sia(pos=(coord, 5 * u.arcsec), collection="euclid_dr1_deep_DpdMerBksMosaic")
+                print("   SIA", label, ":", len(tab), "lignes", flush=True)
+                sci = tab[np.array([str(x).strip().lower() == "science" for x in tab["dataproduct_subtype"]])]
+                bands = {}
+                for r in sci:
+                    b = str(r["energy_bandpassname"]).strip().upper()
+                    if b in ("VIS", "Y", "J", "H") and b not in bands:
+                        bands[b] = r
+                print("   bandes Euclid trouvées :", sorted(bands))
+                cut = {}
+                for b, r in bands.items():
+                    with fits.open(str(r["access_url"]), use_fsspec=True) as hdul:
+                        c = Cutout2D(hdul[0].section, position=coord, size=size_arcmin * u.arcmin, wcs=WCS(hdul[0].header))
+                        cut[b] = np.array(c.data, dtype=float)[::-1]  # nord en haut
+                        cut[b + "_file"] = str(r["access_url"]).split("/")[-1]
+                        print("   découpe", b, cut[b].shape, cut[b + "_file"], flush=True)
+                if "VIS" in cut:
+                    _emos["cut"] = (label, ra, dec, size_arcmin, cut)
+                    return _emos["cut"]
+                break
+            except Exception as e:
+                last = e
+                print("   échec sur", label, ":", repr(e)[:200], flush=True); time.sleep(20 * (attempt + 1))
+    raise RuntimeError(f"aucune mosaïque Euclid DR1 accessible ({last!r})")
 
 def euclid_img_meta(ra, dec, size, files):
-    return [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "Quick Release Q1, mosaïques MER"], ["Centre de la découpe", f"{fr(ra, 4)}° ; {fr(dec, 4)}°".replace("-", "−")],
+    return [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), mosaïques MER des champs profonds"], ["Centre de la découpe", f"{fr(ra, 4)}° ; {fr(dec, 4)}°".replace("-", "−")],
             ["Champ", f"{fr(size, 0)}′ × {fr(size, 0)}′"], ["Fichiers d'origine", " · ".join(files)], ["Traitement", "découpe, étirement asinh, réduction pour le site"]]
 
 def euclid_vis_image(key):
@@ -387,7 +401,7 @@ def euclid_vis_image(key):
     label, ra, dec, size, cut = euclid_cutouts()
     im = Image.fromarray((stretch(cut["VIS"]) * 255).astype("uint8")); im.thumbnail((1100, 1100))
     im.save(os.path.join(OUT, "euclid-vis-image.jpg"), "JPEG", quality=86, optimize=True)
-    return dict(type="image", file="euclid-vis-image.jpg", width=im.size[0], height=im.size[1], title="VIS : " + label, meta=euclid_img_meta(ra, dec, size, [cut["VIS_file"]]), url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+    return dict(type="image", file="euclid-vis-image.jpg", width=im.size[0], height=im.size[1], title="VIS : " + label, meta=euclid_img_meta(ra, dec, size, [cut["VIS_file"]]), url=EUCLID_DR1_URL,
                 caption="Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
 
 def euclid_nisp_image(key):
@@ -398,14 +412,16 @@ def euclid_nisp_image(key):
     rgb = np.dstack([stretch(cut["H"]), stretch(cut["J"]), stretch(cut["Y"])])
     im = Image.fromarray((rgb * 255).astype("uint8")); im.thumbnail((1100, 1100))
     im.save(os.path.join(OUT, "euclid-nisp-image.jpg"), "JPEG", quality=86, optimize=True)
-    return dict(type="image", file="euclid-nisp-image.jpg", width=im.size[0], height=im.size[1], title="NISP : " + label + ", bandes Y, J et H", meta=euclid_img_meta(ra, dec, size, [cut[b + "_file"] for b in "YJH"]), url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+    return dict(type="image", file="euclid-nisp-image.jpg", width=im.size[0], height=im.size[1], title="NISP : " + label + ", bandes Y, J et H", meta=euclid_img_meta(ra, dec, size, [cut[b + "_file"] for b in "YJH"]), url=EUCLID_DR1_URL,
                 caption="Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
 
 def euclid_spectrum(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
-    res = Irsa.query_tap("SELECT TOP 60 * FROM euclid.objectid_spectrafile_association_q1 WHERE hdu IS NOT NULL AND hdu > 0 AND hdu < 40").to_table()
+    res = irsa_tap("SELECT TOP 80 * FROM euclid.objectid_spectrafile_association_dr1 WHERE hdu IS NOT NULL AND hdu > 0 AND hdu < 40")
+    if "bandpass_name" in res.colnames:
+        print("   grismes présents dans l'échantillon :", sorted(set(str(x) for x in res["bandpass_name"])))
     print("   candidats :", len(res), res.colnames, "· première ligne :", [str(v)[:120] for v in res[0]])
     pcol = [c for c in res.colnames if c.lower() in ("path", "uri", "access_url", "file_path")]
     pcol = pcol[0] if pcol else res.colnames[1]
@@ -416,8 +432,8 @@ def euclid_spectrum(key):
         try:
             pth = str(r[pcol]).strip().lstrip("/")
             if base is None:  # où les fichiers sont-ils servis ? on essaie les emplacements connus, une fois
-                for b in ("https://irsa.ipac.caltech.edu/ibe/data/", "https://irsa.ipac.caltech.edu/data/", "https://nasa-irsa-euclid-q1.s3.us-east-1.amazonaws.com/", "https://irsa.ipac.caltech.edu/"):
-                    for q in (pth, pth.replace("euclid/q1/", "q1/", 1), pth.replace("euclid/", "", 1)):
+                for b in ("https://irsa.ipac.caltech.edu/ibe/data/", "https://irsa.ipac.caltech.edu/data/", "https://nasa-irsa-euclid-dr1.s3.us-east-1.amazonaws.com/", "https://nasa-irsa-euclid-q1.s3.us-east-1.amazonaws.com/", "https://irsa.ipac.caltech.edu/"):
+                    for q in (pth, pth.replace("euclid/dr1/", "dr1/", 1), pth.replace("euclid/", "", 1)):
                         try:
                             rr = requests.get(b + q, headers={"Range": "bytes=0-79"}, timeout=60)
                             print("   essai", b + q[:30], "→", rr.status_code, rr.content[:12])
@@ -457,11 +473,11 @@ def euclid_spectrum(key):
     snr, r, w, f, url = best
     w = w / 1e4; lo, hi = np.percentile(f, [0.5, 99.5])
     save_json("euclid-nisp-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=float(min(lo, 0)), ymax=float(hi * 1.08), xlabel="longueur d'onde (µm)", ylabel="flux (erg/s/cm²/Å)"))
-    meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "Quick Release Q1, spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", str(r["objectid"])],
-            ["Grisme", "rouge (RG)"],
+    meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", str(r["objectid"])],
+            ["Grisme", str(r["bandpass_name"]) if "bandpass_name" in r.colnames else "rouge (RG)"],
             ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(r["hdu"])], ["Choix de la source", f"meilleur signal sur bruit parmi {len(res)} sources examinées (≈ {snr:.0f} par pixel)"]]
-    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source du relevé Q1", meta=meta, url="https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
-                caption="Spectre sans fente du grisme rouge, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source de DR1", meta=meta, url=EUCLID_DR1_URL,
+                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
 
 # ---------------------------------------------------------------- Gaia : vrais spectres (DataLink)
 _gstar = {}
