@@ -1,0 +1,19 @@
+name: Sonde
+# Lancement manuel : interroge les archives et affiche ce qu'elles exposent (n'écrit rien).
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Script de tools/data à lancer'
+        required: true
+        default: 'probe_euclid.py'
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install --quiet astroquery astropy numpy requests pyvo
+      - run: python tools/data/${{ github.event.inputs.script }}
