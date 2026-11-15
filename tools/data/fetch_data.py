@@ -286,10 +286,53 @@ def irsa_tap(adql, tries=4):
             last = e; print("   IRSA TAP", "async" if i % 2 == 0 else "sync", "essai", i + 1, ":", repr(e)[:160], flush=True); time.sleep(15)
     raise RuntimeError(f"IRSA TAP indisponible ({last!r})")
 
+S3_DR1 = "https://nasa-irsa-euclid-dr1.s3.us-east-1.amazonaws.com/"
+def s3_list(prefix):
+    """Fichiers publiés sous un préfixe du stockage S3 public d'IRSA (lecture anonyme)."""
+    import re
+    r = requests.get(S3_DR1, params={"list-type": "2", "prefix": prefix, "max-keys": "1000"}, timeout=120); r.raise_for_status()
+    return re.findall(r"<Key>([^<]*)</Key>", r.text)
+def euclid_tile():
+    """Tuile MER de DR1 qui contient le champ des images (son numéro figure dans le nom des mosaïques)."""
+    import re
+    label, ra, dec, size, cut = euclid_cutouts()
+    m = re.search(r"TILE(\d+)", cut["VIS_file"]); return label, ra, dec, m.group(1)
+
 _euclid = {}
+def euclid_rows_s3():
+    """Catalogue MER final de la tuile, lu directement dans le stockage S3 d'IRSA (le service TAP sature depuis la sortie de DR1)."""
+    from astropy.io import fits
+    label, ra0, dec0, tile = euclid_tile()
+    keys = [k for k in s3_list(f"dr1/catalogs/MER_FINAL_CATALOG/{tile}/") if "MER_FINAL-CAT_" in k and k.endswith(".fits")]
+    if not keys:
+        raise RuntimeError(f"catalogue MER introuvable pour la tuile {tile}")
+    url = S3_DR1 + keys[0]; print("   catalogue :", url, flush=True)
+    tmp = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "mer.fits")
+    with requests.get(url, stream=True, timeout=600) as r:
+        r.raise_for_status()
+        with open(tmp, "wb") as fh:
+            for ch in r.iter_content(1 << 22): fh.write(ch)
+    with fits.open(tmp, memmap=True) as h:
+        d = h[1].data; names = {n.upper(): n for n in d.columns.names}
+        def pick(*c):
+            for n in c:
+                if n.upper() in names: return names[n.upper()]
+            raise RuntimeError(f"colonne introuvable parmi {c}")
+        fv = pick("FLUX_VIS_PSF", "FLUX_VIS_SERSIC", "FLUX_VIS_2FWHM_APER"); fhc = pick("FLUX_H_TEMPLFIT", "FLUX_H_SERSIC", "FLUX_H_2FWHM_APER")
+        a = np.array([d[fv], d[fhc]], dtype=float).T
+    os.remove(tmp)
+    a = a[np.isfinite(a[:, 0]) & (a[:, 0] > 0)]
+    _euclid.update(table=keys[0].split("/")[-1], adql=None, cols=(fv, fhc), field=f"{label[0].upper()}{label[1:]}, tuile MER {tile} entière", src="s3")
+    _euclid["rows"] = a
+    return a
+
 def euclid_rows():
     if "rows" in _euclid:
         return _euclid["rows"]
+    try:
+        return euclid_rows_s3()
+    except Exception as e:
+        print("   catalogue S3 indisponible, essai du service TAP :", repr(e)[:200], flush=True)
     table = "euclid_dr1_mer_catalogue_deep_survey"
     cols = [str(c) for c in irsa_tap(f"SELECT column_name FROM TAP_SCHEMA.columns WHERE table_name = '{table}'")["column_name"]]
     def pick(*names):
@@ -315,8 +358,11 @@ def euclid_rows():
     raise RuntimeError(f"aucun champ DR1 exploitable ({last!r})")
 
 def euclid_meta(n):
-    return [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), catalogue MER des champs profonds"], ["Table", _euclid["table"]], ["Colonnes", " et ".join(_euclid["cols"])],
-            ["Champ", _euclid["field"]], ["Sources", fr(n)], ["Conversion", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"], ["Requête ADQL", _euclid["adql"]]]
+    m = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), catalogue MER des champs profonds"], ["Fichier" if _euclid.get("src") == "s3" else "Table", _euclid["table"]], ["Colonnes", " et ".join(_euclid["cols"])],
+         ["Champ", _euclid["field"]], ["Sources", fr(n)], ["Conversion", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"]]
+    if _euclid.get("adql"):
+        m.append(["Requête ADQL", _euclid["adql"]])
+    return m
 
 def euclid_vis(key):
     a = euclid_rows(); mag = 23.9 - 2.5 * np.log10(a[:, 0])
@@ -416,6 +462,57 @@ def euclid_nisp_image(key):
                 caption="Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
 
 def euclid_spectrum(key):
+    try:
+        return euclid_spectrum_s3(key)
+    except Exception as e:
+        print("   spectres S3 indisponibles, essai du service TAP :", repr(e)[:200], flush=True)
+    return euclid_spectrum_tap(key)
+
+def euclid_spectrum_s3(key):
+    """Spectres 1D combinés de la tuile, lus dans le stockage S3 d'IRSA ; on garde la source au meilleur signal sur bruit."""
+    from astropy.io import fits
+    from astropy.table import Table
+    label, ra0, dec0, tile = euclid_tile()
+    keys = [k for k in s3_list(f"dr1/SIR_COMBINED_SPECTRA/{tile}/") if k.endswith(".fits")]
+    print("   fichiers de spectres de la tuile :", len(keys), [k.split("/")[-1] for k in keys[:4]], flush=True)
+    if not keys:
+        raise RuntimeError(f"aucun spectre combiné pour la tuile {tile}")
+    best, seen = None, 0
+    for k in keys[:2]:
+        url = S3_DR1 + k
+        with fits.open(url, use_fsspec=True, lazy_load_hdus=True) as hdul:
+            for i in range(1, 61):
+                try:
+                    h = hdul[i]
+                except IndexError:
+                    break
+                try:
+                    t = Table(h.data); fscale = float(h.header.get("FSCALE", 1.0)); cols = [c.upper() for c in t.colnames]
+                    sig = "SIGNAL" if "SIGNAL" in cols else "FLUX"
+                    w = np.array(t[t.colnames[cols.index("WAVELENGTH")]], dtype=float); f = np.array(t[t.colnames[cols.index(sig)]], dtype=float) * fscale
+                    ok = np.isfinite(w) & np.isfinite(f) & (f != 0)
+                    if "MASK" in cols:
+                        m = np.array(t[t.colnames[cols.index("MASK")]]).astype(int); ok &= (m % 2 == 0) & (m < 64)
+                    w, f = w[ok], f[ok]; seen += 1
+                    if len(w) < 100: continue
+                    snr = float(np.median(f) / (np.std(np.diff(f)) / 1.414 + 1e-300))
+                    oid = str(h.header.get("OBJECT_ID", h.header.get("EXTNAME", i)))
+                    if best is None or snr > best[0]: best = (snr, oid, w, f, url, i)
+                except Exception as e:
+                    if seen < 2: print("   extension illisible :", repr(e)[:200])
+        if best and best[0] > 5: break
+    if best is None:
+        raise RuntimeError("aucun spectre lisible dans la tuile")
+    snr, oid, w, f, url, i = best
+    w = w / 1e4; lo, hi = np.percentile(f, [0.5, 99.5])
+    save_json("euclid-nisp-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=float(min(lo, 0)), ymax=float(hi * 1.08), xlabel="longueur d'onde (µm)", ylabel="flux (erg/s/cm²/Å)"))
+    meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", oid],
+            ["Domaine couvert", f"{fr(w.min(), 2)} à {fr(w.max(), 2)} µm"], ["Champ", f"{label[0].upper()}{label[1:]}, tuile MER {tile}"],
+            ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(i)], ["Choix de la source", f"meilleur signal sur bruit parmi {seen} sources examinées (≈ {snr:.0f} par pixel)"]]
+    return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source de DR1", meta=meta, url=EUCLID_DR1_URL,
+                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+
+def euclid_spectrum_tap(key):
     from astroquery.ipac.irsa import Irsa
     from astropy.io import fits
     from astropy.table import Table
