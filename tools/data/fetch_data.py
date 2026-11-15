@@ -366,7 +366,7 @@ def euclid_meta(n):
 
 def euclid_vis(key):
     a = euclid_rows(); mag = 23.9 - 2.5 * np.log10(a[:, 0])
-    x, y, w = histogram(mag[np.isfinite(mag)], 16, 28, 48)
+    x, y, w = histogram(mag[np.isfinite(mag)], 16, 30, 56)
     save_json("euclid-vis.json", dict(type="hist", x=x, y=y, binw=w, xlabel="magnitude I_E (AB)", ylabel="nombre de sources"))
     return dict(type="plot", file="euclid-vis.json", title="Comptage des sources par magnitude dans la bande I_E de VIS", meta=euclid_meta(len(a)), url=EUCLID_DR1_URL,
                 caption="Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
@@ -477,37 +477,47 @@ def euclid_spectrum_s3(key):
     print("   fichiers de spectres de la tuile :", len(keys), [k.split("/")[-1] for k in keys[:4]], flush=True)
     if not keys:
         raise RuntimeError(f"aucun spectre combiné pour la tuile {tile}")
-    best, seen = None, 0
+    # structure DR1 : pour chaque source, une extension N_META (OBJ_ID, position), puis N_COMBINED1D_SIGNAL (spectre combiné), puis une extension par pose
+    best, seen, meta_h = None, 0, {}
     for k in keys[:2]:
         url = S3_DR1 + k
         with fits.open(url, use_fsspec=True, lazy_load_hdus=True) as hdul:
-            for i in range(1, 61):
+            for i in range(1, 3000):
                 try:
                     h = hdul[i]
                 except IndexError:
                     break
+                if h.name.endswith("_META"):
+                    meta_h = dict(h.header); continue
+                if not h.name.endswith("_COMBINED1D_SIGNAL"):
+                    continue
                 try:
                     t = Table(h.data); fscale = float(h.header.get("FSCALE", 1.0)); cols = [c.upper() for c in t.colnames]
-                    sig = "SIGNAL" if "SIGNAL" in cols else "FLUX"
-                    w = np.array(t[t.colnames[cols.index("WAVELENGTH")]], dtype=float); f = np.array(t[t.colnames[cols.index(sig)]], dtype=float) * fscale
+                    w = np.array(t[t.colnames[cols.index("WAVELENGTH")]], dtype=float); f = np.array(t[t.colnames[cols.index("SIGNAL")]], dtype=float) * fscale
                     ok = np.isfinite(w) & np.isfinite(f) & (f != 0)
                     if "MASK" in cols:
                         m = np.array(t[t.colnames[cols.index("MASK")]]).astype(int); ok &= (m % 2 == 0) & (m < 64)
                     w, f = w[ok], f[ok]; seen += 1
-                    if len(w) < 100: continue
-                    snr = float(np.median(f) / (np.std(np.diff(f)) / 1.414 + 1e-300))
-                    oid = str(h.header.get("OBJECT_ID", h.header.get("EXTNAME", i)))
-                    if best is None or snr > best[0]: best = (snr, oid, w, f, url, i)
+                    if len(w) >= 100:
+                        snr = float(np.median(f) / (np.std(np.diff(f)) / 1.414 + 1e-300))
+                        if best is None or snr > best[0]:
+                            nxt = hdul[i + 1].header if i + 1 < len(hdul) else {}
+                            best = (snr, meta_h, w, f, url, i, float(h.header.get("EXPTIME", 0)), str(nxt.get("GWA_POS", "")))
                 except Exception as e:
-                    if seen < 2: print("   extension illisible :", repr(e)[:200])
+                    print("   extension illisible :", h.name, repr(e)[:160])
+                if seen >= 60:
+                    break
         if best and best[0] > 5: break
     if best is None:
         raise RuntimeError("aucun spectre lisible dans la tuile")
-    snr, oid, w, f, url, i = best
+    snr, mh, w, f, url, i, texp, gwa = best
+    oid = str(mh.get("OBJ_ID", "?"))
+    grism = "bleu (BG)" if gwa.startswith("BGS") else "rouge (RG)" if gwa.startswith("RGS") else "non indiqué"
     w = w / 1e4; lo, hi = np.percentile(f, [0.5, 99.5])
     save_json("euclid-nisp-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=float(min(lo, 0)), ymax=float(hi * 1.08), xlabel="longueur d'onde (µm)", ylabel="flux (erg/s/cm²/Å)"))
     meta = [["Archive", "NASA/IPAC IRSA, miroir des données Euclid"], ["Publication", "DR1 (12 novembre 2026), spectres 1D combinés (SIR)"], ["Identifiant Euclid de la source", oid],
-            ["Domaine couvert", f"{fr(w.min(), 2)} à {fr(w.max(), 2)} µm"], ["Champ", f"{label[0].upper()}{label[1:]}, tuile MER {tile}"],
+            ["Position", f"{fr(float(mh.get('RA_OBJ', 0)), 4)}° ; {fr(float(mh.get('DEC_OBJ', 0)), 4)}°".replace("-", "−")], ["Grisme", grism],
+            ["Domaine couvert", f"{fr(w.min(), 2)} à {fr(w.max(), 2)} µm"], ["Temps de pose cumulé", f"{fr(texp)} s"], ["Champ", f"{label[0].upper()}{label[1:]}, tuile MER {tile}"],
             ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(i)], ["Choix de la source", f"meilleur signal sur bruit parmi {seen} sources examinées (≈ {snr:.0f} par pixel)"]]
     return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source de DR1", meta=meta, url=EUCLID_DR1_URL,
                 caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
