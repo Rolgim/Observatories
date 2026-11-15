@@ -601,7 +601,7 @@
   "file": "euclid-vis-image.jpg",
   "width": 1100,
   "height": 1100,
-  "title": "VIS : la nébuleuse de l'Œil de chat (NGC 6543)",
+  "title": "VIS : le champ COSMOS",
   "meta": [
    [
     "Archive",
@@ -609,11 +609,11 @@
    ],
    [
     "Publication",
-    "Quick Release Q1, mosaïques MER"
+    "DR1 (12 novembre 2026), mosaïques MER des champs profonds"
    ],
    [
     "Centre de la découpe",
-    "269,6392° ; 66,6331°"
+    "150,1200° ; 2,2100°"
    ],
    [
     "Champ",
@@ -621,24 +621,24 @@
    ],
    [
     "Fichiers d'origine",
-    "EUC_MER_BGSUB-MOSAIC-VIS_TILE102159486-467D36_20241025T011029.446661Z_00.00.fits"
+    "EUC_MER_BGSUB-MOSAIC-VIS_TILE101544257-B1E299_20250522T000015.632095Z_00.00.fits"
    ],
    [
     "Traitement",
     "découpe, étirement asinh, réduction pour le site"
    ]
   ],
-  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+  "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.",
   "credit": "ESA/Euclid/Euclid Consortium/NASA",
-  "fetched": "2026-11-13"
+  "fetched": "2026-11-15"
  },
  "euclid/nisp:image": {
   "type": "image",
   "file": "euclid-nisp-image.jpg",
   "width": 1100,
   "height": 1100,
-  "title": "NISP : la nébuleuse de l'Œil de chat (NGC 6543), bandes Y, J et H",
+  "title": "NISP : le champ COSMOS, bandes Y, J et H",
   "meta": [
    [
     "Archive",
@@ -646,11 +646,11 @@
    ],
    [
     "Publication",
-    "Quick Release Q1, mosaïques MER"
+    "DR1 (12 novembre 2026), mosaïques MER des champs profonds"
    ],
    [
     "Centre de la découpe",
-    "269,6392° ; 66,6331°"
+    "150,1200° ; 2,2100°"
    ],
    [
     "Champ",
@@ -658,17 +658,17 @@
    ],
    [
     "Fichiers d'origine",
-    "EUC_MER_BGSUB-MOSAIC-NIR-Y_TILE102159486-D8AA36_20241024T215508.276320Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-J_TILE102159486-FEA83F_20241024T215821.130299Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-H_TILE102159486-5FB4D4_20241024T215012.624096Z_00.00.fits"
+    "EUC_MER_BGSUB-MOSAIC-NIR-Y_TILE101544257-551343_20250808T184917.790690Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-J_TILE101544257-7649E8_20250808T185150.836917Z_00.00.fits · EUC_MER_BGSUB-MOSAIC-NIR-H_TILE101544257-E612B_20250808T184733.389607Z_00.00.fits"
    ],
    [
     "Traitement",
     "découpe, étirement asinh, réduction pour le site"
    ]
   ],
-  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
+  "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.",
   "credit": "ESA/Euclid/Euclid Consortium/NASA",
-  "fetched": "2026-11-13"
+  "fetched": "2026-11-15"
  },
  "gaia/bprp:spectre": {
   "type": "plot",
