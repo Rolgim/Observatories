@@ -191,3 +191,7 @@ abbr.gl:hover, abbr.gl:focus-visible{ text-decoration-color:var(--ink); backgrou
 /* accessibilité : texte lu par les lecteurs d'écran, invisible à l'écran ; focus de la vue 3D */
 .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
 #stage canvas:focus-visible{ outline:2px solid var(--mark); outline-offset:-4px; }
+
+/* sources sous les faits d'une pièce */
+ol.refs.pref{ margin:8px 0 0; padding-left:18px; font-size:11.5px; line-height:1.45; color:var(--ink-2); }
+ol.refs.pref li{ margin:0 0 2px; }

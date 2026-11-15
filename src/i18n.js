@@ -16,7 +16,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
     t.sections.forEach(function(sec, i){ sec.rows.forEach(function(r, j){ var o = frSec[i] && frSec[i].rows[j]; if (o && o[2]) r[2] = o[2]; }); });
     if (e.refs) Object.keys(e.refs).forEach(function(k){ if (t.refs[k]) t.refs[k].t = e.refs[k]; });
     t.cmp.tag = e.cmp.tag; t.cmp.dim = e.cmp.dim;
-    t.parts.forEach(function(p){ var q = e.parts[p.key]; if (q){ p.name = q.name; p.desc = q.desc; p.facts = q.facts; } });
+    t.parts.forEach(function(p){ var q = e.parts[p.key]; if (q){ p.name = q.name; p.desc = q.desc; if (q.facts) p.facts = q.facts.map(function(x, j){ var o = p.facts && p.facts[j]; return o && typeof o !== 'string' ? [x, o[1]] : x; }); } });
   });
   Object.keys(INST_DATA).forEach(function(tid){
     var d = INST_DATA[tid], e = EN_INST[tid]; if (!e) return;

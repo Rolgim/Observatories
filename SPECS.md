@@ -34,11 +34,11 @@ Limites connues :
 
 | Lot | État |
 |---|---|
-| D. Trajet de la lumière | D1, D2 et D3 livrés en première version ; D4 à faire |
+| D. Trajet de la lumière | D1, D2 et D3 livrés (D3 avec surlignage dans le schéma) ; D4 à faire |
 | E. Vraies données | E1 et E2 livrés : image ou spectre réel pour 13 instruments sur 15 ; E3 non commencé |
-| F. Orbites et temps | F1 et F2 livrés (orbites réelles, comparaison, pointés réels) ; F3 et F4 à faire |
+| F. Orbites et temps | F1, F2 et F4 livrés (orbites réelles, Hubble en direct, pointés réels, ciel observable) ; F3 à faire |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
-| A et B (fiches) | fiches des quatre observatoires vérifiées et sourcées le 13 novembre 2026 ; pages d'instruments et pièces à faire |
+| A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
 | C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
@@ -77,7 +77,9 @@ Corrections apportées :
 
 Les périodes des orbites de halo (≈ 175 jours pour JWST, ≈ 170 pour Euclid) sont mesurées sur les éphémérides JPL Horizons déjà utilisées par la page « Orbite ».
 
-Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m), diamètre du pare-soleil de Gaia (≈ 10 m). Le nombre de sources de Gaia DR3 est sourcé depuis le 14 novembre.
+Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m). Le pare-soleil de Gaia est sourcé depuis le 15 novembre (Ø 10,2 m, ESA).
+
+**Fait le 15 novembre 2026 : faits des 31 pièces.** Chaque fait est `[texte, clé de source]` dans `parts[].facts` ; la liste « Pièces » affiche l'appel de note et les sources de la pièce sous ses faits. Retirés faute de source : diamètre du volet de Hubble (≈ 3 m), masse du secondaire (12,4 kg), écart primaire–secondaire (4,9 m), « 10 baies », parabole de 1,3 m, nombre de panneaux et puissance d'Euclid. Corrigés : « 4 logements axiaux + 1 radial » de Hubble (le Primer donne 4 baies radiales : WFC3 et les 3 FGS), segment de JWST ≈ 20 kg (et non 20,1 kg), pare-soleil de Gaia Ø 10,2 m en 12 cadres et deux couvertures de 2 et 5 couches, panneaux de Gaia à triple jonction, 12,8 m², 1 910 W en fin de vie, plan focal de 938 millions de pixels. Le nombre de sources de Gaia DR3 est sourcé depuis le 14 novembre.
 
 **Fait le 14 novembre 2026 : pages des 15 instruments.** Sources : manuels STScI (WFC3 IHB, ACS IHB, STIS et COS Data Handbooks, HST Primer cycle 34), JDox et page STScI des modes spectroscopiques, articles Euclid I, II (VIS, Cropper et al.) et III (NISP, Jahnke et al.), page ESA Gaia DR3, page ESA de l'instrument photométrique, documentation Gaia DR2 et Prusti et al. 2016.
 

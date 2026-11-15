@@ -77,6 +77,16 @@ function refMark(r, nums){
   if (ks.length) return '<sup class="ref">' + ks.map(function(k){ return nums[k]; }).join(',') + '</sup>';
   return /\d/.test(r[1]) ? '<sup class="ref nv" title="Valeur pas encore vérifiée face à une source primaire">?</sup>' : '';
 }
+/* faits d'une pièce : [texte, clé de source] ou texte seul ; numéros propres à la pièce, sources listées dessous */
+function partFacts(t, p){
+  if (!p.facts) return '';
+  var nums = {}, k = 0;
+  p.facts.forEach(function(f){ if (typeof f !== 'string') [].concat(f[1]).forEach(function(x){ if (!nums[x]) nums[x] = ++k; }); });
+  var h = '<div class="pf">' + p.facts.map(function(f){ var r = typeof f === 'string' ? [f, f] : [f[0], f[0], f[1]]; return esc(r[0]) + refMark([r[0], r[1], r[2]], nums); }).join('<br>') + '</div>';
+  var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; });
+  if (keys.length) h += '<ol class="refs pref">' + keys.map(function(x){ var r = t.refs[x]; return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + '</a> <span>' + esc(r.p) + '</span></li>'; }).join('') + '</ol>';
+  return h;
+}
 function refList(t, nums){
   var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }); if (!keys.length) return '';
   var d = t.checked.split('-'), when = OBS_LANG === 'en' ? t.checked : d[2] + '/' + d[1] + '/' + d[0];
@@ -141,7 +151,7 @@ function renderPanel(){
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){
           return '<div class="part' + (S.part===p.key ? ' on' : '') + '" data-part="' + p.key + '"><button aria-expanded="' + (S.part===p.key) + '"><span class="dot"></span>' + esc(p.name) + '</button>' +
-            '<div class="pd">' + esc(p.desc) + (p.facts ? '<div class="pf">' + p.facts.map(esc).join('<br>') + '</div>' : '') + (OPTICAL[t.id].indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
+            '<div class="pd">' + esc(p.desc) + partFacts(t, p) + (OPTICAL[t.id].indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
         }).join('');
   }
   pb.innerHTML = h;
