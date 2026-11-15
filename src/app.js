@@ -227,7 +227,7 @@ function route(){
   renderTabs(); renderHud(); renderPanel();
   $('inst-page').hidden = !S.inst;
   if (S.inst) renderInst();
-  if (renderer) show3D(changed);
+  if (renderer){ show3D(changed); canvasLabel(); }
   consumePart();
 }
 /* pièce demandée depuis un schéma : sélectionnée dès que la maquette est affichée */
@@ -775,6 +775,17 @@ function tick(now){
   }
   renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
 }
+/* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */
+canvas.tabIndex = 0;
+function canvasLabel(){ canvas.setAttribute('aria-label', S.mode === 'compare' ? 'Les quatre observatoires à la même échelle' : 'Maquette 3D de ' + tele(S.id).short + ' : flèches pour parcourir les pièces, Échap pour désélectionner'); }
+canvasLabel();
+canvas.addEventListener('keydown', function(e){
+  if (S.mode !== 'tele' || !/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return;
+  var ps = tele(S.id).parts, i = ps.map(function(p){ return p.key; }).indexOf(S.part), fw = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+  var j = i < 0 ? (fw ? 0 : ps.length - 1) : (i + (fw ? 1 : -1) + ps.length) % ps.length;
+  e.preventDefault(); selectPart(ps[j].key);
+  $('live').textContent = ps[j].name + ' (' + (j + 1) + ' sur ' + ps.length + ')';
+});
 canvas.addEventListener('webglcontextlost', function(e){ e.preventDefault(); banner('Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.'); });
 
 window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };

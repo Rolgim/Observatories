@@ -65,6 +65,10 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   // lien schéma -> maquette
   await go(pg, 'jwst-instruments'); await pg.click('#inst-nav .nav-i[data-inst="optique"]'); await pg.click('[data-jump3d="jwst:primary"]'); await loaded(pg); await pg.waitForTimeout(600);
   if (await pg.evaluate(() => window.__obs.S.part) !== 'primary') fail('lien schéma → maquette : la pièce n\'est pas sélectionnée');
+  // clavier dans la vue 3D : flèche droite sélectionne la première pièce
+  await go(pg, 'euclid'); await loaded(pg); await pg.focus('#stage canvas'); await pg.keyboard.press('ArrowRight'); await pg.waitForTimeout(300);
+  if (!(await pg.evaluate(() => window.__obs.S.part))) fail('clavier : la flèche ne sélectionne pas de pièce dans la vue 3D');
+  await go(pg, 'jwst-instruments'); await pg.click('#inst-nav .nav-i[data-inst="optique"]'); await pg.click('[data-jump3d="jwst:primary"]'); await loaded(pg); await pg.waitForTimeout(600);
   // et retour : la pièce choisie est surlignée dans le schéma
   await pg.click('[data-ptab="parts"]'); await pg.waitForTimeout(300);
   await pg.click('[data-part="primary"] [data-open-optique]'); await pg.waitForTimeout(1200);

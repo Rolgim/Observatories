@@ -198,6 +198,10 @@ abbr.gl:hover, abbr.gl:focus-visible{ text-decoration-color:var(--ink); backgrou
 #gloss-tip{ position:fixed; z-index:60; padding:10px 12px; background:var(--sheet); color:var(--ink); border:1px solid var(--ink); box-shadow:3px 3px 0 var(--mark); font-size:13px; line-height:1.5; pointer-events:none; }
 #gloss-tip b{ display:block; font-weight:700; margin-bottom:3px; }
 
+/* accessibilité : texte lu par les lecteurs d'écran, invisible à l'écran ; focus de la vue 3D */
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+#stage canvas:focus-visible{ outline:2px solid var(--mark); outline-offset:-4px; }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -380,6 +384,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
       <div id="cmp-labels" hidden></div>
       <div id="callout" hidden></div>
       <div id="hover-tip" hidden></div>
+      <div id="live" class="sr-only" aria-live="polite"></div>
       <div id="hint">Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier</div>
 
       <div id="toolbar" role="toolbar" aria-label="Affichage">
@@ -2596,7 +2601,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Les quatre observatoires à la même échelle":"The four observatories at the same scale", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
   "Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Hubble can point at anything more than 62.5° from the Sun (Cycle 34 rule, in reduced-gyro mode; HST Primer). On each 95-minute orbit the Earth also hides part of the sky: not shown. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
   "Webb doit garder son bouclier face au Soleil : il ne vise qu'entre 85° et 135° du Soleil, soit environ 39 % du ciel un jour donné (JDox). Les pôles de l'écliptique, à moins de 5°, restent visibles toute l'année. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Webb must keep its sunshield facing the Sun: it only points between 85° and 135° from the Sun, about 39% of the sky on a given day (JDox). The ecliptic poles, within 5°, stay visible all year. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
   "Euclid vise presque perpendiculairement au Soleil : angle d'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D'où une bande étroite, qui fait le tour du ciel en un an. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Euclid points almost perpendicular to the Sun: solar aspect angle of 87° to 104° in survey practice (Euclid I, Sect. 4.1.1). Hence a narrow band that goes round the sky in a year. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
@@ -2690,6 +2695,8 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^Maquette 3D de (.+) : flèches pour parcourir les pièces, Échap pour désélectionner$/, '3D model of $1: arrow keys to go through the parts, Escape to deselect'],
+  [/^(.+) \((\d+) sur (\d+)\)$/, '$1 ($2 of $3)'],
   [/^Le champ (COSMOS|profond Euclid Nord|profond Euclid Sud), disque de 0,08° autour de \(([−\d,]+)° ; ([−\d,]+)°\)$/, function(m, f, a, d){ return ({ 'COSMOS':'The COSMOS field', 'profond Euclid Nord':'The Euclid Deep Field North', 'profond Euclid Sud':'The Euclid Deep Field South' })[f] + ', disc of 0.08° around (' + a.replace(',', '.') + '°; ' + d.replace(',', '.') + '°)'; }],
   [/^Surligné : (.+), la pièce choisie dans la maquette\.$/, function(m, x){ return 'Highlighted: ' + (EN_UI[x] || x) + ', the part chosen in the 3D model.'; }],
   [/^Valeurs vérifiées le (\S+) face aux sources ci-dessus\. Un «\s\?\s» signale une valeur pas encore confrontée à une source primaire\.$/, "Values checked on $1 against the sources above. A “?” marks a value not yet checked against a primary source."],
@@ -3170,7 +3177,7 @@ function route(){
   renderTabs(); renderHud(); renderPanel();
   $('inst-page').hidden = !S.inst;
   if (S.inst) renderInst();
-  if (renderer) show3D(changed);
+  if (renderer){ show3D(changed); canvasLabel(); }
   consumePart();
 }
 /* pièce demandée depuis un schéma : sélectionnée dès que la maquette est affichée */
@@ -3718,6 +3725,17 @@ function tick(now){
   }
   renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
 }
+/* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */
+canvas.tabIndex = 0;
+function canvasLabel(){ canvas.setAttribute('aria-label', S.mode === 'compare' ? 'Les quatre observatoires à la même échelle' : 'Maquette 3D de ' + tele(S.id).short + ' : flèches pour parcourir les pièces, Échap pour désélectionner'); }
+canvasLabel();
+canvas.addEventListener('keydown', function(e){
+  if (S.mode !== 'tele' || !/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return;
+  var ps = tele(S.id).parts, i = ps.map(function(p){ return p.key; }).indexOf(S.part), fw = e.key === 'ArrowRight' || e.key === 'ArrowDown';
+  var j = i < 0 ? (fw ? 0 : ps.length - 1) : (i + (fw ? 1 : -1) + ps.length) % ps.length;
+  e.preventDefault(); selectPart(ps[j].key);
+  $('live').textContent = ps[j].name + ' (' + (j + 1) + ' sur ' + ps.length + ')';
+});
 canvas.addEventListener('webglcontextlost', function(e){ e.preventDefault(); banner('Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.'); });
 
 window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
