@@ -105,7 +105,7 @@ var OPTICAL = { hubble:['ota','aft'], jwst:['primary','secondary','aos','isim'],
 function renderPanel(){
   var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
   if (S.mode === 'compare'){
-    pt.innerHTML = '<button class="ptab" role="tab" aria-selected="true">À la même échelle</button>';
+    pt.innerHTML = '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" aria-selected="true">À la même échelle</button></div>';
     var maxM = 6.5, maxK = 11110;
     h = '<h2>Quatre observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
         '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau des 15 instruments sur les mêmes axes.</small></button>' +
@@ -121,8 +121,8 @@ function renderPanel(){
     pb.innerHTML = h; pb.scrollTop = 0; return;
   }
   pt.innerHTML =
-    '<button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
+    '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
@@ -781,3 +781,14 @@ window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get
 route();
 requestAnimationFrame(tick);
 })();
+
+/* onglets : flèches gauche et droite, Début et Fin, comme le recommande le motif ARIA « tabs » (activation au déplacement) */
+document.addEventListener('keydown', function(e){
+  var t = e.target; if (!t || t.getAttribute('role') !== 'tab' || !/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
+  var list = t.closest('[role="tablist"]'); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll('[role="tab"]')), i = tabs.indexOf(t), n = tabs.length;
+  var j = e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n;
+  e.preventDefault(); tabs[j].click();
+  var sel = list.id ? '#' + list.id : '.' + list.className.split(' ')[0];
+  [0, 80, 400].forEach(function(ms){ setTimeout(function(){ var a = document.querySelector(sel + ' [role="tab"][aria-selected="true"]'); if (a && document.activeElement !== a) a.focus(); }, ms); });
+});

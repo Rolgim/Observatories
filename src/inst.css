@@ -45,7 +45,7 @@ pre.code{ margin:0; padding:14px 16px; background:#0B0D0F; color:#E4E7E9; overfl
 .ex-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
 .ex-title{ font-size:13px; font-weight:600; }
 .tag{ font-size:11.5px; font-weight:700; padding:1px 7px; white-space:nowrap; }
-.tag.real{ background:var(--ok); color:#fff; }
+.tag.real{ background:var(--ok); color:var(--on-ok); }
 .tag.illus{ border:1.5px solid var(--warn); color:var(--warn); }
 .chips{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px; }
 .chip{ font-size:12px; font-weight:600; padding:3px 7px; border:1px solid var(--rule-2); background:transparent; cursor:pointer; font-variant-numeric:tabular-nums; }

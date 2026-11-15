@@ -4,7 +4,7 @@
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "tailles":"sizes", "Passer au thème sombre":"Switch to dark theme", "Passer au thème clair":"Switch to light theme", "Lire en français":"Lire en français",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Contenu du panneau":"Panel content", "Code":"Code", "tailles":"sizes", "Passer au thème sombre":"Switch to dark theme", "Passer au thème clair":"Switch to light theme", "Lire en français":"Lire en français",
   "Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier":"Drag to rotate, scroll to zoom, click a part to identify it",
   "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
   "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",

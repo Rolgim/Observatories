@@ -11,15 +11,15 @@
 /* Parti pris : une fiche technique imprimée (papier gris froid, encre noire, une seule famille de caractères)
    posée à côté d'un hublot noir sur la maquette. Un seul accent : le jaune de surligneur, réservé à « ce qui est sélectionné ». */
 :root{
-  --paper:#ECEEEF; --sheet:#F7F8F8; --ink:#14171A; --ink-2:#3A4147; --mute:#667077; --rule:#C8CDD1; --rule-2:#98A1A7;
-  --mark:#FFD21F; --on-mark:#14171A; --black:#000; --ok:#0B7A4B; --warn:#8A5200; --bad:#B3261E;
+  --paper:#ECEEEF; --sheet:#F7F8F8; --ink:#14171A; --ink-2:#3A4147; --mute:#5A6369; --rule:#C8CDD1; --rule-2:#98A1A7;
+  --mark:#FFD21F; --on-mark:#14171A; --black:#000; --ok:#0B7A4B; --on-ok:#FFFFFF; --on-bad:#FFFFFF; --warn:#8A5200; --bad:#B3261E;
   --f:'Archivo', 'Helvetica Neue', Arial, sans-serif; --f-code:'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --gl:max(16px, env(safe-area-inset-left, 0px)); --gr:max(16px, env(safe-area-inset-right, 0px));
   color-scheme: light;
 }
 /* thème sombre : gris anthracite, distinct du noir du ciel */
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#1C1F22; --sheet:#262A2E; --ink:#F1F3F4; --ink-2:#C6CCD1; --mute:#939CA3; --rule:#3B4147; --rule-2:#5C656D; --ok:#2FA872; --warn:#E3A33C; --bad:#D9463C; color-scheme:dark; } }
-:root[data-theme="dark"]{ --paper:#1C1F22; --sheet:#262A2E; --ink:#F1F3F4; --ink-2:#C6CCD1; --mute:#939CA3; --rule:#3B4147; --rule-2:#5C656D; --ok:#2FA872; --warn:#E3A33C; --bad:#D9463C; color-scheme:dark; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#1C1F22; --sheet:#262A2E; --ink:#F1F3F4; --ink-2:#C6CCD1; --mute:#939CA3; --rule:#3B4147; --rule-2:#5C656D; --ok:#2FA872; --on-ok:#0E1A14; --on-bad:#14171A; --warn:#E3A33C; --bad:#D9463C; color-scheme:dark; } }
+:root[data-theme="dark"]{ --paper:#1C1F22; --sheet:#262A2E; --ink:#F1F3F4; --ink-2:#C6CCD1; --mute:#939CA3; --rule:#3B4147; --rule-2:#5C656D; --ok:#2FA872; --on-ok:#0E1A14; --on-bad:#14171A; --warn:#E3A33C; --bad:#D9463C; color-scheme:dark; }
 /* couleurs neutres écrites dans les SVG générés : ramenées aux jetons du thème */
 svg [fill="#14171A"]{ fill:var(--ink); } svg [stroke="#14171A"]{ stroke:var(--ink); }
 svg [fill="#3A4147"]{ fill:var(--ink-2); } svg [stroke="#3A4147"]{ stroke:var(--ink-2); }
@@ -98,7 +98,9 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #panel{ width:400px; flex:none; display:flex; flex-direction:column; min-height:0; background:var(--paper); }
 #ptabs{ flex:none; display:flex; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule-2); }
 .ptab{ flex:1; padding:11px 8px 10px; background:transparent; border:0; border-right:1px solid var(--rule); color:var(--ink-2); cursor:pointer; font-size:13px; font-weight:600; white-space:nowrap; }
+.ptl{ display:contents; }
 .ptab:last-child{ border-right:0; }
+.ptl:not(:last-child) .ptab:last-child{ border-right:1px solid var(--rule); }
 .ptab:hover{ background:var(--sheet); }
 .ptab[aria-selected="true"]{ background:var(--mark); color:var(--on-mark); }
 .ptab .n{ font-weight:400; margin-left:5px; opacity:.7; font-variant-numeric:tabular-nums; }
@@ -146,7 +148,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .barcell i{ display:block; height:8px; background:var(--ink); min-width:2px; }
 .barcell i.alt{ background:var(--rule-2); }
 
-#err-banner{ position:fixed; left:50%; top:calc(12px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); background:var(--bad); color:#fff; font-size:12.5px; padding:9px 13px; z-index:999; max-width:88vw; }
+#err-banner{ position:fixed; left:50%; top:calc(12px + env(safe-area-inset-top, 0px)); transform:translateX(-50%); background:var(--bad); color:var(--on-bad); font-size:12.5px; padding:9px 13px; z-index:999; max-width:88vw; }
 
 @media (max-width: 860px){
   #top{ flex-direction:column; gap:0; padding:0; }
@@ -243,7 +245,7 @@ pre.code{ margin:0; padding:14px 16px; background:#0B0D0F; color:#E4E7E9; overfl
 .ex-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
 .ex-title{ font-size:13px; font-weight:600; }
 .tag{ font-size:11.5px; font-weight:700; padding:1px 7px; white-space:nowrap; }
-.tag.real{ background:var(--ok); color:#fff; }
+.tag.real{ background:var(--ok); color:var(--on-ok); }
 .tag.illus{ border:1.5px solid var(--warn); color:var(--warn); }
 .chips{ display:flex; flex-wrap:wrap; gap:4px; margin-bottom:12px; }
 .chip{ font-size:12px; font-weight:600; padding:3px 7px; border:1px solid var(--rule-2); background:transparent; cursor:pointer; font-variant-numeric:tabular-nums; }
@@ -405,7 +407,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
     </section>
 
     <aside id="panel">
-      <div id="ptabs" role="tablist"></div>
+      <div id="ptabs"></div>
       <div id="pbody"></div>
     </aside>
   </div>
@@ -1947,7 +1949,7 @@ var InstrumentsUI = (function(){
       (hasF ? '<div class="cap">Les largeurs dessinées sont schématiques : elles suivent la classe du filtre (W large, M moyenne, N étroite), pas sa courbe de transmission.</div>' : '');
   }
 
-  function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
+  function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code" tabindex="0" aria-label="Code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
   function table(rows, nums){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+(nums ? mark(r, nums) : '')+'</div></div>'; }).join('') + '</div>'; }
   function mark(r, nums){
     var ks = [].concat(r[2] || []);
@@ -2536,7 +2538,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "tailles":"sizes", "Passer au thème sombre":"Switch to dark theme", "Passer au thème clair":"Switch to light theme", "Lire en français":"Lire en français",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Contenu du panneau":"Panel content", "Code":"Code", "tailles":"sizes", "Passer au thème sombre":"Switch to dark theme", "Passer au thème clair":"Switch to light theme", "Lire en français":"Lire en français",
   "Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier":"Drag to rotate, scroll to zoom, click a part to identify it",
   "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
   "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",
@@ -2983,7 +2985,7 @@ var OPTICAL = { hubble:['ota','aft'], jwst:['primary','secondary','aos','isim'],
 function renderPanel(){
   var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
   if (S.mode === 'compare'){
-    pt.innerHTML = '<button class="ptab" role="tab" aria-selected="true">À la même échelle</button>';
+    pt.innerHTML = '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" aria-selected="true">À la même échelle</button></div>';
     var maxM = 6.5, maxK = 11110;
     h = '<h2>Quatre observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
         '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau des 15 instruments sur les mêmes axes.</small></button>' +
@@ -2999,8 +3001,8 @@ function renderPanel(){
     pb.innerHTML = h; pb.scrollTop = 0; return;
   }
   pt.innerHTML =
-    '<button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
+    '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
@@ -3659,6 +3661,17 @@ window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get
 route();
 requestAnimationFrame(tick);
 })();
+
+/* onglets : flèches gauche et droite, Début et Fin, comme le recommande le motif ARIA « tabs » (activation au déplacement) */
+document.addEventListener('keydown', function(e){
+  var t = e.target; if (!t || t.getAttribute('role') !== 'tab' || !/^(ArrowLeft|ArrowRight|Home|End)$/.test(e.key)) return;
+  var list = t.closest('[role="tablist"]'); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll('[role="tab"]')), i = tabs.indexOf(t), n = tabs.length;
+  var j = e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + n) % n;
+  e.preventDefault(); tabs[j].click();
+  var sel = list.id ? '#' + list.id : '.' + list.className.split(' ')[0];
+  [0, 80, 400].forEach(function(ms){ setTimeout(function(){ var a = document.querySelector(sel + ' [role="tab"][aria-selected="true"]'); if (a && document.activeElement !== a) a.focus(); }, ms); });
+});
 
 </script>
 </body>

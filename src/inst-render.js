@@ -134,7 +134,7 @@ var InstrumentsUI = (function(){
       (hasF ? '<div class="cap">Les largeurs dessinées sont schématiques : elles suivent la classe du filtre (W large, M moyenne, N étroite), pas sa courbe de transmission.</div>' : '');
   }
 
-  function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
+  function code(text){ copyStore.push(text); return '<div class="codewrap"><pre class="code" tabindex="0" aria-label="Code">'+esc(text)+'</pre><button class="copy" data-copy="'+(copyStore.length-1)+'">Copier</button></div>'; }
   function table(rows, nums){ return '<div class="stable">' + rows.map(function(r){ return '<div class="srow"><div class="k">'+esc(r[0])+'</div><div class="v">'+esc(r[1]).split(' · ').join('<br>')+(nums ? mark(r, nums) : '')+'</div></div>'; }).join('') + '</div>'; }
   function mark(r, nums){
     var ks = [].concat(r[2] || []);

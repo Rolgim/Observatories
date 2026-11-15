@@ -18,5 +18,7 @@ jobs:
         run: |
           node build.js
           git diff --exit-code --stat index.html || (echo "index.html ne correspond pas aux sources : relancer node build.js et commiter" && exit 1)
-      - run: npm install --no-save playwright@1.56.0 && npx playwright install --with-deps chromium
+      - run: npm install --no-save playwright@1.56.0 axe-core@4.10.2 && npx playwright install --with-deps chromium
       - run: node tools/smoke.js
+      - name: Accessibilité (axe-core, WCAG 2.1 A et AA)
+        run: node tools/a11y.js
