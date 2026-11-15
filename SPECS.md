@@ -211,7 +211,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Cartes de pointés : l'écliptique et le plan de la Galaxie sont tracés. Reste à distinguer les instruments et à montrer pour Euclid l'ordre des plaques à l'intérieur d'un mois.
 - F2 : la carte de balayage est une simulation de la loi nominale ; la comparer à la vraie couverture de Gaia DR3 (nombre de passages par source).
 - F3 (déploiement de JWST) : non commencé. La maquette n'est pas articulée ; il faudrait d'abord la redécouper par élément mobile.
-- F4 (zones du ciel observables) : non commencé.
+- F4 (zones du ciel observables) : **livré le 15 novembre**. Dans chaque page « Orbite », une carte du ciel montre la zone accessible à la date choisie (curseur sur un an à partir d'aujourd'hui) et sa part du ciel. Contraintes sourcées : Hubble à plus de 62,5° du Soleil (HST Primer, cycle 34) ; Webb entre 85° et 135° (JDox) ; Euclid entre 87° et 104° d'angle d'aspect solaire (Euclid I, sect. 4.1.1) ; Gaia, bande de 45° à 135° déduite de l'angle de son axe. Position du Soleil calculée (formule à basse précision, ≈ 0,01°). Non représentés : occultation par la Terre pour Hubble, Lune, contraintes de roulis.
 - Indiquer le facteur d'accélération des animations, et permettre de choisir une date.
 
 ### G. Autres observatoires

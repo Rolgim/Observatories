@@ -34,6 +34,42 @@ var Orbits = (function(){
              'La position de Gaia devait être connue à 150 m près : des télescopes au sol le photographiaient chaque nuit parmi les étoiles.'] }
   };
 
+  /* zones observables (lot F4) : intervalle d'élongation solaire autorisé, en degrés, et sa source */
+  var VIS = {
+    hubble:{ lo:62.5, hi:180, cap:'Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté.' },
+    jwst:{ lo:85, hi:135, cap:'Webb doit garder son bouclier face au Soleil : il ne vise qu\'entre 85° et 135° du Soleil, soit environ 39 % du ciel un jour donné (JDox). Les pôles de l\'écliptique, à moins de 5°, restent visibles toute l\'année.' },
+    euclid:{ lo:87, hi:104, cap:'Euclid vise presque perpendiculairement au Soleil : angle d\'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D\'où une bande étroite, qui fait le tour du ciel en un an.' },
+    gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
+  };
+  function sunVec(jd){
+    var n = jd - 2451545, D = Math.PI/180, L = (280.460 + 0.9856474*n)*D, g = (357.528 + 0.9856003*n)*D, lam = L + (1.915*Math.sin(g) + 0.020*Math.sin(2*g))*D, e = 23.439*D;
+    return [Math.cos(lam), Math.cos(e)*Math.sin(lam), Math.sin(e)*Math.sin(lam)];
+  }
+  function drawVis(c, tid, jd, refs){
+    var g = prep(c), W = c._w, H = c._h, V = VIS[tid], sv = sunVec(jd), D = Math.PI/180, cl = Math.cos(V.lo*D), ch = Math.cos(V.hi*D), ok = 0, tot = 0;
+    g.clearRect(0, 0, W, H);
+    /* rendu pixel par pixel : projection de Hammer inversée, puis test d'élongation */
+    var off = c._off || (c._off = document.createElement('canvas')); off.width = W; off.height = H;
+    var og = off.getContext('2d'), img = og.createImageData(W, H), px = img.data, hex = css('--ok').replace('#', ''), rgb = [0, 2, 4].map(function(k){ return parseInt(hex.substr(k, 2), 16); });
+    for (var y = 0; y < H; y++) for (var x = 0; x < W; x++){
+      var xs = 2*Math.SQRT2*(W/2 - x)/(W/2 - 8), ys = Math.SQRT2*(H/2 - y)/(H/2 - 8), q = 1 - xs*xs/16 - ys*ys/4;
+      if (q < 0.5) continue;
+      var z = Math.sqrt(q), l = 2*Math.atan2(z*xs, 2*(2*z*z - 1)), b = Math.asin(Math.max(-1, Math.min(1, z*ys)));
+      var v0 = -Math.cos(b)*Math.cos(l), v1 = -Math.cos(b)*Math.sin(l), v2 = Math.sin(b), cs = v0*sv[0] + v1*sv[1] + v2*sv[2];
+      if (cs <= cl && cs >= ch){ var o = (y*W + x)*4; px[o] = rgb[0]; px[o+1] = rgb[1]; px[o+2] = rgb[2]; px[o+3] = 115; }
+    }
+    og.putImageData(img, 0, 0); g.drawImage(off, 0, 0, W, H);
+    /* part du ciel : échantillonnage régulier pondéré par le cosinus de la déclinaison */
+    for (var de = -89; de < 90; de += 2) for (var ra = 1; ra < 360; ra += 2){
+      var v = [Math.cos(de*D)*Math.cos(ra*D), Math.cos(de*D)*Math.sin(ra*D), Math.sin(de*D)], cs2 = v[0]*sv[0] + v[1]*sv[1] + v[2]*sv[2], w = Math.cos(de*D);
+      tot += w; if (cs2 <= cl && cs2 >= ch) ok += w;
+    }
+    g.globalAlpha = 1; g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke();
+    refs(g, W, H);
+    var sp = hammer([-sv[0], -sv[1], sv[2]], W, H); g.fillStyle = css('--mark'); g.strokeStyle = css('--ink'); g.beginPath(); g.arc(sp[0], sp[1], 7, 0, 6.2832); g.fill(); g.stroke();
+    g.fillStyle = css('--ink'); label(g, 'Soleil', sp[0] + 11, sp[1] + 4, true);
+    return ok/tot;
+  }
   function render(tid, name){
     var t = TEXT[tid], s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Orbite</div><div class="inst-full">'+name+' : où il se trouve et comment il se déplace</div></div><p class="inst-sum">'+t.sum+'</p></div><div class="inst-cols">';
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
@@ -48,6 +84,10 @@ var Orbits = (function(){
     }
     if (tid === 'euclid') s += '<div class="isec"><h4>L\'avancée du relevé, mois après mois</h4>'+cv('sky', 560, 300, 'Carte du ciel des observations d\'Euclid')+'<div class="orb-ctl"><span class="orb-read" data-orb-sky>Chargement des observations…</span></div><div class="cap">Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de 0,5° où Euclid a commencé au moins une observation ce mois-là ; les mois s\'accumulent. Ce sont les observations VIS réellement publiées dans DR1. Un télescope de relevé ne choisit pas des cibles : il pave le ciel par plaques contiguës, en restant à peu près perpendiculaire à la direction du Soleil.</div></div>';
     if (tid === 'hubble' || tid === 'jwst') s += '<div class="isec"><h4>Où il a pointé, année après année</h4>'+cv('sky', 560, 300, 'Carte du ciel des pointés réels')+'<div class="orb-ctl"><span class="orb-read" data-orb-sky>Chargement des pointés…</span></div><div class="cap">Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de '+(tid === 'jwst' ? '0,5' : '1')+'° où au moins une observation scientifique a commencé cette année-là ; les années s\'accumulent. Données réelles de l\'archive MAST. Contrairement à un télescope de relevé, '+name+' va de cible en cible au gré des programmes acceptés.</div></div>';
+    var V = VIS[tid];
+    s += '<div class="isec"><h4>'+(tid === 'gaia' ? 'Le ciel qu\'il balaie en ce moment' : 'Le ciel qu\'il peut observer en ce moment')+'</h4>'+cv('vis', 560, 300, 'Zone du ciel accessible selon la date')+
+      '<div class="orb-ctl"><label class="vis-day"><span data-vis-date></span><input type="range" min="0" max="364" step="1" value="0" data-vis-day aria-label="Jour de l\'année à partir d\'aujourd\'hui"></label><span class="orb-read" data-vis-read></span></div>'+
+      '<div class="cap">'+V.cap+' Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d\'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.</div></div>';
     s += '<div class="isec"><h4>Ce que cela change</h4><ul class="notes">'+t.notes.map(function(n){ return '<li>'+n+'</li>'; }).join('')+'</ul></div></div>';
     return s;
   }
@@ -126,6 +166,18 @@ var Orbits = (function(){
       }
       curve(function(l){ return [Math.cos(l), Math.sin(l)*Math.cos(e), Math.sin(l)*Math.sin(e)]; }, [2, 4], 'écliptique');
       curve(function(l){ var c = Math.cos(l), s = Math.sin(l); return [R[0][0]*c + R[1][0]*s, R[0][1]*c + R[1][1]*s, R[0][2]*c + R[1][2]*s]; }, [7, 4], 'plan de la Galaxie');
+    }
+    var vis = root.querySelector('[data-orb="vis"]'), vday = root.querySelector('[data-vis-day]');
+    if (vis){
+      var today = Date.now()/86400000 + 2440587.5;
+      var visDraw = function(){
+        var jd = today + (+vday.value), frac = drawVis(vis, tid, jd, skyRefs), d = new Date((jd - 2440587.5)*86400000);
+        root.querySelector('[data-vis-date]').textContent = d.toLocaleDateString(OBS_LANG === 'en' ? 'en-GB' : 'fr-FR', { day:'numeric', month:'long', year:'numeric' });
+        root.querySelector('[data-vis-read]').textContent = OBS_T(tid === 'gaia' ? 'bande balayée :' : 'accessible :') + ' ' + Math.round(frac*100) + ' % ' + OBS_T('du ciel');
+      };
+      vday.addEventListener('input', visDraw); visDraw();
+      new MutationObserver(function(){ if (vis.isConnected) visDraw(); }).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+      if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ if (vis.isConnected) visDraw(); });
     }
     function skyFrame(dt){
       var g = prep(sky), W = sky._w, H = sky._h, ink = css('--ink');

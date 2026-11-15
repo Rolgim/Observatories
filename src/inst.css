@@ -151,3 +151,9 @@ svg.optic g[data-el]{ transition:filter .15s; }
 svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(--mark)) drop-shadow(0 0 6px var(--mark)); }
 .hl-cap{ display:inline-block; margin-top:6px; padding:2px 8px; background:var(--mark); color:var(--on-mark); }
 @media (prefers-reduced-motion: reduce){ svg.optic g[data-el]{ transition:none; } }
+
+/* zone du ciel observable (F4) : date choisie au curseur */
+.vis-day{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; font-size:13px; font-weight:600; }
+.vis-day span{ min-width:11em; }
+.vis-day input{ flex:1; min-width:120px; accent-color:var(--ink); }
+@media (max-width: 600px){ .vis-day{ flex-basis:100%; } }
