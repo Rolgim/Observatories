@@ -279,11 +279,11 @@ EUCLID_DR1_URL = "https://irsa.ipac.caltech.edu/Missions/euclid.html"
 def irsa_tap(adql, tries=4):
     from astroquery.ipac.irsa import Irsa
     last = None
-    for i in range(tries):  # IRSA est très sollicité depuis la sortie de DR1 : on réessaie
+    for i in range(tries):  # IRSA est très sollicité depuis la sortie de DR1 : requête asynchrone en premier, synchrone ensuite
         try:
-            return Irsa.query_tap(adql).to_table()
+            return Irsa.query_tap(adql, async_job=(i % 2 == 0)).to_table()
         except Exception as e:
-            last = e; print("   IRSA TAP, essai", i + 1, ":", repr(e)[:160], flush=True); time.sleep(30 * (i + 1))
+            last = e; print("   IRSA TAP", "async" if i % 2 == 0 else "sync", "essai", i + 1, ":", repr(e)[:160], flush=True); time.sleep(15)
     raise RuntimeError(f"IRSA TAP indisponible ({last!r})")
 
 _euclid = {}

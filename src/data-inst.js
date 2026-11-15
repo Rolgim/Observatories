@@ -467,8 +467,8 @@ var INST_DATA = (function(){
     archives: [
       { label:"ESA, Euclid Science Archive", url:"https://eas.esac.esa.int/", desc:"Archive officielle : catalogues (ADQL), images, spectres." },
       { label:"Euclid DR1 (12 novembre 2026)", url:"https://www.cosmos.esa.int/web/euclid/euclid-dr1", desc:"Première grande publication : relevés large et profonds, plus d'un milliard d'objets, spectres de plus de 160 millions de sources." },
-      { label:"Contenu de Q1", url:"https://www.cosmos.esa.int/web/euclid/q1-contents", desc:"Description des produits publiés dans la Quick Release 1." },
-      { label:"NASA/IPAC, IRSA Euclid", url:"https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html", desc:"Miroir NASA : mosaïques, catalogues, services VO." },
+      { label:"Présentation de DR1 (arXiv:2611.16510)", url:"https://arxiv.org/abs/2611.16510", desc:"Article de présentation de la publication : contenu, couverture, qualité des données." },
+      { label:"NASA/IPAC, IRSA Euclid", url:"https://irsa.ipac.caltech.edu/Missions/euclid.html", desc:"Miroir NASA : mosaïques et catalogues de Q1 et DR1, spectres, services VO (TAP, SIA)." },
       { label:"Documentation des produits (DPDD)", url:"https://euclid.esac.esa.int/dr/q1/dpdd/", desc:"Data Product Description Document de Q1." },
       { label:"astroquery.esa.euclid", url:"https://astroquery.readthedocs.io/en/latest/esa/euclid/euclid.html", desc:"Accès Python à l'archive (TAP+)." }
     ],
