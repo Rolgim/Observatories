@@ -1,0 +1,22 @@
+name: Pointés réels
+# Cartes de pointés (MAST, par instrument et par année) : requêtes longues, d'où un workflow à part.
+# Chaque observatoire est enregistré dès qu'il est complet ; un observatoire déjà à jour n'est pas refait.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['tools/data/fetch_sky.py', '.github/workflows/sky.yml']
+permissions:
+  contents: write
+concurrency: { group: sky, cancel-in-progress: false }
+jobs:
+  sky:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install --quiet astropy numpy requests pyvo
+      - name: Pointés, enregistrés observatoire par observatoire
+        run: python tools/data/fetch_sky.py --commit

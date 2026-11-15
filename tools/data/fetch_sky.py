@@ -7,7 +7,7 @@
 Écrit data/sky.json : pour Hubble et JWST, les pointés scientifiques de l'archive MAST regroupés par case du ciel
 et par année (agrégation faite côté serveur). Un observatoire qui échoue est signalé et laissé de côté.
 """
-import json, os, datetime
+import json, os, sys, datetime
 import numpy as np
 import requests
 
@@ -71,6 +71,28 @@ def euclid_survey(cell=0.5):
     print(f"   {len(t)} observations, {len(cells)} cases-mois, de {min(out)} à {max(out)}")
     return dict(cell=cell, years=out, source="ESA Euclid Science Archive, table dr1.calibrated_frame (observations VIS de DR1)")
 
+def save_and_commit(key):
+    """Enregistre data/sky.json tel quel et le pousse aussitôt (option --commit), pour ne rien perdre si la suite échoue."""
+    if "--commit" not in sys.argv:
+        return
+    import subprocess
+    run = lambda *c: subprocess.run(c, cwd=ROOT, check=False)
+    run("git", "config", "user.name", "github-actions[bot]"); run("git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
+    run("git", "add", "data/sky.json")
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
+    run("git", "commit", "-m", f"Pointés réels : {key}")
+    for _ in range(3):
+        if run("git", "pull", "--rebase", "origin", "main").returncode == 0 and run("git", "push").returncode == 0:
+            return
+
+def write(path, body_key, value):
+    old = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {"bodies": {}}
+    old["bodies"][body_key] = value; old["fetched"] = datetime.date.today().isoformat()
+    with open(path, "w", encoding="utf-8") as fh:
+        json.dump(old, fh, ensure_ascii=False, separators=(",", ":"))
+    save_and_commit(body_key)
+
 def main():
     out = dict(fetched=datetime.date.today().isoformat(), bodies={})
     path = os.path.join(ROOT, "data", "sky.json")
@@ -80,7 +102,7 @@ def main():
         if "inst" in have.get(key, {}):
             print("   déjà présent, non refait"); continue
         try:
-            out["bodies"][key] = mast_pointings(coll, cell)
+            out["bodies"][key] = mast_pointings(coll, cell); write(path, key, out["bodies"][key])
         except Exception as e:
             print("   ÉCHEC :", repr(e)[:1500], flush=True)
     print("== euclid", flush=True)
