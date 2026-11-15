@@ -7,4 +7,4 @@ with fits.open(u, use_fsspec=True, lazy_load_hdus=True) as h:
         x = h[i]
         print("\n== HDU", i, x.name, type(x).__name__, getattr(x.data, "shape", None))
         if hasattr(x, "columns"): print("   colonnes :", x.columns.names)
-        print("\n".join("   " + l for l in repr(x.header).splitlines() if not l.startswith(("TFORM", "TTYPE", "TUNIT", "COMMENT"))][:40]))
+        print("\n".join(["   " + l for l in repr(x.header).splitlines() if not l.startswith(("TFORM", "TTYPE", "TUNIT", "COMMENT"))][:40]))
