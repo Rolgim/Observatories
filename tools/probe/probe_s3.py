@@ -12,13 +12,11 @@ def ls(bucket, prefix="", delim="/", n=60):
     for p in pre[:n]: print("   D", p)
     for k in keys[:n]: print("   F", k)
     return pre, keys
-for b in ("nasa-irsa-euclid-dr1", "nasa-irsa-euclid", "nasa-irsa-euclid-q1"):
-    pre, _ = ls(b)
-    for p in pre[:6]:
-        pre2, _ = ls(b, p)
-        for q in pre2[:12]:
-            ls(b, q, n=15)
-# la tuile COSMOS dont viennent les mosaïques DR1 du site
-for b in ("nasa-irsa-euclid-dr1",):
-    for pfx in ("dr1/catalogs/", "catalogs/", "dr1/"):
-        ls(b, pfx, n=40)
+B = "nasa-irsa-euclid-dr1"
+pre, _ = ls(B, "dr1/catalogs/")
+for p in pre[:20]:
+    pre2, k2 = ls(B, p, n=10)
+    for q in pre2[:3]: ls(B, q, n=10)
+ls(B, "dr1/MER/101544257/", delim="", n=80)
+ls(B, "dr1/SIR_COMBINED_SPECTRA/101544257/", delim="", n=40)
+ls(B, "dr1/catalogs/", delim="", n=5)
