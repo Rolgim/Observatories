@@ -775,11 +775,23 @@
    ],
    [
     "Identifiant Euclid de la source",
-    "5_COMBINED1D_SIGNAL"
+    "1500213454021279218"
+   ],
+   [
+    "Position",
+    "150,0213° ; 2,1279°"
+   ],
+   [
+    "Grisme",
+    "rouge (RG)"
    ],
    [
     "Domaine couvert",
     "1,20 à 1,87 µm"
+   ],
+   [
+    "Temps de pose cumulé",
+    "21 986 s"
    ],
    [
     "Champ",
@@ -787,11 +799,11 @@
    ],
    [
     "Fichier d'origine",
-    "EUC_SIR_W-COMBSPEC_101544257_20250809T195658.539788Z.fits, extension 7"
+    "EUC_SIR_W-COMBSPEC_101544257_20250809T195658.539788Z.fits, extension 2607"
    ],
    [
     "Choix de la source",
-    "meilleur signal sur bruit parmi 28 sources examinées (≈ 8 par pixel)"
+    "meilleur signal sur bruit parmi 35 sources examinées (≈ 29 par pixel)"
    ]
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
