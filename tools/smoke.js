@@ -65,6 +65,10 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   // lien schéma -> maquette
   await go(pg, 'jwst-instruments'); await pg.click('#inst-nav .nav-i[data-inst="optique"]'); await pg.click('[data-jump3d="jwst:primary"]'); await loaded(pg); await pg.waitForTimeout(600);
   if (await pg.evaluate(() => window.__obs.S.part) !== 'primary') fail('lien schéma → maquette : la pièce n\'est pas sélectionnée');
+  // et retour : la pièce choisie est surlignée dans le schéma
+  await pg.click('[data-ptab="parts"]'); await pg.waitForTimeout(300);
+  await pg.click('[data-part="primary"] [data-open-optique]'); await pg.waitForTimeout(1200);
+  if (await pg.evaluate(() => [...document.querySelectorAll('svg.optic g.hl')].map(g => g.getAttribute('data-el')).join()) !== 'primary') fail('lien maquette → schéma : le miroir primaire n\'est pas surligné');
   await pg.close();
 
   // ---- téléphone, thème sombre

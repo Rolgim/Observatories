@@ -10,6 +10,9 @@ var Optics = (function(){
   function P(pts,c,w,d){ return '<polyline points="'+pts.map(function(p){ return f(p[0])+','+f(p[1]); }).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="'+(w||1)+'"'+(d?' stroke-dasharray="'+d+'"':'')+' stroke-linejoin="round" stroke-linecap="round"/>'; }
   function T(x,y,s,a,b){ return '<text x="'+f(x)+'" y="'+f(y)+'" fill="'+(b?INK:MID)+'" font-size="'+(b?12:11)+'" font-weight="'+(b?700:400)+'" font-family="Archivo, Arial, sans-serif"'+(a?' text-anchor="'+a+'"':'')+'>'+s+'</text>'; }
   function dim(x1,x2,y,s){ return L(x1,y,x2,y,MID,1) + L(x1,y-4,x1,y+4,MID,1) + L(x2,y-4,x2,y+4,MID,1) + T((x1+x2)/2, y-6, s, 'middle'); }
+  /* élément optique relié à une pièce de la maquette : surligné quand on vient de cette pièce ou qu'on survole son bouton */
+  function G(k, body){ return '<g data-el="'+k+'"'+(focus === k ? ' class="hl"' : '')+'>'+body+'</g>'; }
+  var focus = null;
   function svg(w,h,body,label){ return '<div class="svgwrap"><svg class="optic" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+label+'">'+body+'</svg></div>'; }
 
   /* télescope à deux miroirs dans l'axe : primaire en z = 0, ciel à gauche. Unités : mètres. */
@@ -19,11 +22,12 @@ var Optics = (function(){
     function sag(h){ return -h*h/(2*o.R); }
     var s = '';
     if (o.tube) s += P(o.tube.map(function(p){ return [X(p[0]), Y(p[1])]; }), SOFT, 1, '4 3') + P(o.tube.map(function(p){ return [X(p[0]), Y(-p[1])]; }), SOFT, 1, '4 3');
+    var pm = '';
     [1,-1].forEach(function(sg){
       var pts = []; for (var i=0;i<=8;i++){ var h = o.hole + (o.r1-o.hole)*i/8; pts.push([X(sag(h)), Y(sg*h)]); }
-      s += P(pts, INK, 4);
+      pm += P(pts, INK, 4);
     });
-    s += L(X(-o.d), Y(o.r2), X(-o.d), Y(-o.r2), INK, 4);
+    s += G(o.k1, pm) + G(o.k2, L(X(-o.d), Y(o.r2), X(-o.d), Y(-o.r2), INK, 4));
     o.rays.forEach(function(h){
       [1,-1].forEach(function(sg){
         var h2 = h*o.r2/o.r1*0.92;
@@ -38,37 +42,36 @@ var Optics = (function(){
 
   var FIG = {
     hubble: function(){
-      return twoMirror({ z0:-9.2, z1:4.2, half:2.25, R:11.04, r1:1.2, hole:0.3, r2:0.15, d:4.9, rays:[1.2, 0.62], focus:[1.5, 0], dLabel:'4,9 m',
+      return twoMirror({ z0:-9.2, z1:4.2, half:2.25, R:11.04, r1:1.2, hole:0.3, r2:0.15, d:4.9, rays:[1.2, 0.62], focus:[1.5, 0], dLabel:'4,9 m', k1:'aft', k2:'ota',
         label:'Schéma optique de Hubble, à l\'échelle',
         tube:[[-9,1.55],[-0.4,1.55],[-0.4,2.1],[3.7,2.1],[3.7,0]],
         after:function(X, Y){
-          return L(X(1.5), Y(0.22), X(1.5), Y(-0.22), DET, 4) +
+          return G('aft', L(X(1.5), Y(0.22), X(1.5), Y(-0.22), DET, 4)) +
             T(X(0.05)+8, Y(1.2)-4, 'Miroir primaire, 2,4 m', null, true) + T(X(-4.9), Y(0.15)-10, 'Miroir secondaire, 0,3 m', 'middle', true) +
             T(X(1.5)+8, Y(0)+4, 'Foyer', null, true) + T(X(1.5)+8, Y(0)+18, '1,5 m derrière', null) + T(X(1.5)+8, Y(0)+31, 'le primaire', null);
         } });
     },
     jwst: function(){
-      return twoMirror({ z0:-8.3, z1:3.2, half:3.6, R:16.2, r1:3.25, hole:0.66, r2:0.37, d:7.17, rays:[3.25, 1.7], focus:[-1.55, 0], dLabel:'7,2 m',
+      return twoMirror({ z0:-8.3, z1:3.2, half:3.6, R:16.2, r1:3.25, hole:0.66, r2:0.37, d:7.17, rays:[3.25, 1.7], focus:[-1.55, 0], dLabel:'7,2 m', k1:'primary', k2:'secondary',
         label:'Schéma optique de JWST',
         after:function(X, Y){
-          var s = '<rect x="'+f(X(-2.0))+'" y="'+f(Y(0.55))+'" width="'+f(X(-0.1)-X(-2.0))+'" height="'+f(Y(-0.55)-Y(0.55))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>';
-          s += '<rect x="'+f(X(0.5))+'" y="'+f(Y(1.9))+'" width="'+f(X(2.9)-X(0.5))+'" height="'+f(Y(-1.9)-Y(1.9))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>';
+          var s = G('aos', '<rect x="'+f(X(-2.0))+'" y="'+f(Y(0.55))+'" width="'+f(X(-0.1)-X(-2.0))+'" height="'+f(Y(-0.55)-Y(0.55))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(-0.25), Y(0.42), X(-0.25), Y(-0.16), INK, 4) + L(X(-1.2), Y(-0.2), X(-1.2), Y(-0.48), INK, 4));
+          s += G('isim', '<rect x="'+f(X(0.5))+'" y="'+f(Y(1.9))+'" width="'+f(X(2.9)-X(0.5))+'" height="'+f(Y(-1.9)-Y(1.9))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(1.6), Y(-0.6), X(1.6), Y(-1.2), DET, 4));
           s += P([[X(-1.55), Y(0)], [X(-0.25), Y(0.3)], [X(-1.2), Y(-0.28)], [X(1.6), Y(-0.9)]], RAY, 1.2) + P([[X(-1.55), Y(0)], [X(-0.25), Y(-0.05)], [X(-1.2), Y(-0.4)], [X(1.6), Y(-0.9)]], RAY, 1.2);
-          s += L(X(-0.25), Y(0.42), X(-0.25), Y(-0.16), INK, 4) + L(X(-1.2), Y(-0.2), X(-1.2), Y(-0.48), INK, 4) + L(X(1.6), Y(-0.6), X(1.6), Y(-1.2), DET, 4);
           s += T(X(0)+12, Y(3.25)+2, 'Miroir primaire, 6,5 m', null, true) + T(X(-7.17)+2, Y(-0.37)+26, 'Miroir secondaire, 0,74 m', null, true);
           s += T(X(-2.0), Y(0.55)-20, 'Optique arrière', null, true) + T(X(-2.0), Y(0.55)-7, 'tertiaire et pointage fin', null) + T(X(1.7), Y(1.9)-7, 'Module d\'instruments', 'middle', true) + T(X(1.6)+9, Y(-0.9)+4, 'Plan focal', null);
           return s;
         } });
     },
     euclid: function(){
-      return twoMirror({ z0:-2.6, z1:1.9, half:0.95, R:5.2, r1:0.6, hole:0.11, r2:0.175, d:1.756, rays:[0.6, 0.3], focus:[0.42, 0], dLabel:'1,756 m',
+      return twoMirror({ z0:-2.6, z1:1.9, half:0.95, R:5.2, r1:0.6, hole:0.11, r2:0.175, d:1.756, rays:[0.6, 0.3], focus:[0.42, 0], dLabel:'1,756 m', k1:'baffle', k2:'baffle',
         label:'Schéma optique d\'Euclid',
         tube:[[-2.45,0.75],[-0.05,0.75]],
         after:function(X, Y){
           var s = P([[X(0.42), Y(0)], [X(0.7), Y(0)], [X(0.7), Y(-0.5)], [X(1.15), Y(-0.5)], [X(1.15), Y(0.1)], [X(1.6), Y(0.1)]], RAY, 1.2);
           s += P([[X(1.15), Y(0.1)], [X(1.15), Y(0.62)]], RAY, 1.2);
           s += L(X(0.63), Y(0.07), X(0.77), Y(-0.07), INK, 4) + L(X(0.63), Y(-0.43), X(0.77), Y(-0.57), INK, 4) + L(X(1.08), Y(-0.57), X(1.22), Y(-0.43), INK, 4);
-          s += L(X(1.08), Y(0.03), X(1.22), Y(0.17), MID, 2.5) + L(X(1.02), Y(0.62), X(1.28), Y(0.62), DET, 4) + L(X(1.6), Y(0.23), X(1.6), Y(-0.03), DET, 4);
+          s += G('instr', L(X(1.08), Y(0.03), X(1.22), Y(0.17), MID, 2.5) + L(X(1.02), Y(0.62), X(1.28), Y(0.62), DET, 4) + L(X(1.6), Y(0.23), X(1.6), Y(-0.03), DET, 4));
           s += T(X(0)-8, Y(0.6)-8, 'Miroir primaire, 1,2 m', 'end', true) + T(X(-1.756), Y(0.175)-10, 'Miroir secondaire, 0,35 m', 'middle', true);
           s += T(X(1.15), Y(0.62)-8, 'VIS', 'middle', true) + T(X(1.6)+7, Y(0.1)+4, 'NISP', null, true) + T(X(1.28), Y(0.1)-12, 'lame dichroïque', null) + T(X(0.95), Y(-0.5)+24, 'renvois et miroir tertiaire', 'middle');
           return s;
@@ -76,11 +79,11 @@ var Optics = (function(){
     },
     gaia: function(){
       var W = 560, H = 330, cx = 280, cy = 158, r = 112, a = 53.25*Math.PI/180, s = '';
-      s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+SOFT+'" stroke-width="10" opacity="0.5"/>';
+      s += G('torus', '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+SOFT+'" stroke-width="10" opacity="0.5"/>');
       [[-1, RAY, 'Télescope 1'], [1, '#9A52D6', 'Télescope 2']].forEach(function(t){
         var sg = t[0], c = t[1], dx = sg*Math.sin(a), dy = -Math.cos(a);
         var m1 = [cx - dx*r, cy - dy*r], far = [cx + dx*(r+78), cy + dy*(r+78)], px = -dy, py = dx;
-        [-22, 22].forEach(function(o){ s += L(far[0]+px*o, far[1]+py*o, m1[0]+px*o, m1[1]+py*o, c, 1.2); });
+        var ap = ''; [-22, 22].forEach(function(o){ ap += L(far[0]+px*o, far[1]+py*o, m1[0]+px*o, m1[1]+py*o, c, 1.2); }); s += G('tent', ap);
         s += L(m1[0]+px*30, m1[1]+py*30, m1[0]-px*30, m1[1]-py*30, INK, 4);
         var m2 = [cx + dx*r*0.72, cy + dy*r*0.72], m3 = [cx - dx*r*0.55, cy - dy*r*0.55 + 4], m4 = [cx + sg*9, cy - 54];
         s += P([[m1[0]+px*22, m1[1]+py*22], m2, m3, m4], c, 1.2) + P([[m1[0]-px*22, m1[1]-py*22], m2], c, 1.2);
@@ -89,7 +92,7 @@ var Optics = (function(){
         s += T(far[0] + sg*4, far[1] - 8, t[2], sg < 0 ? 'start' : 'end', true);
         s += T(m1[0] + sg*-0 + (sg < 0 ? 14 : -14), m1[1] + 30, sg < 0 ? 'M1' : 'M1′', sg < 0 ? 'start' : 'end');
       });
-      s += L(cx - 16, cy - 54, cx + 16, cy - 54, INK, 4) + L(cx - 9, cy - 6, cx + 9, cy - 6, INK, 4) + L(cx + 40, cy + 22, cx + 52, cy + 38, INK, 4) + L(cx - 34, cy + r - 4, cx + 34, cy + r - 4, DET, 5);
+      s += L(cx - 16, cy - 54, cx + 16, cy - 54, INK, 4) + L(cx - 9, cy - 6, cx + 9, cy - 6, INK, 4) + L(cx + 40, cy + 22, cx + 52, cy + 38, INK, 4) + G('focal', L(cx - 34, cy + r - 4, cx + 34, cy + r - 4, DET, 5));
       s += T(cx, cy - 64, 'combineur de faisceaux', 'middle') + T(cx, cy + r + 16, 'Plan focal commun, 106 CCD', 'middle', true);
       s += T(cx, 16, 'angle entre les deux lignes de visée : 106,5°', 'middle');
       return svg(W, H, s, 'Schéma optique de Gaia, vue de dessus');
@@ -179,15 +182,23 @@ var Optics = (function(){
       '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
   }
 
-  function render(tid, name){
-    var t = TEXT[tid];
+  function render(tid, name, part){
+    var t = TEXT[tid]; focus = part || null;
     return '<div class="inst-head"><div class="inst-h"><div class="inst-name">Trajet de la lumière</div><div class="inst-full">'+name+' : du ciel au détecteur</div></div><p class="inst-sum">'+t.title+'. '+t.steps[0]+'</p></div>' +
       '<div class="inst-cols">' +
-      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
+      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+(focus && LINK3D[tid].some(function(l){ return l[0] === focus; }) ? '<div class="cap hl-cap">Surligné : '+LINK3D[tid].filter(function(l){ return l[0] === focus; })[0][1]+', la pièce choisie dans la maquette.</div>' : '')+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip'+(focus === l[0] ? ' on' : '')+'" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>Étape par étape</h4><ol class="notes">'+t.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ol></div>' +
       '<div class="isec"><h4>Combinaison optique</h4><div class="stable">'+t.specs.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1].split(' · ').join('<br>')+'</div></div>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
       '</div>';
   }
+  /* survol ou focus d'un bouton « Voir dans la maquette 3D » : on surligne l'élément correspondant du schéma */
+  function mark(e, on){
+    var b = e.target.closest ? e.target.closest('[data-jump3d]') : null; if (!b) return;
+    var k = b.getAttribute('data-jump3d').split(':')[1], sv = b.closest('.isec') && b.closest('.isec').querySelector('svg.optic'); if (!sv) return;
+    [].forEach.call(sv.querySelectorAll('g[data-el]'), function(g){ g.classList.toggle('hl', on ? g.getAttribute('data-el') === k : g.getAttribute('data-el') === focus); });
+  }
+  ['mouseover','focusin'].forEach(function(ev){ document.addEventListener(ev, function(e){ mark(e, true); }); });
+  ['mouseout','focusout'].forEach(function(ev){ document.addEventListener(ev, function(e){ mark(e, false); }); });
   return { render:render, compareFocal:compareFocal, TEXT:TEXT, LINK3D:LINK3D, FP:FP };
 })();

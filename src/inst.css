@@ -145,3 +145,9 @@ canvas.orb{ display:block; width:100%; max-width:560px; height:auto; background:
 .real-meta .lnks{ margin-top:4px; }
 .orb-key{ display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; font-weight:600; margin:0 0 10px; padding:0; list-style:none; }
 .orb-key i{ display:inline-block; width:11px; height:11px; margin-right:6px; vertical-align:-1px; }
+
+/* élément du schéma optique relié à la pièce choisie dans la maquette (D3) */
+svg.optic g[data-el]{ transition:filter .15s; }
+svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(--mark)) drop-shadow(0 0 6px var(--mark)); }
+.hl-cap{ display:inline-block; margin-top:6px; padding:2px 8px; background:var(--mark); color:var(--on-mark); }
+@media (prefers-reduced-motion: reduce){ svg.optic g[data-el]{ transition:none; } }

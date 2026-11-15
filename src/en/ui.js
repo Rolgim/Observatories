@@ -93,6 +93,7 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^Surligné : (.+), la pièce choisie dans la maquette\.$/, function(m, x){ return 'Highlighted: ' + (EN_UI[x] || x) + ', the part chosen in the 3D model.'; }],
   [/^Valeurs vérifiées le (\S+) face aux sources ci-dessus\. Un «\s\?\s» signale une valeur pas encore confrontée à une source primaire\.$/, "Values checked on $1 against the sources above. A “?” marks a value not yet checked against a primary source."],
   [/ Les zones blanches sont hors du champ observé\./g, " White areas lie outside the observed field."], [/Crédit : /g, "Credit: "], [/Récupéré dans l'archive le (\d\d)\/(\d\d)\/(\d{4})\./g, "Retrieved from the archive on $3-$2-$1."],
   [/ Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu\./g, " Rays are drawn in orange, mirrors as thick lines, detectors in blue."],

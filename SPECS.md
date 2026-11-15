@@ -145,7 +145,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Le schéma de Hubble est entièrement à l'échelle. Ceux de JWST et d'Euclid ne le sont que pour les deux premiers miroirs ; celui de Gaia est un schéma de principe, peu lisible à cause des faisceaux croisés. Les refaire à partir des prescriptions optiques publiées (rayons de courbure, positions des miroirs).
 - Plans focaux : espaces entre détecteurs indicatifs ; la disposition de Gaia (colonne de contrôle, RVS) est à vérifier face à la documentation ESA.
 - Livré depuis : comparaison des plans focaux des quatre observatoires à la même échelle dans « Comparer » ; D3 sous forme de liens dans les deux sens (boutons « Voir dans la maquette 3D » sous chaque schéma, qui sélectionnent la pièce ; lien « Voir le trajet de la lumière » dans la description des pièces optiques).
-- D3, suite : mettre en évidence l'élément dans le schéma lui-même, et pas seulement ouvrir la page.
+- D3, suite : **livré le 15 novembre**. Les éléments des schémas optiques sont reliés aux pièces (`data-el`). Venir d'une pièce par « Voir le trajet de la lumière » surligne l'élément et son bouton ; survoler ou parcourir au clavier un bouton « Voir dans la maquette 3D » surligne aussi l'élément correspondant. Vérifié par `tools/smoke.js`.
 - D4 (coupe ou transparence) : non commencé.
 
 ### E. Vraies données

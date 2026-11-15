@@ -195,7 +195,7 @@ $('inst-page').addEventListener('click', function(e){
     return;
   }
   if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
-  if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; S.filterIdx = 0; renderInst(); }
+  if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
 /* ---------- navigation ---------- */
@@ -205,7 +205,7 @@ document.addEventListener('click', function(e){
   if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
-  if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; location.hash = S.id + '-instruments'; return; }
+  if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
   if (el.hasAttribute('data-part') && e.target.closest('button') && !e.target.closest('.plink')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }

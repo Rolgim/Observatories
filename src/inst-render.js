@@ -351,7 +351,7 @@ var InstrumentsUI = (function(){
       '<button class="nav-i'+(sel==='optique'?' on':'')+'" data-inst="optique"><span class="n">Trajet de la lumière</span><span class="k">Schéma optique, plan focal</span></button>' +
       '<button class="nav-i'+(sel==='orbite'?' on':'')+'" data-inst="orbite"><span class="n">Orbite</span><span class="k">Trajectoire réelle, balayage</span></button>' +
       d.instruments.map(function(it){ return '<button class="nav-i'+(it.id===sel?' on':'')+'" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="n">'+esc(it.name)+'</span><span class="k">'+esc(it.kind)+'</span></button>'; }).join('');
-    return { pills:pills, nav:nav, main: sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid]) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
+    return { pills:pills, nav:nav, main: sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid], window.OBS_OPT || null) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
   return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
