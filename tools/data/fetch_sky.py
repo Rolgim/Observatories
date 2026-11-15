@@ -18,14 +18,27 @@ EUCLID_TAP = "https://eas.esac.esa.int/tap-server/tap/sync"
 def mast_pointings(collection, cell):
     """Pointés scientifiques par case du ciel, par année et par instrument (agrégation faite par le serveur)."""
     import pyvo
+    from astropy.table import vstack
     svc = pyvo.dal.TAPService(MAST_TAP)
-    adql = (f"SELECT instrument_name AS ins, FLOOR(s_ra/{cell}) AS i, FLOOR((s_dec+90)/{cell}) AS j, FLOOR((t_min-51544.5)/365.25) AS yr, COUNT(*) AS n "
-            f"FROM dbo.ObsPointing WHERE obs_collection='{collection}' AND intentType='science' AND s_ra IS NOT NULL AND t_min IS NOT NULL "
-            f"GROUP BY instrument_name, FLOOR(s_ra/{cell}), FLOOR((s_dec+90)/{cell}), FLOOR((t_min-51544.5)/365.25)")
-    print("  ", adql)
-    job = svc.submit_job(adql, maxrec=4000000); job.run(); job.wait(phases=["COMPLETED", "ERROR", "ABORTED"], timeout=2400)
-    job.raise_if_error()
-    t = job.fetch_result().to_table(); job.delete()
+    # une requête par année : regroupée aussi par instrument, la requête d'un seul tenant dépasse la limite de 10 min du serveur
+    first = 1990 if collection == "HST" else 2022
+    parts = []
+    for y in range(first, datetime.date.today().year + 1):
+        m0 = 51544.5 + (y - 2000) * 365.25
+        adql = (f"SELECT instrument_name AS ins, FLOOR(s_ra/{cell}) AS i, FLOOR((s_dec+90)/{cell}) AS j, {y - 2000} AS yr, COUNT(*) AS n "
+                f"FROM dbo.ObsPointing WHERE obs_collection='{collection}' AND intentType='science' AND s_ra IS NOT NULL "
+                f"AND t_min >= {m0} AND t_min < {m0 + 365.25} GROUP BY instrument_name, FLOOR(s_ra/{cell}), FLOOR((s_dec+90)/{cell})")
+        for attempt in range(3):
+            try:
+                job = svc.submit_job(adql, maxrec=2000000); job.run(); job.wait(phases=["COMPLETED", "ERROR", "ABORTED"], timeout=900)
+                job.raise_if_error(); tt = job.fetch_result().to_table(); job.delete()
+                if len(tt): parts.append(tt)
+                print(f"   {y} : {len(tt)} lignes", flush=True); break
+            except Exception as e:
+                print(f"   {y} : essai {attempt + 1} en échec : {repr(e)[:160]}", flush=True)
+        else:
+            raise RuntimeError(f"année {y} impossible à récupérer")
+    t = vstack(parts)
     yr = np.array(t["yr"], dtype=int) + 2000
     ins = np.array([str(x).split("/")[0].strip().upper() or "?" for x in t["ins"]])
     I, J, N = (np.array(t[c], dtype=int) for c in ("i", "j", "n"))
