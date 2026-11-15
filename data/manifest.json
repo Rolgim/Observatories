@@ -521,37 +521,37 @@
   "meta": [
    [
     "Archive",
-    "ESA Euclid Science Archive"
+    "NASA/IPAC IRSA, miroir des données Euclid"
    ],
    [
-    "Table",
-    "q1.mer_catalogue"
+    "Publication",
+    "DR1 (12 novembre 2026), catalogue MER des champs profonds"
+   ],
+   [
+    "Fichier",
+    "EUC_MER_FINAL-CAT_TILE101544257-48ABDE_20250811T121129.048226Z_00.00.fits"
    ],
    [
     "Colonnes",
-    "flux_vis_psf et flux_h_templfit"
+    "FLUX_VIS_PSF et FLUX_H_TEMPLFIT"
    ],
    [
     "Champ",
-    "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)"
+    "Le champ COSMOS, tuile MER 101544257 entière"
    ],
    [
     "Sources",
-    "6 000"
+    "57 974"
    ],
    [
     "Conversion",
     "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"
-   ],
-   [
-    "Requête ADQL",
-    "SELECT TOP 6000 flux_vis_psf, flux_h_templfit FROM q1.mer_catalogue WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination), CIRCLE('ICRS', 52.93, -28.09, 0.08)) AND flux_vis_psf > 0"
    ]
   ],
-  "url": "https://eas.esac.esa.int/",
+  "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.",
   "credit": "ESA/Euclid/Euclid Consortium",
-  "fetched": "2026-11-13"
+  "fetched": "2026-11-15"
  },
  "euclid/nisp": {
   "type": "plot",
@@ -560,41 +560,41 @@
   "meta": [
    [
     "Archive",
-    "ESA Euclid Science Archive"
+    "NASA/IPAC IRSA, miroir des données Euclid"
    ],
    [
-    "Table",
-    "q1.mer_catalogue"
+    "Publication",
+    "DR1 (12 novembre 2026), catalogue MER des champs profonds"
+   ],
+   [
+    "Fichier",
+    "EUC_MER_FINAL-CAT_TILE101544257-48ABDE_20250811T121129.048226Z_00.00.fits"
    ],
    [
     "Colonnes",
-    "flux_vis_psf et flux_h_templfit"
+    "FLUX_VIS_PSF et FLUX_H_TEMPLFIT"
    ],
    [
     "Champ",
-    "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)"
-   ],
-   [
-    "Sources",
-    "6 000"
+    "Le champ COSMOS, tuile MER 101544257 entière"
    ],
    [
     "Détectées aussi en H",
-    "2 090 sources tracées"
+    "9 597 sources tracées"
+   ],
+   [
+    "Sources",
+    "57 974"
    ],
    [
     "Conversion",
     "magnitude AB = 23,9 − 2,5 log10(flux en µJy)"
-   ],
-   [
-    "Requête ADQL",
-    "SELECT TOP 6000 flux_vis_psf, flux_h_templfit FROM q1.mer_catalogue WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination), CIRCLE('ICRS', 52.93, -28.09, 0.08)) AND flux_vis_psf > 0"
    ]
   ],
-  "url": "https://eas.esac.esa.int/",
+  "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.",
   "credit": "ESA/Euclid/Euclid Consortium",
-  "fetched": "2026-11-13"
+  "fetched": "2026-11-15"
  },
  "euclid/vis:image": {
   "type": "image",
@@ -763,7 +763,7 @@
  "euclid/nisp:spectre": {
   "type": "plot",
   "file": "euclid-nisp-spectre.json",
-  "title": "Spectre NISP d'une source du relevé Q1",
+  "title": "Spectre NISP d'une source de DR1",
   "meta": [
    [
     "Archive",
@@ -771,28 +771,32 @@
    ],
    [
     "Publication",
-    "Quick Release Q1, spectres 1D combinés (SIR)"
+    "DR1 (12 novembre 2026), spectres 1D combinés (SIR)"
    ],
    [
     "Identifiant Euclid de la source",
-    "2716245017685336145"
+    "5_COMBINED1D_SIGNAL"
    ],
    [
-    "Grisme",
-    "rouge (RG)"
+    "Domaine couvert",
+    "1,20 à 1,87 µm"
+   ],
+   [
+    "Champ",
+    "Le champ COSMOS, tuile MER 101544257"
    ],
    [
     "Fichier d'origine",
-    "EUC_SIR_W-COMBSPEC_102160610_2024-11-05T17:27:22.071881Z.fits, extension 39"
+    "EUC_SIR_W-COMBSPEC_101544257_20250809T195658.539788Z.fits, extension 7"
    ],
    [
     "Choix de la source",
-    "meilleur signal sur bruit parmi 60 sources examinées (≈ 23 par pixel)"
+    "meilleur signal sur bruit parmi 28 sources examinées (≈ 8 par pixel)"
    ]
   ],
-  "url": "https://irsa.ipac.caltech.edu/data/Euclid/docs/overview_q1.html",
-  "caption": "Spectre sans fente du grisme rouge, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).",
+  "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
+  "caption": "Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).",
   "credit": "ESA/Euclid/Euclid Consortium/NASA",
-  "fetched": "2026-11-13"
+  "fetched": "2026-11-15"
  }
 }
