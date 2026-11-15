@@ -545,7 +545,9 @@ def main():
     manifest = json.load(open(mpath, encoding="utf-8")) if os.path.exists(mpath) else {}
     args = sys.argv[1:]
     # sans argument : seulement les recettes absentes du manifeste, pour que le site ne change pas tout seul ; « all » refait tout
-    todo = list(RECIPES) if args == ["all"] else (args or [k for k in RECIPES if k not in manifest])
+    # les produits Euclid encore tirés de Q1 sont refaits tant que DR1 n'a pas pu être lu (IRSA saturé à la sortie de DR1)
+    stale = lambda k: k.startswith("euclid/") and "q1" in json.dumps(manifest.get(k, {})).lower()
+    todo = list(RECIPES) if args == ["all"] else (args or [k for k in RECIPES if k not in manifest or stale(k)])
     failed = []
     for key in todo:
         print("==", key, flush=True)

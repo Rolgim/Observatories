@@ -168,8 +168,8 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 | Hubble STIS, COS | spectres extraits de HD 209458 et du quasar 3C 273 |
 | JWST NIRCam, MIRI, NIRISS | images combinées de l'amas SMACS 0723 (programme 2736) |
 | JWST NIRSpec | spectre d'une source du même champ, choisie automatiquement au meilleur signal sur bruit |
-| Euclid VIS | découpe d'une mosaïque VIS sur la nébuleuse de l'Œil de chat (Q1, via IRSA), et comptages par magnitude tirés de `q1.mer_catalogue` |
-| Euclid NISP | composition colorée Y, J, H du même champ, spectre du grisme rouge d'une source Q1, couleur visible − infrarouge |
+| Euclid VIS | découpe d'une mosaïque VIS du champ COSMOS (DR1, champs profonds, via IRSA), et comptages par magnitude tirés du catalogue MER (Q1, en attendant DR1) |
+| Euclid NISP | composition colorée Y, J, H du même champ COSMOS (DR1), spectre d'une source et couleur visible − infrarouge (Q1, en attendant DR1) |
 | Gaia Astro | diagramme de Hertzsprung-Russell de 8 000 étoiles à moins de 100 pc |
 | Gaia BP/RP, RVS | spectre BP/RP et spectre RVS réels d'une même étoile de type solaire (DataLink), plus les distributions de couleurs et de vitesses radiales |
 
@@ -178,8 +178,10 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Les deux capteurs de guidage (FGS) n'ont pas de produit.
 - Images : ce sont les aperçus en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition colorée à plusieurs filtres) donnerait un bien meilleur résultat.
 - Un instrument peut maintenant afficher plusieurs produits (clés `obs/inst:image`, `obs/inst:spectre`, `obs/inst` dans le manifeste).
-- Images Euclid : le cœur saturé de la nébuleuse est rendu en blanc ; choisir aussi un champ de galaxies, plus représentatif du relevé.
-- Euclid DR1 est sorti le 12 novembre 2026 (tables `dr1.*` dans l'archive). Le site le mentionne, mais ses exemples et ses graphiques viennent encore de Q1 : les faire passer sur DR1, et relire la fiche NISP (grisme bleu, contenu des catalogues).
+- Euclid DR1 (12 novembre 2026), **en cours le 15 novembre** :
+  - Fait : images VIS et NISP tirées des mosaïques DR1 du champ COSMOS ; textes, schéma de table, exemples de code et liens d'archives des pages VIS et NISP passés sur DR1 (tables `euclid_dr1_*` d'IRSA, relevées par la sonde `tools/probe/probe_euclid.py`).
+  - En attente : comptages par magnitude, couleur VIS − H et spectre NISP. Les recettes sont écrites pour DR1 (`euclid_dr1_mer_catalogue_deep_survey`, `objectid_spectrafile_association_dr1`), mais le service TAP d'IRSA répond 502 depuis la sortie de DR1 et l'archive ESA n'est pas joignable depuis les machines de GitHub. Le workflow « Données réelles » tourne désormais chaque jour et refait tout produit Euclid encore tiré de Q1, jusqu'à ce que DR1 passe ; ensuite il ne refait plus rien.
+  - Le workflow manuel « Sonde » lance un script de `tools/probe/` pour voir ce qu'une archive expose, sans rien écrire dans le dépôt.
 - Les choix d'observation sont automatiques (la plus longue pose publique sur la cible). Les figer par identifiant une fois validés, pour que le site ne change pas tout seul.
 - E3 (requêtes en direct depuis le navigateur) : non commencé.
 

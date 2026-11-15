@@ -46,7 +46,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
 
   /* observations réelles : titres et légendes par clé ; les libellés de provenance passent par le dictionnaire */
   OBS_I18N.real = function(m){
-    Object.keys(m).forEach(function(k){ var e = EN_REAL[k]; if (e){ m[k].title = e.title; m[k].caption = e.caption; }
+    Object.keys(m).forEach(function(k){ var e = EN_REAL[k]; if (e && e.length) e = e.filter(function(x){ return x.fr === m[k].title; })[0] || e[0]; if (e){ m[k].title = e.title; m[k].caption = e.caption; }
       m[k].meta.forEach(function(r){ r[0] = tr(r[0]); var v = String(r[1]), w = tr(v); r[1] = /^(SELECT|EUC_|jw|[a-z0-9_]+\.fits)/.test(v) ? v : (w !== v ? w : OBS_NUM(v)); }); });
     return m;
   };

@@ -1199,34 +1199,33 @@ var INST_DATA = (function(){
           ["Catalogue MER","table maîtresse de sources (VIS + NISP + sol)"],
           ["Découpes","service de cutouts dans l'archive web et dans ESA Datalabs"]
         ],
-        example:{ real:true, title:"Schéma réel de la table q1.mer_catalogue (extrait)", caption:"Colonnes de la table publique Q1 interrogeable en ADQL, avec les noms publiés par l'archive ESA.", text:
-"object_id          long   identifiant unique Euclid de la source\n" +
-"right_ascension    deg    ascension droite (barycentre de la source)\n" +
-"declination        deg    déclinaison\n" +
-"segmentation_area         aire de la source dans la carte de segmentation\n" +
-"ellipticity               ellipticité\n" +
-"kron_radius        pix    demi-grand axe de l'ouverture de Kron\n" +
-"flux_vis_psf              flux VIS (ajustement de PSF) · mag_vis_psf : magnitude AB associée\n" +
-"flux_h_templfit           flux bande H du NISP (ajustement de modèle) · mag_h_templfit : magnitude AB\n" +
-"[≈ 30 millions de lignes : champs EDF-Nord, EDF-Fornax, EDF-Sud et LDN 1641]" },
-        code:{ title:"Interroger le catalogue MER (astroquery.esa.euclid)", text:
-"from astroquery.esa.euclid import Euclid\n\n" +
+        example:{ real:true, title:"Schéma réel de la table euclid_dr1_mer_catalogue_deep_survey (extrait)", caption:"Colonnes de la table publique de DR1 pour les champs profonds, interrogeable en ADQL sur le miroir IRSA (le relevé large a sa propre table, euclid_dr1_mer_catalogue_wide_survey).", text:
+"object_id            identifiant unique Euclid de la source\n" +
+"ra, dec              position (degrés)\n" +
+"flux_vis_2fwhm_aper  flux VIS dans une ouverture de 2 fois la largeur à mi-hauteur\n" +
+"flux_h_2fwhm_aper    même mesure dans la bande H du NISP\n" +
+"point_like_prob      probabilité que la source soit ponctuelle (étoile)\n" +
+"ellipticity          ellipticité\n" +
+"kron_radius          demi-grand axe de l'ouverture de Kron\n" +
+"has_spectrum         la source a-t-elle un spectre NISP ?\n" +
+"tileid               tuile du ciel d'où vient la mesure\n" +
+"[≈ 480 colonnes, dont les flux des relevés au sol (DECam, MegaCam, HSC…)]" },
+        code:{ title:"Interroger le catalogue MER de DR1 (astroquery, IRSA)", text:
+"from astroquery.ipac.irsa import Irsa\n\n" +
 "query = \"\"\"\n" +
-"SELECT TOP 10 object_id, right_ascension, declination,\n" +
-"       flux_vis_psf, flux_h_templfit\n" +
-"FROM q1.mer_catalogue\n" +
-"WHERE 1=CONTAINS(POINT('ICRS', right_ascension, declination),\n" +
-"                 CIRCLE('ICRS', 53.1, -28.1, 0.05))\n" +
-"ORDER BY object_id\n" +
+"SELECT TOP 10 object_id, ra, dec,\n" +
+"       flux_vis_2fwhm_aper, flux_h_2fwhm_aper\n" +
+"FROM euclid_dr1_mer_catalogue_deep_survey\n" +
+"WHERE 1=CONTAINS(POINT('ICRS', ra, dec),\n" +
+"                 CIRCLE('ICRS', 150.12, 2.21, 0.05))\n" +
 "\"\"\"\n" +
-"job = Euclid.launch_job(query)\n" +
-"tbl = job.get_results()\n" +
+"tbl = Irsa.query_tap(query).to_table()\n" +
 "print(tbl)" },
         notes:[
           "L'identifiant object_id encode la position de la source : les déclinaisons négatives donnent des identifiants négatifs.",
-          "Q1 couvre ≈ 63 deg² (EDF-Nord 22,9 · EDF-Fornax 12,1 · EDF-Sud 28,1 deg²) plus la nébuleuse sombre LDN 1641, soit ≈ 35 To."
+          "DR1 sépare le relevé large (wide) et les champs profonds (deep) en tables distinctes ; la publication rapide Q1 reste en ligne à côté."
         ],
-        docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Q1, contenu",u:"https://www.cosmos.esa.int/web/euclid/q1-contents"} ] },
+        docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Présentation de DR1",u:"https://arxiv.org/abs/2611.16510"} ] },
 
       { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
         bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
@@ -1247,28 +1246,29 @@ var INST_DATA = (function(){
           R("YE",0.95,1.21,"B","photométrie"),
           R("JE",1.17,1.57,"B","photométrie"),
           R("HE",1.52,2.02,"B","photométrie"),
-          R("BG",0.92,1.37,"G","grisme bleu, non publié dans Q1"),
-          R("RG",1.21,1.89,"G","grisme rouge, spectres publiés dans Q1")
+          R("BG",0.92,1.37,"G","grisme bleu"),
+          R("RG",1.21,1.89,"G","grismes rouges")
         ],
         products:[
           ["Images NISP","images calibrées par exposition et mosaïques MER (Y, J, H)"],
-          ["Spectres SIR","spectres 1D (DataLink / SSA) et images 2D calibrées ; Q1 : grisme rouge uniquement"],
-          ["Catalogue SPE","13 tables de mesures spectroscopiques (redshifts, qualité)"],
-          ["Catalogue PHZ","8 tables de redshifts photométriques"]
+          ["Spectres SIR","spectres 1D (DataLink / SSA) et images 2D calibrées"],
+          ["Catalogue SPE","redshifts spectroscopiques, classification, raies et qualité"],
+          ["Catalogue PHZ","redshifts photométriques et classification"]
         ],
-        example:{ real:true, title:"Contenu du catalogue de Q1 (nombre de tables par produit)", caption:"Organisation réelle des catalogues interrogeables en ADQL dans l'archive ESA.", text:
-"MER  (produit fusionné)      3 tables   dont q1.mer_catalogue\n" +
-"PHZ  (redshifts photo.)      8 tables\n" +
-"SPE  (spectroscopie)        13 tables   redshifts et qualité à partir des spectres SIR\n" +
+        example:{ real:true, title:"Catalogues de DR1 sur le miroir IRSA (nombre de tables par produit)", caption:"Tables euclid_dr1_* interrogeables en ADQL, relevé large et champs profonds confondus.", text:
+"MER  (catalogue fusionné)        6 tables   large et profonds, avec et sans photométrie détaillée\n" +
+"PHZ  (redshifts photométriques)  4 tables   redshifts et classification\n" +
+"SPE  (spectroscopie)             8 tables   redshifts, classification, raies, qualité\n" +
 "\n" +
 "Jointure : toutes les tables partagent la clé  object_id" },
-        code:{ title:"Lister les tables disponibles (astroquery.esa.euclid)", text:
-"from astroquery.esa.euclid import Euclid\n\n" +
-"tables = Euclid.load_tables(only_names=True)\n" +
-"for t in tables:\n" +
-"    print(t.name)          # ex. q1.mer_catalogue, …" },
+        code:{ title:"Lister les tables de DR1 (astroquery, IRSA)", text:
+"from astroquery.ipac.irsa import Irsa\n\n" +
+"tables = Irsa.query_tap(\n" +
+"    \"SELECT table_name FROM TAP_SCHEMA.tables \"\n" +
+"    \"WHERE table_name LIKE 'euclid_dr1%'\").to_table()\n" +
+"print(tables)    # ex. euclid_dr1_phz_photo_z_wide, …" },
         notes:[
-          "Dans Q1, seuls les spectres du grisme rouge sont publiés.",
+          "Les tables de qualité spectroscopique indiquent pour chaque source le grisme utilisé (spe_grism) et le nombre de poses obtenues avec les grismes rouges et bleu.",
           "VIS et NISP reçoivent la lumière du même champ par le dichroïque et peuvent acquérir en même temps."
         ],
         docs:[ {l:"Euclid Consortium, instruments",u:"https://www.euclid-ec.org/euclid-scientific-instruments/"} ] }
@@ -2399,22 +2399,22 @@ EN_INST.euclid = {
       specs:[["Band", "IE · 530–920 nm"], ["Detectors", "36 thinned e2v CCD273-84 (40 µm), in a 6×6 array"], ["Format", "4096×4132 px per CCD · 12 µm pixels · 4 quadrants, each read by its own node (144 channels)"], ["Mosaic", "≈ 609 Mpx · 0.1″/px sampling"], ["Field", "≈ 0.54 deg² · active area 0.775°×0.697°"], ["CCD temperature", "153 K"], ["Beam", "f/20 delivered by the telescope · 1.2 m pupil"]],
       filtersTitle:"Photometric band",
       products:[["Calibrated images","multi-extension FITS files per exposure (level 2)"],["MER mosaics","stacks per sky tile, including ground-based data"],["MER catalogue","master source table (VIS + NISP + ground)"],["Cutouts","cutout service in the web archive and in ESA Datalabs"]],
-      example:{ title:"Real schema of the q1.mer_catalogue table (excerpt)", caption:"Columns of the public Q1 table, queryable in ADQL, with the names published by the ESA archive.", text:
-"object_id          long   unique Euclid identifier of the source\nright_ascension    deg    right ascension (source barycentre)\ndeclination        deg    declination\nsegmentation_area         area of the source in the segmentation map\nellipticity               ellipticity\nkron_radius        pix    semi-major axis of the Kron aperture\nflux_vis_psf              VIS flux (PSF fit) · mag_vis_psf: matching AB magnitude\nflux_h_templfit           NISP H-band flux (template fit) · mag_h_templfit: AB magnitude\n[≈ 30 million rows: fields EDF-North, EDF-Fornax, EDF-South and LDN 1641]" },
-      code:{ title:"Query the MER catalogue (astroquery.esa.euclid)" },
-      notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","Q1 covers ≈ 63 deg² (EDF-North 22.9 · EDF-Fornax 12.1 · EDF-South 28.1 deg²) plus the dark nebula LDN 1641, about 35 TB."],
-      docs:["Euclid Consortium, VIS","Q1, contents"] },
+      example:{ title:"Real schema of the euclid_dr1_mer_catalogue_deep_survey table (excerpt)", caption:"Columns of the public DR1 table for the Deep Fields, queryable in ADQL on the IRSA mirror (the Wide Survey has its own table, euclid_dr1_mer_catalogue_wide_survey).", text:
+"object_id            unique Euclid identifier of the source\nra, dec              position (degrees)\nflux_vis_2fwhm_aper  VIS flux in an aperture twice the full width at half maximum\nflux_h_2fwhm_aper    same measurement in the NISP H band\npoint_like_prob      probability that the source is point-like (a star)\nellipticity          ellipticity\nkron_radius          semi-major axis of the Kron aperture\nhas_spectrum         does the source have a NISP spectrum?\ntileid               sky tile the measurement comes from\n[≈ 480 columns, including fluxes from ground-based surveys (DECam, MegaCam, HSC…)]" },
+      code:{ title:"Query the DR1 MER catalogue (astroquery, IRSA)" },
+      notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","DR1 splits the Wide Survey and the Deep Fields into separate tables; the Q1 quick release stays online alongside."],
+      docs:["Euclid Consortium, VIS","DR1 overview"] },
     nisp:{ kind:"IR photometer and slitless spectrometer",
       use:"Measuring the infrared colours and spectra of millions of galaxies to find out how far away they are. Together with VIS, it maps the Universe in three dimensions over the last ten billion years.",
 
       summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
       specs:[["Range", "0.95–2.02 µm"], ["Detectors", "16 HgCdTe H2RG arrays in 4×4 · 2040×2040 active px · 18 µm pixels"], ["Sampling", "0.3″/px · 0.57 deg² field"], ["Photometry", "3 filters: YE (0.95–1.21), JE (1.17–1.57), HE (1.52–2.02 µm)"], ["Spectroscopy", "blue grism (BG) 926–1366 nm, R > 400 · red grisms (RG) 1206–1892 nm, R > 480"], ["Mass and power", "≈ 85.3 kg (instrument) + 40.7 kg (warm electronics) · power capped at 200 W"], ["Temperature", "detectors ≈ 95 K · optics ≈ 135 K"]],
       filtersTitle:"Bands and grisms (nominal ranges)",
-      products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images; Q1: red grism only"],["SPE catalogue","13 tables of spectroscopic measurements (redshifts, quality)"],["PHZ catalogue","8 tables of photometric redshifts"]],
-      example:{ title:"Contents of the Q1 catalogue (number of tables per product)", caption:"Real organisation of the catalogues queryable in ADQL in the ESA archive.", text:
-"MER  (merged product)        3 tables   including q1.mer_catalogue\nPHZ  (photometric redshifts) 8 tables\nSPE  (spectroscopy)         13 tables   redshifts and quality from the SIR spectra\n\nJoin: all tables share the key  object_id" },
-      code:{ title:"List the available tables (astroquery.esa.euclid)" },
-      notes:["In Q1, only the red-grism spectra are published.","VIS and NISP receive light from the same field through the dichroic and can expose at the same time."],
+      products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images"],["SPE catalogue","spectroscopic redshifts, classification, lines and quality"],["PHZ catalogue","photometric redshifts and classification"]],
+      example:{ title:"DR1 catalogues on the IRSA mirror (number of tables per product)", caption:"euclid_dr1_* tables queryable in ADQL, Wide Survey and Deep Fields together.", text:
+"MER  (merged catalogue)         6 tables   Wide and Deep, with and without detailed photometry\nPHZ  (photometric redshifts)   4 tables   redshifts and classification\nSPE  (spectroscopy)            8 tables   redshifts, classification, lines, quality\n\nJoin: all tables share the key  object_id" },
+      code:{ title:"List the DR1 tables (astroquery, IRSA)" },
+      notes:["The spectroscopic quality tables give, for each source, the grism used (spe_grism) and the number of exposures taken with the red and blue grisms.","VIS and NISP receive light from the same field through the dichroic and can expose at the same time."],
       docs:["Euclid Consortium, instruments"] }
   }
 };
@@ -2466,7 +2466,7 @@ var EN_WORDS = {
   "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
   "NUV, moyenne résolution":"NUV, medium resolution", "NUV, basse résolution":"NUV, low resolution", "H₂ 2,12 µm":"H₂ 2.12 µm", "H₂ 4,7 µm":"H₂ 4.7 µm", "très large":"extra wide", "R ≈ 1 000 / 2 700":"R ≈ 1,000 / 2,700",
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
-  "grisme bleu, non publié dans Q1":"blue grism, not released in Q1", "grisme rouge, spectres publiés dans Q1":"red grism, spectra released in Q1", "lumière blanche (SM + AF)":"white light (SM + AF)",
+  "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
   "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
@@ -2518,9 +2518,11 @@ var EN_REAL = {
   'jwst/nirspec':{ title:'NIRSpec spectrum of a source in the SMACS 0723 field', caption:'Extracted spectrum of one of the sources observed through the micro-shutters, picked automatically for its signal-to-noise ratio.' },
   'euclid/vis':{ title:'Source counts by magnitude in the VIS I_E band', caption:'The number of sources rises towards fainter magnitudes, then drops where the survey stops being complete: that is the depth reached in this field.' },
   'euclid/nisp':{ title:'Visible − infrared colour of the sources, VIS and NISP combined', caption:'For each source, the difference between the VIS magnitude and the NISP H-band magnitude. This colour is one of the ingredients of photometric redshifts.' },
-  'euclid/vis:image':{ title:'VIS: the Cat\'s Eye Nebula (NGC 6543)', caption:'Cutout of a VIS mosaic, I_E band, at 0.1″ per pixel before reduction.' },
-  'euclid/nisp:image':{ title:'NISP: the Cat\'s Eye Nebula (NGC 6543), Y, J and H bands', caption:'Colour composite of the three NISP bands: H in red, J in green, Y in blue. Each band is stretched separately, so the colours are indicative.' },
-  'euclid/nisp:spectre':{ title:'NISP spectrum of a source in the Q1 survey', caption:'Slitless red-grism spectrum, extracted and combined by the pipeline (pixels flagged as doubtful removed).' },
+  'euclid/vis:image':[{ fr:'VIS : le champ COSMOS', title:'VIS: the COSMOS field', caption:'Cutout of a VIS mosaic, I_E band, at 0.1″ per pixel before reduction.' },
+                      { fr:'VIS : la nébuleuse de l\'Œil de chat (NGC 6543)', title:'VIS: the Cat\'s Eye Nebula (NGC 6543)', caption:'Cutout of a VIS mosaic, I_E band, at 0.1″ per pixel before reduction.' }],
+  'euclid/nisp:image':{ title:'NISP: the COSMOS field, Y, J and H bands', caption:'Colour composite of the three NISP bands: H in red, J in green, Y in blue. Each band is stretched separately, so the colours are indicative.' },
+  'euclid/nisp:spectre':[{ fr:'Spectre NISP d\'une source de DR1', title:'NISP spectrum of a DR1 source', caption:'Slitless spectrum, extracted and combined by the pipeline (pixels flagged as doubtful removed).' },
+                         { fr:'Spectre NISP d\'une source du relevé Q1', title:'NISP spectrum of a source in the Q1 survey', caption:'Slitless red-grism spectrum, extracted and combined by the pipeline (pixels flagged as doubtful removed).' }],
   'gaia/astro':{ title:'Hertzsprung-Russell diagram of nearby stars', caption:'Each point is a star within 100 parsecs. The absolute magnitude comes from the parallax measured by the astrometric field: M_G = G + 5 log10(parallax / 100 mas). The main sequence, the giants and the white dwarfs separate by themselves.' },
   'gaia/bprp':{ title:'Colours of nearby stars, measured by the BP and RP photometers', caption:'Distribution of the BP − RP colour index for the same sample. Low-mass red stars dominate the solar neighbourhood by far.' },
   'gaia/rvs':{ title:'Radial velocities of nearby stars, measured by the RVS', caption:'Speed of recession (positive) or approach (negative) of each star in the sample for which the spectrometer obtained a measurement.' },
@@ -2576,7 +2578,7 @@ var EN_UI = {
   "Filtres ou réseau":"Filters or grating", "Grisme":"Grism", "Identifiant Euclid de la source":"Euclid source identifier", "Identifiant d'observation":"Observation identifier", "Identifiant de la source":"Source identifier",
   "Magnitude G":"G magnitude", "Points":"Points", "Produit":"Product", "Programme":"Programme", "Publication":"Release", "Requête ADQL":"ADQL query", "Responsable du programme":"Principal investigator", "Sources":"Sources", "Sélection":"Selection",
   "Table":"Table", "Temps de pose":"Exposure time", "Température estimée":"Estimated temperature", "Traitement":"Processing", "Vitesse radiale mesurée":"Measured radial velocity", "Étoiles":"Stars",
-  "NASA/IPAC IRSA, miroir des données Euclid":"NASA/IPAC IRSA, mirror of the Euclid data", "Quick Release Q1, mosaïques MER":"Quick Release Q1, MER mosaics", "Quick Release Q1, spectres 1D combinés (SIR)":"Quick Release Q1, combined 1D spectra (SIR)",
+  "NASA/IPAC IRSA, miroir des données Euclid":"NASA/IPAC IRSA, mirror of the Euclid data", "Quick Release Q1, mosaïques MER":"Quick Release Q1, MER mosaics", "DR1 (12 novembre 2026), mosaïques MER des champs profonds":"DR1 (12 November 2026), Deep Field MER mosaics", "DR1 (12 novembre 2026), catalogue MER des champs profonds":"DR1 (12 November 2026), Deep Field MER catalogue", "DR1 (12 novembre 2026), spectres 1D combinés (SIR)":"DR1 (12 November 2026), combined 1D spectra (SIR)", "Quick Release Q1, spectres 1D combinés (SIR)":"Quick Release Q1, combined 1D spectra (SIR)",
   "découpe, étirement asinh, réduction pour le site":"cutout, asinh stretch, reduced for the site", "rouge (RG)":"red (RG)", "flux_vis_psf et flux_h_templfit":"flux_vis_psf and flux_h_templfit",
   "Euclid Deep Field Fornax, disque de 0,08° autour de (52,93° ; −28,09°)":"Euclid Deep Field Fornax, disc of 0.08° around (52.93°; −28.09°)", "magnitude AB = 23,9 − 2,5 log10(flux en µJy)":"AB magnitude = 23.9 − 2.5 log10(flux in µJy)",
   "Gaia DR3, table gaiadr3.gaia_source":"Gaia DR3, table gaiadr3.gaia_source", "ESA Gaia Archive, service DataLink":"ESA Gaia Archive, DataLink service",
@@ -2623,6 +2625,7 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^Le champ (COSMOS|profond Euclid Nord|profond Euclid Sud), disque de 0,08° autour de \(([−\d,]+)° ; ([−\d,]+)°\)$/, function(m, f, a, d){ return ({ 'COSMOS':'The COSMOS field', 'profond Euclid Nord':'The Euclid Deep Field North', 'profond Euclid Sud':'The Euclid Deep Field South' })[f] + ', disc of 0.08° around (' + a.replace(',', '.') + '°; ' + d.replace(',', '.') + '°)'; }],
   [/^Surligné : (.+), la pièce choisie dans la maquette\.$/, function(m, x){ return 'Highlighted: ' + (EN_UI[x] || x) + ', the part chosen in the 3D model.'; }],
   [/^Valeurs vérifiées le (\S+) face aux sources ci-dessus\. Un «\s\?\s» signale une valeur pas encore confrontée à une source primaire\.$/, "Values checked on $1 against the sources above. A “?” marks a value not yet checked against a primary source."],
   [/ Les zones blanches sont hors du champ observé\./g, " White areas lie outside the observed field."], [/Crédit : /g, "Credit: "], [/Récupéré dans l'archive le (\d\d)\/(\d\d)\/(\d{4})\./g, "Retrieved from the archive on $3-$2-$1."],
@@ -2698,7 +2701,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
 
   /* observations réelles : titres et légendes par clé ; les libellés de provenance passent par le dictionnaire */
   OBS_I18N.real = function(m){
-    Object.keys(m).forEach(function(k){ var e = EN_REAL[k]; if (e){ m[k].title = e.title; m[k].caption = e.caption; }
+    Object.keys(m).forEach(function(k){ var e = EN_REAL[k]; if (e && e.length) e = e.filter(function(x){ return x.fr === m[k].title; })[0] || e[0]; if (e){ m[k].title = e.title; m[k].caption = e.caption; }
       m[k].meta.forEach(function(r){ r[0] = tr(r[0]); var v = String(r[1]), w = tr(v); r[1] = /^(SELECT|EUC_|jw|[a-z0-9_]+\.fits)/.test(v) ? v : (w !== v ? w : OBS_NUM(v)); }); });
     return m;
   };

@@ -124,22 +124,22 @@ EN_INST.euclid = {
       specs:[["Band", "IE · 530–920 nm"], ["Detectors", "36 thinned e2v CCD273-84 (40 µm), in a 6×6 array"], ["Format", "4096×4132 px per CCD · 12 µm pixels · 4 quadrants, each read by its own node (144 channels)"], ["Mosaic", "≈ 609 Mpx · 0.1″/px sampling"], ["Field", "≈ 0.54 deg² · active area 0.775°×0.697°"], ["CCD temperature", "153 K"], ["Beam", "f/20 delivered by the telescope · 1.2 m pupil"]],
       filtersTitle:"Photometric band",
       products:[["Calibrated images","multi-extension FITS files per exposure (level 2)"],["MER mosaics","stacks per sky tile, including ground-based data"],["MER catalogue","master source table (VIS + NISP + ground)"],["Cutouts","cutout service in the web archive and in ESA Datalabs"]],
-      example:{ title:"Real schema of the q1.mer_catalogue table (excerpt)", caption:"Columns of the public Q1 table, queryable in ADQL, with the names published by the ESA archive.", text:
-"object_id          long   unique Euclid identifier of the source\nright_ascension    deg    right ascension (source barycentre)\ndeclination        deg    declination\nsegmentation_area         area of the source in the segmentation map\nellipticity               ellipticity\nkron_radius        pix    semi-major axis of the Kron aperture\nflux_vis_psf              VIS flux (PSF fit) · mag_vis_psf: matching AB magnitude\nflux_h_templfit           NISP H-band flux (template fit) · mag_h_templfit: AB magnitude\n[≈ 30 million rows: fields EDF-North, EDF-Fornax, EDF-South and LDN 1641]" },
-      code:{ title:"Query the MER catalogue (astroquery.esa.euclid)" },
-      notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","Q1 covers ≈ 63 deg² (EDF-North 22.9 · EDF-Fornax 12.1 · EDF-South 28.1 deg²) plus the dark nebula LDN 1641, about 35 TB."],
-      docs:["Euclid Consortium, VIS","Q1, contents"] },
+      example:{ title:"Real schema of the euclid_dr1_mer_catalogue_deep_survey table (excerpt)", caption:"Columns of the public DR1 table for the Deep Fields, queryable in ADQL on the IRSA mirror (the Wide Survey has its own table, euclid_dr1_mer_catalogue_wide_survey).", text:
+"object_id            unique Euclid identifier of the source\nra, dec              position (degrees)\nflux_vis_2fwhm_aper  VIS flux in an aperture twice the full width at half maximum\nflux_h_2fwhm_aper    same measurement in the NISP H band\npoint_like_prob      probability that the source is point-like (a star)\nellipticity          ellipticity\nkron_radius          semi-major axis of the Kron aperture\nhas_spectrum         does the source have a NISP spectrum?\ntileid               sky tile the measurement comes from\n[≈ 480 columns, including fluxes from ground-based surveys (DECam, MegaCam, HSC…)]" },
+      code:{ title:"Query the DR1 MER catalogue (astroquery, IRSA)" },
+      notes:["The object_id identifier encodes the source position: negative declinations give negative identifiers.","DR1 splits the Wide Survey and the Deep Fields into separate tables; the Q1 quick release stays online alongside."],
+      docs:["Euclid Consortium, VIS","DR1 overview"] },
     nisp:{ kind:"IR photometer and slitless spectrometer",
       use:"Measuring the infrared colours and spectra of millions of galaxies to find out how far away they are. Together with VIS, it maps the Universe in three dimensions over the last ten billion years.",
 
       summary:"It measures infrared colours (for photometric redshifts) and provides slitless grism spectroscopy, which gives the spectroscopic redshifts of millions of galaxies.",
       specs:[["Range", "0.95–2.02 µm"], ["Detectors", "16 HgCdTe H2RG arrays in 4×4 · 2040×2040 active px · 18 µm pixels"], ["Sampling", "0.3″/px · 0.57 deg² field"], ["Photometry", "3 filters: YE (0.95–1.21), JE (1.17–1.57), HE (1.52–2.02 µm)"], ["Spectroscopy", "blue grism (BG) 926–1366 nm, R > 400 · red grisms (RG) 1206–1892 nm, R > 480"], ["Mass and power", "≈ 85.3 kg (instrument) + 40.7 kg (warm electronics) · power capped at 200 W"], ["Temperature", "detectors ≈ 95 K · optics ≈ 135 K"]],
       filtersTitle:"Bands and grisms (nominal ranges)",
-      products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images; Q1: red grism only"],["SPE catalogue","13 tables of spectroscopic measurements (redshifts, quality)"],["PHZ catalogue","8 tables of photometric redshifts"]],
-      example:{ title:"Contents of the Q1 catalogue (number of tables per product)", caption:"Real organisation of the catalogues queryable in ADQL in the ESA archive.", text:
-"MER  (merged product)        3 tables   including q1.mer_catalogue\nPHZ  (photometric redshifts) 8 tables\nSPE  (spectroscopy)         13 tables   redshifts and quality from the SIR spectra\n\nJoin: all tables share the key  object_id" },
-      code:{ title:"List the available tables (astroquery.esa.euclid)" },
-      notes:["In Q1, only the red-grism spectra are published.","VIS and NISP receive light from the same field through the dichroic and can expose at the same time."],
+      products:[["NISP images","calibrated images per exposure and MER mosaics (Y, J, H)"],["SIR spectra","1D spectra (DataLink / SSA) and calibrated 2D images"],["SPE catalogue","spectroscopic redshifts, classification, lines and quality"],["PHZ catalogue","photometric redshifts and classification"]],
+      example:{ title:"DR1 catalogues on the IRSA mirror (number of tables per product)", caption:"euclid_dr1_* tables queryable in ADQL, Wide Survey and Deep Fields together.", text:
+"MER  (merged catalogue)         6 tables   Wide and Deep, with and without detailed photometry\nPHZ  (photometric redshifts)   4 tables   redshifts and classification\nSPE  (spectroscopy)            8 tables   redshifts, classification, lines, quality\n\nJoin: all tables share the key  object_id" },
+      code:{ title:"List the DR1 tables (astroquery, IRSA)" },
+      notes:["The spectroscopic quality tables give, for each source, the grism used (spe_grism) and the number of exposures taken with the red and blue grisms.","VIS and NISP receive light from the same field through the dichroic and can expose at the same time."],
       docs:["Euclid Consortium, instruments"] }
   }
 };
@@ -191,7 +191,7 @@ var EN_WORDS = {
   "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
   "NUV, moyenne résolution":"NUV, medium resolution", "NUV, basse résolution":"NUV, low resolution", "H₂ 2,12 µm":"H₂ 2.12 µm", "H₂ 4,7 µm":"H₂ 4.7 µm", "très large":"extra wide", "R ≈ 1 000 / 2 700":"R ≈ 1,000 / 2,700",
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
-  "grisme bleu, non publié dans Q1":"blue grism, not released in Q1", "grisme rouge, spectres publiés dans Q1":"red grism, spectra released in Q1", "lumière blanche (SM + AF)":"white light (SM + AF)",
+  "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
   "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };

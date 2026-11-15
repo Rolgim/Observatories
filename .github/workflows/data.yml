@@ -6,6 +6,8 @@ on:
       recettes:
         description: 'Recettes à relancer, séparées par des espaces (vide = toutes)'
         required: false
+  schedule:
+    - cron: '17 5 * * *'   # chaque jour : seulement les recettes manquantes ou périmées (voir fetch_data.py)
   push:
     branches: [main]
     paths: ['tools/data/**', '.github/workflows/data.yml']
@@ -23,7 +25,9 @@ jobs:
       - run: pip install --quiet astroquery astropy numpy pillow requests pyvo fsspec aiohttp
       - run: python tools/data/fetch_data.py ${{ github.event.inputs.recettes }}
       - run: python tools/data/fetch_orbits.py
+        if: github.event_name != 'schedule'
       - run: python tools/data/fetch_sky.py
+        if: github.event_name != 'schedule'
       - name: Commiter les données
         run: |
           git config user.name "github-actions[bot]"
