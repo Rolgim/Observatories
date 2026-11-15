@@ -24,6 +24,7 @@ const srv = http.createServer((q, s) => {
   if (V) await pg.route('**/*', r => {
     const u = r.request().url();
     if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
+    if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
     if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
     if (u.includes('fonts.googleapis')) return r.fulfill({ contentType: 'text/css', body: "@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;src:url(http://localhost:" + PORT + "/__font.woff2) format('woff2')}" });
     if (u.includes('__font.woff2')) return r.fulfill({ path: path.join(V, 'archivo.woff2'), contentType: 'font/woff2' });

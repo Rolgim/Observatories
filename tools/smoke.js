@@ -17,6 +17,7 @@ async function open(b, vp, dark, lang){
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_|Failed to load resource/.test(m.text())) fail('console : ' + m.text().slice(0, 200)); });
   if (V) await pg.route('**/*', r => { const u = r.request().url();
     if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
+    if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
     if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
     return u.startsWith('http://localhost') ? r.continue() : r.abort(); });
   return pg;

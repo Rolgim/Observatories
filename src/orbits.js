@@ -70,12 +70,47 @@ var Orbits = (function(){
     g.fillStyle = css('--ink'); label(g, 'Soleil', sp[0] + 11, sp[1] + 4, true);
     return ok/tot;
   }
+  /* ---------- Hubble en direct (F1) : TLE + SGP4 (satellite.js), carte de la Terre ---------- */
+  var SATJS = 'https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js', satLoading = null, landLoading = null, tleLoading = null;
+  function loadSat(){ return satLoading || (satLoading = new Promise(function(ok, ko){ if (window.satellite) return ok(window.satellite); var e = document.createElement('script'); e.src = SATJS; e.onload = function(){ ok(window.satellite); }; e.onerror = ko; document.head.appendChild(e); })); }
+  function loadJSON(u){ return fetch(u).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }); }
+  function drawTrack(c, st, land){
+    var g = prep(c), W = c._w, H = c._h, S = window.satellite, now = new Date(), D = 180/Math.PI;
+    function X(lon){ return 8 + (lon + 180)/360*(W - 16); } function Y(lat){ return 8 + (90 - lat)/180*(H - 16); }
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = css('--sheet'); g.fillRect(8, 8, W - 16, H - 16);
+    /* terres */
+    g.fillStyle = css('--rule'); land.rings.forEach(function(r){ g.beginPath(); for (var i=0;i<r.length;i+=2){ var x = X(r[i]), y = Y(r[i+1]); if (i) g.lineTo(x, y); else g.moveTo(x, y); } g.closePath(); g.fill(); });
+    /* nuit : côté opposé au point subsolaire */
+    var jd = now.getTime()/86400000 + 2440587.5, sv = sunVec(jd), ra = Math.atan2(sv[1], sv[0]), dec = Math.asin(sv[2]), gm = S.gstime(now), slon = ((ra - gm)*D + 540) % 360 - 180, sdec = dec*D;
+    g.fillStyle = css('--ink'); g.globalAlpha = 0.14; g.beginPath();
+    var poleN = sdec < 0; /* le pôle plongé dans la nuit */
+    for (var lon = -180; lon <= 180; lon += 2){ var lat = Math.atan(-Math.cos((lon - slon)/D)/Math.tan(Math.abs(sdec) < 0.1 ? 0.1/D : sdec/D))*D; if (lon === -180) g.moveTo(X(lon), Y(lat)); else g.lineTo(X(lon), Y(lat)); }
+    g.lineTo(X(180), Y(poleN ? 90 : -90)); g.lineTo(X(-180), Y(poleN ? 90 : -90)); g.closePath(); g.fill(); g.globalAlpha = 1;
+    /* graticule */
+    g.strokeStyle = css('--rule-2'); g.lineWidth = 0.5; g.beginPath();
+    for (var lo = -150; lo <= 150; lo += 30){ g.moveTo(X(lo), 8); g.lineTo(X(lo), H - 8); } for (var la = -60; la <= 60; la += 30){ g.moveTo(8, Y(la)); g.lineTo(W - 8, Y(la)); } g.stroke();
+    g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.strokeRect(8, 8, W - 16, H - 16);
+    /* trace : une orbite avant (pointillé) et une après (plein) */
+    function pos(t){ var pv = S.propagate(st.rec, t); if (!pv || !pv.position) return null; var gd = S.eciToGeodetic(pv.position, S.gstime(t)); return { lon:gd.longitude*D, lat:gd.latitude*D, h:gd.height, v:pv.velocity }; }
+    [[-96, 0, [3, 3]], [0, 96, []]].forEach(function(seg){
+      g.strokeStyle = '#DB5A14'; g.lineWidth = 1.6; g.setLineDash(seg[2]); g.beginPath(); var prev = null;
+      for (var m = seg[0]; m <= seg[1]; m += 1){ var p = pos(new Date(now.getTime() + m*60000)); if (!p) continue; if (prev && Math.abs(p.lon - prev.lon) < 180) g.lineTo(X(p.lon), Y(p.lat)); else g.moveTo(X(p.lon), Y(p.lat)); prev = p; }
+      g.stroke(); g.setLineDash([]);
+    });
+    var p = pos(now); if (!p) return null;
+    g.fillStyle = css('--mark'); g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.beginPath(); g.arc(X(p.lon), Y(p.lat), 6, 0, 6.2832); g.fill(); g.stroke();
+    g.fillStyle = css('--ink'); label(g, 'Hubble', X(p.lon) + (p.lon > 140 ? -10 : 10), Y(p.lat) - 9, true, p.lon > 140 ? 'right' : 'left');
+    p.night = Math.sin(p.lat/D)*Math.sin(sdec/D) + Math.cos(p.lat/D)*Math.cos(sdec/D)*Math.cos((p.lon - slon)/D) < 0;
+    return p;
+  }
   function render(tid, name){
     var t = TEXT[tid], s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Orbite</div><div class="inst-full">'+name+' : où il se trouve et comment il se déplace</div></div><p class="inst-sum">'+t.sum+'</p></div><div class="inst-cols">';
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
     if (tid === 'hubble'){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
-      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 480 km, en baisse'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
+      s += '<div class="isec"><h4>Où est Hubble en ce moment</h4>'+cv('track', 560, 300, 'Position de Hubble au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
+      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
     } else {
       s += '<div class="isec"><h4>Vu depuis la Terre</h4>'+cv('front', 560, 430, 'Trajectoire autour de L2 vue depuis la Terre')+ctl+'<div class="cap">On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l\'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).</div></div>';
       s += '<div class="isec"><h4>Vu de dessus</h4>'+cv('top', 560, 400, 'Trajectoire autour de L2 vue du nord de l\'écliptique')+'<div class="cap">Le Soleil est à gauche, hors du cadre, à 150 millions de km. Le repère tourne avec la Terre autour du Soleil : la Terre et L2 y restent fixes.</div></div>';
@@ -167,6 +202,23 @@ var Orbits = (function(){
       curve(function(l){ return [Math.cos(l), Math.sin(l)*Math.cos(e), Math.sin(l)*Math.sin(e)]; }, [2, 4], 'écliptique');
       curve(function(l){ var c = Math.cos(l), s = Math.sin(l); return [R[0][0]*c + R[1][0]*s, R[0][1]*c + R[1][1]*s, R[0][2]*c + R[1][2]*s]; }, [7, 4], 'plan de la Galaxie');
     }
+    var track = root.querySelector('[data-orb="track"]');
+    if (track) Promise.all([loadSat(), loadJSON('data/land-110m.json'), loadJSON('data/hubble-tle.json')]).then(function(r){
+      var rd = root.querySelector('[data-track-read]'), stats = root.querySelector('[data-track-stats]');
+      if (!r[0] || !r[1] || !r[2]){ rd.textContent = OBS_T('Éléments orbitaux indisponibles pour le moment.'); return; }
+      var tle = r[2], st = { rec:r[0].twoline2satrec(tle.line1, tle.line2) }, age = (Date.now() - Date.parse(tle.epoch))/86400000, fmt = function(x, d){ return x.toFixed(d).replace('.', OBS_LANG === 'en' ? '.' : ','); };
+      (function tick(){
+        if (my !== run || !track.isConnected) return;
+        var p = drawTrack(track, st, r[1]);
+        if (p){
+          var v = Math.hypot(p.v.x, p.v.y, p.v.z);
+          rd.textContent = new Date().toLocaleTimeString(OBS_LANG === 'en' ? 'en-GB' : 'fr-FR') + ' · ' + OBS_T(p.night ? 'au-dessus de la face nocturne' : 'au-dessus de la face éclairée');
+          stats.innerHTML = rows([['Latitude', fmt(Math.abs(p.lat), 1) + '° ' + (p.lat >= 0 ? 'N' : 'S')], ['Longitude', fmt(Math.abs(p.lon), 1) + '° ' + (p.lon >= 0 ? 'E' : (OBS_LANG === 'en' ? 'W' : 'O'))], ['Altitude', fr(p.h) + ' km'], ['Vitesse', fmt(v, 2) + ' km/s'],
+            ['Éléments orbitaux', OBS_LANG === 'en' ? 'epoch ' + tle.epoch.slice(0, 10) + ' (' + (age < 1 ? 'less than a day old' : Math.floor(age) + ' d old') + '), CelesTrak' : 'époque ' + tle.epoch.slice(0, 10).split('-').reverse().join('/') + ' (' + (age < 1 ? 'moins d\'un jour' : 'il y a ' + Math.floor(age) + ' j') + '), CelesTrak']]);
+        }
+        setTimeout(tick, 1000);
+      })();
+    }).catch(function(){ var rd = root.querySelector('[data-track-read]'); if (rd) rd.textContent = OBS_T('Éléments orbitaux indisponibles pour le moment.'); });
     var vis = root.querySelector('[data-orb="vis"]'), vday = root.querySelector('[data-vis-day]');
     if (vis){
       var today = Date.now()/86400000 + 2440587.5;

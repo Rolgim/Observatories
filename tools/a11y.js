@@ -22,7 +22,8 @@ const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['comparer'], ['jw
     if (V) await pg.route('**/*', r => {
       const u = r.request().url();
       if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
-      if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
+      if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
+    if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
       return u.startsWith('http://localhost') ? r.continue() : r.abort();
     });
     for (const [hash, click] of PAGES) {

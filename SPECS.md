@@ -207,7 +207,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 **Reste à faire**
 
 - Livré depuis : les trois orbites de L2 sur une même figure animée dans « Comparer » ; carte des pointés réels de Hubble (1990 à aujourd'hui) et de JWST, année par année, tirée de l'archive MAST ; carte de l'avancée réelle du relevé d'Euclid, mois par mois, tirée des observations VIS de DR1 (`tools/data/fetch_sky.py`, fichier `data/sky.json`).
-- F1 : position réelle de Hubble (éphéméride ou éléments orbitaux à jour).
+- F1 : position réelle de Hubble, **livrée le 15 novembre**. `tools/data/fetch_tle.py` récupère chaque jour le TLE de Hubble (CelesTrak, NORAD 20580) ; la page « Orbite » le propage dans le navigateur (SGP4, satellite.js 5.0.0) et affiche sa position, la trace de l'orbite précédente et suivante, la nuit et le contour des terres (Natural Earth 1:110m, domaine public, `data/land-110m.json`). Latitude, longitude, altitude et vitesse sont mises à jour chaque seconde.
 - Cartes de pointés : l'écliptique et le plan de la Galaxie sont tracés. Reste à distinguer les instruments et à montrer pour Euclid l'ordre des plaques à l'intérieur d'un mois.
 - F2 : la carte de balayage est une simulation de la loi nominale ; la comparer à la vraie couverture de Gaia DR3 (nombre de passages par source).
 - F3 (déploiement de JWST) : non commencé. La maquette n'est pas articulée ; il faudrait d'abord la redécouper par élément mobile.
