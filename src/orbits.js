@@ -202,8 +202,8 @@ var Orbits = (function(){
         var box = root.querySelector('[data-sky-ins]');
         if (box){
           var top = skyNames.slice(0, 6);
-          box.innerHTML = '<button class="chip on" data-sky-k="-1">' + OBS_T('Tous') + '</button>' + top.map(function(nm, k){ return '<button class="chip" data-sky-k="' + k + '"><i style="background:' + SKYPAL[k] + '"></i>' + esc(nm) + '</button>'; }).join('') + (skyNames.length > 6 ? '<span class="sky-more">' + OBS_T('+ autres instruments, en gris') + '</span>' : '');
-          box.addEventListener('click', function(e){ var b = e.target.closest('[data-sky-k]'); if (!b) return; skySel = +b.getAttribute('data-sky-k'); [].forEach.call(box.querySelectorAll('.chip'), function(c){ c.classList.toggle('on', c === b); }); skyI = skyYears.length + 3; });
+          box.innerHTML = '<button class="chip on" data-sky-k="-1">' + OBS_T('Tous') + '</button>' + top.map(function(nm, k){ return '<button class="chip" data-sky-k="' + k + '"><i style="background:' + SKYPAL[k] + '"></i>' + esc(({ NIRSPEC:'NIRSpec', NIRCAM:'NIRCam' })[nm] || nm) + '</button>'; }).join('') + (skyNames.length > 6 ? '<span class="sky-more">' + OBS_T('+ autres instruments, en gris') + '</span>' : '');
+          box.addEventListener('click', function(e){ var b = e.target.closest('[data-sky-k]'); if (!b) return; skySel = +b.getAttribute('data-sky-k'); [].forEach.call(box.querySelectorAll('.chip'), function(c){ c.classList.toggle('on', c === b); }); skyI = skyYears.length + 8; });
         }
       } else {
         for (var y in skyD.years){ var a2 = skyD.years[y], q2 = skyQ[y] = []; for (var i2=0;i2<a2.length;i2+=3) q2.push(a2[i2], a2[i2+1], a2[i2+2], -1); }
@@ -252,7 +252,7 @@ var Orbits = (function(){
     }
     function skyFrame(dt){
       var g = prep(sky), W = sky._w, H = sky._h, ink = css('--ink');
-      if (skyInk !== ink || skyI >= skyYears.length + 3){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); skyRefs(g, W, H); }
+      if (skyInk !== ink || skyI >= skyYears.length + 8){ skyInk = ink; skyI = 0; skyT = 0; skyN = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); skyRefs(g, W, H); }
       if (!playing) return;
       skyT += dt;
       if (skyT > 0.55 && skyI < skyYears.length){
