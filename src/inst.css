@@ -157,3 +157,9 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .vis-day span{ min-width:11em; }
 .vis-day input{ flex:1; min-width:120px; accent-color:var(--ink); }
 @media (max-width: 600px){ .vis-day{ flex-basis:100%; } }
+
+/* cartes de pointés : choix de l'instrument */
+.sky-ins{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0 2px; }
+.sky-ins .chip i{ display:inline-block; width:9px; height:9px; margin-right:6px; vertical-align:0; }
+.sky-ins .chip.on{ background:var(--mark); color:var(--on-mark); border-color:var(--mark); }
+.sky-more{ font-size:12px; color:var(--mute); }

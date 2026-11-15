@@ -366,6 +366,12 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .vis-day input{ flex:1; min-width:120px; accent-color:var(--ink); }
 @media (max-width: 600px){ .vis-day{ flex-basis:100%; } }
 
+/* cartes de pointés : choix de l'instrument */
+.sky-ins{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0 2px; }
+.sky-ins .chip i{ display:inline-block; width:9px; height:9px; margin-right:6px; vertical-align:0; }
+.sky-ins .chip.on{ background:var(--mark); color:var(--on-mark); border-color:var(--mark); }
+.sky-more{ font-size:12px; color:var(--mute); }
+
 </style>
 </head>
 <body>
@@ -1649,6 +1655,7 @@ var Optics = (function(){
 ================================================================= */
 var Orbits = (function(){
   var DATA, loading, run = 0, SKY, skyLoading;
+  function esc(x){ return String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function loadSky(){ return skyLoading || (skyLoading = fetch('data/sky.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ SKY = j; return j; })); }
   function load(){ return loading || (loading = fetch('data/orbits.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }).then(function(j){ DATA = j; return j; })); }
   function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
@@ -1761,7 +1768,7 @@ var Orbits = (function(){
       if (tid === 'gaia') s += '<div class="isec"><h4>La loi de balayage</h4>'+cv('scan', 560, 300, 'Couverture du ciel par la loi de balayage de Gaia')+'<div class="orb-ctl"><span class="orb-read" data-orb-scan></span></div><div class="cap">Carte du ciel entier en coordonnées écliptiques. Chaque trait est le grand cercle balayé pendant un tour de 6 heures ; l\'axe de rotation, incliné à 45° du Soleil, tourne autour de lui en 63 jours. Simulation de la loi nominale, pas l\'historique réel des observations.</div></div>';
     }
     if (tid === 'euclid') s += '<div class="isec"><h4>L\'avancée du relevé, mois après mois</h4>'+cv('sky', 560, 300, 'Carte du ciel des observations d\'Euclid')+'<div class="orb-ctl"><span class="orb-read" data-orb-sky>Chargement des observations…</span></div><div class="cap">Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de 0,5° où Euclid a commencé au moins une observation ce mois-là ; les mois s\'accumulent. Ce sont les observations VIS réellement publiées dans DR1. Un télescope de relevé ne choisit pas des cibles : il pave le ciel par plaques contiguës, en restant à peu près perpendiculaire à la direction du Soleil.</div></div>';
-    if (tid === 'hubble' || tid === 'jwst') s += '<div class="isec"><h4>Où il a pointé, année après année</h4>'+cv('sky', 560, 300, 'Carte du ciel des pointés réels')+'<div class="orb-ctl"><span class="orb-read" data-orb-sky>Chargement des pointés…</span></div><div class="cap">Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de '+(tid === 'jwst' ? '0,5' : '1')+'° où au moins une observation scientifique a commencé cette année-là ; les années s\'accumulent. Données réelles de l\'archive MAST. Contrairement à un télescope de relevé, '+name+' va de cible en cible au gré des programmes acceptés.</div></div>';
+    if (tid === 'hubble' || tid === 'jwst') s += '<div class="isec"><h4>Où il a pointé, année après année</h4>'+cv('sky', 560, 300, 'Carte du ciel des pointés réels')+'<div class="sky-ins" data-sky-ins></div><div class="orb-ctl"><span class="orb-read" data-orb-sky>Chargement des pointés…</span></div><div class="cap">Carte du ciel entier en coordonnées équatoriales. Chaque point est une case de '+(tid === 'jwst' ? '0,5' : '1')+'° où au moins une observation scientifique a commencé cette année-là ; les années s\'accumulent. Données réelles de l\'archive MAST. Contrairement à un télescope de relevé, '+name+' va de cible en cible au gré des programmes acceptés.</div></div>';
     var V = VIS[tid];
     s += '<div class="isec"><h4>'+(tid === 'gaia' ? 'Le ciel qu\'il balaie en ce moment' : 'Le ciel qu\'il peut observer en ce moment')+'</h4>'+cv('vis', 560, 300, 'Zone du ciel accessible selon la date')+
       '<div class="orb-ctl"><label class="vis-day"><span data-vis-date></span><input type="range" min="0" max="364" step="1" value="0" data-vis-day aria-label="Jour de l\'année à partir d\'aujourd\'hui"></label><span class="orb-read" data-vis-read></span></div>'+
@@ -1833,7 +1840,25 @@ var Orbits = (function(){
       st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance à la Terre', 'de '+fr(dmin*1000)+' à '+fr(dmax*1000)+' km'], ['Écart latéral maximal', '± '+fr(ymax*1000)+' km'], ['Écart maximal hors de l\'écliptique', '± '+fr(zmax*1000)+' km'], ['Le long de l\'axe Terre–L2', 'de '+fr(xmin*1000)+' à '+fr(xmax*1000)+' km'], ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+j.fetched.split('-').reverse().join('/')]]);
     });
     var sky = root.querySelector('[data-orb="sky"]'), skyD = null, skyYears = [], skyI = 0, skyT = 0, skyN = 0, skyInk = '';
-    if (sky) loadSky().then(function(j){ if (my !== run) return; skyD = j && j.bodies && j.bodies[tid]; var el = root.querySelector('[data-orb-sky]'); if (!skyD){ if (el) el.textContent = 'Les pointés n\'ont pas pu être chargés.'; return; } skyYears = Object.keys(skyD.years).sort().filter(function(y){ return tid !== 'hubble' || y >= '1990'; }); });
+    /* pointés : quadruplets (case i, case j, nombre, instrument) par année ; filtre par instrument (lot F, cartes de pointés) */
+    var SKYPAL = ['#2F6FDB', '#DB5A14', '#1A9E77', '#9A4FD1', '#B8860B', '#D6457A'], skySel = -1, skyQ = {}, skyNames = [];
+    if (sky) loadSky().then(function(j){
+      if (my !== run) return; skyD = j && j.bodies && j.bodies[tid]; var el = root.querySelector('[data-orb-sky]');
+      if (!skyD){ if (el) el.textContent = OBS_T('Les pointés n\'ont pas pu être chargés.'); return; }
+      if (skyD.inst){
+        skyNames = Object.keys(skyD.inst).sort(function(a, b){ return (skyD.totals[b] || 0) - (skyD.totals[a] || 0); });
+        skyNames.forEach(function(nm, k){ var d = skyD.inst[nm]; for (var y in d){ var a = d[y], q = skyQ[y] || (skyQ[y] = []); for (var i=0;i<a.length;i+=3) q.push(a[i], a[i+1], a[i+2], k); } });
+        var box = root.querySelector('[data-sky-ins]');
+        if (box){
+          var top = skyNames.slice(0, 6);
+          box.innerHTML = '<button class="chip on" data-sky-k="-1">' + OBS_T('Tous') + '</button>' + top.map(function(nm, k){ return '<button class="chip" data-sky-k="' + k + '"><i style="background:' + SKYPAL[k] + '"></i>' + esc(nm) + '</button>'; }).join('') + (skyNames.length > 6 ? '<span class="sky-more">' + OBS_T('+ autres instruments, en gris') + '</span>' : '');
+          box.addEventListener('click', function(e){ var b = e.target.closest('[data-sky-k]'); if (!b) return; skySel = +b.getAttribute('data-sky-k'); [].forEach.call(box.querySelectorAll('.chip'), function(c){ c.classList.toggle('on', c === b); }); skyI = skyYears.length + 3; });
+        }
+      } else {
+        for (var y in skyD.years){ var a2 = skyD.years[y], q2 = skyQ[y] = []; for (var i2=0;i2<a2.length;i2+=3) q2.push(a2[i2], a2[i2+1], a2[i2+2], -1); }
+      }
+      skyYears = Object.keys(skyQ).sort().filter(function(y){ return tid !== 'hubble' || y >= '1990'; });
+    });
     /* repères : écliptique et plan de la Galaxie, en coordonnées équatoriales (centre de la carte : ascension droite 12 h) */
     function skyRefs(g, W, H){
       var e = 23.4393*Math.PI/180, R = [[-0.0548755604, -0.8734370902, -0.4838350155], [0.4941094279, -0.4448296300, 0.7469822445]];
@@ -1880,8 +1905,12 @@ var Orbits = (function(){
       if (!playing) return;
       skyT += dt;
       if (skyT > 0.55 && skyI < skyYears.length){
-        var a = skyD.years[skyYears[skyI]], c = skyD.cell, D2R = Math.PI/180; g.fillStyle = '#DB5A14';
-        for (var q=0;q<a.length;q+=3){ var ra = (a[q] + 0.5)*c*D2R, de = ((a[q+1] + 0.5)*c - 90)*D2R, p = hammer([Math.cos(de)*Math.cos(ra - Math.PI), Math.cos(de)*Math.sin(ra - Math.PI), Math.sin(de)], W, H); g.globalAlpha = Math.min(0.9, 0.35 + 0.12*Math.log(a[q+2] + 1)); g.fillRect(p[0] - 1, p[1] - 1, 2, 2); skyN += a[q+2]; }
+        var a = skyQ[skyYears[skyI]], c = skyD.cell, D2R = Math.PI/180, grey = css('--mute');
+        for (var q=0;q<a.length;q+=4){
+          var k = a[q+3]; if (skySel >= 0 && k !== skySel) continue;
+          var ra = (a[q] + 0.5)*c*D2R, de = ((a[q+1] + 0.5)*c - 90)*D2R, p = hammer([Math.cos(de)*Math.cos(ra - Math.PI), Math.cos(de)*Math.sin(ra - Math.PI), Math.sin(de)], W, H);
+          g.fillStyle = k < 0 ? '#DB5A14' : k < 6 ? SKYPAL[k] : grey; g.globalAlpha = Math.min(0.9, 0.35 + 0.12*Math.log(a[q+2] + 1)); g.fillRect(p[0] - 1, p[1] - 1, 2, 2); skyN += a[q+2];
+        }
         g.globalAlpha = 1; var el = root.querySelector('[data-orb-sky]'); if (el) el.textContent = (skyYears[skyI].length > 4 ? skyYears[skyI].split('-').reverse().join('/') : skyYears[skyI]) + ' : ' + fr(skyN) + ' observations depuis ' + (skyYears[0].length > 4 ? skyYears[0].split('-').reverse().join('/') : skyYears[0]);
         skyI++; skyT = 0;
       } else if (skyT > 0.55){ skyI++; skyT = 0; }
@@ -2671,7 +2700,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
   "Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l'orbite à venir ; pointillé : celle qui vient de s'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.":"Position computed in your browser from the latest published orbital elements (CelesTrak TLE, SGP4 model). Solid line: the coming orbit; dotted: the one just completed. The shaded area is night. Land outline: Natural Earth.",
    "Les quatre observatoires à la même échelle":"The four observatories at the same scale", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
   "Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Hubble can point at anything more than 62.5° from the Sun (Cycle 34 rule, in reduced-gyro mode; HST Primer). On each 95-minute orbit the Earth also hides part of the sky: not shown. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",

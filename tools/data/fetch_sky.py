@@ -16,22 +16,28 @@ MAST_TAP = "https://mast.stsci.edu/vo-tap/api/v0.1/caom"
 EUCLID_TAP = "https://eas.esac.esa.int/tap-server/tap/sync"
 
 def mast_pointings(collection, cell):
+    """Pointés scientifiques par case du ciel, par année et par instrument (agrégation faite par le serveur)."""
     import pyvo
     svc = pyvo.dal.TAPService(MAST_TAP)
-    adql = (f"SELECT FLOOR(s_ra/{cell}) AS i, FLOOR((s_dec+90)/{cell}) AS j, FLOOR((t_min-51544.5)/365.25) AS yr, COUNT(*) AS n "
+    adql = (f"SELECT instrument_name AS ins, FLOOR(s_ra/{cell}) AS i, FLOOR((s_dec+90)/{cell}) AS j, FLOOR((t_min-51544.5)/365.25) AS yr, COUNT(*) AS n "
             f"FROM dbo.ObsPointing WHERE obs_collection='{collection}' AND intentType='science' AND s_ra IS NOT NULL AND t_min IS NOT NULL "
-            f"GROUP BY FLOOR(s_ra/{cell}), FLOOR((s_dec+90)/{cell}), FLOOR((t_min-51544.5)/365.25)")
+            f"GROUP BY instrument_name, FLOOR(s_ra/{cell}), FLOOR((s_dec+90)/{cell}), FLOOR((t_min-51544.5)/365.25)")
     print("  ", adql)
-    job = svc.submit_job(adql, maxrec=2000000); job.run(); job.wait(phases=["COMPLETED", "ERROR", "ABORTED"], timeout=1500)
+    job = svc.submit_job(adql, maxrec=4000000); job.run(); job.wait(phases=["COMPLETED", "ERROR", "ABORTED"], timeout=2400)
     job.raise_if_error()
     t = job.fetch_result().to_table(); job.delete()
     yr = np.array(t["yr"], dtype=int) + 2000
+    ins = np.array([str(x).split("/")[0].strip().upper() or "?" for x in t["ins"]])
+    I, J, N = (np.array(t[c], dtype=int) for c in ("i", "j", "n"))
+    cells = {}
+    for a, y, i, j, n in zip(ins, yr, I, J, N):  # « WFC3/UVIS » et « WFC3/IR » réunis sous WFC3
+        k = (a, int(y), int(i), int(j)); cells[k] = cells.get(k, 0) + int(n)
     out = {}
-    for y in sorted(set(yr)):
-        m = yr == y
-        out[str(y)] = [int(v) for trip in zip(np.array(t["i"], dtype=int)[m], np.array(t["j"], dtype=int)[m], np.array(t["n"], dtype=int)[m]) for v in trip]
-    print(f"   {len(t)} cases-années, {int(np.array(t['n']).sum()):,} observations, années {min(out)} à {max(out)}")
-    return dict(cell=cell, years=out, source="MAST, table dbo.ObsPointing (observations scientifiques)")
+    for (a, y, i, j), n in sorted(cells.items()):
+        out.setdefault(a, {}).setdefault(str(y), []).extend([i, j, n])
+    tot = {a: sum(sum(v[2::3]) for v in d.values()) for a, d in out.items()}
+    print(f"   {len(t)} lignes, {sum(tot.values()):,} observations ; par instrument :", dict(sorted(tot.items(), key=lambda x: -x[1])))
+    return dict(cell=cell, inst=out, totals=tot, source="MAST, table dbo.ObsPointing (observations scientifiques)")
 
 def euclid_survey(cell=0.5):
     """Avancée réelle du relevé : une ligne par observation VIS de DR1 (position moyenne des poses, date de début)."""
@@ -58,7 +64,7 @@ def main():
     have = json.load(open(path, encoding="utf-8")).get("bodies", {}) if os.path.exists(path) else {}
     for key, coll, cell in (("jwst", "JWST", 0.5), ("hubble", "HST", 1.0)):
         print("==", key, flush=True)
-        if key in have:
+        if "inst" in have.get(key, {}):
             print("   déjà présent, non refait"); continue
         try:
             out["bodies"][key] = mast_pointings(coll, cell)
