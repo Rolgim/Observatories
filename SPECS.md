@@ -170,8 +170,8 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 | Hubble STIS, COS | spectres extraits de HD 209458 et du quasar 3C 273 |
 | JWST NIRCam, MIRI, NIRISS | images combinées de l'amas SMACS 0723 (programme 2736) |
 | JWST NIRSpec | spectre d'une source du même champ, choisie automatiquement au meilleur signal sur bruit |
-| Euclid VIS | découpe d'une mosaïque VIS du champ COSMOS (DR1, champs profonds, via IRSA), et comptages par magnitude tirés du catalogue MER (Q1, en attendant DR1) |
-| Euclid NISP | composition colorée Y, J, H du même champ COSMOS (DR1), spectre d'une source et couleur visible − infrarouge (Q1, en attendant DR1) |
+| Euclid VIS | découpe d'une mosaïque VIS du champ COSMOS (DR1, champs profonds, via IRSA), et comptages par magnitude des 57 974 sources du catalogue MER final de la même tuile (DR1) |
+| Euclid NISP | composition colorée Y, J, H du même champ COSMOS (DR1), spectre rouge combiné d'une source (22 000 s de pose) et couleur visible − infrarouge (DR1) |
 | Gaia Astro | diagramme de Hertzsprung-Russell de 8 000 étoiles à moins de 100 pc |
 | Gaia BP/RP, RVS | spectre BP/RP et spectre RVS réels d'une même étoile de type solaire (DataLink), plus les distributions de couleurs et de vitesses radiales |
 
@@ -182,7 +182,8 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Un instrument peut maintenant afficher plusieurs produits (clés `obs/inst:image`, `obs/inst:spectre`, `obs/inst` dans le manifeste).
 - Euclid DR1 (12 novembre 2026), **en cours le 15 novembre** :
   - Fait : images VIS et NISP tirées des mosaïques DR1 du champ COSMOS ; textes, schéma de table, exemples de code et liens d'archives des pages VIS et NISP passés sur DR1 (tables `euclid_dr1_*` d'IRSA, relevées par la sonde `tools/probe/probe_euclid.py`).
-  - En attente : comptages par magnitude, couleur VIS − H et spectre NISP. Les recettes sont écrites pour DR1 (`euclid_dr1_mer_catalogue_deep_survey`, `objectid_spectrafile_association_dr1`), mais le service TAP d'IRSA répond 502 depuis la sortie de DR1 et l'archive ESA n'est pas joignable depuis les machines de GitHub. Le workflow « Données réelles » tourne désormais chaque jour et refait tout produit Euclid encore tiré de Q1, jusqu'à ce que DR1 passe ; ensuite il ne refait plus rien.
+  - Fait le 15 novembre au soir : comptages, couleur VIS − H et spectre NISP passés sur DR1. Le service TAP d'IRSA renvoyant toujours 502, `fetch_data.py` lit les fichiers directement dans le stockage S3 public d'IRSA (`nasa-irsa-euclid-dr1`, lecture anonyme) : catalogue `MER_FINAL-CAT` et spectres `SIR_COMBINED_SPECTRA` de la tuile COSMOS 101544257, trouvée dans le nom des mosaïques. TAP reste en repli. Structure d'un fichier de spectres DR1 : pour chaque source, une extension `N_META` (OBJ_ID, position), puis `N_COMBINED1D_SIGNAL`, puis une extension par pose (avec `GWA_POS` : RGS ou BGS).
+  - Le workflow quotidien refait encore tout produit Euclid tiré de Q1 ; il n'en reste plus.
   - Le workflow manuel « Sonde » lance un script de `tools/probe/` pour voir ce qu'une archive expose, sans rien écrire dans le dépôt.
 - Les choix d'observation sont automatiques (la plus longue pose publique sur la cible). Les figer par identifiant une fois validés, pour que le site ne change pas tout seul.
 - E3 (requêtes en direct depuis le navigateur) : non commencé.

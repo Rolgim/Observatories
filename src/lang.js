@@ -9,4 +9,5 @@ var OBS_LANG = (function(){
   return v;
 })();
 /* nombres : virgule décimale et espace des milliers en français, point et virgule en anglais */
-function OBS_NUM(s){ return OBS_LANG === 'en' ? String(s).replace(/(\d)[   ](?=\d{3}(\D|$))/g, '$1,').replace(/(\d),(\d)/g, function(_, a, b){ return a + '.' + b; }) : s; }
+/* décimales d'abord (virgule → point), séparateur de milliers ensuite (espace → virgule) : l'ordre inverse transformait 57 974 en 57.974 */
+function OBS_NUM(s){ return OBS_LANG === 'en' ? String(s).replace(/(\d),(\d)/g, '$1.$2').replace(/(\d)[\u00A0\u202F ](?=\d{3}(\D|$))/g, '$1,') : s; }
