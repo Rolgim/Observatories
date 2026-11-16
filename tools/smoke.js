@@ -74,6 +74,12 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   await pg.click('[data-ptab="parts"]'); await pg.waitForTimeout(300);
   await pg.click('[data-part="primary"] [data-open-optique]'); await pg.waitForTimeout(1200);
   if (await pg.evaluate(() => [...document.querySelectorAll('svg.optic g.hl')].map(g => g.getAttribute('data-el')).join()) !== 'primary') fail('lien maquette → schéma : le miroir primaire n\'est pas surligné');
+  // onglet Mission : déroulé, chaîne de traitement et sources pour chaque observatoire
+  for (const id of ['hubble', 'jwst', 'euclid', 'gaia']) {
+    await go(pg, id); await pg.click('[data-ptab="mission"]'); await pg.waitForTimeout(200);
+    const ms = await pg.evaluate(() => [document.querySelectorAll('.ms-tl li').length, document.querySelectorAll('.ms-chain li').length, document.querySelectorAll('#pbody ol.refs li').length]);
+    if (ms[0] < 4 || ms[1] < 4 || ms[2] < 3) fail('onglet Mission incomplet pour ' + id + ' : ' + ms.join(', '));
+  }
   await pg.close();
 
   // ---- téléphone, thème sombre

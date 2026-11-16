@@ -222,6 +222,23 @@ abbr.gl:hover, abbr.gl:focus-visible{ text-decoration-color:var(--ink); backgrou
 ol.refs.pref{ margin:8px 0 0; padding-left:18px; font-size:11.5px; line-height:1.45; color:var(--ink-2); }
 ol.refs.pref li{ margin:0 0 2px; }
 
+/* onglet Mission */
+.ms-tl{ list-style:none; margin:0; padding:0; }
+.ms-tl li{ display:grid; grid-template-columns:7.4em 1fr; gap:10px; padding:9px 0; border-bottom:1px solid var(--rule); }
+.ms-tl li:last-child{ border-bottom:0; }
+.ms-d{ font-size:12px; color:var(--ink-2); font-variant-numeric:tabular-nums; line-height:1.35; }
+.ms-d small{ display:block; color:var(--warn); font-size:11px; margin-top:2px; }
+.ms-tl strong, .ms-chain strong{ font-size:13.5px; }
+.ms-tl p, .ms-chain p{ margin:3px 0 0; font-size:13px; line-height:1.45; color:var(--ink-2); }
+.ms-rel li.plan strong{ font-weight:600; }
+.ms-intro{ font-size:13px; line-height:1.5; color:var(--ink-2); margin:8px 0 10px; }
+.ms-chain{ list-style:none; margin:0; padding:0; counter-reset:ms; }
+.ms-chain li{ position:relative; display:grid; grid-template-columns:6.6em 1fr; gap:10px; padding:0 0 14px; }
+.ms-chain li::before{ content:""; position:absolute; left:3.3em; top:24px; bottom:0; width:2px; background:var(--rule-2); }
+.ms-chain li:last-child::before{ display:none; }
+.ms-lv{ position:relative; z-index:1; align-self:start; text-align:center; padding:3px 4px; background:var(--mark); color:var(--on-mark); font-family:var(--f-code); font-size:11px; font-weight:600; line-height:1.3; word-break:break-word; }
+.ms-st code{ display:inline-block; margin-top:5px; font-family:var(--f-code); font-size:11.5px; color:var(--ink); background:var(--sheet); border:1px solid var(--rule); padding:1px 6px; }
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -688,7 +705,7 @@ var TELESCOPES = [
         ['Position','orbite de halo autour de L2, amplitude ≈ 1 million de km','ops'], ['Période du halo','≈ 170 jours','hz'],
         ['Relevé','≈ 14 000 deg² en ≈ 6 ans · champs profonds 53 deg²','e1'],
         ['Liaison science','bande K, 55 Mbit/s, 4 h par jour','ops'], ['Volume','≈ 826 Gbit compressés par jour','e1'],
-        ['DR1','12 novembre 2026 · ≈ 1 900 deg² · plus d\'un milliard d\'objets','dr1'] ]}
+        ['DR1, première partie','12 novembre 2026 · ≈ 1 900 deg² · plus d\'un milliard d\'objets','dr1'] ]}
     ],
     parts:[
       { key:'sunshield', name:'Pare-soleil et panneaux solaires', explode:[-0.44,0,0.9,2.2],
@@ -1242,7 +1259,7 @@ var INST_DATA = (function(){
       nisp:{ t:"Euclid Collaboration, Jahnke et al. 2025, Euclid. III. The NISP instrument, A&A 697, A3", p:"A&A", u:"https://doi.org/10.1051/0004-6361/202450786" }
     },
     axis: { min:0.5, max:2.2 },
-    summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). La première grande publication, DR1, date du 12 novembre 2026 : environ 1 900 deg² du relevé large (14 % de la cible), observés du printemps 2024 au printemps 2025, soit plus d'un milliard d'objets. Elle s'ajoute à la « Quick Release » Q1 de mars 2025, dont sont tirés les exemples de cette page.",
+    summary: "Deux instruments se partagent le même télescope de 1,2 m grâce à un dichroïque : VIS (visible) et NISP (proche infrarouge). La première partie de DR1, première grande publication, date du 12 novembre 2026 (la partie complète, avec les produits pour la cosmologie, est annoncée pour mi-2027) : environ 1 900 deg² du relevé large (14 % de la cible), observés du printemps 2024 au printemps 2025, soit plus d'un milliard d'objets. Elle s'ajoute à la « Quick Release » Q1 de mars 2025, dont sont tirés les exemples de cette page.",
     archives: [
       { label:"ESA, Euclid Science Archive", url:"https://eas.esac.esa.int/", desc:"Archive officielle : catalogues (ADQL), images, spectres." },
       { label:"Euclid DR1 (12 novembre 2026)", url:"https://www.cosmos.esa.int/web/euclid/euclid-dr1", desc:"Première grande publication : relevés large et profonds, plus d'un milliard d'objets, spectres de plus de 160 millions de sources." },
@@ -1479,6 +1496,193 @@ var INST_DATA = (function(){
 
   };
 })();
+
+/* =================================================================
+   MISSION ET TRAITEMENTS : onglet « Mission » de chaque fiche
+   Textes en paires [français, anglais]. Chaque fait porte une ou plusieurs clés de source :
+   celles de MISSION[id].refs, ou à défaut celles de la fiche (TELESCOPES[…].refs).
+   phases : [date FR, date EN, titre FR, titre EN, texte FR, texte EN, sources]
+   ops    : [libellé FR, libellé EN, valeur FR, valeur EN, sources]
+   chain  : étapes de la chaîne de traitement { lv: niveau ou suffixe, n: nom, x: ce qui est fait, sw: logiciel ou lieu, r: sources }
+   rel    : [date FR, date EN, nom, texte FR, texte EN, sources, prévue]
+================================================================= */
+var MISSION = {
+  hubble: {
+    checked:'2026-11-16',
+    refs:{
+      sm:{ t:'Hubble Space Telescope Servicing Missions, fact sheet', p:'NASA', u:'https://smd-cms.nasa.gov/wp-content/uploads/2023/04/hst-servicing-missions-fact-sheet.pdf' },
+      pdata:{ t:'HST Primer for Cycle 34, Data Processing and the HST Data Archive', p:'STScI', u:'https://hst-docs.stsci.edu/hsp/the-hubble-space-telescope-primer-for-cycle-34/hst-primer-data-processing-and-the-hst-data-archive' },
+      wfc3:{ t:'WFC3 Data Handbook, 3.1 The calwf3 Data Processing Pipeline', p:'STScI', u:'https://hst-docs.stsci.edu/wfc3dhb/chapter-3-wfc3-data-calibration/3-1-the-calwf3-data-processing-pipeline' },
+      acs:{ t:'ACS Data Handbook, 3.2 Pipeline Overview', p:'STScI', u:'https://hst-docs.stsci.edu/acsdhb/chapter-3-acs-calibration-pipeline/3-2-pipeline-overview' }
+    },
+    intro:["Hubble est le seul télescope spatial conçu pour être réparé en orbite : cinq missions de la navette l'ont entretenu et ont changé presque tous ses instruments. Le Space Telescope Science Institute (STScI), à Baltimore, choisit les observations, calibre toutes les données et les archive.",
+           "Hubble is the only space telescope designed to be repaired in orbit: five Shuttle missions serviced it and replaced almost all its instruments. The Space Telescope Science Institute (STScI) in Baltimore selects the observations, calibrates all the data and archives them."],
+    phases:[
+      ['24 avril 1990','24 April 1990','Lancement','Launch',"La navette Discovery (STS-31) place Hubble sur une orbite basse.","Space Shuttle Discovery (STS-31) puts Hubble in low Earth orbit.",'lallo'],
+      ['1990','1990','Le miroir est mal poli','The mirror is mis-figured',"Les premières images sont floues : le miroir primaire a une aberration sphérique, due à une erreur lors de son polissage.","The first images are blurred: the primary mirror has spherical aberration, caused by an error during polishing.",'lallo'],
+      ['2–13 déc. 1993','2–13 Dec 1993','Mission de service 1 (STS-61)','Servicing Mission 1 (STS-61)',"COSTAR, une « lentille de contact », corrige la vue des instruments ; la caméra WFPC2 remplace la première caméra ; nouveaux panneaux solaires et gyroscopes.","COSTAR, a 'contact lens', corrects the instruments' view; the WFPC2 camera replaces the first camera; new solar arrays and gyroscopes.",'sm'],
+      ['11–21 févr. 1997','11–21 Feb 1997','Mission de service 2 (STS-82)','Servicing Mission 2 (STS-82)',"STIS et NICMOS sont installés : Hubble gagne l'infrarouge proche. Un capteur de guidage fin et un enregistreur à état solide sont aussi remplacés.","STIS and NICMOS are installed: Hubble gains the near infrared. A fine guidance sensor and a solid-state recorder are also replaced.",'sm'],
+      ['19–27 déc. 1999','19–27 Dec 1999','Mission de service 3A (STS-103)','Servicing Mission 3A (STS-103)',"Mission avancée après la panne d'un gyroscope le 13 novembre 1999, qui avait mis Hubble en mode survie : six gyroscopes neufs et un ordinateur plus rapide.","Brought forward after a gyroscope failure on 13 November 1999 put Hubble in safe mode: six new gyroscopes and a faster computer.",'sm'],
+      ['1–12 mars 2002','1–12 March 2002','Mission de service 3B (STS-109)','Servicing Mission 3B (STS-109)',"La caméra ACS remplace FOC, dernier instrument d'origine. Panneaux solaires rigides et nouvelle unité de contrôle de puissance : Hubble est mis entièrement hors tension pour la première fois.","The ACS camera replaces FOC, the last original instrument. Rigid solar arrays and a new power control unit: Hubble is fully powered down for the first time.",'sm'],
+      ['11–24 mai 2009','11–24 May 2009','Mission de service 4 (STS-125)','Servicing Mission 4 (STS-125)',"Dernière visite : WFC3 et COS installés, STIS et ACS réparés, batteries et gyroscopes neufs, et un mécanisme d'amarrage pour une future désorbitation.","Last visit: WFC3 and COS installed, STIS and ACS repaired, new batteries and gyroscopes, and a capture fixture for a future deorbit.",'sm'],
+      ['juin 2024','June 2024','Un seul gyroscope','One-gyro mode',"Trois des six gyroscopes fonctionnent encore. Hubble n'en utilise plus qu'un et garde un autre en réserve ; la plupart des observations ne sont pas affectées.","Three of the six gyroscopes still work. Hubble now uses only one and keeps another in reserve; most observations are unaffected.",'gyro']
+    ],
+    ops:[
+      ['Programme scientifique et données','Science programme and data','STScI, Baltimore','STScI, Baltimore','pdata'],
+      ['Liaison','Link','bande S, par les satellites relais TDRS','S band, via the TDRS relay satellites','primer'],
+      ['Accès exclusif','Exclusive access','en général 6 mois après l\'observation, puis données publiques','usually 6 months after observation, then public','pdata'],
+      ['Archive','Archive','MAST (Barbara A. Mikulski Archive for Space Telescopes)','MAST (Barbara A. Mikulski Archive for Space Telescopes)','pdata']
+    ],
+    chain:{
+      intro:["Le pipeline de production du STScI traite automatiquement chaque pose avec les meilleurs fichiers de calibration du moment, et retraite l'archive quand ils changent.",
+             "STScI's production pipeline automatically processes every exposure with the best calibration files available, and reprocesses the archive when they change."],
+      steps:[
+        { lv:'_raw', n:['Télémétrie découpée en poses','Telemetry split into exposures'], x:['Les données reçues sont mises en forme et découpées en fichiers FITS bruts, un par pose.','Received data are edited and split into raw FITS files, one per exposure.'], sw:'STScI', r:'pdata' },
+        { lv:'_flt  _flc', n:['Calibration de chaque pose','Calibration of each exposure'], x:['Biais, courant d\'obscurité, champ plat, conversion en électrons ; _flc ajoute la correction de l\'efficacité de transfert de charge des CCD.','Bias, dark current, flat field, conversion to electrons; _flc adds the correction for CCD charge transfer efficiency.'], sw:'HSTCal (calwf3, calacs, calstis), CalCOS', r:['pdata','wfc3','acs'] },
+        { lv:'_drz  _drc', n:['Combinaison des poses','Combining exposures'], x:['AstroDrizzle corrige la distorsion géométrique et combine les poses décalées en une seule image.','AstroDrizzle corrects the geometric distortion and combines dithered exposures into a single image.'], sw:'AstroDrizzle (drizzlepac)', r:'wfc3' },
+        { lv:'HAP', n:['Produits avancés','Advanced products'], x:['Mosaïques par visite et multi-visites, et catalogues de sources, produits pour toute l\'archive.','Single-visit and multi-visit mosaics, and source catalogues, produced across the archive.'], sw:'Hubble Advanced Products', r:'pdata' },
+        { lv:'MAST', n:['Archive et retraitement','Archive and reprocessing'], x:['Recherche et téléchargement (portail et astroquery). Une donnée en attente de retraitement est en général prête en quelques heures.','Search and download (portal and astroquery). Data queued for reprocessing are usually ready within a few hours.'], sw:'MAST', r:'pdata' }
+      ]
+    },
+    rel:null
+  },
+
+  jwst: {
+    checked:'2026-11-16',
+    refs:{
+      dec:{ t:'Webb Blog, December 2021 (déploiements)', p:'NASA', u:'https://science.nasa.gov/blogs/webb/2021/12/' },
+      sfn:{ t:'Astronomers breathe sigh of relief with final Webb telescope deployment milestone (10 janvier 2022)', p:'Spaceflight Now', u:'https://spaceflightnow.com/2022/01/10/astronomers-breathe-sigh-of-relief-with-final-webb-telescope-deployment-milestone/' },
+      l2:{ t:'Webb has arrived at L2 (24 janvier 2022)', p:'ESA', u:'https://esa.int/Science_Exploration/Space_Science/Webb/Webb_has_arrived_at_L2' },
+      ar:{ t:'STScI Annual Report 2022, The Future Is Here', p:'STScI', u:'https://www.stsci.edu/contents/annual-reports/2022/the-future-is-here' },
+      rights:{ t:'JWST Data Rights and Duplications (cycle 5)', p:'STScI, JDox', u:'https://jwst-docs.stsci.edu/jwst-opportunities-and-policies/jwst-call-for-proposals-for-cycle-5/jwst-data-rights-and-duplications' },
+      pipe:{ t:'JWST pipeline, Pipeline Stages', p:'STScI', u:'https://jwst-pipeline.readthedocs.io/en/stable/jwst/pipeline/main.html' },
+      stages:{ t:'Stages of JWST Data Processing', p:'STScI, JDox', u:'https://jwst-docs.stsci.edu/jwst-science-calibration-pipeline/stages-of-jwst-data-processing' }
+    },
+    intro:["Webb est exploité par le STScI, à Baltimore, qui choisit aussi les observations, calibre les données et les archive dans MAST. Les données descendent chaque jour vers le Deep Space Network de la NASA.",
+           "Webb is operated by STScI in Baltimore, which also selects the observations, calibrates the data and archives them in MAST. Data come down every day to NASA's Deep Space Network."],
+    phases:[
+      ['25 déc. 2021','25 Dec 2021','Lancement','Launch',"Ariane 5 depuis Kourou. Le voyage vers L2 dure un mois.","Ariane 5 from Kourou. The trip to L2 takes a month.",['fs','l2']],
+      ['25 déc. 2021 – 8 janv. 2022','25 Dec 2021 – 8 Jan 2022','Déploiements','Deployments',"Panneau solaire, antenne, bouclier, tour, miroir secondaire, puis les deux ailes du primaire (bouton « Déploiement » de la vue 3D).","Solar array, antenna, sunshield, tower, secondary mirror, then the two primary wings ('Deployment' button in the 3D view).",['dec','sfn']],
+      ['24 janv. 2022','24 Jan 2022','Arrivée autour de L2','Arrival around L2',"Une poussée de 297 secondes place Webb sur son orbite. Commence l'alignement des 18 segments, à quelques nanomètres près.","A 297-second burn puts Webb on its orbit. Aligning the 18 segments to within nanometres begins.",'l2'],
+      ['janv. – juil. 2022','Jan – Jul 2022','Mise en service','Commissioning',"Environ six mois, jour et nuit : alignement de l'optique, réglage des quatre instruments et préparation de la chaîne de traitement.","About six months, around the clock: optics alignment, instrument checkout and pipeline preparation.",'ar'],
+      ['12 juil. 2022','12 Jul 2022','Premières images, début de la science','First images, science begins',"Les premières images en couleurs marquent le début officiel des opérations scientifiques ; les données sont aussitôt publiques dans MAST.","The first full-colour images mark the official start of science operations; the data are immediately public in MAST.",'ar']
+    ],
+    ops:[
+      ['Exploitation et données','Operations and data','STScI, Baltimore','STScI, Baltimore','ar'],
+      ['Liaison science','Science link','bande Ka, jusqu\'à 28 Mbit/s, Deep Space Network','Ka band, up to 28 Mbit/s, Deep Space Network','ie'],
+      ['Volume','Volume','jusqu\'à 57 Go par jour','up to 57 GB per day','ie'],
+      ['Accès exclusif','Exclusive access','12 mois par défaut (petits et moyens programmes) ; aucun pour les grands programmes','12 months by default (small and medium programmes); none for large programmes','rights'],
+      ['Archive','Archive','MAST','MAST','ar']
+    ],
+    chain:{
+      intro:["La chaîne de calibration de Webb est un logiciel libre en Python, organisé en trois étapes. Les fichiers de référence (champs plats, obscurité, linéarité…) viennent du système CRDS et sont mis à jour en continu.",
+             "Webb's calibration pipeline is open-source Python software in three stages. Reference files (flats, darks, linearity…) come from the CRDS system and are updated continuously."],
+      steps:[
+        { lv:'_uncal', n:['Rampes non calibrées','Uncalibrated ramps'], x:['Les détecteurs sont lus plusieurs fois pendant une pose : chaque pixel donne une « rampe » de valeurs croissantes.','Detectors are read several times during an exposure: each pixel gives a \'ramp\' of increasing values.'], sw:'MAST', r:'stages' },
+        { lv:'_rate', n:['Étape 1 : détecteur','Stage 1: detector'], x:['Saturation, biais, linéarité, obscurité, sauts dus aux rayons cosmiques, puis pente de chaque rampe : un taux de comptage par pixel.','Saturation, bias, linearity, dark, cosmic-ray jumps, then the slope of each ramp: a count rate per pixel.'], sw:'calwebb_detector1', r:['pipe','stages'] },
+        { lv:'_cal  _s2d  _x1d', n:['Étape 2 : chaque pose','Stage 2: each exposure'], x:['Selon le mode : champ plat, calibration absolue du flux, coordonnées sur le ciel ; extraction des spectres en 2D et 1D.','Depending on the mode: flat field, absolute flux calibration, sky coordinates; extraction of 2D and 1D spectra.'], sw:'calwebb_image2, calwebb_spec2', r:['pipe','stages'] },
+        { lv:'_i2d  _s3d  _cat', n:['Étape 3 : combinaison','Stage 3: combination'], x:['Les poses sont recalées et combinées : mosaïque, cube spectral, spectres combinés, catalogue de sources. Des variantes traitent la coronographie, l\'interférométrie (AMI) et les séries temporelles.','Exposures are aligned and combined: mosaic, spectral cube, combined spectra, source catalogue. Variants handle coronagraphy, interferometry (AMI) and time series.'], sw:'calwebb_image3, spec3, coron3, ami3, tso3', r:['pipe','stages'] }
+      ]
+    },
+    rel:null
+  },
+
+  euclid: {
+    checked:'2026-11-16',
+    refs:{
+      tl:{ t:'Euclid, Timeline', p:'ESA', u:'https://www.cosmos.esa.int/web/euclid/timeline' },
+      dr1tl:{ t:'Euclid, DR1 Timeline', p:'ESA', u:'https://www.cosmos.esa.int/web/euclid/dr1-timeline' },
+      memo:{ t:'Euclid DR1 content, mémo EUCL-EST-ME-8-020 (projet, version 1.1)', p:'ESA', u:'https://www.cosmos.esa.int/documents/10647/12245842/DR1-memo_250624.pdf/' },
+      sgs:{ t:'The Science Ground Segment', p:'Consortium Euclid', u:'https://www.euclid-ec.org/public/data/ground-segment/' },
+      q1:{ t:'Euclid data release: Q1', p:'Consortium Euclid', u:'https://www.euclid-ec.org/science/q1/' },
+      dpc:{ t:'Dabin et al. 2017, The Euclid Data Processing Challenges (arXiv:1701.08158)', p:'IAU Symposium 325', u:'https://arxiv.org/abs/1701.08158' }
+    },
+    intro:["Euclid est piloté depuis l'ESOC, à Darmstadt. Le centre des opérations scientifiques de l'ESA, à l'ESAC près de Madrid, planifie le relevé et met les données en forme ; le consortium Euclid les traite ensuite dans 9 centres de données scientifiques qui font tourner la même chaîne.",
+           "Euclid is flown from ESOC in Darmstadt. ESA's Science Operations Centre at ESAC near Madrid plans the survey and formats the data; the Euclid Consortium then processes them in 9 Science Data Centres that all run the same pipeline."],
+    phases:[
+      ['1er juil. 2023','1 Jul 2023','Lancement','Launch',"Falcon 9 depuis Cap Canaveral, vers L2.","Falcon 9 from Cape Canaveral, to L2.",'tl'],
+      ['14 févr. 2024','14 Feb 2024','Début du relevé','Survey starts',"Début du relevé nominal : environ 14 000 deg² en six ans, plus trois champs profonds.","Start of the nominal survey: about 14,000 deg² in six years, plus three deep fields.",['tl','e1']],
+      ['mai 2024','May 2024','Premières observations publiées','Early Release Observations',"Publication des données des observations de démonstration.","Release of the Early Release Observations data.",'tl'],
+      ['21 mai 2025','21 May 2025','Fin des données de DR1','End of DR1 data',"DR1 rassemble les 15 premiers mois du relevé large, depuis le 14 février 2024.","DR1 gathers the first 15 months of the Wide survey, since 14 February 2024.",'memo']
+    ],
+    ops:[
+      ['Pilotage','Flight operations','ESOC, Darmstadt (ESA)','ESOC, Darmstadt (ESA)','e1'],
+      ['Opérations scientifiques','Science operations','SOC de l\'ESA, ESAC (Espagne) : planification du relevé, contrôle rapide, mise en forme','ESA SOC, ESAC (Spain): survey planning, quick-look, formatting',['e1','sgs']],
+      ['Traitement','Processing','consortium Euclid, 9 centres de données scientifiques (SDC)','Euclid Consortium, 9 Science Data Centres (SDCs)',['e1','sgs']],
+      ['Liaison science','Science link','bande K, 55 Mbit/s, 4 h par jour','K band, 55 Mbit/s, 4 h per day','ops'],
+      ['Volume','Volume','≈ 826 Gbit compressés par jour','≈ 826 Gbit compressed per day','e1'],
+      ['Archive','Archive','ESA Euclid Science Archive ; copie à l\'IRSA (NASA)','ESA Euclid Science Archive; mirror at IRSA (NASA)','dr1']
+    ],
+    chain:{
+      intro:["Les données sont classées en trois niveaux : LE1 (brutes), LE2 (images, catalogues et spectres calibrés), LE3 (produits pour la cosmologie). Chaque fonction de traitement est conçue par une unité du consortium (OU) puis exécutée dans les SDC ; chaque jeu de données est conservé dans au moins deux SDC.",
+             "Data come in three levels: LE1 (raw), LE2 (calibrated images, catalogues and spectra), LE3 (products for cosmology). Each processing function is designed by a consortium unit (OU) and run in the SDCs; every dataset is kept in at least two SDCs."],
+      steps:[
+        { lv:'LE1', n:['Données brutes','Raw data'], x:['Le SOC convertit la télémétrie et les fichiers bruts en FITS et les verse dans l\'archive de traitement. Un traitement « au fil de l\'eau » surveille l\'état des instruments.','The SOC converts telemetry and raw files to FITS and ingests them into the processing archive. On-the-fly processing monitors instrument health.'], sw:['SOC, ESAC','SOC, ESAC'], r:['e1','memo'] },
+        { lv:'LE2', n:['VIS, NIR, SIR, EXT : calibration','VIS, NIR, SIR, EXT: calibration'], x:['Nettoyage et calibration des images visibles (VIS), des images infrarouges (NIR), des spectres sans fente (SIR) et des images des télescopes au sol (EXT, filtres g, r, i, z).','Cleaning and calibration of visible images (VIS), infrared images (NIR), slitless spectra (SIR) and ground-based images (EXT, g, r, i, z filters).'], sw:['fonctions VIS, NIR, SIR, EXT','VIS, NIR, SIR, EXT functions'], r:['dpc','sgs'] },
+        { lv:'LE2', n:['MER : fusion','MER: merging'], x:['Fusion de toutes les images : détection des sources, mosaïques et catalogue de flux dans les sept filtres.','Merging all images: source detection, mosaics and a flux catalogue in the seven filters.'], sw:['fonction MER','MER function'], r:'dpc' },
+        { lv:'LE2', n:['PHZ, SPE, SHE : mesures','PHZ, SPE, SHE: measurements'], x:['Distances des galaxies par leurs couleurs (PHZ) et par leurs spectres (SPE), et mesure de leur forme pour le cisaillement gravitationnel (SHE).','Galaxy distances from their colours (PHZ) and spectra (SPE), and shape measurement for weak lensing (SHE).'], sw:['fonctions PHZ, SPE, SHE','PHZ, SPE, SHE functions'], r:'dpc' },
+        { lv:'LE3', n:['Produits pour la cosmologie','Cosmology products'], x:['Agrégation des galaxies, cisaillement, amas : les mesures qui contraignent l\'énergie noire et la matière noire.','Galaxy clustering, shear, clusters: the measurements that constrain dark energy and dark matter.'], sw:['fonction LE3','LE3 function'], r:['dpc','dr1tl'] }
+      ],
+      note:["Une dixième unité, SIM, produit des données simulées pour tester toute la chaîne avant et pendant la mission.","A tenth unit, SIM, produces simulated data to test the whole pipeline before and during the mission."], noteR:'dpc'
+    },
+    rel:[
+      ['19 mars 2025','19 Mar 2025','Q1',"Première publication rapide : ≈ 63 deg² des champs profonds.","First quick release: ≈ 63 deg² of the deep fields.",['tl','q1'],false],
+      ['24 juin 2026','24 Jun 2026','Q2',"Deuxième publication rapide.","Second quick release.",'tl',false],
+      ['12 nov. 2026','12 Nov 2026','DR1, première partie',"Données brutes, images calibrées, catalogues et spectres (LE1 et LE2) sur ≈ 1 900 deg².","Raw data, calibrated images, catalogues and spectra (LE1 and LE2) over ≈ 1,900 deg².",['tl','dr1tl'],false],
+      ['mi-2027','mid-2027','DR1 complète',"Ajoute les produits LE3 pour l'agrégation des galaxies et le cisaillement gravitationnel.","Adds the LE3 products for galaxy clustering and weak lensing.",'dr1tl',true],
+      ['juin 2029','June 2029','DR2',"Date provisoire.","Tentative date.",'tl',true],
+      ['oct. 2031','Oct 2031','DR3',"Date provisoire.","Tentative date.",'tl',true]
+    ]
+  },
+
+  gaia: {
+    checked:'2026-11-16',
+    refs:{
+      cal:{ t:'Gaia Mission Calendar', p:'ESA', u:'https://www.cosmos.esa.int/web/gaia/calendars' },
+      dpac:{ t:'Gaia DR3 documentation, 1.2.2 Organigramme and funding (DPAC)', p:'ESA, DPAC', u:'https://gea.esac.esa.int/archive/documentation/GDR3/Introduction/chap_cu0int/cu0int_sec_dpac/cu0int_ssec_dpac_structure.html' },
+      proc:{ t:'Gaia, Data Processing', p:'ESA', u:'https://www.cosmos.esa.int/web/gaia/data-processing' },
+      cyc:{ t:'Gaia DR3 documentation, Processing configuration', p:'ESA, DPAC', u:'https://gea.esac.esa.int/archive/documentation/GDR3/Introduction/chap_cu0int/cu0int_sec_release_framework/cu0int_ssec_processing_configuration.html' },
+      dr4:{ t:'Gaia DR4 content', p:'ESA', u:'https://cosmos.esa.int/web/gaia/dr4' }
+    },
+    intro:["Le traitement des données de Gaia est confié au consortium DPAC, qui réunit des membres de plus de 20 pays : neuf unités de coordination conçoivent les traitements, six centres de traitement les exécutent, dont celui du CNES à Toulouse.",
+           "Gaia's data processing is entrusted to the DPAC consortium, with members from more than 20 countries: nine coordination units design the processing and six data processing centres run it, including CNES in Toulouse."],
+    phases:[
+      ['19 déc. 2013','19 Dec 2013','Lancement','Launch',"Soyouz-Fregat depuis Kourou, vers L2.","Soyuz-Fregat from Kourou, to L2.",'cal'],
+      ['25 juil. 2014','25 Jul 2014','Début des opérations','Routine operations begin',"Début de la mission nominale : Gaia balaie le ciel en continu.","Nominal mission begins: Gaia scans the sky continuously.",'cal'],
+      ['16 juil. 2019','16 Jul 2019','Fin de la mission nominale','End of nominal mission',"Une manœuvre évite une éclipse par la Terre et marque la fin de la mission nominale ; Gaia continue d'observer en mission prolongée.","A manoeuvre avoids an eclipse by the Earth and marks the end of the nominal mission; Gaia keeps observing in its extended mission.",'cal'],
+      ['15 janv. 2025','15 Jan 2025','Fin des observations','End of observations',"Après plus de dix ans, Gaia cesse d'observer.","After more than ten years, Gaia stops observing.",'cal'],
+      ['27 mars 2025','27 Mar 2025','Passivation','Passivation',"Le satellite est éteint définitivement sur une orbite autour du Soleil.","The spacecraft is switched off for good on an orbit around the Sun.",['cal','end']],
+      ['1er juil. 2025','1 Jul 2025','Post-opérations','Post-operations',"Le traitement continue pour les deux dernières publications.","Processing continues for the last two releases.",'cal']
+    ],
+    ops:[
+      ['Consortium','Consortium','DPAC, membres de plus de 20 pays','DPAC, members from more than 20 countries','proc'],
+      ['Organisation','Organisation','9 unités de coordination (CU), 6 centres de traitement (DPC)','9 coordination units (CUs), 6 data processing centres (DPCs)',['proc','dpac']],
+      ['Centres de traitement','Processing centres','ESAC (Madrid), Barcelone, CNES (Toulouse), Cambridge, Genève, Turin','ESAC (Madrid), Barcelona, CNES (Toulouse), Cambridge, Geneva, Turin','dpac'],
+      ['Archive','Archive','Gaia Archive de l\'ESA (ADQL)','ESA Gaia Archive (ADQL)','dr3']
+    ],
+    chain:{
+      intro:["Gaia ne vise pas d'objets : il balaie le ciel et chaque étoile passe des dizaines de fois devant ses CCD. Le traitement est itératif et se calibre lui-même : à chaque cycle, les chaînes reprennent toutes les données depuis le début de la mission, avec de meilleurs algorithmes.",
+             "Gaia points at nothing: it scans the sky and each star crosses its CCDs dozens of times. Processing is iterative and self-calibrating: at each cycle the chains reprocess all data since the start of the mission, with better algorithms."],
+      steps:[
+        { lv:'CU3', n:['Traitement initial','Initial data treatment'], x:['Chaque jour : décodage de la télémétrie, premières positions et flux, contrôles de qualité (« first look »).','Every day: telemetry decoding, first positions and fluxes, quality checks (\'first look\').'], sw:['DPCE, ESAC','DPCE, ESAC'], r:'dpac' },
+        { lv:'CU3', n:['Solution astrométrique globale','Global astrometric solution'], x:['Positions, parallaxes et mouvements propres de toutes les étoiles, résolus en même temps que l\'orientation du satellite et sa calibration.','Positions, parallaxes and proper motions of all stars, solved together with the spacecraft attitude and calibration.'], sw:'AGIS', r:['dpac','cyc'] },
+        { lv:'CU5  CU6', n:['Photométrie et spectroscopie','Photometry and spectroscopy'], x:['Magnitudes G, BP et RP, spectres basse résolution BP/RP (CU5) ; spectres RVS et vitesses radiales (CU6).','G, BP and RP magnitudes, low-resolution BP/RP spectra (CU5); RVS spectra and radial velocities (CU6).'], sw:'PhotPipe…', r:['dpac','cyc'] },
+        { lv:'CU4  CU7  CU8', n:['Analyse des objets','Object analysis'], x:['Étoiles doubles et multiples, petits corps du Système solaire, galaxies (CU4) ; étoiles variables (CU7) ; température, gravité, distance et extinction de chaque source (CU8).','Double and multiple stars, Solar System bodies, galaxies (CU4); variable stars (CU7); temperature, gravity, distance and extinction of each source (CU8).'], sw:'Apsis (CU8)', r:'dpac' },
+        { lv:'CU9', n:['Validation et publication','Validation and release'], x:['Validation du catalogue, préparation de la publication avec l\'ESA, archive publique.','Catalogue validation, release preparation with ESA, public archive.'], sw:['Gaia Archive','Gaia Archive'], r:'dpac' }
+      ],
+      note:["L'architecture d'ensemble, les outils communs et la base de données principale relèvent de CU1 ; les simulations, de CU2.","The overall architecture, shared tools and main database belong to CU1; simulations to CU2."], noteR:'dpac'
+    },
+    rel:[
+      ['14 sept. 2016','14 Sep 2016','DR1',"Première publication.","First release.",'cal',false],
+      ['25 avril 2018','25 Apr 2018','DR2',"Premières parallaxes pour plus d'un milliard d'étoiles.","First parallaxes for more than a billion stars.",'cal',false],
+      ['3 déc. 2020','3 Dec 2020','EDR3',"Astrométrie et photométrie améliorées.","Improved astrometry and photometry.",'cal',false],
+      ['13 juin 2022','13 Jun 2022','DR3',"Spectres, vitesses radiales, paramètres astrophysiques, étoiles variables et doubles.","Spectra, radial velocities, astrophysical parameters, variable and double stars.",['cal','dr3'],false],
+      ['10 oct. 2023','10 Oct 2023','FPR',"Publication ciblée (produits particuliers).","Focused Product Release (special products).",'cal',false],
+      ['déc. 2026','Dec 2026','DR4',"66 mois de données (25 juillet 2014 – 20 janvier 2020), ≈ 2,8 milliards de sources traitées et, pour la première fois, les observations individuelles : ≈ 400 To contre 10 To pour DR3.","66 months of data (25 July 2014 – 20 January 2020), ≈ 2.8 billion processed sources and, for the first time, the individual observations: ≈ 400 TB against 10 TB for DR3.",['cal','dr4'],true],
+      ['fin 2030 au plus tôt','end of 2030 at the earliest','DR5',"Toute la mission, plus de dix ans de données.","The whole mission, more than ten years of data.",'cal',true]
+    ]
+  }
+};
 
 /* =================================================================
    TRAJET DE LA LUMIÈRE (lot D des specs) — schémas optiques et plans focaux.
@@ -2438,7 +2642,7 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       { title:'Optics', rows:[['Design','three-mirror Korsch'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m · f/20.4'],['Common field','≈ 0.54 deg²'],['Temperature','≈ 126 K (primary mirror) · 130 to 135 K (baseplate)']] },
       { title:'VIS (visible)', rows:[['Detectors','36 CCDs of 4132 × 4096 px (6 × 6) · ≈ 609 Mpx'],['Band','530–920 nm'],['Sampling','0.1″ per pixel'],['CCD temperature','153 K']] },
       { title:'NISP (near infrared)', rows:[['Detectors','16 H2RG arrays of 2048 × 2048 px (4 × 4)'],['Photometry','Y 950–1212 nm · J 1168–1567 nm · H 1522–2021 nm'],['Spectroscopy','blue grism 926–1366 nm (R ≳ 400) · red grism 1206–1892 nm (R ≳ 480)'],['Sampling','0.298″ per pixel'],['Detector temperature','≈ 95 K']] },
-      { title:'Orbit and data', rows:[['Location','halo orbit around L2, amplitude ≈ 1 million km'],['Halo period','≈ 170 days'],['Survey','≈ 14,000 deg² in ≈ 6 years · deep fields 53 deg²'],['Science link','K band, 55 Mbit/s, 4 h per day'],['Volume','≈ 826 Gbit compressed per day'],['DR1','12 November 2026 · ≈ 1,900 deg² · more than a billion objects']] }
+      { title:'Orbit and data', rows:[['Location','halo orbit around L2, amplitude ≈ 1 million km'],['Halo period','≈ 170 days'],['Survey','≈ 14,000 deg² in ≈ 6 years · deep fields 53 deg²'],['Science link','K band, 55 Mbit/s, 4 h per day'],['Volume','≈ 826 Gbit compressed per day'],['DR1, first part','12 November 2026 · ≈ 1,900 deg² · more than a billion objects']] }
     ],
     parts:{
       sunshield:{ name:'Sunshield and solar panels', desc:"The large panel that always faces the Sun. It carries the solar cells on its lit side and keeps the whole telescope in shadow, which the thermal stability of the images depends on.", facts:["Carries the photovoltaic panels", "Keeps the telescope in shadow"] },
@@ -2591,7 +2795,7 @@ EN_INST.jwst = {
   }
 };
 EN_INST.euclid = {
-  summary:"Two instruments share the same 1.2 m telescope through a dichroic: VIS (visible) and NISP (near infrared). The first major release, DR1, came out on 12 November 2026: about 1,900 deg² of the Wide Survey (14% of the goal), observed from spring 2024 to spring 2025, more than a billion objects. It adds to the Q1 “Quick Release” of March 2025, from which the examples on this page are taken.",
+  summary:"Two instruments share the same 1.2 m telescope through a dichroic: VIS (visible) and NISP (near infrared). The first part of DR1, the first major release, came out on 12 November 2026 (the full release, with the cosmology products, is announced for mid-2027): about 1,900 deg² of the Wide Survey (14% of the goal), observed from spring 2024 to spring 2025, more than a billion objects. It adds to the Q1 “Quick Release” of March 2025, from which the examples on this page are taken.",
   archives:[["ESA, Euclid Science Archive","Official archive: catalogues (ADQL), images, spectra."],["Euclid DR1 (12 November 2026)","First major release: Wide and Deep surveys, more than a billion objects, spectra of more than 160 million sources."],["DR1 overview (arXiv:2611.16510)","Release overview paper: contents, coverage, data quality."],["NASA/IPAC, IRSA Euclid","NASA mirror: Q1 and DR1 mosaics and catalogues, spectra, VO services (TAP, SIA)."],["Product documentation (DPDD)","Data Product Description Document for Q1."],["astroquery.esa.euclid","Python access to the archive (TAP+)."]],
   instruments:{
     vis:{ kind:"Visible imager",
@@ -3574,6 +3778,29 @@ function refList(t, nums){
     keys.map(function(k){ var x = t.refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a> <span>' + esc(x.p) + '</span></li>'; }).join('') +
     '</ol><p class="source-note">Valeurs vérifiées le ' + when + ' face aux sources ci-dessus. Un « ? » signale une valeur pas encore confrontée à une source primaire.</p></div>';
 }
+/* ---------- onglet Mission : déroulé, exploitation, chaîne de traitement, publications (src/data-mission.js) ---------- */
+function missionHtml(t){
+  var m = MISSION[t.id], en = OBS_LANG === 'en', L = function(x){ return Array.isArray(x) ? x[en ? 1 : 0] : x; };
+  var refs = {}, k; for (k in t.refs) refs[k] = t.refs[k]; for (k in m.refs) refs[k] = m.refs[k];
+  var nums = {}, n = 0;
+  function mark(r){ var ks = [].concat(r || []).filter(function(x){ return refs[x]; }); if (!ks.length) return '';
+    return '<sup class="ref">' + ks.map(function(x){ if (!nums[x]) nums[x] = ++n; return nums[x]; }).join(',') + '</sup>'; }
+  var h = '<h2>' + (en ? 'Mission and processing' : 'Mission et traitements') + '</h2><p class="desc">' + esc(L(m.intro)) + '</p>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Timeline' : 'Déroulé') + '</div><ol class="ms-tl">' +
+    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
+    m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Processing pipeline' : 'Chaîne de traitement') + '</div><p class="ms-intro">' + esc(L(m.chain.intro)) + '</p><ol class="ms-chain">' +
+    m.chain.steps.map(function(s){ return '<li><div class="ms-lv">' + esc(s.lv) + '</div><div class="ms-st"><strong>' + esc(L(s.n)) + '</strong>' + mark(s.r) + '<p>' + esc(L(s.x)) + '</p>' + (s.sw ? '<code>' + esc(L(s.sw)) + '</code>' : '') + '</div></li>'; }).join('') + '</ol>' +
+    (m.chain.note ? '<p class="ms-intro">' + esc(L(m.chain.note)) + mark(m.chain.noteR) + '</p>' : '') + '</div>';
+  if (m.rel) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Data releases' : 'Publications des données') + '</div><ol class="ms-tl ms-rel">' +
+    m.rel.map(function(r){ return '<li' + (r[6] ? ' class="plan"' : '') + '><span class="ms-d">' + esc(en ? r[1] : r[0]) + (r[6] ? '<small>' + (en ? 'planned' : 'prévue') + '</small>' : '') + '</span><div><strong>' + esc(r[2]) + '</strong>' + mark(r[5]) + '<p>' + esc(en ? r[4] : r[3]) + '</p></div></li>'; }).join('') + '</ol></div>';
+  var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }), d = m.checked.split('-');
+  h += '<div class="spec-section"><div class="spec-section-title">Sources</div><ol class="refs">' +
+    keys.map(function(x){ var r = refs[x]; return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + '</a> <span>' + esc(r.p) + '</span></li>'; }).join('') + '</ol>' +
+    '<p class="source-note">' + (en ? 'Checked against the sources above on ' + m.checked + '. Dates marked “planned” are the agency\'s announced dates and may change.' : 'Vérifié le ' + d[2] + '/' + d[1] + '/' + d[0] + ' face aux sources ci-dessus. Les dates marquées « prévue » sont celles annoncées par l\'agence et peuvent changer.') + '</p></div>';
+  return h;
+}
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -3612,7 +3839,8 @@ function renderPanel(){
   }
   pt.innerHTML =
     '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
+    (window.MISSION && MISSION[t.id] ? '<button class="ptab" role="tab" data-ptab="mission" aria-selected="' + (S.ptab==='mission') + '">Mission</button>' : '') + '</div>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
@@ -3627,6 +3855,8 @@ function renderPanel(){
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
+  } else if (S.ptab === 'mission'){
+    h = missionHtml(t);
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){

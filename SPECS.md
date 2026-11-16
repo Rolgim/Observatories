@@ -39,6 +39,7 @@ Limites connues :
 | F. Orbites et temps | F1 à F4 livrés (orbites réelles, Hubble en direct, pointés réels, déploiement de Webb, ciel observable) |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
+| M. Mission et traitements | livré le 16 novembre : onglet « Mission » sur chaque fiche |
 | C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
@@ -216,6 +217,20 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - F3 (déploiement de JWST) : **livré le 16 novembre** (src/deploy.js). Bouton « Déploiement » sur la fiche de Webb : un curseur en 13 étapes, du lancement (25 décembre 2021) à l'arrivée autour de L2 (24 janvier 2022), avec date, titre et explication, boutons étape précédente et suivante, et « Rejouer » (1,6 s par étape, désactivé si l'utilisateur réduit les animations). La maquette n'étant pas articulée, les pièces sont repliées par déformation des sommets : panneau solaire, antenne, palettes du bouclier (rotation à 88°), tour (−1,22 m, valeur publiée), volet arrière, bras médians (largeur réduite), couches non tendues (rapprochées), trépied du secondaire, ailes du primaire (rotation de 100° vers l'arrière). Dates et ordre : blog Webb de la NASA (décembre 2021, janvier 2022) et Spaceflight Now. Formes repliées : schématiques, dit sous le curseur. Côté bâbord et tribord des ailes dans la maquette : non vérifié. Le radiateur arrière (6 janvier) est cité sans être représenté. Pendant le déploiement, « Éclater » est désactivé. Repliement revu le 16 novembre : chaque triangle bouge d'un bloc (décision sur son centre), pour qu'aucun triangle ne s'étire à travers une charnière ; seules les longues bandes du bouclier (plus de 1,5 m) se plient sommet par sommet. La tour ne descend que de 1,0 m au lieu de 1,22 m, sinon le télescope abaissé entre dans le module de la maquette. Contrôle automatique : `tools/deploy-check.js` échantillonne les surfaces dans une grille de 6 cm à chaque état du curseur et signale les interpénétrations nouvelles (au-delà de 40 voxels) et les pièces qui perdent tout contact ; il reste des signalements sur les ailes repliées, dus au changement d'orientation par rapport à la grille (vérifiés visuellement).
 - F4 (zones du ciel observables) : **livré le 15 novembre**. Dans chaque page « Orbite », une carte du ciel montre la zone accessible à la date choisie (curseur sur un an à partir d'aujourd'hui) et sa part du ciel. Contraintes sourcées : Hubble à plus de 62,5° du Soleil (HST Primer, cycle 34) ; Webb entre 85° et 135° (JDox) ; Euclid entre 87° et 104° d'angle d'aspect solaire (Euclid I, sect. 4.1.1) ; Gaia, bande de 45° à 135° déduite de l'angle de son axe. Position du Soleil calculée (formule à basse précision, ≈ 0,01°). Non représentés : occultation par la Terre pour Hubble, Lune, contraintes de roulis.
 - Indiquer le facteur d'accélération des animations, et permettre de choisir une date.
+
+### M. Mission et traitements
+
+**Besoin.** Savoir comment la mission s'est déroulée et comment une donnée passe du satellite au catalogue, à la fois pour l'étudiant (schéma, phrases simples) et pour l'expert (niveaux de produits, noms des logiciels et des centres).
+
+**Livré le 16 novembre** (`src/data-mission.js`, rendu par `missionHtml` dans `src/app.js`) : un troisième onglet « Mission » dans le panneau de chaque observatoire, en français et en anglais, avec :
+
+- Déroulé daté (lancement, missions de service de Hubble, mise en service et premières images de Webb, début du relevé d'Euclid, fin des observations et passivation de Gaia…).
+- Exploitation : qui pilote, qui traite, liaison, volume, accès exclusif, archive.
+- Chaîne de traitement en étapes, chacune avec son niveau ou son suffixe de fichier, ce qui est fait et le logiciel ou le centre : pipeline du STScI pour Hubble (`_raw`, `_flt`/`_flc`, `_drz`/`_drc`, produits HAP) ; trois étapes `calwebb_*` pour Webb ; niveaux LE1, LE2, LE3 et fonctions VIS, NIR, SIR, EXT, MER, PHZ, SPE, SHE, LE3 pour Euclid ; unités de coordination CU1 à CU9 et six centres de traitement de DPAC pour Gaia.
+- Publications des données, avec les dates prévues signalées comme telles (Euclid DR1 complète mi-2027, DR2, DR3 ; Gaia DR4 décembre 2026, DR5).
+- Sources numérotées, propres à l'onglet, et date de vérification.
+
+Reste : les suffixes de fichiers de Webb et de Hubble sont donnés d'après les pages d'étapes de la documentation, sans avoir relu chaque tableau de produits ; la date de DR1 citée ailleurs sur le site (« DR1, 12 novembre 2026 ») désigne la première partie de DR1 (LE1 et LE2), la partie complète étant annoncée pour mi-2027.
 
 ### G. Autres observatoires
 

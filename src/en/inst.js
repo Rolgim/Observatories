@@ -114,7 +114,7 @@ EN_INST.jwst = {
   }
 };
 EN_INST.euclid = {
-  summary:"Two instruments share the same 1.2 m telescope through a dichroic: VIS (visible) and NISP (near infrared). The first major release, DR1, came out on 12 November 2026: about 1,900 deg² of the Wide Survey (14% of the goal), observed from spring 2024 to spring 2025, more than a billion objects. It adds to the Q1 “Quick Release” of March 2025, from which the examples on this page are taken.",
+  summary:"Two instruments share the same 1.2 m telescope through a dichroic: VIS (visible) and NISP (near infrared). The first part of DR1, the first major release, came out on 12 November 2026 (the full release, with the cosmology products, is announced for mid-2027): about 1,900 deg² of the Wide Survey (14% of the goal), observed from spring 2024 to spring 2025, more than a billion objects. It adds to the Q1 “Quick Release” of March 2025, from which the examples on this page are taken.",
   archives:[["ESA, Euclid Science Archive","Official archive: catalogues (ADQL), images, spectra."],["Euclid DR1 (12 November 2026)","First major release: Wide and Deep surveys, more than a billion objects, spectra of more than 160 million sources."],["DR1 overview (arXiv:2611.16510)","Release overview paper: contents, coverage, data quality."],["NASA/IPAC, IRSA Euclid","NASA mirror: Q1 and DR1 mosaics and catalogues, spectra, VO services (TAP, SIA)."],["Product documentation (DPDD)","Data Product Description Document for Q1."],["astroquery.esa.euclid","Python access to the archive (TAP+)."]],
   instruments:{
     vis:{ kind:"Visible imager",

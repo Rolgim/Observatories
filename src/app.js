@@ -94,6 +94,29 @@ function refList(t, nums){
     keys.map(function(k){ var x = t.refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a> <span>' + esc(x.p) + '</span></li>'; }).join('') +
     '</ol><p class="source-note">Valeurs vérifiées le ' + when + ' face aux sources ci-dessus. Un « ? » signale une valeur pas encore confrontée à une source primaire.</p></div>';
 }
+/* ---------- onglet Mission : déroulé, exploitation, chaîne de traitement, publications (src/data-mission.js) ---------- */
+function missionHtml(t){
+  var m = MISSION[t.id], en = OBS_LANG === 'en', L = function(x){ return Array.isArray(x) ? x[en ? 1 : 0] : x; };
+  var refs = {}, k; for (k in t.refs) refs[k] = t.refs[k]; for (k in m.refs) refs[k] = m.refs[k];
+  var nums = {}, n = 0;
+  function mark(r){ var ks = [].concat(r || []).filter(function(x){ return refs[x]; }); if (!ks.length) return '';
+    return '<sup class="ref">' + ks.map(function(x){ if (!nums[x]) nums[x] = ++n; return nums[x]; }).join(',') + '</sup>'; }
+  var h = '<h2>' + (en ? 'Mission and processing' : 'Mission et traitements') + '</h2><p class="desc">' + esc(L(m.intro)) + '</p>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Timeline' : 'Déroulé') + '</div><ol class="ms-tl">' +
+    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
+    m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
+  h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Processing pipeline' : 'Chaîne de traitement') + '</div><p class="ms-intro">' + esc(L(m.chain.intro)) + '</p><ol class="ms-chain">' +
+    m.chain.steps.map(function(s){ return '<li><div class="ms-lv">' + esc(s.lv) + '</div><div class="ms-st"><strong>' + esc(L(s.n)) + '</strong>' + mark(s.r) + '<p>' + esc(L(s.x)) + '</p>' + (s.sw ? '<code>' + esc(L(s.sw)) + '</code>' : '') + '</div></li>'; }).join('') + '</ol>' +
+    (m.chain.note ? '<p class="ms-intro">' + esc(L(m.chain.note)) + mark(m.chain.noteR) + '</p>' : '') + '</div>';
+  if (m.rel) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Data releases' : 'Publications des données') + '</div><ol class="ms-tl ms-rel">' +
+    m.rel.map(function(r){ return '<li' + (r[6] ? ' class="plan"' : '') + '><span class="ms-d">' + esc(en ? r[1] : r[0]) + (r[6] ? '<small>' + (en ? 'planned' : 'prévue') + '</small>' : '') + '</span><div><strong>' + esc(r[2]) + '</strong>' + mark(r[5]) + '<p>' + esc(en ? r[4] : r[3]) + '</p></div></li>'; }).join('') + '</ol></div>';
+  var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }), d = m.checked.split('-');
+  h += '<div class="spec-section"><div class="spec-section-title">Sources</div><ol class="refs">' +
+    keys.map(function(x){ var r = refs[x]; return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + '</a> <span>' + esc(r.p) + '</span></li>'; }).join('') + '</ol>' +
+    '<p class="source-note">' + (en ? 'Checked against the sources above on ' + m.checked + '. Dates marked “planned” are the agency\'s announced dates and may change.' : 'Vérifié le ' + d[2] + '/' + d[1] + '/' + d[0] + ' face aux sources ci-dessus. Les dates marquées « prévue » sont celles annoncées par l\'agence et peuvent changer.') + '</p></div>';
+  return h;
+}
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -132,7 +155,8 @@ function renderPanel(){
   }
   pt.innerHTML =
     '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
+    (window.MISSION && MISSION[t.id] ? '<button class="ptab" role="tab" data-ptab="mission" aria-selected="' + (S.ptab==='mission') + '">Mission</button>' : '') + '</div>' +
     '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
@@ -147,6 +171,8 @@ function renderPanel(){
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
+  } else if (S.ptab === 'mission'){
+    h = missionHtml(t);
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){
