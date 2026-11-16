@@ -33,7 +33,7 @@ var DEPLOY = (function(){
   function ease(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
 
   /* repères (repère de la maquette, mètres) */
-  var BUS_TOP = -3.47, PAL_F = 2.0, PAL_A = -1.9, PAL_Y = -3.6, MB = 1.05, TOWER = 1.22,
+  var BUS_TOP = -3.47, PAL_F = 3.4, PAL_A = -2.6, PAL_Y = -3.6, MB = 1.05, TOWER = 1.22,
       WING_X = 1.71, WING_Z = 1.3, SEC_H = [0, -1.75, 2.0], SEC_TOP = [0, 4.62, 1.91], FLAP_H = [-9.16, -1.5];
   var UPPER = { primary:1, secondary:1, aos:1, isim:1 };
 
@@ -46,7 +46,7 @@ var DEPLOY = (function(){
     if (part === 'sunshield' || part === 'flap'){
       if (part === 'flap' && g.flap < 1) rotX(p, n, FLAP_H[1], FLAP_H[0], -(1 - g.flap)*100*rad);
       var mem = Math.abs(p.z) > 1.15 || Math.abs(p.x) > MB;          /* membrane et bras, hors du module */
-      if (mem && g.tension < 1 && p.y > -5.2){ var k = 0.3 + 0.7*g.tension; p.y = BUS_TOP - 0.15 + (p.y - BUS_TOP + 0.15)*k; }
+      if (mem && g.tension < 1 && p.y > -5.2){ var k = 0.15 + 0.85*g.tension; p.y = BUS_TOP - 0.15 + (p.y - BUS_TOP + 0.15)*k; }
       if (g.booms < 1 && Math.abs(p.x) > MB){ var sx = 0.06 + 0.94*g.booms; p.x = (p.x > 0 ? 1 : -1)*(MB + (Math.abs(p.x) - MB)*sx); }
       if (g.pallets < 1){
         var lz = 0.62 + 0.38*g.pallets, a = (1 - g.pallets)*88*rad;
@@ -54,7 +54,8 @@ var DEPLOY = (function(){
         else if (p.z < PAL_A){ p.z = PAL_A + (p.z - PAL_A)*lz; rotX(p, n, PAL_Y, PAL_A, a); }
       }
     } else if (part === 'solar'){
-      if (g.solar < 1 && p.z < -1.8){ p.z = -1.8 + (p.z + 1.8)*(0.1 + 0.9*g.solar); }
+      /* replié en accordéon (cinq panneaux) puis rabattu contre la face arrière du module */
+      if (g.solar < 1 && p.z < -1.8){ p.z = -1.8 + (p.z + 1.8)*(0.22 + 0.78*g.solar); rotX(p, n, -4.0, -1.8, -(1 - g.solar)*85*rad); }
     } else if (part === 'hga'){
       if (g.hga < 1) rotX(p, n, -5.0, -1.5, (1 - g.hga)*80*rad);
     } else if (UPPER[part]){
