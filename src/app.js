@@ -735,7 +735,9 @@ show3D = function(changed){
   $('cmp-labels').hidden = true; $('callout').hidden = true; setTip(null);
   S.explodeGoal = S.explode = 0; $('explode').value = 0;
   var cmpMode = S.mode === 'compare';
-  $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode; $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
+  $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode;
+  /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
+  $('b-cut').disabled = cmpMode; $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode)); $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
     var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
