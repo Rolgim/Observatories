@@ -670,6 +670,36 @@ function applyCut(){
   updateCut();
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
+/* déploiement de Webb (F3) : curseur d'étapes, la maquette se replie et se déplie */
+var dep = { on:false, play:null };
+function depShow(v){
+  if (!current || current.t.id !== 'jwst' || !window.DEPLOY) return;
+  v = Math.max(0, Math.min(DEPLOY.last, v)); DEPLOY.set(current, v); $('dep-range').value = v;
+  var i = Math.ceil(v - 0.02), st = DEPLOY.STEPS[i], en = OBS_LANG === 'en';
+  $('dep-date').textContent = en ? st[1] : st[0]; $('dep-title').textContent = en ? st[3] : st[2]; $('dep-text').textContent = en ? st[5] : st[4];
+  $('dep-prev').disabled = v <= 0; $('dep-next').disabled = v >= DEPLOY.last;
+  var folded = v < DEPLOY.last; $('explode').disabled = folded; $('explode').parentNode.style.opacity = folded ? 0.4 : 1;
+  if (folded){ S.explodeGoal = S.explode = 0; $('explode').value = 0; setExplode(current, 0); }
+  touch();
+}
+function depStop(){ if (dep.play){ cancelAnimationFrame(dep.play); dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); } }
+function depToggle(on){
+  depStop(); dep.on = on; $('dep').hidden = !on; $('stage').classList.toggle('dep-on', on); $('b-dep').setAttribute('aria-pressed', String(on));
+  if (!S.part) C.gtgt.set(0, on ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau */
+  if (!window.DEPLOY) return;
+  if (on) depShow(0); else if (models.jwst && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models.jwst, DEPLOY.last);
+  if (!on){ $('explode').disabled = S.mode === 'compare'; $('explode').parentNode.style.opacity = S.mode === 'compare' ? 0.4 : 1; }
+}
+$('b-dep').addEventListener('click', function(){ depToggle(!dep.on); });
+$('dep-range').addEventListener('input', function(){ depStop(); depShow(+this.value); });
+$('dep-prev').addEventListener('click', function(){ depStop(); depShow(Math.ceil(DEPLOY.value() - 0.001) - 1); });
+$('dep-next').addEventListener('click', function(){ depStop(); depShow(Math.floor(DEPLOY.value() + 0.001) + 1); });
+$('dep-play').addEventListener('click', function(){
+  if (dep.play){ depStop(); return; }
+  var v0 = DEPLOY.value() >= DEPLOY.last ? 0 : DEPLOY.value(), t0 = performance.now(), dur = REDUCED ? 0 : 1600;   /* 1,6 s par étape */
+  this.textContent = OBS_T('Pause');
+  (function step(now){ var v = v0 + (now - t0)/(dur || 1); depShow(Math.min(v, DEPLOY.last)); if (v < DEPLOY.last && dur) dep.play = requestAnimationFrame(step); else { dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); if (!dur) depShow(DEPLOY.last); } })(t0);
+});
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
 $('b-spin').setAttribute('aria-pressed', String(S.spin));
 $('l-retry').addEventListener('click', function(){ show3D(true); });
@@ -737,6 +767,7 @@ show3D = function(changed){
   var cmpMode = S.mode === 'compare';
   $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
+  $('b-dep').hidden = cmpMode || S.id !== 'jwst'; if (dep.on && (cmpMode || S.id !== 'jwst')) depToggle(false);
   $('b-cut').disabled = cmpMode; $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode)); $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};

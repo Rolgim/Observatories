@@ -62,6 +62,18 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #t-src{ color:#8E979D; font-size:11.5px; margin-top:3px; text-shadow:0 1px 8px #000; }
 
 #hover-tip{ position:absolute; pointer-events:none; padding:3px 8px; background:#fff; color:#14171A; font-size:12px; font-weight:600; max-width:260px; transform:translate(12px, 14px); z-index:3; }
+#dep{ position:absolute; left:50%; bottom:calc(66px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); width:min(560px, calc(100% - 24px)); background:var(--paper); color:var(--ink); padding:10px 14px 8px; z-index:3; border-top:3px solid var(--mark); }
+.dep-head{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+#dep-date{ font-size:12px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+#dep-title{ font-size:15px; }
+#dep-text{ margin:4px 0 8px; font-size:13px; line-height:1.4; color:var(--ink-2); min-height:2.8em; }
+.dep-ctl{ display:flex; align-items:center; gap:8px; }
+#dep-range{ flex:1; min-width:0; accent-color:var(--ink); }
+.dep-b{ height:30px; min-width:30px; padding:0 10px; border:1px solid var(--rule-2); background:transparent; color:var(--ink); font:600 14px var(--f); cursor:pointer; }
+.dep-b:hover{ background:var(--sheet); }
+.dep-play{ font-size:13px; }
+.dep-note{ margin:6px 0 0; font-size:11px; color:var(--mute); }
+#stage.dep-on #hint{ display:none; }
 #cut-note{ position:absolute; right:12px; top:12px; max-width:min(420px, calc(100% - 24px)); margin:0; padding:6px 10px; background:var(--paper); color:var(--ink); font-size:12px; line-height:1.4; border-left:3px solid var(--mark); z-index:2; pointer-events:none; }
 #callout{ position:absolute; pointer-events:none; transform:translate(-50%, -150%); padding:3px 9px; background:var(--mark); color:var(--on-mark); font-size:12.5px; font-weight:700; white-space:nowrap; z-index:2; }
 #callout::after{ content:""; position:absolute; left:50%; top:100%; width:2px; height:12px; margin-left:-1px; background:var(--mark); }
@@ -397,6 +409,17 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
       <div id="hover-tip" hidden></div>
       <p id="cut-note" hidden><span>La coque est ouverte, l'intérieur est reconstruit d'après les descriptions publiées. Miroirs, écarts et nombre d'équipements : valeurs publiées. Emplacements dans les modules de service : indicatifs. Survolez un élément pour le nommer.</span> <span id="cut-src"></span></p>
       <div id="live" class="sr-only" aria-live="polite"></div>
+      <div id="dep" hidden>
+        <div class="dep-head"><span id="dep-date"></span><strong id="dep-title"></strong></div>
+        <p id="dep-text"></p>
+        <div class="dep-ctl">
+          <button class="dep-b" id="dep-prev" aria-label="Étape précédente">‹</button>
+          <input id="dep-range" type="range" min="0" max="12" step="0.01" value="12" aria-label="Étape du déploiement">
+          <button class="dep-b" id="dep-next" aria-label="Étape suivante">›</button>
+          <button class="dep-b dep-play" id="dep-play">Rejouer</button>
+        </div>
+        <p class="dep-note">Dates : NASA. Formes repliées schématiques.</p>
+      </div>
       <div id="hint">Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier</div>
 
       <div id="toolbar" role="toolbar" aria-label="Affichage">
@@ -413,6 +436,10 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
         <button class="tool" id="b-cut" aria-pressed="false" title="Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5v13"/><path d="M8 3.5H3.5v9H8" stroke-dasharray="1.6 1.6"/><path d="M8 3.5h4.5v9H8"/></svg>
           <span class="lbl">Coupe</span>
+        </button>
+        <button class="tool" id="b-dep" aria-pressed="false" hidden title="Rejouer le déploiement de Webb, du lancement à l'arrivée autour de L2">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 14.5V7M8 7 3 2.5M8 7l5-4.5M2 10.5h12"/></svg>
+          <span class="lbl">Déploiement</span>
         </button>
         <button class="tool" id="b-spin" aria-pressed="true" title="Rotation automatique">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/><path d="M12.4 1.4v3h-3"/></svg>
@@ -2710,7 +2737,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "FGS (FGS2), mode photométrique":"FGS (FGS2), photometric mode", "Durée":"Duration", "13,5 h sans interruption":"13.5 h without a break", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min":"sum of the four photomultipliers, measured 40 times per second, averaged over 2 min bins", "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)":"divided by a model of the oscillations due to Hubble's orbit (96 min)", "Dispersion restante":"Remaining scatter", "temps depuis le début de la pose (h)":"time since start of exposure (h)", "flux relatif":"relative flux", "Coupe":"Cutaway", "La coque est ouverte, l'intérieur est reconstruit d'après les descriptions publiées. Miroirs, écarts et nombre d'équipements : valeurs publiées. Emplacements dans les modules de service : indicatifs. Survolez un élément pour le nommer.":"The shell is opened, the interior is rebuilt from published descriptions. Mirrors, spacings and equipment counts: published values. Locations inside the service modules: indicative. Hover an item to name it.", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "FGS (FGS2), mode photométrique":"FGS (FGS2), photometric mode", "Durée":"Duration", "13,5 h sans interruption":"13.5 h without a break", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min":"sum of the four photomultipliers, measured 40 times per second, averaged over 2 min bins", "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)":"divided by a model of the oscillations due to Hubble's orbit (96 min)", "Dispersion restante":"Remaining scatter", "temps depuis le début de la pose (h)":"time since start of exposure (h)", "flux relatif":"relative flux", "Coupe":"Cutaway", "Déploiement":"Deployment", "Rejouer le déploiement de Webb, du lancement à l'arrivée autour de L2":"Replay Webb's deployment, from launch to arrival around L2", "Rejouer":"Replay", "Pause":"Pause", "Étape précédente":"Previous step", "Étape suivante":"Next step", "Étape du déploiement":"Deployment step", "Dates : NASA. Formes repliées schématiques.":"Dates: NASA. Folded shapes are schematic.", "La coque est ouverte, l'intérieur est reconstruit d'après les descriptions publiées. Miroirs, écarts et nombre d'équipements : valeurs publiées. Emplacements dans les modules de service : indicatifs. Survolez un élément pour le nommer.":"The shell is opened, the interior is rebuilt from published descriptions. Mirrors, spacings and equipment counts: published values. Locations inside the service modules: indicative. Hover an item to name it.", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
   "Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l'orbite à venir ; pointillé : celle qui vient de s'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.":"Position computed in your browser from the latest published orbital elements (CelesTrak TLE, SGP4 model). Solid line: the coming orbit; dotted: the one just completed. The shaded area is night. Land outline: Natural Earth.",
    "Les quatre observatoires à la même échelle":"The four observatories at the same scale", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
   "Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Hubble can point at anything more than 62.5° from the Sun (Cycle 34 rule, in reduced-gyro mode; HST Primer). On each 95-minute orbit the Earth also hides part of the sky: not shown. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
@@ -3287,6 +3314,119 @@ var INTERIOR = (function(){
     M.interior.forEach(function(o){ o.layers.set(on ? 0 : 31); });
   }
   return { build:build, show:show, DATA:D, SRC:SRC };
+})();
+
+/* =================================================================
+   DÉPLOIEMENT DE WEBB (F3)
+   La maquette NASA est livrée déployée et n'est pas articulée. On replie ses pièces par
+   déformation des sommets, en mètres et dans le repère de la maquette (y vers le télescope,
+   z le long du bouclier, x en travers) :
+   - rotations autour de charnières (palettes du bouclier, ailes du miroir, trépied du secondaire,
+     volet arrière, antenne) ;
+   - compressions (bras médians rentrés, couches non tendues, panneau solaire replié, tour rentrée).
+   Dates et ordre des étapes : NASA (blog Webb, décembre 2021 et janvier 2022). Formes repliées :
+   schématiques, les plans de repliement n'étant pas publics ; la longueur de la tour (1,22 m) est publiée.
+   Côté des ailes (bâbord, tribord) dans la maquette : non vérifié.
+================================================================= */
+var DEPLOY = (function(){
+  var PI = Math.PI, rad = PI/180;
+  /* étapes : [date FR, date EN, titre FR, titre EN, texte FR, texte EN, clé d'étape géométrique ou null] */
+  var STEPS = [
+    ['25 déc. 2021', '25 Dec 2021', 'Lancement, tout est replié', 'Launch, everything folded', 'Webb tient replié sous la coiffe d\'Ariane 5, de 5,4 m de diamètre.', 'Webb fits folded inside the 5.4 m Ariane 5 fairing.', null],
+    ['25 déc., +29 min', '25 Dec, +29 min', 'Panneau solaire', 'Solar array', 'Le panneau solaire s\'ouvre juste après la séparation du lanceur.', 'The solar array opens just after separation from the launcher.', 'solar'],
+    ['26 déc.', '26 Dec', 'Antenne grand gain', 'High-gain antenna', 'L\'antenne qui transmet les données vers la Terre se déploie.', 'The antenna that sends data to Earth swings out.', 'hga'],
+    ['28 déc.', '28 Dec', 'Palettes du bouclier', 'Sunshield pallets', 'Les palettes avant et arrière, qui portent le bouclier plié, s\'abaissent.', 'The forward and aft pallets, which carry the folded sunshield, are lowered.', 'pallets'],
+    ['29 déc.', '29 Dec', 'Tour déployable : +1,22 m', 'Deployable tower: +1.22 m', 'La tour éloigne le télescope du module de service, chaud, de 1,22 m.', 'The tower moves the telescope 1.22 m away from the warm spacecraft bus.', 'tower'],
+    ['30 déc.', '30 Dec', 'Volet d\'équilibrage', 'Aft momentum flap', 'Le volet arrière compense la pression du rayonnement solaire. Les housses du bouclier sont retirées.', 'The aft flap offsets solar radiation pressure. The sunshield covers are released.', 'flap'],
+    ['31 déc.', '31 Dec', 'Bras médians', 'Mid-booms', 'Les deux bras télescopiques ouvrent le bouclier en largeur.', 'The two telescopic booms spread the sunshield sideways.', 'booms'],
+    ['3 et 4 janv. 2022', '3–4 Jan 2022', 'Tension des cinq couches', 'Tensioning the five layers', 'Les cinq couches, fines comme un cheveu, sont tendues et s\'écartent les unes des autres.', 'The five layers, thin as a hair, are pulled taut and separate from each other.', 'tension'],
+    ['5 janv.', '5 Jan', 'Miroir secondaire', 'Secondary mirror', 'Le trépied bascule et place le miroir secondaire à environ 7 m devant le primaire.', 'The tripod swings out and sets the secondary mirror about 7 m in front of the primary.', 'secondary'],
+    ['6 janv.', '6 Jan', 'Radiateur des instruments', 'Instrument radiator', 'Le radiateur arrière du module d\'instruments s\'ouvre (non représenté).', 'The aft radiator of the instrument module opens (not shown).', null],
+    ['7 janv.', '7 Jan', 'Aile bâbord du primaire', 'Primary mirror port wing', 'Trois segments repliés à l\'arrière pivotent et se verrouillent.', 'Three segments folded at the back swing round and latch.', 'wingP'],
+    ['8 janv.', '8 Jan', 'Aile tribord : déploiement terminé', 'Starboard wing: deployment complete', 'Le miroir de 6,5 m est complet. Restent l\'alignement des 18 segments et le refroidissement.', 'The 6.5 m mirror is complete. Aligning the 18 segments and cooling down remain.', 'wingS'],
+    ['24 janv.', '24 Jan', 'Arrivée autour de L2', 'Arrival around L2', 'Une dernière poussée place Webb sur son orbite autour de L2, à 1,5 million de km.', 'A final burn puts Webb on its orbit around L2, 1.5 million km away.', null]
+  ];
+  var KEYS = {}; STEPS.forEach(function(s, i){ if (s[6]) KEYS[s[6]] = i; });
+  function stage(v, k){ var i = KEYS[k]; return Math.max(0, Math.min(1, v - (i - 1))); }
+  function ease(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
+
+  /* repères (repère de la maquette, mètres) */
+  var BUS_TOP = -3.47, PAL_F = 2.0, PAL_A = -1.9, PAL_Y = -3.6, MB = 1.05, TOWER = 1.22,
+      WING_X = 1.71, WING_Z = 1.3, SEC_H = [0, -1.75, 2.0], SEC_TOP = [0, 4.62, 1.91], FLAP_H = [-9.16, -1.5];
+  var UPPER = { primary:1, secondary:1, aos:1, isim:1 };
+
+  var M3 = THREE.Matrix3, V3 = THREE.Vector3;
+  function rotX(p, n, cy, cz, a){ var c = Math.cos(a), s = Math.sin(a), y = p.y - cy, z = p.z - cz; p.y = cy + y*c - z*s; p.z = cz + y*s + z*c; var ny = n.y, nz = n.z; n.y = ny*c - nz*s; n.z = ny*s + nz*c; }
+  function rotY(p, n, cx, cz, a){ var c = Math.cos(a), s = Math.sin(a), x = p.x - cx, z = p.z - cz; p.x = cx + x*c + z*s; p.z = cz - x*s + z*c; var nx = n.x, nz = n.z; n.x = nx*c + nz*s; n.z = -nx*s + nz*c; }
+
+  /* déforme un sommet (p, n en repère maquette) pour l'état g (chaque étape de 0 = replié à 1 = déployée) */
+  function deform(part, name, p, n, g){
+    if (part === 'sunshield' || part === 'flap'){
+      if (part === 'flap' && g.flap < 1) rotX(p, n, FLAP_H[1], FLAP_H[0], -(1 - g.flap)*100*rad);
+      var mem = Math.abs(p.z) > 1.15 || Math.abs(p.x) > MB;          /* membrane et bras, hors du module */
+      if (mem && g.tension < 1 && p.y > -5.2){ var k = 0.3 + 0.7*g.tension; p.y = BUS_TOP - 0.15 + (p.y - BUS_TOP + 0.15)*k; }
+      if (g.booms < 1 && Math.abs(p.x) > MB){ var sx = 0.06 + 0.94*g.booms; p.x = (p.x > 0 ? 1 : -1)*(MB + (Math.abs(p.x) - MB)*sx); }
+      if (g.pallets < 1){
+        var lz = 0.62 + 0.38*g.pallets, a = (1 - g.pallets)*88*rad;
+        if (p.z > PAL_F){ p.z = PAL_F + (p.z - PAL_F)*lz; rotX(p, n, PAL_Y, PAL_F, -a); }
+        else if (p.z < PAL_A){ p.z = PAL_A + (p.z - PAL_A)*lz; rotX(p, n, PAL_Y, PAL_A, a); }
+      }
+    } else if (part === 'solar'){
+      if (g.solar < 1 && p.z < -1.8){ p.z = -1.8 + (p.z + 1.8)*(0.1 + 0.9*g.solar); }
+    } else if (part === 'hga'){
+      if (g.hga < 1) rotX(p, n, -5.0, -1.5, (1 - g.hga)*80*rad);
+    } else if (UPPER[part]){
+      if (part === 'primary' && Math.abs(p.x) > WING_X){
+        var w = p.x > 0 ? g.wingS : g.wingP;
+        if (w < 1) rotY(p, n, (p.x > 0 ? 1 : -1)*WING_X, WING_Z, (p.x > 0 ? 1 : -1)*(1 - w)*100*rad);
+      }
+      if (part === 'secondary' && g.secondary < 1){
+        var f = 1 - g.secondary;
+        if (name === 'secondary_2'){ var q = 0.2 + 0.8*g.secondary; p.y = SEC_TOP[1] + (p.y - SEC_TOP[1])*q; p.z = SEC_TOP[2] + (p.z - SEC_TOP[2])*q; }
+        else rotX(p, n, SEC_H[1], SEC_H[2], -f*60*rad);
+      }
+      if (g.tower < 1) p.y -= (1 - g.tower)*TOWER;
+    }
+  }
+
+  var store = null;
+  /* mémorise les sommets d'origine et les passages repère local ↔ repère maquette (pièces à l'état éclaté 0) */
+  function prepare(M){
+    if (store && store.M === M) return store;
+    var inv = new THREE.Matrix4().copy(M.root.matrixWorld).invert(), seen = new Set(), list = [];
+    M.root.updateMatrixWorld(true);
+    M.meshes.forEach(function(o){
+      if (o.userData.interior || !o.geometry || !o.geometry.attributes.position) return;
+      var k = o.userData.part; if (!(k === 'sunshield' || k === 'flap' || k === 'solar' || k === 'hga' || UPPER[k])) return;
+      if (seen.has(o.geometry)) o.geometry = o.geometry.clone(); seen.add(o.geometry);
+      if (o.userData.base) o.position.copy(o.userData.base); o.updateMatrixWorld(true);
+      var m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), mi = new THREE.Matrix4().copy(m).invert();
+      var pos = o.geometry.attributes.position, nor = o.geometry.attributes.normal;
+      list.push({ o:o, part:k, name:o.name, m:m, mi:mi, nm:new M3().getNormalMatrix(m), nmi:new M3().getNormalMatrix(mi),
+        p0:pos.array.slice(0), n0:nor ? nor.array.slice(0) : null });
+    });
+    store = { M:M, list:list, v:STEPS.length - 1 };
+    return store;
+  }
+  var p = new V3(), n = new V3();
+  function set(M, v){
+    var st = prepare(M); st.v = v;
+    var g = {}; Object.keys(KEYS).forEach(function(k){ g[k] = ease(stage(v, k)); });
+    st.list.forEach(function(e){
+      var pos = e.o.geometry.attributes.position, nor = e.o.geometry.attributes.normal, a = pos.array, b = nor && nor.array, i;
+      for (i=0;i<a.length;i+=3){
+        p.set(e.p0[i], e.p0[i+1], e.p0[i+2]).applyMatrix4(e.m);
+        if (b) n.set(e.n0[i], e.n0[i+1], e.n0[i+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
+        deform(e.part, e.name, p, n, g);
+        p.applyMatrix4(e.mi); a[i] = p.x; a[i+1] = p.y; a[i+2] = p.z;
+        if (b){ n.applyMatrix3(e.nmi).normalize(); b[i] = n.x; b[i+1] = n.y; b[i+2] = n.z; }
+      }
+      pos.needsUpdate = true; if (nor) nor.needsUpdate = true;
+      e.o.geometry.computeBoundingSphere(); e.o.geometry.computeBoundingBox();
+    });
+  }
+  function value(){ return store ? store.v : STEPS.length - 1; }
+  return { STEPS:STEPS, set:set, value:value, last:STEPS.length - 1 };
 })();
 
 /* =================================================================
@@ -3961,6 +4101,36 @@ function applyCut(){
   updateCut();
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
+/* déploiement de Webb (F3) : curseur d'étapes, la maquette se replie et se déplie */
+var dep = { on:false, play:null };
+function depShow(v){
+  if (!current || current.t.id !== 'jwst' || !window.DEPLOY) return;
+  v = Math.max(0, Math.min(DEPLOY.last, v)); DEPLOY.set(current, v); $('dep-range').value = v;
+  var i = Math.ceil(v - 0.02), st = DEPLOY.STEPS[i], en = OBS_LANG === 'en';
+  $('dep-date').textContent = en ? st[1] : st[0]; $('dep-title').textContent = en ? st[3] : st[2]; $('dep-text').textContent = en ? st[5] : st[4];
+  $('dep-prev').disabled = v <= 0; $('dep-next').disabled = v >= DEPLOY.last;
+  var folded = v < DEPLOY.last; $('explode').disabled = folded; $('explode').parentNode.style.opacity = folded ? 0.4 : 1;
+  if (folded){ S.explodeGoal = S.explode = 0; $('explode').value = 0; setExplode(current, 0); }
+  touch();
+}
+function depStop(){ if (dep.play){ cancelAnimationFrame(dep.play); dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); } }
+function depToggle(on){
+  depStop(); dep.on = on; $('dep').hidden = !on; $('stage').classList.toggle('dep-on', on); $('b-dep').setAttribute('aria-pressed', String(on));
+  if (!S.part) C.gtgt.set(0, on ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau */
+  if (!window.DEPLOY) return;
+  if (on) depShow(0); else if (models.jwst && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models.jwst, DEPLOY.last);
+  if (!on){ $('explode').disabled = S.mode === 'compare'; $('explode').parentNode.style.opacity = S.mode === 'compare' ? 0.4 : 1; }
+}
+$('b-dep').addEventListener('click', function(){ depToggle(!dep.on); });
+$('dep-range').addEventListener('input', function(){ depStop(); depShow(+this.value); });
+$('dep-prev').addEventListener('click', function(){ depStop(); depShow(Math.ceil(DEPLOY.value() - 0.001) - 1); });
+$('dep-next').addEventListener('click', function(){ depStop(); depShow(Math.floor(DEPLOY.value() + 0.001) + 1); });
+$('dep-play').addEventListener('click', function(){
+  if (dep.play){ depStop(); return; }
+  var v0 = DEPLOY.value() >= DEPLOY.last ? 0 : DEPLOY.value(), t0 = performance.now(), dur = REDUCED ? 0 : 1600;   /* 1,6 s par étape */
+  this.textContent = OBS_T('Pause');
+  (function step(now){ var v = v0 + (now - t0)/(dur || 1); depShow(Math.min(v, DEPLOY.last)); if (v < DEPLOY.last && dur) dep.play = requestAnimationFrame(step); else { dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); if (!dur) depShow(DEPLOY.last); } })(t0);
+});
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
 $('b-spin').setAttribute('aria-pressed', String(S.spin));
 $('l-retry').addEventListener('click', function(){ show3D(true); });
@@ -4028,6 +4198,7 @@ show3D = function(changed){
   var cmpMode = S.mode === 'compare';
   $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
+  $('b-dep').hidden = cmpMode || S.id !== 'jwst'; if (dep.on && (cmpMode || S.id !== 'jwst')) depToggle(false);
   $('b-cut').disabled = cmpMode; $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode)); $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
