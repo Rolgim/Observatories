@@ -605,7 +605,7 @@ function pick(x, y){
   if (!current) return null;
   var hits = ray.intersectObjects(current.meshes, false), clip = renderer.localClippingEnabled;
   for (var i=0;i<hits.length;i++){
-    if (clip && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
+    if (clip && hits[i].object.material.clippingPlanes && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
     var u = hits[i].object.userData;
     if (u.part) return { part:u.part, label:u.interior ? (OBS_LANG === 'en' ? u.labelEn : u.label) : null };
   }
@@ -644,13 +644,20 @@ var cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), cutRoot = null, c
 function applyCut(){
   var on = !!(S.cut && S.mode === 'tele');
   renderer.localClippingEnabled = on;
-  if (cutRoot && cutRoot !== (current && current.root)) cutRoot.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } }); });
+  function each(root, fn){ root.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ fn(m, o); }); }); }
+  if (cutRoot && cutRoot !== (current && current.root)) each(cutRoot, function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } });
   for (var id in models) if (window.INTERIOR) INTERIOR.show(models[id], on && models[id] === current);
-  $('cut-note').hidden = !(on && current && current.interior);
-  cutRoot = current && current.root; if (cutRoot) cutC = new THREE.Box3().setFromObject(cutRoot).getCenter(new THREE.Vector3());
-  cutRoot && cutRoot.traverse(function(o){ if (!o.material) return; [].concat(o.material).forEach(function(m){
+  var note = $('cut-note'), has = on && current && current.interior;
+  note.hidden = !has;
+  if (has){ var en = OBS_LANG === 'en', src = INTERIOR.SRC[current.t.id]; $('cut-src').textContent = src ? (en ? 'Sources: ' + src[1] + '.' : 'Sources : ' + src[0] + '.') : ''; }
+  cutRoot = current && current.root; if (!cutRoot) return;
+  /* la coque est coupée ; l'intérieur reconstruit reste entier, sauf ses enveloppes (clip) ; Webb : seul le module de service s'ouvre */
+  var only = current.cut && current.cut.parts, P0 = only && current.parts[only[0]];
+  cutC = P0 ? P0.center.clone().applyMatrix4(cutRoot.matrixWorld) : new THREE.Box3().setFromObject(current.inner).getCenter(new THREE.Vector3());
+  each(cutRoot, function(m, o){
     if (m.userData.side0 === undefined) m.userData.side0 = m.side;
-    m.clippingPlanes = on ? [cutPlane] : null; m.side = on ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; }); });
+    var u = o.userData, c = on && (u.interior ? u.clip : (!only || only.indexOf(u.part) >= 0));
+    m.clippingPlanes = c ? [cutPlane] : null; m.side = c || u.interior ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; });
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });

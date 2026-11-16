@@ -395,7 +395,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
       <div id="cmp-labels" hidden></div>
       <div id="callout" hidden></div>
       <div id="hover-tip" hidden></div>
-      <p id="cut-note" hidden>Intérieur reconstruit d'après les descriptions publiées : miroirs et écarts à l'échelle, emplacement des équipements indicatif. Survolez un élément pour le nommer.</p>
+      <p id="cut-note" hidden><span>La coque est ouverte, l'intérieur est reconstruit d'après les descriptions publiées. Miroirs, écarts et nombre d'équipements : valeurs publiées. Emplacements dans les modules de service : indicatifs. Survolez un élément pour le nommer.</span> <span id="cut-src"></span></p>
       <div id="live" class="sr-only" aria-live="polite"></div>
       <div id="hint">Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier</div>
 
@@ -2710,7 +2710,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "FGS (FGS2), mode photométrique":"FGS (FGS2), photometric mode", "Durée":"Duration", "13,5 h sans interruption":"13.5 h without a break", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min":"sum of the four photomultipliers, measured 40 times per second, averaged over 2 min bins", "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)":"divided by a model of the oscillations due to Hubble's orbit (96 min)", "Dispersion restante":"Remaining scatter", "temps depuis le début de la pose (h)":"time since start of exposure (h)", "flux relatif":"relative flux", "Coupe":"Cutaway", "Intérieur reconstruit d'après les descriptions publiées : miroirs et écarts à l'échelle, emplacement des équipements indicatif. Survolez un élément pour le nommer.":"Interior rebuilt from published descriptions: mirrors and spacings to scale, equipment locations indicative. Hover an item to name it.", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "FGS (FGS2), mode photométrique":"FGS (FGS2), photometric mode", "Durée":"Duration", "13,5 h sans interruption":"13.5 h without a break", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min":"sum of the four photomultipliers, measured 40 times per second, averaged over 2 min bins", "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)":"divided by a model of the oscillations due to Hubble's orbit (96 min)", "Dispersion restante":"Remaining scatter", "temps depuis le début de la pose (h)":"time since start of exposure (h)", "flux relatif":"relative flux", "Coupe":"Cutaway", "La coque est ouverte, l'intérieur est reconstruit d'après les descriptions publiées. Miroirs, écarts et nombre d'équipements : valeurs publiées. Emplacements dans les modules de service : indicatifs. Survolez un élément pour le nommer.":"The shell is opened, the interior is rebuilt from published descriptions. Mirrors, spacings and equipment counts: published values. Locations inside the service modules: indicative. Hover an item to name it.", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
   "Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l'orbite à venir ; pointillé : celle qui vient de s'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.":"Position computed in your browser from the latest published orbital elements (CelesTrak TLE, SGP4 model). Solid line: the coming orbit; dotted: the one just completed. The shaded area is night. Land outline: Natural Earth.",
    "Les quatre observatoires à la même échelle":"The four observatories at the same scale", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
   "Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Hubble can point at anything more than 62.5° from the Sun (Cycle 34 rule, in reduced-gyro mode; HST Primer). On each 95-minute orbit the Earth also hides part of the sky: not shown. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
@@ -3067,100 +3067,213 @@ var Glossary = (function(){
    INTÉRIEURS RECONSTRUITS (vue en coupe)
    Les maquettes publiques (NASA, ESA, Gaia Sky) sont des coques vides. On ajoute ici,
    en mètres et dans le repère de chaque maquette, ce que les sources disent se trouver
-   à l'intérieur. Tailles des miroirs et écarts : valeurs publiées. Emplacement des
-   équipements dans les modules de service : indicatif, les plans détaillés n'étant pas publics.
-   Élément : { k: pièce de rattachement, l: libellé FR, en: libellé EN, f: forme, ... }
-   Formes : disc (r, h, hole, ax), box (s:[x,y,z]), sph (r), cyl (r, h, ax), plate (s:[w,h], n: normale)
+   à l'intérieur. Ces éléments ne sont pas coupés par le plan de coupe (sauf clip:true,
+   pour les enveloppes qui cacheraient le reste) : la coque s'ouvre, l'intérieur reste entier.
+
+   Ce qui est sourcé : dimensions des miroirs et écarts, nombre et nature des équipements,
+   contenu des baies de Hubble. Ce qui est indicatif : l'emplacement précis dans les modules
+   de service, les plans détaillés n'étant pas publics. Chaque libellé le dit.
+
+   Sources. Hubble : NASA, SM3B Media Reference Guide, section 5 (HST Systems).
+   Euclid : Racca et al. 2016 (arXiv:1610.05508). Gaia : Gaia Collaboration, Prusti et al. 2016 ;
+   ESA, Service module ; Spaceflight101, Gaia Spacecraft Overview. Webb : NASA et STScI (JDox), Spacecraft bus.
+
+   Formes : mirror (r, hole, h, R courbure) · disc/cyl (r, h) · cone (r1, r2, h) · box (s) · plate (s, n)
+            sph (r) · tank (r, h : cylindre à fonds bombés) · torus (r, tube) · strut (a, b, r) · sector (r1, r2, a1, a2, h)
 ================================================================= */
 var INTERIOR = (function(){
-  var MIR = { color:0xE4E9EE, metalness:0.55, roughness:0.15, em:0x1E2A36 }, GOLD = { color:0xD9B45A, metalness:1, roughness:0.25 },
-      BOX = { color:0x7D848C, metalness:0.35, roughness:0.6 }, TANK = { color:0xC7CBD0, metalness:0.7, roughness:0.35 },
-      WHEEL = { color:0x4B5258, metalness:0.6, roughness:0.4 }, CCD = { color:0x4C64A0, metalness:0.3, roughness:0.35 }, PLATE = { color:0x50575E, metalness:0.4, roughness:0.6 }, INST = { color:0xB8A27A, metalness:0.5, roughness:0.45 }, TRUSS = { color:0x8A7A5C, metalness:0.3, roughness:0.6 };
-  function ring(n, r, z0, fn){ var a = []; for (var i=0;i<n;i++){ var t = i/n*Math.PI*2; a.push(fn(Math.cos(t)*r, Math.sin(t)*r, i)); } return a; }
-  var D = {
-    /* Hubble : axe optique = z ; centre du tube vers y = −0,15 */
-    hubble: [].concat(
-      [{ k:'aft', l:'Miroir primaire : 2,4 m, percé d\'un trou de 0,6 m', en:'Primary mirror: 2.4 m, with a 0.6 m central hole', f:'disc', p:[0,-0.15,-2.55], r:1.2, hole:0.305, h:0.3, ax:'z', m:MIR },
-       { k:'ota', l:'Miroir secondaire : 0,3 m, à 4,9 m du primaire', en:'Secondary mirror: 0.3 m, 4.9 m from the primary', f:'disc', p:[0,-0.15,2.35], r:0.15, h:0.08, ax:'z', m:MIR },
-       { k:'ota', l:'Déflecteur du miroir secondaire', en:'Secondary mirror baffle', f:'cyl', p:[0,-0.15,2.15], r:0.32, h:0.5, ax:'z', open:true, m:TRUSS },
-       { k:'ota', l:'Déflecteur central (longueur indicative)', en:'Central baffle (length indicative)', f:'cyl', p:[0,-0.15,-1.7], r:0.3, h:1.6, ax:'z', open:true, m:TRUSS },
-       { k:'aft', l:'Structure du plan focal : la lumière y entre par le trou du primaire', en:'Focal plane structure: light enters through the primary\'s hole', f:'disc', p:[0,-0.15,-3.05], r:1.3, hole:0.0, h:0.12, ax:'z', m:PLATE }],
-      /* treillis de maintien des miroirs : longerons et anneaux (diamètre indicatif) */
-      ring(8, 1.38, 0, function(x, y){ return { k:'ota', l:'Treillis qui maintient l\'écart entre les miroirs', en:'Metering truss holding the mirror spacing', f:'cyl', p:[x, y-0.15, -0.1], r:0.025, h:4.8, ax:'z', m:TRUSS }; }),
-      [{ k:'ota', l:'Treillis qui maintient l\'écart entre les miroirs', en:'Metering truss holding the mirror spacing', f:'torus', p:[0,-0.15,-2.3], r:1.38, tube:0.03, ax:'z', m:TRUSS },
-       { k:'ota', l:'Treillis qui maintient l\'écart entre les miroirs', en:'Metering truss holding the mirror spacing', f:'torus', p:[0,-0.15,2.1], r:1.38, tube:0.03, ax:'z', m:TRUSS }],
-      /* 4 instruments axiaux « de la taille d'une cabine téléphonique », juste derrière le primaire */
-      [['STIS','STIS',-1,1],['NICMOS (hors service)','NICMOS (out of service)',1,1],['ACS','ACS',-1,-1],['COS','COS',1,-1]].map(function(a){
-        return { k:'aft', l:'Instrument axial : ' + a[0], en:'Axial instrument: ' + a[1], f:'box', p:[a[2]*0.48, -0.15 + a[3]*0.48, -4.35], s:[0.88, 0.88, 2.2], m:INST }; }),
-      /* 4 instruments radiaux autour de l'axe : WFC3 et les 3 FGS */
-      [['WFC3','WFC3',0],['FGS 1','FGS 1',1],['FGS 2','FGS 2',2],['FGS 3','FGS 3',3]].map(function(a){
-        var t = (a[2]*90 + 45)*Math.PI/180; return { k:'aft', l:'Instrument radial : ' + a[0], en:'Radial instrument: ' + a[1], f:'box', p:[Math.cos(t)*1.5, -0.15 + Math.sin(t)*1.5, -3.5], s:[0.7, 0.7, 0.9], m:INST }; }),
-      /* section d'équipements : anneau de baies (batteries, ordinateur, communications) */
-      ring(10, 1.85, 0, function(x, y, i){ return { k:'ssm', l:'Baie d\'équipement : batteries, ordinateur et communications (répartition indicative)', en:'Equipment bay: batteries, computer and communications (layout indicative)', f:'box', p:[x, y-0.15, -2.45], s:[0.75, 0.75, 1.3], rot:Math.atan2(y, x), m:BOX }; })
-    ),
-    /* Euclid : axe du télescope = y ; centre du tube vers x = 0,05, z = −0,03 */
-    euclid: [
-      { k:'baffle', l:'Miroir primaire : 1,2 m, carbure de silicium', en:'Primary mirror: 1.2 m, silicon carbide', f:'disc', p:[0.05,-0.08,-0.03], r:0.6, hole:0, h:0.1, ax:'y', m:MIR },
-      { k:'baffle', l:'Miroir secondaire : 0,35 m, à 1,756 m du primaire', en:'Secondary mirror: 0.35 m, 1.756 m from the primary', f:'disc', p:[0.05,1.676,-0.03], r:0.175, h:0.05, ax:'y', m:MIR },
-      { k:'instr', l:'Miroirs de renvoi et lame dichroïque (disposition indicative)', en:'Fold mirrors and dichroic plate (layout indicative)', f:'plate', p:[0.25,-0.45,0.1], s:[0.35,0.25], n:[1,1,0], m:MIR },
-      { k:'instr', l:'VIS : plan focal de 36 CCD', en:'VIS: focal plane of 36 CCDs', f:'box', p:[-0.25,-0.55,0.35], s:[0.5,0.18,0.5], m:CCD },
-      { k:'instr', l:'NISP : 16 détecteurs infrarouges, filtres et grismes', en:'NISP: 16 infrared detectors, filters and grisms', f:'box', p:[0.55,-0.6,-0.45], s:[0.55,0.45,0.6], m:INST },
-      { k:'svm', l:'Électronique chaude de VIS et NISP, unités de commande et de traitement (emplacement indicatif)', en:'VIS and NISP warm electronics, control and data units (location indicative)', f:'box', p:[-0.75,-1.55,0.6], s:[0.6,0.6,0.5], m:BOX },
-      { k:'svm', l:'Réservoir d\'ergols : 210,7 kg au lancement (emplacement indicatif)', en:'Propellant tank: 210.7 kg at launch (location indicative)', f:'sph', p:[0.75,-1.6,0.55], r:0.33, m:TANK },
-      { k:'svm', l:'Réservoir d\'ergols : 210,7 kg au lancement (emplacement indicatif)', en:'Propellant tank: 210.7 kg at launch (location indicative)', f:'sph', p:[-0.7,-1.6,-0.6], r:0.33, m:TANK },
-      { k:'svm', l:'Réservoir d\'azote de la micro-propulsion à gaz froid (emplacement indicatif)', en:'Nitrogen tank for the cold-gas micro-propulsion (location indicative)', f:'cyl', p:[0.75,-1.6,-0.6], r:0.2, h:0.75, ax:'y', m:TANK },
-      { k:'svm', l:'Roues de réaction : 3 ou 4 servent aux pivotements (emplacement indicatif)', en:'Reaction wheels: 3 or 4 are used for slews (location indicative)', f:'disc', p:[0.05,-1.2,-0.03], r:0.18, h:0.09, ax:'y', m:WHEEL },
-      { k:'svm', l:'Roues de réaction : 3 ou 4 servent aux pivotements (emplacement indicatif)', en:'Reaction wheels: 3 or 4 are used for slews (location indicative)', f:'disc', p:[0.05,-1.95,-0.03], r:0.18, h:0.09, ax:'y', m:WHEEL }
-    ],
-    /* Gaia : axe de rotation = y ; banc optique (tore) vers y = 0,24 */
-    gaia: [
-      { k:'torus', l:'Miroir primaire du télescope 1 : 1,45 × 0,50 m', en:'Telescope 1 primary mirror: 1.45 × 0.50 m', f:'plate', p:[Math.cos(-53.25*Math.PI/180)*1.15, 0.72, Math.sin(-53.25*Math.PI/180)*1.15], s:[1.45,0.5], n:[-Math.cos(-53.25*Math.PI/180), 0, -Math.sin(-53.25*Math.PI/180)], m:MIR },
-      { k:'torus', l:'Miroir primaire du télescope 2 : 1,45 × 0,50 m, à 106,5° du premier', en:'Telescope 2 primary mirror: 1.45 × 0.50 m, 106.5° from the first', f:'plate', p:[Math.cos(-126.75*Math.PI/180)*1.15, 0.72, Math.sin(-126.75*Math.PI/180)*1.15], s:[1.45,0.5], n:[-Math.cos(-126.75*Math.PI/180), 0, -Math.sin(-126.75*Math.PI/180)], m:MIR },
-      { k:'svm', l:'Ordinateur central, traitement des données et communications (emplacement indicatif)', en:'Central computer, data handling and communications (location indicative)', f:'box', p:[0.8,-1.15,0.5], s:[0.6,0.6,0.6], m:BOX },
-      { k:'svm', l:'Traitement vidéo et stockage des données de la charge utile (emplacement indicatif)', en:'Payload video processing and data storage (location indicative)', f:'box', p:[-0.8,-1.15,0.5], s:[0.6,0.6,0.6], m:BOX },
-      { k:'svm', l:'Propulsion chimique : réservoirs d\'ergols (emplacement indicatif)', en:'Chemical propulsion: propellant tanks (location indicative)', f:'sph', p:[0.6,-1.15,-0.7], r:0.33, m:TANK },
-      { k:'svm', l:'Propulsion chimique : réservoirs d\'ergols (emplacement indicatif)', en:'Chemical propulsion: propellant tanks (location indicative)', f:'sph', p:[-0.6,-1.15,-0.7], r:0.33, m:TANK },
-      { k:'svm', l:'Micro-propulsion à azote : réservoir (emplacement indicatif)', en:'Nitrogen micro-propulsion: tank (location indicative)', f:'cyl', p:[0,-1.15,-1.0], r:0.16, h:0.8, ax:'x', m:TANK },
-      { k:'svm', l:'Batterie lithium-ion, pour le lancement (emplacement indicatif)', en:'Lithium-ion battery, for launch (location indicative)', f:'box', p:[0,-1.2,0.95], s:[0.45,0.3,0.3], m:BOX }
-    ],
-    /* JWST : module de service sous le bouclier, vers y = −4,3 */
-    jwst: [
-      { k:'bus', l:'Réservoirs d\'hydrazine et de peroxyde d\'azote, pour les moteurs SCAT et MRE-1 (emplacement indicatif)', en:'Hydrazine and dinitrogen tetroxide tanks, for the SCAT and MRE-1 thrusters (location indicative)', f:'sph', p:[-0.6,-4.3,-0.6], r:0.42, m:TANK },
-      { k:'bus', l:'Réservoirs d\'hydrazine et de peroxyde d\'azote, pour les moteurs SCAT et MRE-1 (emplacement indicatif)', en:'Hydrazine and dinitrogen tetroxide tanks, for the SCAT and MRE-1 thrusters (location indicative)', f:'sph', p:[0.65,-4.3,-0.6], r:0.42, m:TANK },
-      { k:'bus', l:'Réservoirs d\'hydrazine et de peroxyde d\'azote, pour les moteurs SCAT et MRE-1 (emplacement indicatif)', en:'Hydrazine and dinitrogen tetroxide tanks, for the SCAT and MRE-1 thrusters (location indicative)', f:'sph', p:[0,-4.3,0.7], r:0.42, m:TANK },
-      { k:'bus', l:'Commande et données : processeur et enregistreur (emplacement indicatif)', en:'Command and data handling: processor and recorder (location indicative)', f:'box', p:[0.85,-4.3,0.9], s:[0.5,0.6,0.5], m:BOX },
-      { k:'bus', l:'Énergie et communications (emplacement indicatif)', en:'Power and communications (location indicative)', f:'box', p:[-0.85,-4.3,0.9], s:[0.5,0.6,0.5], m:BOX },
-      { k:'bus', l:'Roues de réaction, pour le pointage (nombre et emplacement indicatifs)', en:'Reaction wheels, for pointing (number and location indicative)', f:'disc', p:[0,-4.75,-0.1], r:0.2, h:0.1, ax:'y', m:WHEEL }
-    ]
+  var MIR = { color:0xE4E9EE, metalness:0.55, roughness:0.15, em:0x1E2A36 },
+      BOX = { color:0x8E959C, metalness:0.35, roughness:0.6 }, ELEC = { color:0x6F8F86, metalness:0.3, roughness:0.6 },
+      BATT = { color:0xB07A4A, metalness:0.3, roughness:0.6 }, COMM = { color:0x8A7FB0, metalness:0.3, roughness:0.6 },
+      TANK = { color:0xD2D6DA, metalness:0.75, roughness:0.3 }, TANK2 = { color:0xC9B27A, metalness:0.7, roughness:0.35 }, GAS = { color:0x9FB4C8, metalness:0.7, roughness:0.35 },
+      WHEEL = { color:0x4B5258, metalness:0.6, roughness:0.4 }, CCD = { color:0x4C64A0, metalness:0.3, roughness:0.35 },
+      INST = { color:0xB8A27A, metalness:0.5, roughness:0.45 }, FGS = { color:0xA9AEB4, metalness:0.5, roughness:0.45 },
+      TRUSS = { color:0x3A3F45, metalness:0.2, roughness:0.7 }, BAF = { color:0x26292D, metalness:0.1, roughness:0.9 },
+      RING = { color:0x9A9488, metalness:0.7, roughness:0.4 }, SHELL = { color:0x7A8188, metalness:0.3, roughness:0.7 }, COOL = { color:0x5F8FB0, metalness:0.4, roughness:0.5 };
+  var PI = Math.PI, rad = PI/180;
+  function pol(r, deg, y){ return [Math.cos(deg*rad)*r, y, Math.sin(deg*rad)*r]; }           /* autour de l'axe y */
+  function ind(fr, en){ return { l:fr + ' (emplacement indicatif)', en:en + ' (location indicative)' }; }
+  function mk(base, extra){ var o = {}, k; for (k in base) o[k] = base[k]; for (k in extra) o[k] = extra[k]; return o; }
+
+  /* ---------------- Hubble : axe optique = z, V3 = y, V2 = x ; axe du tube à y = −0,15 ---------------- */
+  var HY = -0.15, ZM = -2.5, ZS = ZM + 4.9;          /* face du primaire, puis secondaire 4,9 m plus loin */
+  function hubble(){
+    var a = [], i, j;
+    a.push({ k:'ssm', l:'Miroir primaire : 2,4 m, verre à très faible dilatation, trou central de 0,6 m', en:'Primary mirror: 2.4 m, ultra-low expansion glass, 0.6 m central hole', f:'mirror', p:[0,HY,ZM], r:1.2, hole:0.3, h:0.3, R:11.04, ax:'z', m:MIR });
+    a.push({ k:'ssm', l:'Anneau principal en titane : 2,9 m, il porte le miroir primaire', en:'Titanium main ring: 2.9 m, it carries the primary mirror', f:'sector', p:[0,HY,ZM-0.33], r1:1.22, r2:1.45, a1:0, a2:360, h:0.38, m:RING });
+    a.push({ k:'ota', l:'Miroir secondaire : 0,3 m, convexe, à 4,9 m du primaire', en:'Secondary mirror: 0.3 m, convex, 4.9 m from the primary', f:'disc', p:[0,HY,ZS+0.04], r:0.15, h:0.08, ax:'z', m:MIR });
+    a.push({ k:'ota', l:'Déflecteur du miroir secondaire', en:'Secondary mirror baffle', f:'cone', p:[0,HY,ZS-0.2], r1:0.2, r2:0.3, h:0.6, ax:'z', open:true, m:BAF });
+    a.push({ k:'ota', l:'Déflecteur central : cône de 3 m planté dans le trou du primaire', en:'Central baffle: 3 m cone set in the primary\'s hole', f:'cone', p:[0,HY,ZM+1.5], r1:0.17, r2:0.3, h:3, ax:'z', open:true, m:BAF });
+    /* treillis : 4,8 m de long, 2,7 m de diamètre, 48 barres sur trois anneaux, moyeu du secondaire */
+    var TR = 1.35, zr = [ZM+0.1, ZM+1.7, ZM+3.3, ZM+4.9], TL = 'Treillis en fibre de carbone : 4,8 m de long, 48 barres, il maintient l\'écart entre les miroirs', TE = 'Carbon-fibre metering truss: 4.8 m long, 48 struts, it holds the mirror spacing';
+    for (i=1;i<4;i++) a.push({ k:'ota', l:TL, en:TE, f:'torus', p:[0,HY,zr[i]], r:TR, tube:0.035, ax:'z', m:TRUSS });
+    for (i=0;i<3;i++) for (j=0;j<16;j++){
+      var t0 = (j + (j%2 ? 1 : 0))*22.5*rad, t1 = (j + (j%2 ? 0 : 1))*22.5*rad;
+      a.push({ k:'ota', l:TL, en:TE, f:'strut', a:[Math.cos(t0)*TR, HY+Math.sin(t0)*TR, zr[i]], b:[Math.cos(t1)*TR, HY+Math.sin(t1)*TR, zr[i+1]], r:0.022, m:TRUSS });
+    }
+    for (j=0;j<4;j++){ var ts = (45 + j*90)*rad; a.push({ k:'ota', l:'Araignée : quatre lames qui tiennent le miroir secondaire', en:'Spider: four vanes holding the secondary mirror', f:'strut', a:[Math.cos(ts)*TR, HY+Math.sin(ts)*TR, zr[3]], b:[Math.cos(ts)*0.2, HY+Math.sin(ts)*0.2, ZS+0.1], r:0.015, m:TRUSS }); }
+    /* section d'équipements : anneau de baies autour du primaire ; contenu sourcé, ordre des baies sourcé, sens de rotation indicatif */
+    var BAYS = [
+      ['Baie 1 : ordinateur de bord et gestion des données','Bay 1: flight computer and data management', ELEC],
+      ['Baie 2 : batteries et horloge','Bay 2: batteries and clock', BATT],
+      ['Baie 3 : batteries','Bay 3: batteries', BATT],
+      ['Baie 4 : régulation et distribution de l\'énergie','Bay 4: power control and distribution', ELEC],
+      null,
+      ['Baie 5 : communications et enregistreur de données','Bay 5: communications and data recorder', COMM],
+      ['Baie 6 : deux roues de réaction de 59 cm','Bay 6: two 59 cm reaction wheels', WHEEL],
+      ['Baie 7 : commande des mécanismes','Bay 7: mechanism control', ELEC],
+      null,
+      ['Baie 8 : électronique de pointage et enregistreur de données','Bay 8: pointing electronics and data recorder', ELEC],
+      ['Baie 9 : deux roues de réaction de 59 cm','Bay 9: two 59 cm reaction wheels', WHEEL],
+      ['Baie 10 : commande et données des instruments','Bay 10: science instrument control and data handling', COMM]
+    ];
+    BAYS.forEach(function(b, n){
+      if (!b) return;
+      var mid = 90 - n*30 - 15, c = Math.cos(mid*rad), s = Math.sin(mid*rad), zc = ZM - 0.1;
+      if (b[2] === WHEEL){
+        [-0.36, 0.36].forEach(function(dz){ a.push({ k:'ssm', l:b[0], en:b[1], f:'disc', p:[c*1.8, HY+s*1.8, zc+dz], r:0.295, h:0.22, radial:mid, m:WHEEL, clip:true }); });
+      } else if (b[2] === BATT){
+        a.push({ k:'ssm', l:b[0], en:b[1], f:'box', p:[c*1.82, HY+s*1.82, zc], s:[0.25, 0.9, 0.9], rot:mid*rad, m:BATT, clip:true });
+      } else a.push({ k:'ssm', l:b[0], en:b[1], f:'box', p:[c*1.8, HY+s*1.8, zc], s:[0.4, 0.8, 1.1], rot:mid*rad, m:b[2], clip:true });
+    });
+    /* derrière le primaire : structure du plan focal, 3 FGS et WFC3 en position radiale, 4 instruments axiaux */
+    var ZR = ZM - 1.05, ZA = ZM - 2.55;
+    [['FGS 1','FGS 1',0],['FGS 2','FGS 2',90],['FGS 3','FGS 3',180]].forEach(function(g){
+      var c = Math.cos(g[2]*rad), s = Math.sin(g[2]*rad);
+      a.push({ k:'aft', l:'Capteur de guidage fin ' + g[0] + ' : 1,5 × 1 m, en position radiale', en:'Fine guidance sensor ' + g[1] + ': 1.5 × 1 m, radial position', f:'box', p:[c*1.15, HY+s*1.15, ZR], s:[1.5, 1.0, 0.5], rot:g[2]*rad, m:FGS });
+    });
+    a.push({ k:'aft', l:'WFC3 : caméra à grand champ, en position radiale, côté radiateur', en:'WFC3: wide field camera, radial position, radiator side', f:'box', p:[0, HY-1.1, ZR], s:[1.6, 0.9, 0.55], rot:-90*rad, m:INST });
+    a.push({ k:'aft', l:'Miroir de renvoi : il prélève le centre du champ pour WFC3', en:'Pick-off mirror: it takes the centre of the field for WFC3', f:'plate', p:[0, HY, ZR+0.1], s:[0.14, 0.14], n:[0,-1,1], m:MIR });
+    [['STIS','STIS',-1,1],['NICMOS (éteint)','NICMOS (switched off)',1,1],['ACS','ACS',-1,-1],['COS','COS',1,-1]].forEach(function(q){
+      a.push({ k:'aft', l:'Instrument axial ' + q[0] + ' : 0,9 × 0,9 × 2,2 m, la taille d\'une cabine téléphonique', en:'Axial instrument ' + q[1] + ': 0.9 × 0.9 × 2.2 m, the size of a phone booth', f:'box', p:[q[2]*0.5, HY+q[3]*0.5, ZA], s:[0.9, 0.9, 2.2], m:INST });
+    });
+    a.push({ k:'aft', l:'Structure du plan focal : elle porte les instruments derrière le miroir', en:'Focal plane structure: it holds the instruments behind the mirror', f:'box', p:[0, HY, ZA], s:[0.06, 2.0, 2.2], m:TRUSS });
+    a.push({ k:'aft', l:'Structure du plan focal : elle porte les instruments derrière le miroir', en:'Focal plane structure: it holds the instruments behind the mirror', f:'box', p:[0, HY, ZA], s:[2.0, 0.06, 2.2], m:TRUSS });
+    [-0.45, 0, 0.45].forEach(function(dx){ a.push(mk(ind('Viseur d\'étoiles et gyroscopes, du côté opposé au Soleil', 'Star tracker and gyroscopes, on the side away from the Sun'), { k:'aft', f:'cyl', p:[dx, HY-1.75, ZA+0.3], r:0.13, h:0.5, ax:'y', m:BOX })); });
+    return a;
+  }
+
+  /* ---------------- Euclid : axe du télescope = y ; centre vers x = 0,05, z = −0,03 ---------------- */
+  var EX = 0.05, EZ = -0.03;
+  function euclid(){
+    var a = [], Y1 = -0.02, YS = -1.6;
+    function at(r, deg, y){ var p = pol(r, deg, y); return [p[0]+EX, p[1], p[2]+EZ]; }
+    a.push({ k:'baffle', l:'Miroir primaire M1 : 1,2 m, carbure de silicium', en:'Primary mirror M1: 1.2 m, silicon carbide', f:'mirror', p:[EX,Y1,EZ], r:0.6, hole:0.11, h:0.09, R:3.2, ax:'y', m:MIR });
+    a.push({ k:'baffle', l:'Miroir secondaire M2 : 0,35 m, à 1,756 m du primaire', en:'Secondary mirror M2: 0.35 m, 1.756 m from the primary', f:'disc', p:[EX,Y1+1.756+0.025,EZ], r:0.175, h:0.05, ax:'y', m:MIR });
+    a.push(mk(ind('Miroir tertiaire M3, sous la plaque de base', 'Tertiary mirror M3, below the baseplate'), { k:'instr', f:'mirror', p:[EX-0.45,-0.82,EZ], r:0.2, hole:0, h:0.05, R:3, ax:'y', m:MIR }));
+    a.push(mk(ind('Lame dichroïque : le visible part vers VIS, l\'infrarouge vers NISP', 'Dichroic plate: visible light goes to VIS, infrared to NISP'), { k:'instr', f:'plate', p:[EX+0.1,-0.55,EZ+0.1], s:[0.28,0.22], n:[1,0.2,1], m:{ color:0xD9B45A, metalness:0.9, roughness:0.2 } }));
+    a.push(mk(ind('VIS : plan focal de 36 CCD', 'VIS: focal plane of 36 CCDs'), { k:'instr', f:'box', p:[EX-0.35,-0.55,EZ+0.5], s:[0.42,0.4,0.12], m:CCD }));
+    a.push(mk(ind('NISP : 16 détecteurs infrarouges, roues à filtres et à grismes', 'NISP: 16 infrared detectors, filter and grism wheels'), { k:'instr', f:'box', p:[EX+0.6,-0.58,EZ-0.2], s:[0.5,0.5,1.0], m:INST }));
+    /* module de service : base hexagonale autour d'un cône central qui contient le réservoir d'hydrazine */
+    a.push({ k:'svm', l:'Cône central : il porte le télescope et contient le réservoir d\'hydrazine', en:'Central cone: it carries the telescope and houses the hydrazine tank', f:'cone', p:[EX,YS,EZ], r1:0.55, r2:0.83, h:1.2, ax:'y', open:true, m:SHELL, clip:true });
+    a.push({ k:'svm', l:'Réservoir d\'hydrazine, au centre : 137,5 kg', en:'Hydrazine tank, at the centre: 137.5 kg', f:'sph', p:[EX,YS,EZ], r:0.4, m:TANK });
+    [0, 120, 180, 300].forEach(function(d){ a.push(mk(ind('Réservoir d\'azote à haute pression : 4 réservoirs, 70 kg en tout, pour le pointage fin', 'High-pressure nitrogen tank: 4 tanks, 70 kg in all, for fine pointing'), { k:'svm', f:'tank', p:at(1.08, d, YS), r:0.17, h:0.85, ax:'y', m:GAS })); });
+    [[60,-1.3],[60,-1.9],[240,-1.3],[240,-1.9]].forEach(function(w){ a.push(mk(ind('Roue de réaction : 4 roues, elles font pivoter le satellite d\'un champ à l\'autre', 'Reaction wheel: 4 wheels, they slew the satellite from one field to the next'), { k:'svm', f:'disc', p:at(1.1, w[0], w[1]), r:0.17, h:0.1, radialY:w[0], m:WHEEL })); });
+    [['Électronique chaude de VIS','VIS warm electronics',ELEC],['Électronique chaude de NISP','NISP warm electronics',ELEC],['Ordinateur de bord et mémoire de masse','On-board computer and mass memory',COMM],
+     ['Distribution de l\'énergie et batterie','Power distribution and battery',BATT],['Émetteurs en bande K et en bande X','K-band and X-band transmitters',COMM],['Électronique du contrôle d\'attitude','Attitude control electronics',ELEC]].forEach(function(u, i){
+      var d = 30 + i*60; a.push(mk(ind(u[0] + ', sur un panneau latéral', u[1] + ', on a side panel'), { k:'svm', f:'box', p:at(1.32, d, YS+0.05), s:[0.22,0.7,0.6], rotY:-d*rad, m:u[2] }));
+    });
+    return a;
+  }
+
+  /* ---------------- Gaia : axe de rotation = y ; banc optique (tore de 3 m) vers y = 0,24 ---------------- */
+  function gaia(){
+    var a = [], YS = -1.13, L1 = 36.75, L2 = 143.25;      /* directions de visée, séparées de 106,5° */
+    [[L1,'1'],[L2,'2']].forEach(function(t){
+      var m1 = pol(1.25, t[0]+180, 0.75), m2 = pol(1.3, t[0], 1.15), n = pol(1, t[0], 0);
+      a.push({ k:'torus', l:'Miroir primaire du télescope ' + t[1] + ' : 1,45 × 0,50 m, carbure de silicium', en:'Telescope ' + t[1] + ' primary mirror: 1.45 × 0.50 m, silicon carbide', f:'plate', p:m1, s:[1.45,0.5], n:n, m:MIR });
+      a.push(mk(ind('Miroir secondaire du télescope ' + t[1] + ', en face du primaire', 'Telescope ' + t[1] + ' secondary mirror, facing the primary'), { k:'torus', f:'plate', p:m2, s:[0.35,0.16], n:[-n[0],0,-n[2]], m:MIR }));
+    });
+    /* module de service : six panneaux radiaux autour d'un tube central de 1,17 m */
+    a.push({ k:'svm', l:'Tube central : 1,17 m de long, il porte la charge utile', en:'Central tube: 1.17 m long, it carries the payload', f:'cyl', p:[0,YS,0], r:0.5, h:1.17, ax:'y', open:true, m:SHELL, clip:true });
+    for (var i=0;i<6;i++) a.push({ k:'svm', l:'Panneau radial : six panneaux relient le tube central aux côtés', en:'Radial panel: six panels link the central tube to the sides', f:'box', p:pol(1.0, i*60, YS), s:[1.0,1.0,0.025], rotY:-i*60*rad, m:SHELL, clip:true });
+    [30, 210].forEach(function(d){ a.push(mk(ind('Réservoir d\'ergols : 2 réservoirs, environ 400 kg, pour rejoindre L2 et s\'y maintenir', 'Propellant tank: 2 tanks, about 400 kg, to reach L2 and stay there'), { k:'svm', f:'sph', p:pol(1.0, d, YS), r:0.36, m:TANK })); });
+    [150, 330].forEach(function(d){ a.push(mk(ind('Réservoir d\'azote : 2 réservoirs de 28,5 kg à 310 bar, pour la micro-propulsion', 'Nitrogen tank: 2 tanks of 28.5 kg at 310 bar, for micro-propulsion'), { k:'svm', f:'sph', p:pol(1.0, d, YS), r:0.26, m:GAS })); });
+    [[90,'Unités de traitement vidéo : elles repèrent les étoiles dans le flux des CCD','Video processing units: they pick out the stars in the CCD stream',ELEC],
+     [270,'Mémoire de la charge utile et ordinateur central','Payload data storage and central computer',COMM]].forEach(function(u){
+      a.push(mk(ind(u[1], u[2]), { k:'svm', f:'box', p:pol(1.28, u[0]-12, YS), s:[0.22,0.7,0.45], rotY:-(u[0]-12)*rad, m:u[3] }));
+      a.push(mk(ind(u[1], u[2]), { k:'svm', f:'box', p:pol(1.28, u[0]+12, YS), s:[0.22,0.7,0.45], rotY:-(u[0]+12)*rad, m:u[3] }));
+    });
+    a.push(mk(ind('Batterie lithium-ion, pour le lancement', 'Lithium-ion battery, for launch'), { k:'svm', f:'box', p:pol(1.25, 150, YS-0.15), s:[0.2,0.3,0.4], rotY:-150*rad, m:BATT }));
+    a.push(mk(ind('Régulation et distribution de l\'énergie', 'Power control and distribution'), { k:'svm', f:'box', p:pol(1.25, 330, YS-0.1), s:[0.2,0.4,0.5], rotY:-330*rad, m:ELEC }));
+    return a;
+  }
+
+  /* ---------------- Webb : module de service sous le bouclier, y de −5,06 à −3,47 ---------------- */
+  function jwst(){
+    var a = [], Y = -4.27;
+    a.push(mk(ind('Réservoir d\'hydrazine : 168 kg au lancement', 'Hydrazine tank: 168 kg at launch'), { k:'bus', f:'sph', p:[-0.55,Y,0.3], r:0.45, m:TANK }));
+    a.push(mk(ind('Réservoir de peroxyde d\'azote : 133 kg au lancement', 'Dinitrogen tetroxide tank: 133 kg at launch'), { k:'bus', f:'sph', p:[0.55,Y,0.3], r:0.36, m:TANK2 }));
+    [-0.3, 0.3].forEach(function(dx){ a.push(mk(ind('Réservoir d\'hélium : 2 réservoirs, ils mettent les ergols sous pression', 'Helium tank: 2 tanks, they pressurise the propellants'), { k:'bus', f:'sph', p:[dx,Y+0.3,-0.55], r:0.2, m:GAS })); });
+    for (var i=0;i<6;i++) a.push(mk(ind('Roue de réaction : 6 roues, elles orientent l\'observatoire sans consommer d\'ergols', 'Reaction wheel: 6 wheels, they turn the observatory without using propellant'), { k:'bus', f:'disc', p:[-1.0 + (i%3)*1.0, Y-0.5, i<3 ? 1.35 : -1.3], r:0.19, h:0.11, ax:'y', m:WHEEL }));
+    a.push(mk(ind('Compresseur du cryoréfrigérateur de MIRI : il refroidit l\'instrument à 7 K', 'MIRI cryocooler compressor: it cools the instrument to 7 K'), { k:'bus', f:'box', p:[-1.0,Y+0.1,-1.3], s:[0.6,0.6,0.7], m:COOL }));
+    a.push(mk(ind('Commande et données : processeur et enregistreur de 58,9 Go', 'Command and data handling: processor and 58.9 GB recorder'), { k:'bus', f:'box', p:[1.05,Y+0.1,-1.3], s:[0.5,0.6,0.7], m:COMM }));
+    a.push(mk(ind('Énergie : régulateur, distribution et batterie lithium-ion', 'Power: regulator, distribution and lithium-ion battery'), { k:'bus', f:'box', p:[1.1,Y+0.1,1.5], s:[0.5,0.6,0.6], m:BATT }));
+    a.push(mk(ind('Émetteurs et récepteurs en bandes S et Ka', 'S-band and Ka-band transmitters and receivers'), { k:'bus', f:'box', p:[-1.1,Y+0.1,1.5], s:[0.5,0.6,0.6], m:COMM }));
+    return a;
+  }
+
+  var D = { hubble:hubble(), euclid:euclid(), gaia:gaia(), jwst:jwst() };
+  var SRC = {
+    hubble:['NASA, guide de la mission SM3B, section 5', 'NASA, SM3B Media Reference Guide, section 5'],
+    euclid:['Racca et al. 2016', 'Racca et al. 2016'],
+    gaia:['Gaia Collaboration, Prusti et al. 2016 ; ESA ; Spaceflight101', 'Gaia Collaboration, Prusti et al. 2016; ESA; Spaceflight101'],
+    jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus']
   };
-  var AX = { x:new THREE.Euler(0, 0, Math.PI/2), y:new THREE.Euler(0, 0, 0), z:new THREE.Euler(Math.PI/2, 0, 0) };
+  /* Webb : seul le module de service est coupé, le plan passe par son centre */
+  var CUT = { jwst:{ parts:['bus'] } };
+
+  var AX = { x:[0, 0, -PI/2], y:[0, 0, 0], z:[PI/2, 0, 0] }, UP = new THREE.Vector3(0, 1, 0);
   function geom(e){
+    var pts, i, g, sh, hl;
     if (e.f === 'box') return new THREE.BoxGeometry(e.s[0], e.s[1], e.s[2]);
-    if (e.f === 'sph') return new THREE.SphereGeometry(e.r, 24, 16);
-    if (e.f === 'cyl') return new THREE.CylinderGeometry(e.r, e.r, e.h, 28, 1, !!e.open);
-    if (e.f === 'torus') return new THREE.TorusGeometry(e.r, e.tube, 6, 64);
+    if (e.f === 'sph') return new THREE.SphereGeometry(e.r, 28, 18);
+    if (e.f === 'cyl' || e.f === 'disc') return new THREE.CylinderGeometry(e.r, e.r, e.h, 40, 1, !!e.open);
+    if (e.f === 'cone') return new THREE.CylinderGeometry(e.r1, e.r2, e.h, 40, 1, !!e.open);
+    if (e.f === 'torus') return new THREE.TorusGeometry(e.r, e.tube, 8, 72);
     if (e.f === 'plate') return new THREE.BoxGeometry(e.s[0], e.s[1], 0.04);
-    if (e.f === 'disc'){
-      if (!e.hole) return new THREE.CylinderGeometry(e.r, e.r, e.h, 48);
-      var sh = new THREE.Shape(); sh.absarc(0, 0, e.r, 0, Math.PI*2, false);
-      var hl = new THREE.Path(); hl.absarc(0, 0, e.hole, 0, Math.PI*2, true); sh.holes.push(hl);
-      var g = new THREE.ExtrudeGeometry(sh, { depth:e.h, bevelEnabled:false, curveSegments:48 }); g.translate(0, 0, -e.h/2); g.rotateX(-Math.PI/2); return g;
+    if (e.f === 'strut'){ var A = new THREE.Vector3().fromArray(e.a), B = new THREE.Vector3().fromArray(e.b); return new THREE.CylinderGeometry(e.r, e.r, A.distanceTo(B), 6); }
+    if (e.f === 'tank'){
+      pts = []; var hc = Math.max(0, e.h/2 - e.r);
+      for (i=0;i<=8;i++){ var t = -PI/2 + i/8*PI/2; pts.push(new THREE.Vector2(Math.cos(t)*e.r, -hc + Math.sin(t)*e.r)); }
+      for (i=0;i<=8;i++){ var u = i/8*PI/2; pts.push(new THREE.Vector2(Math.cos(u)*e.r, hc + Math.sin(u)*e.r)); }
+      return new THREE.LatheGeometry(pts, 24);
+    }
+    if (e.f === 'mirror'){                      /* face réfléchissante concave tournée vers +y, flèche r²/2R */
+      pts = []; var r0 = e.hole || 0.001;
+      for (i=0;i<=12;i++){ var r = r0 + (e.r - r0)*i/12; pts.push(new THREE.Vector2(r, r*r/(2*e.R))); }
+      pts.push(new THREE.Vector2(e.r, -e.h)); pts.push(new THREE.Vector2(r0, -e.h)); pts.push(new THREE.Vector2(r0, r0*r0/(2*e.R)));
+      return new THREE.LatheGeometry(pts, 64);
+    }
+    if (e.f === 'sector'){                      /* anneau ou secteur d'anneau, extrudé le long de z */
+      sh = new THREE.Shape(); sh.absarc(0, 0, e.r2, e.a1*rad, e.a2*rad, false);
+      if (e.a2 - e.a1 >= 360){ hl = new THREE.Path(); hl.absarc(0, 0, e.r1, 0, PI*2, true); sh.holes.push(hl); }
+      else { sh.absarc(0, 0, e.r1, e.a2*rad, e.a1*rad, true); sh.closePath(); }
+      g = new THREE.ExtrudeGeometry(sh, { depth:e.h, bevelEnabled:false, curveSegments:48 }); g.translate(0, 0, -e.h/2); return g;
     }
   }
-  /* construit les éléments d'une maquette ; rangés dans un groupe caché tant que la coupe est inactive */
+  /* construit les éléments d'une maquette ; cachés tant que la coupe est inactive */
   function build(M){
     var list = D[M.t.id]; if (!list) return null;
     var grp = new THREE.Group(); grp.name = 'interieur'; grp.visible = false;
-    M.interior = [];
+    M.interior = []; M.cut = CUT[M.t.id] || null;
     list.forEach(function(e){
       var mat = new THREE.MeshStandardMaterial({ color:e.m.color, metalness:e.m.metalness, roughness:e.m.roughness, side:THREE.DoubleSide, emissive:e.m.em || 0x000000 });
       var o = new THREE.Mesh(geom(e), mat);
-      o.position.fromArray(e.p);
-      if (e.ax && e.f !== 'box') o.rotation.copy(AX[e.ax]);
-      if (e.f === 'plate') o.lookAt(new THREE.Vector3().fromArray(e.p).add(new THREE.Vector3().fromArray(e.n)));
-      if (e.rot !== undefined) o.rotation.z = e.rot;
+      if (e.f === 'strut'){
+        var A = new THREE.Vector3().fromArray(e.a), B = new THREE.Vector3().fromArray(e.b);
+        o.position.copy(A).add(B).multiplyScalar(0.5); o.quaternion.setFromUnitVectors(UP, B.clone().sub(A).normalize());
+      } else {
+        o.position.fromArray(e.p);
+        if (e.f === 'plate') o.lookAt(new THREE.Vector3().fromArray(e.p).add(new THREE.Vector3().fromArray(e.n)));
+        else if (e.radial !== undefined) o.quaternion.setFromUnitVectors(UP, new THREE.Vector3(Math.cos(e.radial*rad), Math.sin(e.radial*rad), 0));       /* axe radial autour de z */
+        else if (e.radialY !== undefined) o.quaternion.setFromUnitVectors(UP, new THREE.Vector3(Math.cos(e.radialY*rad), 0, Math.sin(e.radialY*rad)));   /* axe radial autour de y */
+        else if (e.rot !== undefined) o.rotation.z = e.rot;
+        else if (e.rotY !== undefined) o.rotation.y = e.rotY;
+        else if (e.ax && e.f !== 'box' && e.f !== 'sector' && e.f !== 'sph') o.rotation.fromArray(AX[e.ax]);
+      }
       o.castShadow = o.receiveShadow = true;
-      o.userData.part = e.k; o.userData.label = e.l; o.userData.labelEn = e.en; o.userData.interior = true;
+      o.userData.part = e.k; o.userData.label = e.l; o.userData.labelEn = e.en; o.userData.interior = true; o.userData.clip = !!e.clip;
       var P = M.parts[e.k]; o.userData.base = o.position.clone(); o.userData.ex = P ? P.off.clone() : new THREE.Vector3();
       o.layers.set(31);
       grp.add(o); M.interior.push(o); M.meshes.push(o); M.mats.push(mat); if (P) P.meshes.push(o);
@@ -3171,9 +3284,9 @@ var INTERIOR = (function(){
   function show(M, on){
     if (!M || !M.interiorGroup) return;
     M.interiorGroup.visible = on;
-    M.interior.forEach(function(o){ if (on) o.layers.set(0); else o.layers.set(31); });
+    M.interior.forEach(function(o){ o.layers.set(on ? 0 : 31); });
   }
-  return { build:build, show:show, DATA:D };
+  return { build:build, show:show, DATA:D, SRC:SRC };
 })();
 
 /* =================================================================
@@ -3783,7 +3896,7 @@ function pick(x, y){
   if (!current) return null;
   var hits = ray.intersectObjects(current.meshes, false), clip = renderer.localClippingEnabled;
   for (var i=0;i<hits.length;i++){
-    if (clip && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
+    if (clip && hits[i].object.material.clippingPlanes && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
     var u = hits[i].object.userData;
     if (u.part) return { part:u.part, label:u.interior ? (OBS_LANG === 'en' ? u.labelEn : u.label) : null };
   }
@@ -3822,13 +3935,20 @@ var cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), cutRoot = null, c
 function applyCut(){
   var on = !!(S.cut && S.mode === 'tele');
   renderer.localClippingEnabled = on;
-  if (cutRoot && cutRoot !== (current && current.root)) cutRoot.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } }); });
+  function each(root, fn){ root.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ fn(m, o); }); }); }
+  if (cutRoot && cutRoot !== (current && current.root)) each(cutRoot, function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } });
   for (var id in models) if (window.INTERIOR) INTERIOR.show(models[id], on && models[id] === current);
-  $('cut-note').hidden = !(on && current && current.interior);
-  cutRoot = current && current.root; if (cutRoot) cutC = new THREE.Box3().setFromObject(cutRoot).getCenter(new THREE.Vector3());
-  cutRoot && cutRoot.traverse(function(o){ if (!o.material) return; [].concat(o.material).forEach(function(m){
+  var note = $('cut-note'), has = on && current && current.interior;
+  note.hidden = !has;
+  if (has){ var en = OBS_LANG === 'en', src = INTERIOR.SRC[current.t.id]; $('cut-src').textContent = src ? (en ? 'Sources: ' + src[1] + '.' : 'Sources : ' + src[0] + '.') : ''; }
+  cutRoot = current && current.root; if (!cutRoot) return;
+  /* la coque est coupée ; l'intérieur reconstruit reste entier, sauf ses enveloppes (clip) ; Webb : seul le module de service s'ouvre */
+  var only = current.cut && current.cut.parts, P0 = only && current.parts[only[0]];
+  cutC = P0 ? P0.center.clone().applyMatrix4(cutRoot.matrixWorld) : new THREE.Box3().setFromObject(current.inner).getCenter(new THREE.Vector3());
+  each(cutRoot, function(m, o){
     if (m.userData.side0 === undefined) m.userData.side0 = m.side;
-    m.clippingPlanes = on ? [cutPlane] : null; m.side = on ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; }); });
+    var u = o.userData, c = on && (u.interior ? u.clip : (!only || only.indexOf(u.part) >= 0));
+    m.clippingPlanes = c ? [cutPlane] : null; m.side = c || u.interior ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; });
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
