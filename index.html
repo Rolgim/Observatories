@@ -3355,7 +3355,7 @@ var DEPLOY = (function(){
 
   /* repères (repère de la maquette, mètres) */
   var BUS_TOP = -3.47, PAL_F = 3.4, PAL_A = -2.6, PAL_Y = -3.6, MB = 1.05, TOWER = 1.22,
-      WING_X = 1.71, WING_Z = 1.3, SEC_H = [0, -1.75, 2.0], SEC_TOP = [0, 4.62, 1.91], FLAP_H = [-9.16, -1.5];
+      WING_X = 1.71, WING_Z = 1.3, SEC_H = [0, -1.75, 2.0], SEC_FOLD = { secondary_2:[4.62, 1.91], secondary_7:[5.6, 2.25] }, SEC_M = [0.9, 8.4], FLAP_H = [-9.16, -1.5];
   var UPPER = { primary:1, secondary:1, aos:1, isim:1 };
 
   var M3 = THREE.Matrix3, V3 = THREE.Vector3;
@@ -3378,16 +3378,26 @@ var DEPLOY = (function(){
       /* replié en accordéon (cinq panneaux) puis rabattu contre la face arrière du module */
       if (g.solar < 1 && p.z < -1.8){ p.z = -1.8 + (p.z + 1.8)*(0.22 + 0.78*g.solar); rotX(p, n, -4.0, -1.8, -(1 - g.solar)*85*rad); }
     } else if (part === 'hga'){
-      if (g.hga < 1) rotX(p, n, -5.0, -1.5, (1 - g.hga)*80*rad);
+      if (g.hga < 1 && p.x < 0) rotX(p, n, -5.0, -1.5, (1 - g.hga)*80*rad);   /* la parabole seule ; les petites antennes à x > 0 restent fixées au module */
     } else if (UPPER[part]){
-      if (part === 'primary' && Math.abs(p.x) > WING_X){
+      /* ailes : segments (primary) et leur structure arrière, rangée par la maquette avec le module d'instruments (isim) */
+      if ((part === 'primary' || (part === 'isim' && p.z > 0.6)) && Math.abs(p.x) > WING_X){
         var w = p.x > 0 ? g.wingS : g.wingP;
         if (w < 1) rotY(p, n, (p.x > 0 ? 1 : -1)*WING_X, WING_Z, (p.x > 0 ? 1 : -1)*(1 - w)*100*rad);
       }
       if (part === 'secondary' && g.secondary < 1){
         var f = 1 - g.secondary;
-        if (name === 'secondary_2'){ var q = 0.2 + 0.8*g.secondary; p.y = SEC_TOP[1] + (p.y - SEC_TOP[1])*q; p.z = SEC_TOP[2] + (p.z - SEC_TOP[2])*q; }
-        else rotX(p, n, SEC_H[1], SEC_H[2], -f*60*rad);
+        var A = SEC_FOLD[name];
+        if (A){
+          /* bras supérieur : reste tendu entre sa charnière en haut du miroir (A) et le miroir secondaire, qui bascule ;
+             il raccourcit en se repliant (genou), sans jamais se détacher de ses deux extrémités */
+          var ang = -f*60*rad, c = Math.cos(ang), sn = Math.sin(ang), sy = SEC_M[0] - SEC_H[1], sz = SEC_M[1] - SEC_H[2];
+          var ny = SEC_H[1] + sy*c - sz*sn, nz = SEC_H[2] + sy*sn + sz*c;                       /* position actuelle du secondaire */
+          var uy = SEC_M[0] - A[0], uz = SEC_M[1] - A[1], dy = p.y - A[0], dz = p.z - A[1], t = (dy*uy + dz*uz)/(uy*uy + uz*uz);
+          var q = 0.3 + 0.7*g.secondary;
+          p.y = A[0] + t*(ny - A[0]) + (dy - t*uy)*q; p.z = A[1] + t*(nz - A[1]) + (dz - t*uz)*q;
+        }
+        else if (name !== 'secondary') rotX(p, n, SEC_H[1], SEC_H[2], -f*60*rad);                                /* « secondary » : petit élément fixé en haut du primaire */
       }
       if (g.tower < 1) p.y -= (1 - g.tower)*TOWER;
     }
