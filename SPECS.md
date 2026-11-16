@@ -35,7 +35,7 @@ Limites connues :
 | Lot | État |
 |---|---|
 | D. Trajet de la lumière | D1, D2 et D3 livrés (D3 avec surlignage dans le schéma) ; D4 à faire |
-| E. Vraies données | E1 et E2 livrés : image ou spectre réel pour 13 instruments sur 15 ; E3 non commencé |
+| E. Vraies données | E1 et E2 livrés : exemple réel pour les 15 instruments (FGS de Hubble et de JWST ajoutés le 16 novembre) ; E3 non commencé |
 | F. Orbites et temps | F1, F2 et F4 livrés (orbites réelles, Hubble en direct, pointés réels, ciel observable) ; F3 à faire |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
@@ -258,3 +258,5 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Télescopes au sol.
 - Comptes utilisateurs, contenu modifiable en ligne.
 - Simulation physique (thermique, orbitographie précise).
+
+**Ajouté le 16 novembre 2026 : exemples des deux FGS.** Hubble : 13,5 h de photométrie de l'étoile HD 17156 (programme 11945, pose fb8u5502m), somme des quatre photomultiplicateurs à 40 Hz, moyennée par 2 min et divisée par un modèle des oscillations orbitales (dispersion restante ≈ 168 ppm). Le programme visait des transits de HD 17156 b, mais aucune des longues poses examinées n'en montre un net : la courbe est présentée comme une mesure de précision, sans parler de transit. JWST : image FGS1 du champ d'étalonnage astrométrique du Grand Nuage de Magellan (programme 1086), lue par son identifiant d'observation (la recherche par position dépasse 10 min dans ce champ dense).
