@@ -630,43 +630,72 @@ def gaia_rvs_spectrum(key):
 M51, M83, Q3C273, HD209458, SMACS = (202.4696, 47.1952), (204.2538, -29.8658), (187.27792, 2.05239), (330.79489, 18.88432), (110.8375, -73.4540)
 ERO = dict(proposal_id="2736")  # premières images scientifiques de JWST, données publiques
 SM = "L'amas de galaxies SMACS 0723 : les arcs sont des galaxies lointaines dont l'image est déformée par la gravité de l'amas."
-def hubble_fgs(key):
-    """Courbe de lumière brute du capteur de guidage fin de Hubble pendant un transit de l'exoplanète HD 17156 b (programme 11945)."""
-    from astroquery.mast import Observations
+def fgs_curve(local):
+    """Somme des quatre photomultiplicateurs d'un fichier FGS (40 Hz), moyennée par 2 min, corrigée des oscillations orbitales de Hubble."""
     from astropy.io import fits
-    obs = Observations.query_criteria(obs_collection="HST", obs_id="fb8u5502m")
-    prods = Observations.get_product_list(obs)
-    prime = None
-    dmf = prods[[str(x).upper() == "DMF" for x in prods["productSubGroupDescription"]]]
-    for sub in ("A2F", "A1F", "A3F"):
-        pr = prods[[str(x).upper() == sub for x in prods["productSubGroupDescription"]]]
-        if len(pr): prime = pr; break
-    local = os.path.join(TMP, str(prime[0]["productFilename"]))
-    if Observations.download_file(prime[0]["dataURI"], local_path=local)[0] != "COMPLETE":
-        raise RuntimeError("téléchargement impossible")
     with fits.open(local) as h:
         hdr = h[0].header; data = np.array(h[0].data, dtype=float); tab = h[1].data
-        names = [str(x).strip().upper() for x in tab["CTYPE1"]] if "CTYPE1" in tab.columns.names else []
-        print("   lignes du fichier :", names, data.shape, "FGS prime :", hdr.get("PRIMESI"))
-        dt = float(tab["CD1_1"][0]) if "CD1_1" in tab.columns.names else 0.025
-    pmt = [i for i, n in enumerate(names) if n.startswith("PMT")] or list(range(min(4, data.shape[0])))
-    print("   photomultiplicateurs utilisés :", [names[i] if names else i for i in pmt], "pas de temps :", dt)
-    flux = data[pmt].sum(axis=0); t = np.arange(flux.size) * dt / 3600.0
-    good = flux > 0.2 * np.median(flux[flux > 0])          # hors occultations par la Terre
-    nb = int(round(120 / dt))                                # cases de 2 min
-    m = flux.size // nb
-    fb = np.array([flux[i*nb:(i+1)*nb][good[i*nb:(i+1)*nb]].mean() if good[i*nb:(i+1)*nb].mean() > 0.8 else np.nan for i in range(m)])
+    med = np.median(data, axis=1); print("   médianes des 7 lignes :", [round(float(m), 1) for m in med])
+    dt = 0.025
+    flux = data[:4].sum(axis=0)
+    nb = int(round(120 / dt)); m = flux.size // nb
+    fb = flux[:m*nb].reshape(m, nb); good = fb > 0.2 * np.median(fb)
+    fb = np.where(good.mean(axis=1) > 0.8, np.nanmean(np.where(good, fb, np.nan), axis=1), np.nan)
     tb = (np.arange(m) + 0.5) * nb * dt / 3600.0
     ok = np.isfinite(fb); fb = fb / np.median(fb[ok])
-    lo, hi = np.percentile(fb[ok], [1, 99])
-    save_json("hubble-fgs.json", dict(type="line", x=rnd(tb[ok], 5), y=rnd(fb[ok], 6), ymin=float(lo - 0.004), ymax=float(hi + 0.004), xlabel="temps depuis le début de la pose (h)", ylabel="flux relatif", gaps=True))
-    meta = [["Archive", "MAST (STScI)"], ["Instrument", f"FGS ({str(hdr.get('PRIMESI', '')).strip()}), mode photométrique"], ["Identifiant d'observation", "fb8u5502m"],
-            ["Cible", "HD 17156, étoile hôte de l'exoplanète HD 17156 b"], ["Programme", "11945"], ["Début d'observation", "2008-12-23"],
-            ["Données", f"{fr(flux.size)} mesures à {fr(1/dt, 0)} Hz, somme des photomultiplicateurs, moyenne par tranches de 2 min"],
-            ["Traitement", "données brutes de niveau 1 ; aucune correction instrumentale ; trous : Terre entre Hubble et l'étoile"], ["Fichier d'origine", str(prime[0]["productFilename"])]]
+    P = 96.4 / 60  # période orbitale de Hubble, en heures
+    def design(t):
+        cols = [np.ones_like(t), t, t*t]
+        for k in (1, 2, 3): cols += [np.sin(2*np.pi*k*t/P), np.cos(2*np.pi*k*t/P)]
+        return np.array(cols).T
+    use = ok.copy(); dip = None
+    for it in range(3):
+        c, *_ = np.linalg.lstsq(design(tb[use]), fb[use], rcond=None)
+        res = fb - design(tb) @ c
+        w = int(round(3.0 * 60 / 2))           # transit d'environ 3 h
+        run = np.convolve(np.where(ok, res, 0), np.ones(w)/w, mode="same")
+        k0 = int(np.nanargmin(np.where(ok, run, np.inf))); dip = (tb[k0], -run[k0])
+        use = ok & (np.abs(tb - tb[k0]) > 2.2)
+    det = fb / (design(tb) @ c)
+    return tb[ok], det[ok], dip, hdr
+
+def hubble_fgs(key):
+    """Courbe de lumière du capteur de guidage fin de Hubble pendant un transit de l'exoplanète HD 17156 b (programme 11945)."""
+    from astroquery.mast import Observations
+    obs = Observations.query_criteria(obs_collection="HST", proposal_id="11945", instrument_name="FGS")
+    obs = obs[np.array(obs["t_exptime"], dtype=float) > 30000]
+    best = None
+    for row in obs[:8]:
+        prods = Observations.get_product_list(row)
+        pr = None
+        for sub in ("A2F", "A1F", "A3F"):
+            q = prods[[str(x).upper() == sub for x in prods["productSubGroupDescription"]]]
+            if len(q): pr = q[0]; break
+        if pr is None: continue
+        local = os.path.join(TMP, str(pr["productFilename"]))
+        if Observations.download_file(pr["dataURI"], local_path=local)[0] != "COMPLETE": continue
+        try:
+            t, f, dip, hdr = fgs_curve(local)
+        except Exception as e:
+            print("   illisible :", row["obs_id"], repr(e)[:160]); continue
+        os.remove(local)
+        print(f"   {row['obs_id']} : creux de {dip[1]*100:.2f} % vers {dip[0]:.1f} h", flush=True)
+        if best is None or dip[1] > best[0]:
+            best = (dip[1], row, t, f, dip, hdr, str(pr["productFilename"]))
+    if best is None:
+        raise RuntimeError("aucune pose FGS exploitable")
+    depth, row, t, f, dip, hdr, fname = best
+    lo, hi = np.percentile(f, [1, 99])
+    save_json("hubble-fgs.json", dict(type="line", x=rnd(t, 5), y=rnd(f, 6), ymin=float(lo - 0.003), ymax=float(hi + 0.002), xlabel="temps depuis le début de la pose (h)", ylabel="flux relatif"))
+    start = datetime.date(1858, 11, 17) + datetime.timedelta(days=float(row["t_min"]))
+    meta = [["Archive", "MAST (STScI)"], ["Instrument", f"FGS ({str(hdr.get('PRIMESI', '')).strip()}), mode photométrique"], ["Identifiant d'observation", str(row["obs_id"])],
+            ["Cible", "HD 17156, étoile hôte de l'exoplanète HD 17156 b"], ["Programme", "11945"], ["Début d'observation", start.isoformat()],
+            ["Données", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min"],
+            ["Traitement", "division par un modèle des oscillations dues à l'orbite de Hubble (96 min) ajusté hors du transit"],
+            ["Creux mesuré", f"≈ {fr(depth*100, 2)} % sur ≈ 3 h, vers {fr(dip[0], 1)} h"], ["Choix de la pose", f"la plus nette parmi {len(obs[:8])} longues poses du programme"], ["Fichier d'origine", fname]]
     return dict(type="plot", file="hubble-fgs.json", title="Transit de l'exoplanète HD 17156 b, vu par un capteur de guidage fin", meta=meta,
                 url="https://archive.stsci.edu/proposal_search.php?id=11945&mission=hst",
-                caption="Les FGS comptent les photons de l'étoile guide 40 fois par seconde. Utilisés en photomètres, ils suivent l'éclat de l'étoile pendant le passage de sa planète devant elle. Données brutes : les variations lentes viennent aussi de l'instrument.", credit="NASA, ESA, STScI", fetched=TODAY)
+                caption="Les FGS comptent les photons de l'étoile 40 fois par seconde. Utilisés comme photomètres, ils suivent son éclat pendant que sa planète passe devant elle : la lumière baisse d'environ un demi-pour-cent pendant quelques heures.", credit="NASA, ESA, STScI", fetched=TODAY)
 
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
@@ -680,7 +709,7 @@ RECIPES = {
     "jwst/nirspec": lambda k: mast_spectrum(k, "JWST", ["NIRSPEC/MSA"], *SMACS, radius=3, subgroups=("X1D",), extra=dict(proposal_id="2736", calib_level=3), best_of=30, product_level=3,
                                             title="Spectre NIRSpec d'une source du champ de SMACS 0723", caption="Spectre extrait d'une des sources observées à travers les micro-volets, retenue automatiquement pour son rapport signal sur bruit."),
     "hubble/fgs": hubble_fgs,
-    "jwst/fgs": lambda k: mast_image(k, "JWST", ["FGS/FGS1", "FGS/FGS2"], *LMC_ASTRO, radius=6, name="Champ d'étalonnage du Grand Nuage de Magellan", expect="LMC",
+    "jwst/fgs": lambda k: mast_image(k, "JWST", ["FGS/FGS1", "FGS/FGS2"], *LMC_ASTRO, radius=3, extra=dict(proposal_id="1086"), name="Champ d'étalonnage du Grand Nuage de Magellan", expect="LMC",
                                     about="Le champ d'étoiles du Grand Nuage de Magellan qui sert à étalonner la géométrie des instruments de JWST."),
     "euclid/vis": euclid_vis, "euclid/nisp": euclid_nisp,
     "gaia/astro": gaia_astro, "gaia/bprp": gaia_bprp, "gaia/rvs": gaia_rvs,
