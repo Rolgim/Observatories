@@ -8,6 +8,7 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | Gaia | jeu de données Gaia Sky `mission-gaia` (OBJ, Toni Sagristà) | `map_Kn` → `map_Bump` dans le .mtl pour garder les cartes de normales, OBJ → glTF, quantification ; les pièces sont les objets nommés du fichier |
 | JWST | NASA 3D Resources, « James Webb Space Telescope (B) » (GLB Draco) | décodage Draco (`gltf-transform copy`), soudure → `jwst_src.glb`, redécoupage (`jwst_cls.js`), quantification |
 | Hubble | jeu de données Gaia Sky `spacecraft-hst` (modèle NASA VTAD) | textures 1024 px → `hst_tex.glb`, redécoupage (`seg_hst.js`), quantification |
+| Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (GLB Draco, conception AFTA 2015) | décodage Draco, soudure, simplification (`--ratio 0.08 --error 0.004`), redécoupage (`roman_cls.js`), puis `slim.mjs` : simplification sur les seules positions, normales recalculées par face, quantification (≈ 3 Mo au lieu de 7,8) |
 
 ## Redécoupage en pièces
 

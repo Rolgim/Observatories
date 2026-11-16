@@ -18,7 +18,21 @@ BODIES = {  # identifiants Horizons, période, pas
     "jwst":   dict(id="-170",    start="2022-02-01", stop=TODAY.isoformat(), step="2d", name="James Webb Space Telescope"),
     "euclid": dict(id="-680",    start="2023-08-15", stop=TODAY.isoformat(), step="2d", name="Euclid"),
     "gaia":   dict(id="-139479", start="2014-02-01", stop="2025-03-15",      step="3d", name="Gaia"),
+    # Roman : identifiant Horizons cherché par son nom (voir lookup) ; lancé le 30 août 2026
+    "roman":  dict(id="?Roman",   start="2026-09-05", stop=TODAY.isoformat(), step="2d", name="Nancy Grace Roman Space Telescope"),
 }
+
+def lookup(name):
+    """Identifiant Horizons d'un engin spatial à partir de son nom (API horizons_lookup du JPL)."""
+    import urllib.request, urllib.parse
+    url = "https://ssd-api.jpl.nasa.gov/api/horizons_lookup.api?" + urllib.parse.urlencode(dict(sstr=name, group="sct"))
+    with urllib.request.urlopen(url, timeout=60) as r:
+        res = json.load(r).get("result", [])
+    print("   recherche", name, ":", [(x.get("name"), x.get("spkid")) for x in res], flush=True)
+    for x in res:
+        if "roman" in (x.get("name") or "").lower() or "roman" in " ".join(x.get("alias") or []).lower():
+            return x["spkid"]
+    raise RuntimeError("aucun identifiant trouvé pour " + name)
 
 def vectors(body, start, stop, step):
     from astroquery.jplhorizons import Horizons
@@ -30,6 +44,8 @@ def main():
     for key, b in BODIES.items():
         print("==", key, flush=True)
         try:
+            if b["id"].startswith("?"):
+                b["id"] = lookup(b["id"][1:])
             jd, r = vectors(b["id"], b["start"], b["stop"], b["step"])
             jd2, s = vectors("10", b["start"], b["stop"], b["step"])  # Soleil vu de la Terre
             if len(jd) != len(jd2):

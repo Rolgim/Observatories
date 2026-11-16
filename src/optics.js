@@ -96,12 +96,25 @@ var Optics = (function(){
       s += T(cx, cy - 64, 'combineur de faisceaux', 'middle') + T(cx, cy + r + 16, 'Plan focal commun, 106 CCD', 'middle', true);
       s += T(cx, 16, 'angle entre les deux lignes de visée : 106,5°', 'middle');
       return svg(W, H, s, 'Schéma optique de Gaia, vue de dessus');
+    },
+    /* Roman : schéma de principe (aucune prescription optique publique consultée) */
+    roman: function(){
+      var W = 560, H = 250, s = '', y0 = 118;
+      s += P([[40, y0-80], [300, y0-80]], SOFT, 1, '4 3') + P([[40, y0+80], [300, y0+80]], SOFT, 1, '4 3');
+      s += G('ota', P([[300, y0-74], [306, y0-40], [308, y0-14]], INK, 4) + P([[300, y0+74], [306, y0+40], [308, y0+14]], INK, 4) + L(118, y0-20, 118, y0+20, INK, 4));
+      s += P([[20, y0-62], [304, y0-62], [118, y0-14], [330, y0+4]], RAY, 1.2) + P([[20, y0+62], [304, y0+62], [118, y0+14], [330, y0-4]], RAY, 1.2);
+      s += G('instr', L(340, y0-10, 352, y0+10, INK, 4) + P([[346, y0], [346, y0+70], [430, y0+70]], RAY, 1.2) + L(430, y0+58, 444, y0+82, INK, 4) +
+        P([[437, y0+70], [500, y0+30]], RAY, 1.2) + L(492, y0+18, 512, y0+42, DET, 5) +
+        P([[346, y0], [420, y0], [420, y0-60], [500, y0-60]], RAY, 1.2, '4 3') + L(500, y0-72, 500, y0-48, DET, 4));
+      s += T(298, y0-88, 'Miroir primaire, 2,4 m', 'end', true) + T(118, y0-30, 'secondaire', 'middle', true);
+      s += T(392, y0+100, 'optique arrière : tertiaire', 'middle') + T(516, y0+30, 'WFI', null, true) + T(492, y0-64, 'coronographe', 'end', true) + T(452, y0-48, 'faisceau collimaté', 'middle');
+      return svg(W, H, s, 'Schéma optique de Roman');
     }
   };
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -126,7 +139,13 @@ var Optics = (function(){
              'Chacun a un miroir primaire rectangulaire de 1,45 × 0,50 m, puis un secondaire et un tertiaire.',
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
-      specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] }
+      specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    roman:{ title:'Un anastigmat à trois miroirs, construit autour d\'un télescope existant', scale:'Schéma de principe : ni les tailles ni les distances ne sont à l\'échelle. Seuls les détecteurs, plus bas, le sont.',
+      steps:['Le miroir primaire de 2,4 m, de la taille de celui de Hubble, et le secondaire forment l\'avant du télescope ; ils travaillent vers 265 K.',
+             'Derrière le primaire, l\'optique arrière reprend le faisceau : un miroir orientable, un miroir de renvoi, puis le miroir tertiaire.',
+             'Le tertiaire corrige les aberrations sur un champ très large et forme l\'image, ouverte à f/7,9, sur les 18 détecteurs du WFI.',
+             'Une autre branche, de cinq miroirs dont un orientable, envoie un faisceau collimaté vers le coronographe.'],
+      specs:[['Combinaison','anastigmat à trois miroirs'],['Ouverture','2,4 m · utile 2,36 m'],['Obstruction centrale','30,3 % du diamètre'],['Faisceau vers WFI','f/7,9'],['Température des miroirs','≈ 265 K (primaire et secondaire)']] }
   };
 
   /* ---------- plans focaux, en millimètres ---------- */
@@ -139,6 +158,8 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.2,49.6,2,2,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,6,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'VIS mesure environ 30 cm de côté : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace.' },
+    roman:{ groups:[ grid(6,3,41,41,5,5,'#B8860B',['WFI','18 détecteurs de 4096 × 4096 px, 10 µm']) ],
+             note:'Sur le télescope, les 18 détecteurs sont disposés en arc, non en grille régulière.' },
     gaia:{ groups:[ grid(17,7,45,59,4,1,function(i, j){ if (i===0) return j===3 ? null : (j===0||j===1||j===2) ? (j===2 ? GC.aux : GC.aux) : null; if (i<=2) return GC.sm; if (i<=10) return GC.af; if (i===11) return j===3 ? GC.aux : GC.af; if (i===12) return GC.bp; if (i===13) return GC.rp; return j<4 ? GC.rvs : null; }, ['Plan focal de Gaia','106 CCD de 4500 × 1966 px, 10 × 30 µm']) ],
            key:[[GC.aux,'contrôle (angle de base, front d\'onde)'],[GC.sm,'cartographe de ciel'],[GC.af,'champ astrométrique'],[GC.bp,'photomètre bleu'],[GC.rp,'photomètre rouge'],[GC.rvs,'spectromètre RVS']],
            note:'Les étoiles traversent le plan focal de gauche à droite pendant que le satellite tourne : détection, puis astrométrie, photométrie et enfin spectroscopie.' }
@@ -163,7 +184,7 @@ var Optics = (function(){
   /* tous les plans focaux à la même échelle, pour la page « Comparer » */
   function compareFocal(OBS, NAMES){
     var W = 1000, k = 0.8, gap = 44, rows = [[], []], s = '';
-    ['gaia','euclid','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' ? 0 : 1].push({ t:t, g:g }); }); });
+    ['gaia','euclid','roman','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' || t === 'roman' ? 0 : 1].push({ t:t, g:g }); }); });
     var y = 10;
     rows.forEach(function(r){
       var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
@@ -178,8 +199,8 @@ var Optics = (function(){
       y += th + 40;
     });
     s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
-    return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des quatre observatoires à la même échelle') +
-      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
+    return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des observatoires à la même échelle') +
+      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; celui du WFI de Roman, environ 27 × 13 cm ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
   }
 
   function render(tid, name, part){

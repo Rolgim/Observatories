@@ -75,6 +75,30 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       adapter:{ name:'Launch vehicle adapter ring', desc:"The ring by which the spacecraft was attached to the top of the Falcon 9 rocket. It has no use after separation.", facts:["Interface with Falcon 9"] }
     }
   },
+  roman:{
+    agency:'NASA (with ESA, JAXA and CNES)', launch:'Launched 30 August 2026, Falcon Heavy, Kennedy',
+    sub:'Lagrange point L2, wide-field near infrared', src:'Model: NASA 3D Resources (2015 design)',
+    cmp:{ tag:'> 12 m', dim:'more than 12 m tall, deployed' },
+    desc:"Roman has the same 2.4 m mirror as Hubble, but a field of view at least a hundred times larger. Launched to L2 on 30 August 2026, it is to map dark matter, measure the expansion of the Universe with thousands of supernovae and find thousands of exoplanets by microlensing towards the centre of the Galaxy. Its first public images are expected in early 2027.",
+    sourceNote:"NASA model (NASA 3D Resources repository) showing the 2015 design ('AFTA'): the telescope that flew differs in several details, notably its soft aperture cover and hexagonal barrel. It is scaled to the 2.4 m primary mirror and has been re-cut here into seven assemblies from its geometry and materials.",
+    refs:{ data:'Roman: Delivering Data That Unlocks Discovery (newsletter, 2026)', wfi:'Roman WFI Technical (performance, v1.4, March 2026)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Height, deployed','more than 12 m'],['Launch mass','≈ 10,500 kg with propellant (2021 estimate)'],['Spacecraft bus','≈ 4 m × 2 m · 3,800 kg'],['Mission','5 years, 10-year goal'],['Launch','30 August 2026, Falcon Heavy, Kennedy (pad 39A)']] },
+      { title:'Optics', rows:[['Design','three-mirror anastigmat'],['Primary mirror','2.4 m · effective aperture 2.36 m · donated by another federal agency'],['Central obscuration','30.3% of the diameter'],['Beam to the WFI','f/7.9'],['Mirror temperature','≈ 265 K']] },
+      { title:'WFI (wide field)', rows:[['Detectors','18 HgCdTe H4RG-10 of 4096 × 4096 px · 10 µm pixels · ≈ 300 Mpx'],['Sampling','0.11″ per pixel'],['Field','0.8° × 0.4° · 0.281 deg² excluding gaps'],['Range','0.48–2.3 µm, 8 filters'],['Spectroscopy','grism 1.00–1.93 µm (R ≈ 461 λ/µm) · prism 0.75–1.80 µm (R 80 to 180)'],['Detector temperature','89.5 K']] },
+      { title:'Coronagraph', rows:[['Role','technology demonstration: seeing planets next to bright stars'],['Range','0.4–1.0 µm'],['Masks','hybrid Lyot and shaped pupil'],['Detectors','EMCCDs supplied by ESA']] },
+      { title:'Orbit and data', rows:[['Location','halo orbit around L2, period ≈ 6 months'],['Pointing','between 54° and 126° from the Sun'],['Science link','Ka band, up to 500 Mbit/s'],['Volume','≈ 1.4 TB per day'],['Stations','White Sands (NASA), New Norcia (ESA), JAXA'],['Data','public as soon as processed, no proprietary period']] }
+    ],
+    parts:{
+      sass:{ name:'Solar array sunshield', desc:"The large panel facing the Sun. It carries the solar cells and, at the same time, keeps the telescope and instruments in shadow, which limits stray light and stabilises their temperature.", facts:["Six panels: two fixed, four deployable", "≈ 4,500 W at end of life"] },
+      barrel:{ name:'Barrel and light shade', desc:"The long enclosure around the telescope, cut at an angle at the front. It protects the optics from stray light and heat; on the real telescope it is a hexagonal composite structure holding ten baffles.", facts:["Ten internal baffles", "Carries the sunshield and the aperture cover"] },
+      cover:{ name:'Aperture cover', desc:"The cover that shielded the telescope from the Sun just after launch. Deployed once, it then blocks stray light at extreme pointing angles. On the 2015 model it is a rigid disc; the cover that flew is a soft structure.", facts:["One-time deployment", "Carries coarse Sun sensors"] },
+      ota:{ name:'Telescope (primary and secondary mirrors)', desc:"A 2.4 m telescope, the size of Hubble's, transferred to NASA by another federal agency and adapted for Roman. The first two mirrors are at the front; the third, in the aft optics, sends the light to the wide-field camera.", facts:["2.4 m primary mirror", "Mirrors near 265 K", "Existing telescope, transferred to NASA"] },
+      instr:{ name:'Instruments and carrier', desc:"The composite structure that holds the telescope and the two instruments: the wide-field camera (WFI) and the coronagraph. It reuses the technology of Webb's structure and runs near 213 K.", facts:["WFI: 18 detectors, ≈ 300 Mpx", "Coronagraph: technology demonstration", "Structure derived from Webb's, ≈ 213 K"] },
+      bus:{ name:'Spacecraft bus', desc:"The hexagonal platform at the back: power, pointing, computers, memory and propulsion. Its six electronics bays also act as radiators.", facts:["≈ 4 m × 2 m, 3,800 kg", "Six reaction wheels", "Hydrazine: four tanks, 24 thrusters", "9 TB of memory"] },
+      hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
+    }
+  },
   gaia:{
     agency:'ESA', launch:'Launched 19 December 2013, Soyuz-Fregat, Kourou',
     sub:'Lagrange point L2 (2014–2025), astrometry in visible light', src:'Model: Toni Sagristà, Gaia Sky',

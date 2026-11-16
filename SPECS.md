@@ -14,7 +14,7 @@ Public visé : **de l'étudiant à l'expert**. Conséquences sur tout le contenu
 
 ## 2. État actuel (novembre 2026)
 
-- Quatre observatoires : Hubble, JWST, Euclid, Gaia.
+- Cinq observatoires : Hubble, JWST, Euclid, Gaia et, depuis le 16 novembre, Roman.
 - Vue 3D : maquettes réelles redécoupées en pièces cliquables (8, 10, 6 et 7 pièces), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, comparaison des tailles à l'échelle.
 - Fiche par observatoire : chiffres clés, description, schéma d'orbite, cinq tableaux de caractéristiques.
 - Instruments et données : 15 instruments ; couverture spectrale, champs de vue à l'échelle, filtres, produits de données, exemple, code d'accès (astroquery, ADQL), liens vers les archives ; comparaison des instruments entre observatoires.
@@ -40,7 +40,8 @@ Limites connues :
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
 | M. Mission et traitements | livré le 16 novembre : rubrique « Mission et traitements » de la page « Mission et données » |
-| C, G, autres H | plus tard |
+| G. Autres observatoires | Roman ajouté le 16 novembre ; suite à décider (Chandra, puis XMM-Newton, Planck, Herschel si la licence ESA le permet) |
+| C, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
 
@@ -245,6 +246,13 @@ Reste : les suffixes de fichiers de Webb et de Hubble sont donnés d'après les 
 - G3. La navigation tient au-delà de six ou sept observatoires (les onglets d'en-tête ne suffiront plus) : prévoir un classement par domaine spectral ou par agence.
 
 **Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js`.
+
+**Roman, livré le 16 novembre.** Maquette NASA 3D Resources « Nancy Grace Roman Space Telescope (A) » (domaine public, conception AFTA de 2015, signalé dans la fiche), décodée, simplifiée et redécoupée en sept pièces (`tools/models/roman_cls.js`, `slim.mjs`, 3,1 Mo), mise à l'échelle sur le miroir de 2,4 m. Fiche, pièces, WFI (filtres, grisme, prisme, champ de vue, plan focal) et coronographe, trajet de la lumière (schéma de principe), mission et traitements (niveaux L1 à L5, RomanCal, MAST, aucune période réservée), ciel observable (54° à 126° du Soleil) et comparaisons, en français et en anglais, sourcés (NASA Goddard, NTRS 2021, STScI, ESA). Restes :
+- Aucune donnée scientifique publique avant début 2027 : pas d'exemple réel ni de code d'accès.
+- Trajectoire réelle : `fetch_orbits.py` cherche l'identifiant de Roman dans JPL Horizons par son nom ; tant qu'il n'est pas trouvé, la page Orbite l'annonce.
+- Masse au lancement : prévision de 2021 (≈ 10 500 kg), à remplacer par la valeur de lancement.
+- Pas d'intérieur reconstruit pour la vue en coupe.
+- Ajouter un observatoire touche encore plusieurs tables codées en dur (`app.js`, `inst-render.js`, `optics.js`, `orbits.js`, `build.js`, tests) : l'exigence d'acceptation n'est pas encore remplie.
 
 ### H. Socle technique
 

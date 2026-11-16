@@ -25,4 +25,11 @@ $GT quantize $W/tmp/jwst_seg.glb $OUT/jwst.glb --quantize-position 14 --quantize
 # ---------- Hubble: segmented already from textured source
 (cd $W && node seg_hst.js)
 $GT quantize $W/hst_seg.glb $OUT/hubble.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+# ---------- Roman: NASA model (A), Draco-decoded, simplified, segmented, slimmed
+# attendu dans $DL : roman/romanA.glb (« Nancy Grace Roman Space Telescope (A).glb » du dépôt nasa/NASA-3D-Resources)
+$GT copy $DL/roman/romanA.glb $W/tmp/roman_dec.glb >/dev/null
+$GT weld $W/tmp/roman_dec.glb $W/tmp/roman_w.glb >/dev/null
+$GT simplify $W/tmp/roman_w.glb $W/tmp/roman_s.glb --ratio 0.08 --error 0.004 >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/roman_s.glb','$W/tmp/roman_seg.glb',require('$W/roman_cls.js')).then(s=>console.log('roman',JSON.stringify(s)))"
+(cd $W && node slim.mjs $W/tmp/roman_seg.glb $OUT/roman.glb 0.25 0.002)
 ls -la $OUT

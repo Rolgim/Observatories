@@ -274,5 +274,71 @@ var TELESCOPES = [
         desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
         facts:[["106 CCD, 938 millions de pixels", "prusti"], ["0,42 × 0,92 m", "sc"]] }
     ]
+  },
+  {
+    id:'roman', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
+    agency:'NASA (avec l\'ESA, la JAXA et le CNES)', launch:'Lancé le 30 août 2026, Falcon Heavy, Kennedy',
+    sub:'Point de Lagrange L2, proche infrarouge grand champ',
+    src:'Maquette : NASA 3D Resources (conception de 2015)',
+    file:'models/roman.glb', bytes:3112960, axis:'x', size:11.34,
+    view:{ az:-2.3, el:0.32, dist:1.25 }, sun:[0.15,0.95,0.25], orbit:'l2',
+    hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
+    cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
+    desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
+    checked:'2026-11-16',
+    refs:{
+      ot:{ t:'Roman Observatory Technical Overview', p:'NASA Goddard', u:'https://roman.gsfc.nasa.gov/science/observatory_technical.html' },
+      wfi:{ t:'Roman WFI Technical (performances, v1.4, mars 2026)', p:'NASA Goddard', u:'https://roman.gsfc.nasa.gov/science/WFI_technical.html' },
+      ntrs:{ t:'Nancy Grace Roman Space Telescope: Observatory Implementation and Challenges (2021)', p:'NASA NTRS', u:'https://ntrs.nasa.gov/api/citations/20210021677/downloads/NGRST%20Observatory%20Implementation%20and%20Challenges.pdf' },
+      esa:{ t:'Roman factsheet', p:'ESA', u:'https://esa.int/Science_Exploration/Space_Science/Roman_factsheet' },
+      gs:{ t:'Roman Ground Systems', p:'NASA', u:'https://science.nasa.gov/mission/roman-space-telescope/ground-systems/' },
+      bus:{ t:'NASA Completes Spacecraft to Transport, Support Roman Space Telescope', p:'NASA', u:'https://www.nasa.gov/missions/roman-space-telescope/nasa-completes-spacecraft-to-transport-support-roman-space-telescope' },
+      launch:{ t:'NASA\'s Roman Space Telescope Launches on Mission to Probe Hidden Universe', p:'Sci.News', u:'https://www.sci.news/astronomy/roman-space-telescope-launch-15027.html' },
+      stobs:{ t:'Roman, Observatory Overview', p:'STScI', u:'https://www.stsci.edu/roman/observatory' },
+      data:{ t:'Roman: Delivering Data That Unlocks Discovery (newsletter, 2026)', p:'STScI', u:'https://www.stsci.edu/contents/newsletters/2026-volume-43-issue-01/roman-delivering-data-that-unlocks-discovery' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Hauteur, déployé','plus de 12 m','ntrs'], ['Masse au lancement','≈ 10 500 kg avec ergols (prévision de 2021)','ntrs'],
+        ['Module de service','≈ 4 m × 2 m · 3 800 kg','bus'], ['Mission','5 ans, objectif 10 ans','ot'], ['Lancement','30 août 2026, Falcon Heavy, Kennedy (pas de tir 39A)','launch'] ]},
+      { title:'Optique', rows:[
+        ['Type','anastigmat à trois miroirs','ntrs'], ['Miroir primaire','2,4 m · ouverture utile 2,36 m · don d\'une autre agence fédérale',['ot','stobs']],
+        ['Obstruction centrale','30,3 % du diamètre','ot'], ['Faisceau vers WFI','f/7,9','ot'], ['Température des miroirs','≈ 265 K','ot'] ]},
+      { title:'WFI (grand champ)', rows:[
+        ['Détecteurs','18 HgCdTe H4RG-10 de 4096 × 4096 px · pixels de 10 µm · ≈ 300 Mpx',['wfi','esa']], ['Échantillonnage','0,11″ par pixel','wfi'],
+        ['Champ','0,8° × 0,4° · 0,281 deg² hors interstices','wfi'], ['Domaine','0,48–2,3 µm, 8 filtres','wfi'],
+        ['Spectroscopie','grisme 1,00–1,93 µm (R ≈ 461 λ/µm) · prisme 0,75–1,80 µm (R 80 à 180)','wfi'], ['Température des détecteurs','89,5 K','wfi'] ]},
+      { title:'Coronographe', rows:[
+        ['Rôle','démonstration technologique : observer des planètes à côté d\'étoiles brillantes','esa'], ['Domaine','0,4–1,0 µm','stobs'],
+        ['Masques','Lyot hybride et pupille façonnée','ntrs'], ['Détecteurs','EMCCD fournis par l\'ESA','esa'] ]},
+      { title:'Orbite et données', rows:[
+        ['Position','orbite de halo autour de L2, période ≈ 6 mois','ntrs'], ['Pointage','entre 54° et 126° du Soleil','ot'],
+        ['Liaison science','bande Ka, jusqu\'à 500 Mbit/s','gs'], ['Volume','≈ 1,4 To par jour','gs'],
+        ['Stations','White Sands (NASA), New Norcia (ESA), JAXA','ot'], ['Données','publiques dès leur traitement, sans période réservée','data'] ]}
+    ],
+    parts:[
+      { key:'sass', name:'Pare-soleil à panneaux solaires', explode:[0,1,0,1.6],
+        desc:"Le grand panneau tourné vers le Soleil. Il porte les cellules solaires et, en même temps, garde le télescope et les instruments à l'ombre, ce qui limite la lumière parasite et stabilise leur température.",
+        facts:[["Six panneaux : deux fixes, quatre déployables", "ntrs"], ["≈ 4 500 W en fin de vie", "ntrs"]] },
+      { key:'barrel', name:'Barillet et pare-lumière', explode:[-1,0,0,1.6],
+        desc:"La longue enveloppe autour du télescope, ouverte en biseau vers l'avant. Elle protège l'optique de la lumière parasite et de la chaleur ; sur le télescope réel, c'est une structure composite hexagonale qui contient dix baffles.",
+        facts:[["Dix baffles internes", "ntrs"], ["Porte le pare-soleil et le couvercle d'ouverture", "ntrs"]] },
+      { key:'cover', name:'Couvercle d\'ouverture', explode:[-0.4,-1,0,1.6],
+        desc:"Le couvercle qui protégeait le télescope du Soleil juste après le lancement. Déployé une seule fois, il bloque ensuite la lumière parasite aux angles de visée extrêmes. Sur la maquette de 2015, c'est un disque rigide ; le couvercle lancé est une structure souple.",
+        facts:[["Déploiement unique", "ntrs"], ["Porte des capteurs solaires grossiers", "ntrs"]] },
+      { key:'ota', name:'Télescope (miroirs primaire et secondaire)', explode:[0,0,0,0],
+        desc:"Un télescope de 2,4 m, la taille de celui de Hubble, cédé à la NASA par une autre agence fédérale et adapté pour Roman. Les deux premiers miroirs sont à l'avant ; le troisième, dans l'optique arrière, envoie la lumière vers le grand champ.",
+        facts:[["Miroir primaire de 2,4 m", "ot"], ["Miroirs vers 265 K", "ot"], ["Télescope existant, cédé à la NASA", "stobs"]] },
+      { key:'instr', name:'Instruments et structure porteuse', explode:[0,-1,0,1.2],
+        desc:"La structure en composite qui tient le télescope et les deux instruments : la caméra grand champ (WFI) et le coronographe. Elle reprend la technologie de la structure de Webb et travaille vers 213 K.",
+        facts:[["WFI : 18 détecteurs, ≈ 300 Mpx", ["wfi", "esa"]], ["Coronographe : démonstration technologique", "esa"], ["Structure dérivée de celle de Webb, ≈ 213 K", "ntrs"]] },
+      { key:'bus', name:'Module de service', explode:[1,0,0,1.4],
+        desc:"La plateforme hexagonale à l'arrière : énergie, pointage, ordinateurs, mémoire et propulsion. Ses six baies d'électronique servent aussi de radiateurs.",
+        facts:[["≈ 4 m × 2 m, 3 800 kg", "bus"], ["Six roues de réaction", "ntrs"], ["Hydrazine : quatre réservoirs, 24 propulseurs", "ntrs"], ["Mémoire de 9 To", "ntrs"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[1,0.5,0,1.8],
+        desc:"La parabole orientable qui envoie chaque jour les données vers les stations de la NASA, de l'ESA et de la JAXA. Roman produit bien plus de données que Hubble et Webb réunis.",
+        facts:[["Parabole de 1,7 m, bandes Ka et S", "ntrs"], ["Jusqu'à 500 Mbit/s", "gs"], ["≈ 1,4 To par jour", "gs"]] }
+    ]
   }
 ];

@@ -28,7 +28,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
 
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const TELES = ['hubble', 'jwst', 'euclid', 'gaia'];
+  const TELES = ['hubble', 'jwst', 'euclid', 'gaia', 'roman'];
 
   // ---- bureau, thème clair : vue 3D
   let pg = await open(b, { width: 1360, height: 820 }, false);
@@ -75,7 +75,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   await pg.click('[data-part="primary"] [data-open-optique]'); await pg.waitForTimeout(1200);
   if (await pg.evaluate(() => [...document.querySelectorAll('svg.optic g.hl')].map(g => g.getAttribute('data-el')).join()) !== 'primary') fail('lien maquette → schéma : le miroir primaire n\'est pas surligné');
   // onglet Mission : déroulé, chaîne de traitement et sources pour chaque observatoire
-  for (const id of ['hubble', 'jwst', 'euclid', 'gaia']) {
+  for (const id of ['hubble', 'jwst', 'euclid', 'gaia', 'roman']) {
     await go(pg, id + '-instruments'); await pg.click('#inst-nav [data-inst="mission"]'); await pg.waitForTimeout(300);
     const ms = await pg.evaluate(() => [document.querySelectorAll('.ms-tl li').length, document.querySelectorAll('.ms-chain li').length, document.querySelectorAll('#inst-main ol.refs li').length]);
     if (ms[0] < 4 || ms[1] < 4 || ms[2] < 3) fail('onglet Mission incomplet pour ' + id + ' : ' + ms.join(', '));

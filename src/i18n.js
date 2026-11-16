@@ -42,7 +42,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
     var fp = Optics.FP[tid]; fp.note = e.fp.note; fp.groups.forEach(function(g, i){ if (e.fp.labs[i]) g.lab = e.fp.labs[i]; });
     if (fp.key && e.fp.key) fp.key.forEach(function(k, i){ k[1] = e.fp.key[i]; });
   });
-  Object.keys(EN_ORBITS).forEach(function(tid){ Orbits.TEXT[tid].sum = EN_ORBITS[tid].sum; Orbits.TEXT[tid].notes = EN_ORBITS[tid].notes; });
+  Object.keys(EN_ORBITS).forEach(function(tid){ Orbits.TEXT[tid].sum = EN_ORBITS[tid].sum; Orbits.TEXT[tid].notes = EN_ORBITS[tid].notes; if (EN_ORBITS[tid].noTraj) Orbits.TEXT[tid].noTraj = EN_ORBITS[tid].noTraj; });
 
   /* observations réelles : titres et légendes par clé ; les libellés de provenance passent par le dictionnaire */
   OBS_I18N.real = function(m){

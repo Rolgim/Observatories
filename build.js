@@ -4,7 +4,7 @@
                               page sans <html>/<head>, maquettes encodées en base64) */
 const fs = require('fs'), path = require('path');
 const r = f => fs.readFileSync(path.join(__dirname, 'src', f), 'utf8');
-const NAMES = ['hubble', 'jwst', 'euclid', 'gaia'];
+const NAMES = ['hubble', 'jwst', 'euclid', 'gaia', 'roman'];
 const artifact = process.argv[2] === 'artifact';
 
 let data = r('data-tele.js');

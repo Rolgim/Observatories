@@ -143,6 +143,28 @@ EN_INST.euclid = {
       docs:["Euclid Consortium, instruments"] }
   }
 };
+EN_INST.roman = {
+  summary:"Two instruments behind a 2.4 m telescope: a near-infrared wide-field camera (WFI), which also does slitless spectroscopy, and a demonstration coronagraph. Roman was launched on 30 August 2026; no science data are public yet, the first images being expected in early 2027. All data will be public as soon as they are processed.",
+  archives:[["MAST, Roman archive","Official archive for the telescope's products (images, spectra, catalogues), at STScI."],["RomanDocs (STScI)","Documentation of the instruments, surveys and data products."],["Science Support Center (IPAC)","Coronagraph and survey support."]],
+  instruments:{
+    wfi:{ kind:"Wide-field IR imager and spectrometer",
+      use:"Photographing, in a single exposure, a patch of sky larger than the full Moon with Hubble's sharpness. By repeating these exposures, Roman maps billions of galaxies for dark matter and dark energy, and follows millions of stars in the Galactic bulge to spot planets.",
+      summary:"A 300-megapixel camera: 18 infrared detectors in a 6 × 3 mosaic, eight imaging filters, a grism and a prism for slitless spectroscopy.",
+      specs:[["Detectors", "18 HgCdTe Teledyne H4RG-10 · 4096 × 4096 px · 10 µm pixels"], ["Mosaic", "6 × 3 detectors · ≈ 300 Mpx"], ["Sampling", "0.11″ per pixel"], ["Field", "0.8° × 0.4° · 0.281 deg² excluding gaps"], ["Imaging range", "0.48–2.3 µm, 8 filters"], ["Grism", "1.00–1.93 µm · R ≈ 461 × λ (µm)"], ["Prism", "0.75–1.80 µm · R from 80 to 180"], ["Detector temperature", "89.5 K"]],
+      filtersTitle:"Filters and dispersers (centre ± half-width)",
+      products:[["Level 1 (L1)","detector ramps, uncalibrated"],["Level 2 (L2)","calibrated image of each exposure"],["Level 3 (L3)","combination of the exposures of one visit"],["Level 4 (L4)","source catalogues per filter"],["Level 5 (L5)","community-contributed products"]],
+      example:{ title:"Planned product levels for the WFI", caption:"Hierarchy announced by STScI; no science product has been released yet.", text:
+"L1  detector ramps (successive reads, uncalibrated)\nL2  calibrated image of one exposure  → STScI RomanCal pipeline\nL3  combination of one visit\nL4  source catalogue, one per filter\nL5  community products\n\nDistribution: MAST · online analysis: Roman Research Nexus" },
+      notes:["All data will be public, with no proprietary period, whether from the large community surveys or from general astrophysics programmes.","The very broad F146 filter is for the Galactic bulge survey: it collects as much light as possible to follow the brightness of millions of stars."],
+      docs:["WFI, technical data (NASA)","RomanDocs, WFI"] },
+    cgi:{ kind:"Coronagraphy demonstrator",
+      use:"Blocking a star's light to see the planets and dust discs around it. It is a technology test, preparing a future telescope able to photograph Earth-like planets.",
+      summary:"Demonstration instrument: coronagraph masks and deformable mirrors to dim starlight, with electron-multiplying detectors supplied by ESA.",
+      specs:[["Status", "technology demonstration"], ["Range", "0.4–1.0 µm"], ["Masks", "hybrid Lyot and shaped pupil"], ["Beam", "collimated by the telescope, through five mirrors, one of them steerable"], ["Detectors", "EMCCDs (electron multiplying), supplied by ESA"]],
+      notes:["Coronagraph observations are prepared by the Science Support Center, run by IPAC (Caltech) with the Laboratoire d'Astrophysique de Marseille.","The Coronagraph Technology Center, at the Jet Propulsion Laboratory (NASA), follows the technology demonstration together with the support center."],
+      docs:["Coronagraph (IPAC)"] }
+  }
+};
 EN_INST.gaia = {
   summary:"Gaia has no separate instruments in the usual sense. A single focal plane of 106 CCDs, shared by the two telescopes, performs three functions that read the same stream of light as the spacecraft scans the sky.",
   archives:[["ESA, Gaia Archive","Official archive: ADQL queries on Gaia DR3, downloads, XP and RVS spectra."],["Gaia DR3 documentation","Full description of the catalogue and its tables."],["VizieR, Gaia DR3 (I/355)","CDS access to the catalogue."],["astroquery.gaia","Python access to the archive."]],

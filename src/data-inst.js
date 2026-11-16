@@ -571,6 +571,92 @@ var INST_DATA = (function(){
     ]
   },
 
+  /* ------------------------------------------------------------- ROMAN */
+  roman: {
+    checked:'2026-11-16',
+    refs:{
+      wfi:{ t:"Roman WFI Technical (performances, v1.4, mars 2026)", p:"NASA Goddard", u:"https://roman.gsfc.nasa.gov/science/WFI_technical.html" },
+      ot:{ t:"Roman Observatory Technical Overview", p:"NASA Goddard", u:"https://roman.gsfc.nasa.gov/science/observatory_technical.html" },
+      ntrs:{ t:"Nancy Grace Roman Space Telescope: Observatory Implementation and Challenges (2021)", p:"NASA NTRS", u:"https://ntrs.nasa.gov/api/citations/20210021677/downloads/NGRST%20Observatory%20Implementation%20and%20Challenges.pdf" },
+      esa:{ t:"Roman factsheet", p:"ESA", u:"https://esa.int/Science_Exploration/Space_Science/Roman_factsheet" },
+      stobs:{ t:"Roman, Observatory Overview", p:"STScI", u:"https://www.stsci.edu/roman/observatory" },
+      data:{ t:"Roman: Delivering Data That Unlocks Discovery (newsletter, 2026)", p:"STScI", u:"https://www.stsci.edu/contents/newsletters/2026-volume-43-issue-01/roman-delivering-data-that-unlocks-discovery" }
+    },
+    axis: { min:0.38, max:2.4 },
+    summary: "Deux instruments derrière un télescope de 2,4 m : une caméra grand champ en proche infrarouge (WFI), qui fait aussi de la spectroscopie sans fente, et un coronographe de démonstration. Roman a été lancé le 30 août 2026 ; aucune donnée scientifique n'est encore publique, les premières images étant attendues début 2027. Toutes les données seront publiques dès leur traitement.",
+    archives: [
+      { label:"MAST, archive de Roman", url:"https://archive.stsci.edu/missions-and-data/roman", desc:"Archive officielle des produits du télescope (images, spectres, catalogues), au STScI." },
+      { label:"RomanDocs (STScI)", url:"https://roman-docs.stsci.edu/", desc:"Documentation des instruments, des relevés et des produits de données." },
+      { label:"Centre de support scientifique (IPAC)", url:"https://roman.ipac.caltech.edu/", desc:"Coronographe et soutien aux relevés." }
+    ],
+    instruments: [
+      { id:"wfi", name:"WFI", full:"Wide Field Instrument", kind:"Imageur et spectro grand champ IR",
+        bands:[ {l:"imagerie",lo:0.48,hi:2.3} ],
+        use:"Photographier en une seule pose une portion de ciel plus grande que la pleine Lune, avec la netteté de Hubble. En répétant ces poses, Roman cartographie des milliards de galaxies pour la matière noire et l'énergie noire, et suit des millions d'étoiles du bulbe galactique pour y repérer des planètes.",
+        summary:"Caméra de 300 millions de pixels : 18 détecteurs infrarouges en mosaïque de 6 × 3, huit filtres d'imagerie, un grisme et un prisme pour la spectroscopie sans fente.",
+        specs:[
+          ["Détecteurs", "18 HgCdTe Teledyne H4RG-10 · 4096 × 4096 px · pixels de 10 µm", "wfi"],
+          ["Mosaïque", "6 × 3 détecteurs · ≈ 300 Mpx", ["ntrs","esa"]],
+          ["Échantillonnage", "0,11″ par pixel", "wfi"],
+          ["Champ", "0,8° × 0,4° · 0,281 deg² hors interstices", "wfi"],
+          ["Domaine d'imagerie", "0,48–2,3 µm, 8 filtres", "wfi"],
+          ["Grisme", "1,00–1,93 µm · R ≈ 461 × λ (µm)", "wfi"],
+          ["Prisme", "0,75–1,80 µm · R de 80 à 180", "wfi"],
+          ["Température des détecteurs", "89,5 K", "wfi"]
+        ],
+        filtersTitle:"Filtres et éléments dispersifs (centre ± demi-largeur)",
+        filters:[
+          R("F062",0.48,0.76,"W","0,620 µm, largeur 0,280"),
+          R("F087",0.7605,0.9775,"W","0,869 µm, largeur 0,217"),
+          R("F106",0.9275,1.1925,"W","1,060 µm, largeur 0,265"),
+          R("F129",1.1315,1.4545,"W","1,293 µm, largeur 0,323"),
+          R("F158",1.38,1.774,"W","1,577 µm, largeur 0,394"),
+          R("F184",1.6835,2.0005,"W","1,842 µm, largeur 0,317"),
+          R("F213",1.95,2.30,"W","2,125 µm, largeur 0,350"),
+          R("F146",0.949,1.979,"W","1,464 µm, largeur 1,030 : très large, pour la microlentille"),
+          R("Grisme",1.00,1.93,"G","R ≈ 461 × λ"),
+          R("Prisme",0.75,1.80,"G","R de 80 à 180")
+        ],
+        products:[
+          ["Niveau 1 (L1)","rampes du détecteur, non calibrées"],
+          ["Niveau 2 (L2)","image calibrée de chaque pose"],
+          ["Niveau 3 (L3)","combinaison des poses d'une même visite"],
+          ["Niveau 4 (L4)","catalogues de sources par filtre"],
+          ["Niveau 5 (L5)","produits contribués par la communauté"]
+        ],
+        example:{ real:false, title:"Niveaux de produits prévus pour le WFI", caption:"Hiérarchie annoncée par le STScI ; aucun produit scientifique n'est encore publié.", text:
+"L1  rampes du détecteur (lectures successives, non calibrées)\n" +
+"L2  image calibrée d'une pose      → chaîne RomanCal du STScI\n" +
+"L3  combinaison d'une visite\n" +
+"L4  catalogue de sources, un par filtre\n" +
+"L5  produits de la communauté\n" +
+"\n" +
+"Distribution : MAST · analyse en ligne : Roman Research Nexus" },
+        notes:[
+          "Toutes les données seront publiques, sans période réservée, qu'elles viennent des grands relevés communautaires ou des programmes d'astrophysique générale.",
+          "Le filtre F146, très large, sert au relevé du bulbe galactique : il capte le maximum de lumière pour suivre la luminosité de millions d'étoiles."
+        ],
+        docs:[ {l:"WFI, données techniques (NASA)",u:"https://roman.gsfc.nasa.gov/science/WFI_technical.html"}, {l:"RomanDocs, WFI",u:"https://roman-docs.stsci.edu/roman-instruments/the-wide-field-instrument"} ] },
+
+      { id:"cgi", name:"Coronographe", full:"Coronagraph Instrument (CGI)", kind:"Démonstrateur de coronographie",
+        bands:[ {l:"visible",lo:0.4,hi:1.0} ],
+        use:"Éteindre la lumière d'une étoile pour voir les planètes et les disques de poussière qui l'entourent. C'est un essai technologique, qui prépare un futur télescope capable de photographier des planètes semblables à la Terre.",
+        summary:"Instrument de démonstration : masques coronographiques et miroirs déformables pour atténuer la lumière stellaire, avec des détecteurs à multiplication d'électrons fournis par l'ESA.",
+        specs:[
+          ["Statut", "démonstration technologique", "esa"],
+          ["Domaine", "0,4–1,0 µm", "stobs"],
+          ["Masques", "Lyot hybride et pupille façonnée", "ntrs"],
+          ["Faisceau", "collimaté par le télescope, via cinq miroirs dont un orientable", "ntrs"],
+          ["Détecteurs", "EMCCD (multiplication d'électrons), fournis par l'ESA", "esa"]
+        ],
+        notes:[
+          "Les observations du coronographe sont préparées par le centre de support scientifique, que l'IPAC (Caltech) exploite avec le Laboratoire d'astrophysique de Marseille.",
+          "Le centre de technologie du coronographe, au Jet Propulsion Laboratory (NASA), suit la démonstration technologique avec le centre de support."
+        ],
+        docs:[ {l:"Coronographe (IPAC)",u:"https://roman.ipac.caltech.edu/"} ] }
+    ]
+  },
+
   /* -------------------------------------------------------------- GAIA */
   gaia: {
     checked:'2026-11-14',

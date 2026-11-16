@@ -136,6 +136,43 @@ var MISSION = {
     ]
   },
 
+  roman: {
+    checked:'2026-11-16',
+    refs:{
+      tl:{ t:'History of the Roman Mission', p:'NASA', u:'https://science.nasa.gov/mission/roman-space-telescope/timeline' }
+    },
+    intro:["Roman est piloté depuis le centre Goddard de la NASA. Le STScI, à Baltimore, planifie les observations, traite les images du grand champ et les archive avec l'ESA ; le centre de support scientifique, que l'IPAC exploite avec le Laboratoire d'astrophysique de Marseille, s'occupe du coronographe.",
+           "Roman is operated from NASA Goddard. STScI in Baltimore plans the observations, processes the wide-field images and archives them, with ESA; the Science Support Center, run by IPAC with the Laboratoire d'Astrophysique de Marseille, handles the coronagraph."],
+    phases:[
+      ['2010','2010','Priorité de la décennie','Decadal priority',"Le projet, alors appelé WFIRST, est classé première priorité des grandes missions spatiales par la revue décennale américaine.","The project, then called WFIRST, is ranked top priority for a large space mission in the US decadal survey.",'tl'],
+      ['20 mai 2020','20 May 2020','Nancy Grace Roman','Nancy Grace Roman',"La mission prend le nom de la première astronome en chef de la NASA.","The mission is named after NASA's first chief astronomer.",'tl'],
+      ['7 nov. 2024','7 Nov 2024','Livraison du télescope','Telescope delivered',"Dernière grande livraison : l'ensemble optique arrive au centre Goddard.","Last major delivery: the optical telescope assembly arrives at Goddard.",'tl'],
+      ['12 déc. 2024 – 8 janv. 2025','12 Dec 2024 – 8 Jan 2025','Assemblage','Integration',"Télescope et instruments sont montés sur leur structure porteuse, puis l'ensemble est fixé au module de service.","Telescope and instruments are mounted on their carrier, then the payload is joined to the spacecraft.",'tl'],
+      ['4 déc. 2025','4 Dec 2025','Observatoire terminé','Observatory complete',"Fin de la construction ; viennent ensuite les essais acoustiques, de vibration et de déploiement.","Construction is complete; acoustic, vibration and deployment tests follow.",'tl'],
+      ['30 août 2026','30 Aug 2026','Lancement','Launch',"Falcon Heavy depuis Kennedy. Panneaux solaires et pare-soleil inférieur se déploient 83 minutes après le décollage ; les premières images publiques sont visées début 2027.","Falcon Heavy from Kennedy. The solar panels and lower sunshade deploy 83 minutes after liftoff; first public images are targeted for early 2027.",'launch']
+    ],
+    ops:[
+      ['Pilotage','Flight operations','NASA Goddard (centre des opérations de la mission)','NASA Goddard (Mission Operations Center)','gs'],
+      ['Science et archive','Science and archive','STScI et ESA (centre des opérations scientifiques)','STScI and ESA (Science Operations Center)','gs'],
+      ['Coronographe','Coronagraph','IPAC et LAM (centre de support scientifique), JPL','IPAC and LAM (Science Support Center), JPL','gs'],
+      ['Liaison science','Science link','bande Ka, jusqu\'à 500 Mbit/s','Ka band, up to 500 Mbit/s','gs'],
+      ['Volume','Volume','≈ 1,4 To par jour, jusqu\'à 20 Po sur 5 ans',"≈ 1.4 TB per day, up to 20 PB over 5 years",['gs','esa']],
+      ['Accès','Access','toutes les données publiques, sans période réservée','all data public, no proprietary period','data']
+    ],
+    chain:{
+      intro:["Les produits sont rangés en niveaux de 1 à 4, plus un niveau 5 pour les contributions de la communauté. Ils sont distribués par MAST et peuvent être analysés directement dans le nuage, sur la plateforme Roman Research Nexus.",
+             "Products are organised in levels 1 to 4, plus a level 5 for community contributions. They are distributed by MAST and can be analysed directly in the cloud on the Roman Research Nexus platform."],
+      steps:[
+        { lv:'L1', n:['Rampes du détecteur','Detector ramps'], x:['Les lectures successives de chaque pixel pendant la pose, non calibrées.','Successive reads of each pixel during the exposure, uncalibrated.'], sw:'STScI', r:'data' },
+        { lv:'L2', n:['Pose calibrée','Calibrated exposure'], x:['Image en deux dimensions de chaque pose, calibrée.','Calibrated two-dimensional image of each exposure.'], sw:'RomanCal', r:'data' },
+        { lv:'L3', n:['Visite combinée','Combined visit'], x:['Combinaison des poses d\'une même visite.','Combination of the exposures of a single visit.'], sw:'RomanCal', r:'data' },
+        { lv:'L4', n:['Catalogues','Catalogues'], x:['Catalogues de sources, un par filtre.','Source catalogues, one per filter.'], sw:'MAST', r:'data' },
+        { lv:'L5', n:['Produits de la communauté','Community products'], x:['Produits contribués par les équipes, dont celles des grands relevés.','Products contributed by the teams, including those of the large surveys.'], sw:'Roman Research Nexus', r:'data' }
+      ]
+    },
+    rel:null
+  },
+
   gaia: {
     checked:'2026-11-16',
     refs:{
