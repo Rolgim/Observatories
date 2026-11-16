@@ -64,6 +64,9 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .dep-play{ font-size:13px; }
 .dep-note{ margin:6px 0 0; font-size:11px; color:var(--mute); }
 #stage.dep-on #hint{ display:none; }
+#dep.dep-below{ position:static; transform:none; width:auto; flex:none; padding:8px max(16px, env(safe-area-inset-left, 0px)) 8px; border-top:3px solid var(--mark); border-bottom:1px solid var(--rule); }
+#dep.dep-below #dep-text{ min-height:0; }
+.explode[hidden], .tool-sep[hidden]{ display:none; }
 #cut-note{ position:absolute; right:12px; top:12px; max-width:min(420px, calc(100% - 24px)); margin:0; padding:6px 10px; background:var(--paper); color:var(--ink); font-size:12px; line-height:1.4; border-left:3px solid var(--mark); z-index:2; pointer-events:none; }
 #callout{ position:absolute; pointer-events:none; transform:translate(-50%, -150%); padding:3px 9px; background:var(--mark); color:var(--on-mark); font-size:12.5px; font-weight:700; white-space:nowrap; z-index:2; }
 #callout::after{ content:""; position:absolute; left:50%; top:100%; width:2px; height:12px; margin-left:-1px; background:var(--mark); }

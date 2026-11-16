@@ -685,11 +685,16 @@ function depShow(v){
 function depStop(){ if (dep.play){ cancelAnimationFrame(dep.play); dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); } }
 function depToggle(on){
   depStop(); dep.on = on; $('dep').hidden = !on; $('stage').classList.toggle('dep-on', on); $('b-dep').setAttribute('aria-pressed', String(on));
-  if (!S.part) C.gtgt.set(0, on ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau */
+  if (!S.part) C.gtgt.set(0, on && !depMQ.matches ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau (bureau) */
   if (!window.DEPLOY) return;
   if (on) depShow(0); else if (models.jwst && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models.jwst, DEPLOY.last);
-  if (!on){ $('explode').disabled = S.mode === 'compare'; $('explode').parentNode.style.opacity = S.mode === 'compare' ? 0.4 : 1; }
+  if (!on){ $('explode').disabled = false; $('explode').parentNode.style.opacity = 1; }
+  depPlace();
 }
+/* sur téléphone, la vue 3D est trop basse : le panneau passe sous la vue au lieu de la recouvrir */
+var depMQ = window.matchMedia('(max-width: 860px)');
+function depPlace(){ var d = $('dep'), st = $('stage'); if (depMQ.matches){ if (d.parentNode !== st.parentNode) st.parentNode.insertBefore(d, st.nextSibling); } else if (d.parentNode !== st) st.insertBefore(d, $('live')); d.classList.toggle('dep-below', depMQ.matches); }
+if (depMQ.addEventListener) depMQ.addEventListener('change', depPlace); else depMQ.addListener(depPlace);
 $('b-dep').addEventListener('click', function(){ depToggle(!dep.on); });
 $('dep-range').addEventListener('input', function(){ depStop(); depShow(+this.value); });
 $('dep-prev').addEventListener('click', function(){ depStop(); depShow(Math.ceil(DEPLOY.value() - 0.001) - 1); });
@@ -765,11 +770,12 @@ show3D = function(changed){
   $('cmp-labels').hidden = true; $('callout').hidden = true; setTip(null);
   S.explodeGoal = S.explode = 0; $('explode').value = 0;
   var cmpMode = S.mode === 'compare';
-  $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode;
+  /* comparaison : seuls Recadrer reste ; Éclater, Soleil réel, Coupe et Rotation sont retirés */
+  $('explode').parentNode.hidden = cmpMode; document.querySelector('#toolbar .tool-sep').hidden = cmpMode; $('b-sun').hidden = cmpMode; $('b-cut').hidden = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
   $('b-dep').hidden = cmpMode || S.id !== 'jwst'; if (dep.on && (cmpMode || S.id !== 'jwst')) depToggle(false);
   $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
-  $('b-cut').disabled = cmpMode; $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode)); $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
+  $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode));
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
     var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
