@@ -12,7 +12,7 @@ const srv = http.createServer((q, s) => {
   fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); s.end(d); });
 }).listen(PORT);
 // [hash, clic éventuel une fois la page chargée]
-const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid', '[data-ptab="mission"]'], ['comparer'], ['jwst-instruments'], ['euclid-instruments', '#inst-nav [data-inst="nisp"]'],
+const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid-instruments', '#inst-nav [data-inst="mission"]'], ['comparer'], ['jwst-instruments'], ['euclid-instruments', '#inst-nav [data-inst="nisp"]'],
   ['gaia-instruments', '#inst-nav [data-inst="optique"]'], ['euclid-instruments', '#inst-nav [data-inst="orbite"]'], ['comparer-instruments']];
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });

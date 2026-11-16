@@ -117,6 +117,7 @@ function missionHtml(t){
     '<p class="source-note">' + (en ? 'Checked against the sources above on ' + m.checked + '. Dates marked “planned” are the agency\'s announced dates and may change.' : 'Vérifié le ' + d[2] + '/' + d[1] + '/' + d[0] + ' face aux sources ci-dessus. Les dates marquées « prévue » sont celles annoncées par l\'agence et peuvent changer.') + '</p></div>';
   return h;
 }
+window.OBS_MISSION = function(tid){ return missionHtml(tele(tid)); };
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -155,24 +156,21 @@ function renderPanel(){
   }
   pt.innerHTML =
     '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
-    (window.MISSION && MISSION[t.id] ? '<button class="ptab" role="tab" data-ptab="mission" aria-selected="' + (S.ptab==='mission') + '">Mission</button>' : '') + '</div>' +
-    '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
+    '<button class="ptab go" data-inst-open="1">Mission et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
     h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + '<br>' + esc(t.launch) + '</div>' +
         '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
         '<div class="where">' + orbitSvg(t) + '</div>' +
-        '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Trajet de la lumière, filtres, exemples de données, accès aux archives.</small></button>' +
+        '<button class="cta" data-inst-open="1">Voir la mission et les données<small>Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments (' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '), exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
             sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
-  } else if (S.ptab === 'mission'){
-    h = missionHtml(t);
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){

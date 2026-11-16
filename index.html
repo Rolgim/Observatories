@@ -238,6 +238,7 @@ ol.refs.pref li{ margin:0 0 2px; }
 .ms-chain li:last-child::before{ display:none; }
 .ms-lv{ position:relative; z-index:1; align-self:start; text-align:center; padding:3px 4px; background:var(--mark); color:var(--on-mark); font-family:var(--f-code); font-size:11px; font-weight:600; line-height:1.3; word-break:break-word; }
 .ms-st code{ display:inline-block; margin-top:5px; font-family:var(--f-code); font-size:11.5px; color:var(--ink); background:var(--sheet); border:1px solid var(--rule); padding:1px 6px; }
+.inst-mission{ max-width:52rem; }
 
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
@@ -489,7 +490,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
   <div id="inst-page" hidden>
     <div class="inst-top">
       <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
-      <div class="inst-title">Instruments et données</div>
+      <div class="inst-title">Mission et données</div>
       <div class="pills" id="inst-pills"></div>
     </div>
     <div class="inst-body">
@@ -2564,13 +2565,14 @@ var InstrumentsUI = (function(){
   function render(tid, sel, fidx){
     copyStore = [];
     var d = INST_DATA[tid];
-    if (sel && sel !== 'optique' && sel !== 'orbite' && !get(tid, sel)) sel = null;
+    if (sel && sel !== 'optique' && sel !== 'orbite' && sel !== 'mission' && !get(tid, sel)) sel = null;
     var pills = pillsFor(tid);
     var nav = '<button class="nav-i'+(!sel?' on':'')+'" data-inst=""><span class="n">Vue d\'ensemble</span><span class="k">Spectre, champs de vue, archives</span></button>' +
+      (window.MISSION && MISSION[tid] ? '<button class="nav-i'+(sel==='mission'?' on':'')+'" data-inst="mission"><span class="n">Mission et traitements</span><span class="k">Déroulé, exploitation, chaîne de traitement</span></button>' : '') +
       '<button class="nav-i'+(sel==='optique'?' on':'')+'" data-inst="optique"><span class="n">Trajet de la lumière</span><span class="k">Schéma optique, plan focal</span></button>' +
       '<button class="nav-i'+(sel==='orbite'?' on':'')+'" data-inst="orbite"><span class="n">Orbite</span><span class="k">Trajectoire réelle, balayage</span></button>' +
       d.instruments.map(function(it){ return '<button class="nav-i'+(it.id===sel?' on':'')+'" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="n">'+esc(it.name)+'</span><span class="k">'+esc(it.kind)+'</span></button>'; }).join('');
-    return { pills:pills, nav:nav, main: sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid], window.OBS_OPT || null) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
+    return { pills:pills, nav:nav, main: sel === 'mission' ? '<div class="inst-mission">' + window.OBS_MISSION(tid) + '</div>' : sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid], window.OBS_OPT || null) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
   return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
@@ -2955,7 +2957,7 @@ var EN_UI = {
   "Glisser pour tourner, molette pour zoomer, cliquer une pièce pour l'identifier":"Drag to rotate, scroll to zoom, click a part to identify it",
   "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
   "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",
-  "Fiche":"Overview", "Pièces":"Parts", "Instruments et données":"Instruments and data", "Voir les instruments et les données":"See the instruments and data",
+  "Fiche":"Overview", "Pièces":"Parts", "Instruments et données":"Instruments and data", "Mission et données":"Mission and data", "Voir les instruments et les données":"See the instruments and data", "Voir la mission et les données":"See the mission and data", "Mission et traitements":"Mission and processing", "Déroulé, exploitation, chaîne de traitement":"Timeline, operations, processing pipeline",
   "Miroir primaire":"Primary mirror", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
   "Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s'assemblent.":"Click a part in the 3D view or in the list. The “Explode” slider pulls them apart to show how they fit together.",
   "Les pièces principales de l'observatoire.":"The main parts of the observatory.", "Voir le trajet de la lumière":"See the light path",
@@ -3062,6 +3064,7 @@ var EN_RULES = [
   [/^(.+) : du ciel au détecteur$/, "$1: from the sky to the detector"], [/^(.+) : où il se trouve et comment il se déplace$/, "$1: where it is and how it moves"], [/^(.+) à L2$/, "$1 at L2"], [/^Instruments de (.+)$/, "$1 instruments"],
   [/^(\d+) instruments ou fonctions\. Cliquer une ligne du graphique ou une case pour ouvrir le détail\.$/, "$1 instruments or functions. Click a row of the chart or a tile to open the details."],
   [/^(.+)\. Trajet de la lumière, filtres, exemples de données, accès aux archives\.$/, "$1. Light path, filters, data examples, archive access."],
+  [/^Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments \((.+)\), exemples de données, accès aux archives\.$/, "Timeline and processing pipeline, orbit, light path, instruments ($1), data examples, archive access."],
   [/^JPL Horizons, objet (\S+), récupéré le (\d\d)\/(\d\d)\/(\d{4})$/, "JPL Horizons, object $1, retrieved $4-$3-$2"],
   [/^(\d\d)\/(\d\d)\/(\d{4}) au (\d\d)\/(\d\d)\/(\d{4})$/, "$3-$2-$1 to $6-$5-$4"], [/^de ([\d,]+) à ([\d,]+) km$/, "from $1 to $2 km"],
   [/^écart latéral ± (.+)$/, "sideways excursion ± $1"], [/^hors écliptique ± (.+)$/, "out of the ecliptic ± $1"],
@@ -3801,6 +3804,7 @@ function missionHtml(t){
     '<p class="source-note">' + (en ? 'Checked against the sources above on ' + m.checked + '. Dates marked “planned” are the agency\'s announced dates and may change.' : 'Vérifié le ' + d[2] + '/' + d[1] + '/' + d[0] + ' face aux sources ci-dessus. Les dates marquées « prévue » sont celles annoncées par l\'agence et peuvent changer.') + '</p></div>';
   return h;
 }
+window.OBS_MISSION = function(tid){ return missionHtml(tele(tid)); };
 function renderTabs(){
   var h = TELESCOPES.map(function(t){
     return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
@@ -3839,24 +3843,21 @@ function renderPanel(){
   }
   pt.innerHTML =
     '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" data-ptab="fiche" aria-selected="' + (S.ptab==='fiche') + '">Fiche</button>' +
-    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button>' +
-    (window.MISSION && MISSION[t.id] ? '<button class="ptab" role="tab" data-ptab="mission" aria-selected="' + (S.ptab==='mission') + '">Mission</button>' : '') + '</div>' +
-    '<button class="ptab go" data-inst-open="1">Instruments et données</button>';
+    '<button class="ptab" role="tab" data-ptab="parts" aria-selected="' + (S.ptab==='parts') + '">Pièces<span class="n">' + t.parts.length + '</span></button></div>' +
+    '<button class="ptab go" data-inst-open="1">Mission et données</button>';
   if (S.ptab === 'fiche'){
     var nums = refNums(t);
     h = '<h2>' + esc(t.name) + '</h2><div class="launch">' + esc(t.agency) + '<br>' + esc(t.launch) + '</div>' +
         '<dl class="facts">' + facts(t).map(function(f){ return '<div><dt>' + f[0] + '</dt><dd>' + f[1] + '</dd></div>'; }).join('') + '</dl>' +
         '<p class="desc">' + esc(t.desc) + '</p>' +
         '<div class="where">' + orbitSvg(t) + '</div>' +
-        '<button class="cta" data-inst-open="1">Voir les instruments et les données<small>' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '. Trajet de la lumière, filtres, exemples de données, accès aux archives.</small></button>' +
+        '<button class="cta" data-inst-open="1">Voir la mission et les données<small>Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments (' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '), exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
             sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';
-  } else if (S.ptab === 'mission'){
-    h = missionHtml(t);
   } else {
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){

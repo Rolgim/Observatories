@@ -39,7 +39,7 @@ Limites connues :
 | F. Orbites et temps | F1 à F4 livrés (orbites réelles, Hubble en direct, pointés réels, déploiement de Webb, ciel observable) |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
-| M. Mission et traitements | livré le 16 novembre : onglet « Mission » sur chaque fiche |
+| M. Mission et traitements | livré le 16 novembre : rubrique « Mission et traitements » de la page « Mission et données » |
 | C, G, autres H | plus tard |
 
 ### A. Fiabiliser le contenu
@@ -222,7 +222,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 
 **Besoin.** Savoir comment la mission s'est déroulée et comment une donnée passe du satellite au catalogue, à la fois pour l'étudiant (schéma, phrases simples) et pour l'expert (niveaux de produits, noms des logiciels et des centres).
 
-**Livré le 16 novembre** (`src/data-mission.js`, rendu par `missionHtml` dans `src/app.js`) : un troisième onglet « Mission » dans le panneau de chaque observatoire, en français et en anglais, avec :
+**Livré le 16 novembre** (`src/data-mission.js`, rendu par `missionHtml` dans `src/app.js`) : une rubrique « Mission et traitements » dans la page de chaque observatoire, en français et en anglais. Le site sépare deux aspects : la plateforme (panneau de la vue 3D : fiche et pièces) et la mission (page « Mission et données », anciennement « Instruments et données » : mission et traitements, trajet de la lumière, orbite, instruments). La rubrique contient :
 
 - Déroulé daté (lancement, missions de service de Hubble, mise en service et premières images de Webb, début du relevé d'Euclid, fin des observations et passivation de Gaia…).
 - Exploitation : qui pilote, qui traite, liaison, volume, accès exclusif, archive.
