@@ -3354,53 +3354,69 @@ var DEPLOY = (function(){
   function ease(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
 
   /* repères (repère de la maquette, mètres) */
-  var BUS_TOP = -3.47, PAL_F = 3.4, PAL_A = -2.6, PAL_Y = -3.6, MB = 1.05, TOWER = 1.22,
-      WING_X = 1.71, WING_Z = 1.3, SEC_H = [0, -1.75, 2.0], SEC_FOLD = { secondary_2:[4.62, 1.91], secondary_7:[5.6, 2.25] }, SEC_M = [0.9, 8.4], FLAP_H = [-9.16, -1.5];
+  var BUS_TOP = -3.47, CORE = -3.45, PAL_F = 3.4, PAL_A = -2.6, PAL_Y = -3.6, MB = 1.05, TOWER = 1.0,   /* tour : 1,22 m en réalité ; 1,0 m ici, sinon le télescope abaissé entre dans le module de la maquette */
+      WING_X = 1.71, WING_Z = 0.6, SEC_H = [0, -1.75, 2.0], SEC_FOLD = { secondary_2:[4.62, 1.91], secondary_7:[5.6, 2.25] }, SEC_M = [0.9, 8.4], FLAP_H = [-9.16, -1.5];
   var UPPER = { primary:1, secondary:1, aos:1, isim:1 };
 
   var M3 = THREE.Matrix3, V3 = THREE.Vector3;
-  function rotX(p, n, cy, cz, a){ var c = Math.cos(a), s = Math.sin(a), y = p.y - cy, z = p.z - cz; p.y = cy + y*c - z*s; p.z = cz + y*s + z*c; var ny = n.y, nz = n.z; n.y = ny*c - nz*s; n.z = ny*s + nz*c; }
-  function rotY(p, n, cx, cz, a){ var c = Math.cos(a), s = Math.sin(a), x = p.x - cx, z = p.z - cz; p.x = cx + x*c + z*s; p.z = cz - x*s + z*c; var nx = n.x, nz = n.z; n.x = nx*c + nz*s; n.z = -nx*s + nz*c; }
+  /* Chaque triangle bouge d'un bloc : les décisions (quelle pièce mobile, quel côté d'une charnière) se prennent sur son
+     centre d, puis la même transformation s'applique à ses sommets. Sinon les triangles à cheval sur une charnière
+     s'étirent et traversent le reste de la maquette. P = [d, sommet] ; n = normale du sommet. */
+  function rx(P, n, cy, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, y, z;
+    for (i=0;i<P.length;i++){ y = P[i].y - cy; z = P[i].z - cz; P[i].y = cy + y*c - z*s; P[i].z = cz + y*s + z*c; }
+    y = n.y; z = n.z; n.y = y*c - z*s; n.z = y*s + z*c; }
+  function ry(P, n, cx, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, x, z;
+    for (i=0;i<P.length;i++){ x = P[i].x - cx; z = P[i].z - cz; P[i].x = cx + x*c + z*s; P[i].z = cz - x*s + z*c; }
+    x = n.x; z = n.z; n.x = x*c + z*s; n.z = -x*s + z*c; }
+  function each(P, f){ for (var i=0;i<P.length;i++) f(P[i]); }
 
-  /* déforme un sommet (p, n en repère maquette) pour l'état g (chaque étape de 0 = replié à 1 = déployée) */
-  function deform(part, name, p, n, g){
+  /* déforme un triangle (P en repère maquette) pour l'état g (chaque étape de 0 = replié à 1 = déployée) */
+  function deform(part, name, P, n, g){
+    var d = P[0];
     if (part === 'sunshield' || part === 'flap'){
-      if (part === 'flap' && g.flap < 1) rotX(p, n, FLAP_H[1], FLAP_H[0], -(1 - g.flap)*100*rad);
-      var mem = Math.abs(p.z) > 1.15 || Math.abs(p.x) > MB;          /* membrane et bras, hors du module */
-      if (mem && g.tension < 1 && p.y > -5.2){ var k = 0.15 + 0.85*g.tension; p.y = BUS_TOP - 0.15 + (p.y - BUS_TOP + 0.15)*k; }
-      if (g.booms < 1 && Math.abs(p.x) > MB){ var sx = 0.06 + 0.94*g.booms; p.x = (p.x > 0 ? 1 : -1)*(MB + (Math.abs(p.x) - MB)*sx); }
+      if (part === 'flap' && g.flap < 1) rx(P, n, FLAP_H[1], FLAP_H[0], -(1 - g.flap)*100*rad);
+      /* cœur : la zone au-dessus du module, entre les charnières des palettes ; le reste est membrane et bras */
+      var mem = !(Math.abs(d.x) < MB + 0.3 && d.z > PAL_A && d.z < PAL_F);
+      /* avant tension, couches serrées juste au-dessus du module (plus serrées tant que la tour est rentrée et que le
+         télescope repose sur le module), le plan remontant vers l'arrière au-dessus du panneau solaire incliné */
+      if (mem && g.tension < 1 && d.y > -5.2){
+        var lo = 1 - g.tower, k = (0.15 + 0.85*g.tension)*(1 - 0.8*lo);
+        each(P, function(q){ var yr = BUS_TOP + 0.06 + Math.max(0, -q.z - 3)*0.3*g.pallets; q.y = yr + (q.y - yr)*k; });
+      }
+      /* cœur du bouclier au-dessus du module : il s'écrase avec la tour rentrée, sous le télescope abaissé */
+      if (!mem && g.tower < 1) each(P, function(q){ if (q.y > CORE) q.y = CORE + (q.y - CORE)*(1 - 0.95*(1 - g.tower)); });
+      if (g.booms < 1){ var sx = 0.06 + 0.94*g.booms; each(P, function(q){ if (Math.abs(q.x) > MB) q.x = (q.x > 0 ? 1 : -1)*(MB + (Math.abs(q.x) - MB)*sx); }); }
       if (g.pallets < 1){
         var lz = 0.62 + 0.38*g.pallets, a = (1 - g.pallets)*88*rad;
-        if (p.z > PAL_F){ p.z = PAL_F + (p.z - PAL_F)*lz; rotX(p, n, PAL_Y, PAL_F, -a); }
-        else if (p.z < PAL_A){ p.z = PAL_A + (p.z - PAL_A)*lz; rotX(p, n, PAL_Y, PAL_A, a); }
+        if (d.z > PAL_F){ each(P, function(q){ q.z = PAL_F + (q.z - PAL_F)*lz; }); rx(P, n, PAL_Y, PAL_F, -a); }
+        else if (d.z < PAL_A){ each(P, function(q){ q.z = PAL_A + (q.z - PAL_A)*lz; }); rx(P, n, PAL_Y, PAL_A, a); }
       }
     } else if (part === 'solar'){
       /* replié en accordéon (cinq panneaux) puis rabattu contre la face arrière du module */
-      if (g.solar < 1 && p.z < -1.8){ p.z = -1.8 + (p.z + 1.8)*(0.22 + 0.78*g.solar); rotX(p, n, -4.0, -1.8, -(1 - g.solar)*85*rad); }
+      if (g.solar < 1 && d.z < -2.15){ each(P, function(q){ q.z = -2.15 + (q.z + 2.15)*(0.22 + 0.78*g.solar); }); rx(P, n, -4.0, -2.35, -(1 - g.solar)*78*rad); }
     } else if (part === 'hga'){
-      if (g.hga < 1 && p.x < 0) rotX(p, n, -5.0, -1.5, (1 - g.hga)*80*rad);   /* la parabole seule ; les petites antennes à x > 0 restent fixées au module */
+      if (g.hga < 1 && d.x < 0) rx(P, n, -5.0, -1.5, (1 - g.hga)*80*rad);   /* la parabole seule ; les petites antennes à x > 0 restent fixées au module */
     } else if (UPPER[part]){
       /* ailes : segments (primary) et leur structure arrière, rangée par la maquette avec le module d'instruments (isim) */
-      if ((part === 'primary' || (part === 'isim' && p.z > 0.6)) && Math.abs(p.x) > WING_X){
-        var w = p.x > 0 ? g.wingS : g.wingP;
-        if (w < 1) rotY(p, n, (p.x > 0 ? 1 : -1)*WING_X, WING_Z, (p.x > 0 ? 1 : -1)*(1 - w)*100*rad);
+      if ((part === 'primary' || (part === 'isim' && d.z > 0.6)) && Math.abs(d.x) > WING_X){
+        var sd = d.x > 0 ? 1 : -1, w = sd > 0 ? g.wingS : g.wingP;
+        if (w < 1) ry(P, n, sd*WING_X, WING_Z, sd*(1 - w)*90*rad);
       }
       if (part === 'secondary' && g.secondary < 1){
-        var f = 1 - g.secondary;
-        var A = SEC_FOLD[name];
+        var f = 1 - g.secondary, A = SEC_FOLD[name];
         if (A){
           /* bras supérieur : reste tendu entre sa charnière en haut du miroir (A) et le miroir secondaire, qui bascule ;
              il raccourcit en se repliant (genou), sans jamais se détacher de ses deux extrémités */
           var ang = -f*60*rad, c = Math.cos(ang), sn = Math.sin(ang), sy = SEC_M[0] - SEC_H[1], sz = SEC_M[1] - SEC_H[2];
-          var ny = SEC_H[1] + sy*c - sz*sn, nz = SEC_H[2] + sy*sn + sz*c;                       /* position actuelle du secondaire */
-          var uy = SEC_M[0] - A[0], uz = SEC_M[1] - A[1], dy = p.y - A[0], dz = p.z - A[1], t = (dy*uy + dz*uz)/(uy*uy + uz*uz);
-          var q = 0.3 + 0.7*g.secondary;
-          p.y = A[0] + t*(ny - A[0]) + (dy - t*uy)*q; p.z = A[1] + t*(nz - A[1]) + (dz - t*uz)*q;
+          var ny = SEC_H[1] + sy*c - sz*sn, nz = SEC_H[2] + sy*sn + sz*c, uy = SEC_M[0] - A[0], uz = SEC_M[1] - A[1], q2 = 0.3 + 0.7*g.secondary;
+          each(P, function(q){ var dy = q.y - A[0], dz = q.z - A[1], t = (dy*uy + dz*uz)/(uy*uy + uz*uz);
+            q.y = A[0] + t*(ny - A[0]) + (dy - t*uy)*q2; q.z = A[1] + t*(nz - A[1]) + (dz - t*uz)*q2; });
         }
-        else if (name !== 'secondary') rotX(p, n, SEC_H[1], SEC_H[2], -f*60*rad);                                /* « secondary » : petit élément fixé en haut du primaire */
+        else if (name !== 'secondary') rx(P, n, SEC_H[1], SEC_H[2], -f*60*rad);                         /* « secondary » : petit élément fixé en haut du primaire */
       }
-      if (g.tower < 1) p.y -= (1 - g.tower)*TOWER;
+      if (g.tower < 1) each(P, function(q){ q.y -= (1 - g.tower)*TOWER; });
     }
+    if (part === 'tower' && g.tower < 1) each(P, function(q){ if (q.y > CORE) q.y = CORE + (q.y - CORE)*(1 - 0.95*(1 - g.tower)); });
   }
 
   var store = null;
@@ -3408,10 +3424,12 @@ var DEPLOY = (function(){
   var NORM = { Int8Array:127, Uint8Array:255, Int16Array:32767, Uint16Array:65535 };
   function copy(at){
     var arr = at.isInterleavedBufferAttribute ? at.data.array : at.array, k = at.normalized ? (NORM[arr.constructor.name] || 1) : 1;
-    var r = new Float32Array(at.count*3); for (var i=0;i<at.count;i++){ r[3*i] = at.getX(i)/k; r[3*i+1] = at.getY(i)/k; r[3*i+2] = at.getZ(i)/k; } return r;
+    var sz = at.itemSize, r = new Float32Array(at.count*sz), get = ['getX', 'getY', 'getZ', 'getW'];
+    for (var i=0;i<at.count;i++) for (var c=0;c<sz;c++) r[sz*i + c] = at[get[c]](i)/k;
+    return r;
   }
   /* remplace un attribut entrelacé ou entier (normales quantifiées du glTF) par un attribut en flottants, propre à cette géométrie */
-  function own(geo, name){ var at = geo.attributes[name]; if (!at) return null; var f = new THREE.BufferAttribute(copy(at), 3); geo.setAttribute(name, f); return f; }
+  function own(geo, name){ var at = geo.attributes[name]; if (!at) return null; var f = new THREE.BufferAttribute(copy(at), at.itemSize); geo.setAttribute(name, f); return f; }
   function dirty(at){ if (at.isInterleavedBufferAttribute) at.data.needsUpdate = true; else at.needsUpdate = true; }
   /* mémorise les sommets d'origine et les passages repère local ↔ repère maquette (pièces à l'état éclaté 0) */
   function prepare(M){
@@ -3420,30 +3438,37 @@ var DEPLOY = (function(){
     M.root.updateMatrixWorld(true);
     M.meshes.forEach(function(o){
       if (o.userData.interior || !o.geometry || !o.geometry.attributes.position) return;
-      var k = o.userData.part; if (!(k === 'sunshield' || k === 'flap' || k === 'solar' || k === 'hga' || UPPER[k])) return;
+      var k = o.userData.part; if (!(k === 'sunshield' || k === 'flap' || k === 'solar' || k === 'hga' || k === 'tower' || UPPER[k])) return;
       if (seen.has(o.geometry)) o.geometry = o.geometry.clone(); seen.add(o.geometry);
       if (o.userData.base) o.position.copy(o.userData.base); o.updateMatrixWorld(true);
       var m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), mi = new THREE.Matrix4().copy(m).invert();
-      var pos = own(o.geometry, 'position'), nor = own(o.geometry, 'normal');
+      Object.keys(o.geometry.attributes).forEach(function(k){ own(o.geometry, k); });
+      if (o.geometry.index){ var gi = o.geometry.toNonIndexed(); gi.groups = []; o.geometry.dispose(); o.geometry = gi; }   /* un triangle = trois sommets propres */
+      var pos = o.geometry.attributes.position, nor = o.geometry.attributes.normal;
       list.push({ o:o, part:k, name:o.name, m:m, mi:mi, nm:new M3().getNormalMatrix(m), nmi:new M3().getNormalMatrix(mi),
         p0:pos.array.slice(0), n0:nor ? nor.array.slice(0) : null });
     });
     store = { M:M, list:list, v:STEPS.length - 1 };
     return store;
   }
-  var p = new V3(), n = new V3();
+  var d = new V3(), p = new V3(), n = new V3(), P = [d, p], c3 = [new V3(), new V3(), new V3()];
   function set(M, v){
     var st = prepare(M); st.v = v;
     var g = {}; Object.keys(KEYS).forEach(function(k){ g[k] = ease(stage(v, k)); });
     st.list.forEach(function(e){
-      var pos = e.o.geometry.attributes.position, nor = e.o.geometry.attributes.normal, i, j;
-      for (i=0;i<pos.count;i++){
-        j = 3*i;
-        p.set(e.p0[j], e.p0[j+1], e.p0[j+2]).applyMatrix4(e.m);
-        if (nor) n.set(e.n0[j], e.n0[j+1], e.n0[j+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
-        deform(e.part, e.name, p, n, g);
-        p.applyMatrix4(e.mi); pos.setXYZ(i, p.x, p.y, p.z);
-        if (nor){ n.applyMatrix3(e.nmi).normalize(); nor.setXYZ(i, n.x, n.y, n.z); }
+      var pos = e.o.geometry.attributes.position, nor = e.o.geometry.attributes.normal, i, j, t;
+      for (t=0;t<pos.count;t+=3){
+        for (i=0;i<3;i++){ j = 3*(t + i); c3[i].set(e.p0[j], e.p0[j+1], e.p0[j+2]).applyMatrix4(e.m); }
+        var big = Math.max(c3[0].distanceTo(c3[1]), c3[1].distanceTo(c3[2]), c3[2].distanceTo(c3[0])) > 1.5;
+        for (i=0;i<3;i++){
+          j = 3*(t + i);
+          /* grand triangle (bande de plus de 1,5 m, bords du bouclier) : décision par sommet, il se plie comme une toile */
+          p.copy(c3[i]); if (big) d.copy(p); else d.copy(c3[0]).add(c3[1]).add(c3[2]).multiplyScalar(1/3);
+          if (nor) n.set(e.n0[j], e.n0[j+1], e.n0[j+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
+          deform(e.part, e.name, P, n, g);
+          p.applyMatrix4(e.mi); pos.setXYZ(t + i, p.x, p.y, p.z);
+          if (nor){ n.applyMatrix3(e.nmi).normalize(); nor.setXYZ(t + i, n.x, n.y, n.z); }
+        }
       }
       dirty(pos); if (nor) dirty(nor);
       e.o.geometry.computeBoundingSphere(); e.o.geometry.computeBoundingBox();
