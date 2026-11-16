@@ -478,6 +478,7 @@ function prepare(t, gltf){
       o.userData.ex = P.off.clone().divideScalar(s).applyMatrix3(m3);
     });
   }
+  if (window.INTERIOR) INTERIOR.build(M);
   return M;
 }
 
@@ -602,14 +603,18 @@ function pick(x, y){
     return best ? { tele:best } : null;
   }
   if (!current) return null;
-  var hits = ray.intersectObjects(current.meshes, false);
-  for (var i=0;i<hits.length;i++) if (hits[i].object.userData.part) return { part:hits[i].object.userData.part };
+  var hits = ray.intersectObjects(current.meshes, false), clip = renderer.localClippingEnabled;
+  for (var i=0;i<hits.length;i++){
+    if (clip && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
+    var u = hits[i].object.userData;
+    if (u.part) return { part:u.part, label:u.interior ? (OBS_LANG === 'en' ? u.labelEn : u.label) : null };
+  }
   return null;
 }
 function setTip(txt, x, y){
   var tip = $('hover-tip'); tip.hidden = !txt; if (!txt) return;
   var r = stage.getBoundingClientRect(); tip.textContent = txt;
-  tip.style.left = Math.min(x - r.left, r.width - 190) + 'px'; tip.style.top = (y - r.top) + 'px';
+  tip.style.left = Math.min(x - r.left, r.width - 280) + 'px'; tip.style.top = (y - r.top) + 'px';
 }
 function setHover(k){ if (S.hover === k) return; S.hover = k; applyHighlight(); canvas.classList.toggle('over-part', !!k); }
 var hoverPending = null;
@@ -621,7 +626,7 @@ function hoverAt(x, y){
     var h = pick(p[0], p[1]);
     if (S.mode === 'compare'){ canvas.classList.toggle('over-part', !!h); setTip(h ? 'Ouvrir ' + tele(h.tele).short : null, p[0], p[1]); return; }
     setHover(h ? h.part : null);
-    setTip(h && h.part !== S.part ? current.parts[h.part].def.name : null, p[0], p[1]);
+    setTip(h && (h.label || h.part !== S.part) ? (h.label || current.parts[h.part].def.name) : null, p[0], p[1]);
   });
 }
 function clickAt(x, y){
@@ -640,6 +645,8 @@ function applyCut(){
   var on = !!(S.cut && S.mode === 'tele');
   renderer.localClippingEnabled = on;
   if (cutRoot && cutRoot !== (current && current.root)) cutRoot.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } }); });
+  for (var id in models) if (window.INTERIOR) INTERIOR.show(models[id], on && models[id] === current);
+  $('cut-note').hidden = !(on && current && current.interior);
   cutRoot = current && current.root; if (cutRoot) cutC = new THREE.Box3().setFromObject(cutRoot).getCenter(new THREE.Vector3());
   cutRoot && cutRoot.traverse(function(o){ if (!o.material) return; [].concat(o.material).forEach(function(m){
     if (m.userData.side0 === undefined) m.userData.side0 = m.side;
