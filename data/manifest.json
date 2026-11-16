@@ -814,7 +814,7 @@
  "hubble/fgs": {
   "type": "plot",
   "file": "hubble-fgs.json",
-  "title": "Transit de l'exoplanète HD 17156 b, vu par un capteur de guidage fin",
+  "title": "Éclat d'une étoile suivi pendant 13 heures par un capteur de guidage fin",
   "meta": [
    [
     "Archive",
@@ -830,7 +830,7 @@
    ],
    [
     "Cible",
-    "HD 17156, étoile hôte de l'exoplanète HD 17156 b"
+    "HD 17156 (V ≈ 8)"
    ],
    [
     "Programme",
@@ -838,15 +838,23 @@
    ],
    [
     "Début d'observation",
-    "2008-12-23"
+    "2008-12-24"
+   ],
+   [
+    "Durée",
+    "13,5 h sans interruption"
    ],
    [
     "Données",
-    "1 947 998 mesures à 40 Hz, somme des photomultiplicateurs, moyenne par tranches de 2 min"
+    "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min"
    ],
    [
     "Traitement",
-    "données brutes de niveau 1 ; aucune correction instrumentale ; trous : Terre entre Hubble et l'étoile"
+    "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)"
+   ],
+   [
+    "Dispersion restante",
+    "≈ 168 millionièmes (ppm) par point de 2 min"
    ],
    [
     "Fichier d'origine",
@@ -854,8 +862,61 @@
    ]
   ],
   "url": "https://archive.stsci.edu/proposal_search.php?id=11945&mission=hst",
-  "caption": "Les FGS comptent les photons de l'étoile guide 40 fois par seconde. Utilisés en photomètres, ils suivent l'éclat de l'étoile pendant le passage de sa planète devant elle. Données brutes : les variations lentes viennent aussi de l'instrument.",
+  "caption": "Les FGS comptent les photons de l'étoile 40 fois par seconde. Utilisés comme photomètres, ils mesurent son éclat sans interruption : l'étoile, proche du pôle de l'orbite, n'est jamais cachée par la Terre. Ce qui reste après correction de l'orbite donne la précision de la mesure.",
   "credit": "NASA, ESA, STScI",
+  "fetched": "2026-11-16"
+ },
+ "jwst/fgs": {
+  "type": "image",
+  "file": "jwst-fgs.jpg",
+  "width": 1068,
+  "height": 1100,
+  "title": "Champ d'étalonnage du Grand Nuage de Magellan, FGS/FGS1",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "FGS/FGS1"
+   ],
+   [
+    "Identifiant d'observation",
+    "jw01086-o001_t001_fgs_clear"
+   ],
+   [
+    "Cible",
+    "LMC-NIRISS-FGS-ALIGNMENT"
+   ],
+   [
+    "Filtres ou réseau",
+    "OPEN"
+   ],
+   [
+    "Programme",
+    "1086"
+   ],
+   [
+    "Responsable du programme",
+    "Martel, Andre"
+   ],
+   [
+    "Début d'observation",
+    "2022-04-30"
+   ],
+   [
+    "Temps de pose",
+    "12 755 s"
+   ],
+   [
+    "Fichier d'origine",
+    "jw01086-o001_t001_fgs_clear_i2d.jpg"
+   ]
+  ],
+  "url": "https://www.stsci.edu/jwst/science-execution/program-information?id=1086",
+  "caption": "Le champ d'étoiles du Grand Nuage de Magellan qui sert à étalonner la géométrie des instruments de JWST. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
+  "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-16"
  }
 }
