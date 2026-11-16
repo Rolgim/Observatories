@@ -446,10 +446,19 @@ function tweakMaterial(id, m){
     if (/Gold|Aluminum|Metal/.test(n)){ m.metalness = Math.max(m.metalness, 0.75); m.roughness = Math.min(m.roughness, 0.45); }
     if (/SolarArray/.test(n)){ m.metalness = 0.35; m.roughness = 0.35; }
   } else if (id === 'roman'){
-    if (/solar\d|solartop/.test(n)){ m.color.setHex(0x223060); m.metalness = 0.1; m.roughness = 0.45; }
+    /* Les couleurs du fichier NASA sont des valeurs sRGB que le chargeur lit comme linéaires :
+       sous la lumière du site, tout virait au blanc. On les reconvertit, puis : cellules solaires
+       sombres et mates, couvertures argentées, structure gris foncé. */
+    if (/solar\d|solartop/.test(n)){
+      m.color.setHex(/top/.test(n) ? 0x1A1E26 : 0x0B1638); m.metalness = 0; m.roughness = /top/.test(n) ? 1 : 0.7; m.userData.envK = 0.25; m.side = THREE.DoubleSide;
+      if (/top/.test(n)){ m.polygonOffset = true; m.polygonOffsetFactor = 2; m.polygonOffsetUnits = 2; }   /* les cellules, coplanaires, passent devant le support */
+    }
     else if (/lens/.test(n)){ m.color.setHex(0xC9CED4); m.metalness = 0.9; m.roughness = 0.2; }
     else if (/bronze/.test(n)){ m.color.setHex(0xA8834A); m.metalness = 0.8; m.roughness = 0.4; }
-    else { m.metalness = Math.min(m.metalness, 0.4); m.roughness = Math.max(m.roughness, 0.55); }
+    else if (/silver1|rear-side-panels|Instrument1/.test(n)){ m.color.setHex(0xB4B8BC); m.metalness = 0.6; m.roughness = 0.45; }
+    else if (/hood/.test(n)){ m.color.setHex(0xC4C8CC); m.metalness = 0.7; m.roughness = 0.35; }   /* pare-soleil : couvertures argentées */
+    else { m.metalness = Math.min(m.metalness, 0.4); m.roughness = Math.max(m.roughness, 0.6); }
+    m.color.convertSRGBToLinear();
   } else if (id === 'euclid'){
     m.metalness = Math.min(m.metalness, 0.5); m.roughness = Math.max(0.5, Math.min(m.roughness, 0.75)); m.color.multiplyScalar(0.78);
   }
@@ -560,7 +569,7 @@ function applyLighting(){
     rim.position.set(-0.25, 0.5, -0.9); rim.intensity = 0.55; hemi.intensity = 0.55;
   }
   var env = real ? 0.42 : 1.0;
-  for (var id in models) models[id].mats.forEach(function(m){ m.envMapIntensity = env; });
+  for (var id in models) models[id].mats.forEach(function(m){ m.envMapIntensity = env * (m.userData.envK || 1); });
   sunSprite.visible = real; sunSprite.position.copy(sunDir).multiplyScalar(80000);
   earth.visible = S.mode === 'tele' && t.orbit === 'leo';
   earthMat.uniforms.sun.value.copy(sunDir); atmoMat.uniforms.sun.value.copy(sunDir);

@@ -45,7 +45,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     notes.push(t + ' : ' + r.parts + ' pièces, ' + r.picked + ' atteignables assemblé, ' + picked2 + ' éclaté');
   }
   await go(pg, 'comparer'); await loaded(pg); await pg.waitForTimeout(800);
-  if (await pg.evaluate(() => document.querySelectorAll('.cmp-label').length) !== 4) fail('comparaison : il manque des étiquettes');
+  if (await pg.evaluate(() => document.querySelectorAll('.cmp-label').length) !== 5) fail('comparaison : il manque des étiquettes');
 
   // ---- pages d'instruments, trajet de la lumière, orbites
   for (const t of TELES){
