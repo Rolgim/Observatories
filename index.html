@@ -3220,8 +3220,8 @@ var INTERIOR = (function(){
     gaia:['Gaia Collaboration, Prusti et al. 2016 ; ESA ; Spaceflight101', 'Gaia Collaboration, Prusti et al. 2016; ESA; Spaceflight101'],
     jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus']
   };
-  /* Webb : seul le module de service est coupé, le plan passe par son centre */
-  var CUT = { jwst:{ parts:['bus'] } };
+  /* Webb : le module de service et le module d'instruments s'ouvrent, chacun avec son plan de coupe ; le bouclier et les miroirs restent entiers */
+  var CUT = { jwst:[{ parts:['bus'] }, { parts:['isim'], c:[0, 1.65, -0.45] }] };
 
   var AX = { x:[0, 0, -PI/2], y:[0, 0, 0], z:[PI/2, 0, 0] }, UP = new THREE.Vector3(0, 1, 0);
   function geom(e){
@@ -3896,7 +3896,7 @@ function pick(x, y){
   if (!current) return null;
   var hits = ray.intersectObjects(current.meshes, false), clip = renderer.localClippingEnabled;
   for (var i=0;i<hits.length;i++){
-    if (clip && hits[i].object.material.clippingPlanes && cutPlane.distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
+    var cp = hits[i].object.material.clippingPlanes; if (clip && cp && cp[0].distanceToPoint(hits[i].point) < 0) continue;   /* moitié retirée par la coupe */
     var u = hits[i].object.userData;
     if (u.part) return { part:u.part, label:u.interior ? (OBS_LANG === 'en' ? u.labelEn : u.label) : null };
   }
@@ -3931,7 +3931,8 @@ $('explode').addEventListener('input', function(){ S.explodeGoal = this.value/10
 $('b-sun').addEventListener('click', function(){ S.sunReal = !S.sunReal; applyLighting(); });
 $('b-spin').addEventListener('click', function(){ S.spin = !S.spin; this.setAttribute('aria-pressed', String(S.spin)); C.last = 0; });
 /* coupe (D4) : un plan qui suit la caméra retire la moitié de la maquette tournée vers l'observateur */
-var cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), cutRoot = null, cutC = new THREE.Vector3();
+var cutRoot = null, cutGroups = [];   /* un plan par groupe de pièces : { plane, c: centre, parts: clés ou null pour toute la maquette } */
+function updateCut(){ cutGroups.forEach(function(g){ var cn = g.c.clone().sub(camera.position).normalize(); g.plane.set(cn, -cn.dot(g.c)); }); }
 function applyCut(){
   var on = !!(S.cut && S.mode === 'tele');
   renderer.localClippingEnabled = on;
@@ -3943,12 +3944,21 @@ function applyCut(){
   if (has){ var en = OBS_LANG === 'en', src = INTERIOR.SRC[current.t.id]; $('cut-src').textContent = src ? (en ? 'Sources: ' + src[1] + '.' : 'Sources : ' + src[0] + '.') : ''; }
   cutRoot = current && current.root; if (!cutRoot) return;
   /* la coque est coupée ; l'intérieur reconstruit reste entier, sauf ses enveloppes (clip) ; Webb : seul le module de service s'ouvre */
-  var only = current.cut && current.cut.parts, P0 = only && current.parts[only[0]];
-  cutC = P0 ? P0.center.clone().applyMatrix4(cutRoot.matrixWorld) : new THREE.Box3().setFromObject(current.inner).getCenter(new THREE.Vector3());
+  var defs = current.cut || [{ parts:null }], byPart = {};
+  cutGroups = defs.map(function(d){
+    var c = new THREE.Vector3();
+    if (d.parts){ var bx = new THREE.Box3(); d.parts.forEach(function(k){ if (current.parts[k]) bx.union(current.parts[k].box); }); bx.getCenter(c); if (d.c) c.fromArray(d.c); c.applyMatrix4(cutRoot.matrixWorld); }
+    else new THREE.Box3().setFromObject(current.inner).getCenter(c);
+    var g = { plane:new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), c:c, parts:d.parts };
+    if (d.parts) d.parts.forEach(function(k){ byPart[k] = g; });
+    return g;
+  });
+  var all = defs[0].parts ? null : cutGroups[0];
   each(cutRoot, function(m, o){
     if (m.userData.side0 === undefined) m.userData.side0 = m.side;
-    var u = o.userData, c = on && (u.interior ? u.clip : (!only || only.indexOf(u.part) >= 0));
-    m.clippingPlanes = c ? [cutPlane] : null; m.side = c || u.interior ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; });
+    var u = o.userData, g = all || byPart[u.part], c = on && g && (!u.interior || u.clip);
+    m.clippingPlanes = c ? [g.plane] : null; m.side = c || u.interior ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; });
+  updateCut();
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
@@ -4101,7 +4111,7 @@ function tick(now){
     project(cmp.rulerAnchor, ls[ls.length-1]);
   }
   if (!!(S.cut && S.mode === 'tele') !== renderer.localClippingEnabled || (S.cut && current && current.root !== cutRoot)) applyCut();
-  if (renderer.localClippingEnabled){ var cn = cutC.clone().sub(camera.position).normalize(); cutPlane.set(cn, -cn.dot(cutC)); }
+  if (renderer.localClippingEnabled) updateCut();
   renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
 }
 /* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */

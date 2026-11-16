@@ -155,8 +155,8 @@ var INTERIOR = (function(){
     gaia:['Gaia Collaboration, Prusti et al. 2016 ; ESA ; Spaceflight101', 'Gaia Collaboration, Prusti et al. 2016; ESA; Spaceflight101'],
     jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus']
   };
-  /* Webb : seul le module de service est coupé, le plan passe par son centre */
-  var CUT = { jwst:{ parts:['bus'] } };
+  /* Webb : le module de service et le module d'instruments s'ouvrent, chacun avec son plan de coupe ; le bouclier et les miroirs restent entiers */
+  var CUT = { jwst:[{ parts:['bus'] }, { parts:['isim'], c:[0, 1.65, -0.45] }] };
 
   var AX = { x:[0, 0, -PI/2], y:[0, 0, 0], z:[PI/2, 0, 0] }, UP = new THREE.Vector3(0, 1, 0);
   function geom(e){
