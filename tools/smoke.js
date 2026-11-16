@@ -96,7 +96,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   pg = await open(b, { width: 1360, height: 820 }, false, 'en');
   await go(pg, 'jwst'); await loaded(pg); await pg.waitForTimeout(600);
   const en = await pg.evaluate(() => ({ lang: document.documentElement.lang, tab: document.querySelector('.ptab.go').textContent, h: document.querySelector('.spec-section-title').textContent, launch: document.querySelector('.launch').textContent }));
-  if (en.lang !== 'en' || en.tab !== 'Instruments and data' || en.h !== 'Spacecraft' || !/Launched/.test(en.launch)) fail('anglais : la fiche n\'est pas traduite (' + JSON.stringify(en) + ')');
+  if (en.lang !== 'en' || en.tab !== 'Mission and data' || en.h !== 'Spacecraft' || !/Launched/.test(en.launch)) fail('anglais : la fiche n\'est pas traduite (' + JSON.stringify(en) + ')');
   let left = 0;
   for (const t of TELES){
     await go(pg, t + '-instruments'); await pg.waitForTimeout(300);

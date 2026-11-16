@@ -110,7 +110,7 @@ function missionHtml(t){
     m.chain.steps.map(function(s){ return '<li><div class="ms-lv">' + esc(s.lv) + '</div><div class="ms-st"><strong>' + esc(L(s.n)) + '</strong>' + mark(s.r) + '<p>' + esc(L(s.x)) + '</p>' + (s.sw ? '<code>' + esc(L(s.sw)) + '</code>' : '') + '</div></li>'; }).join('') + '</ol>' +
     (m.chain.note ? '<p class="ms-intro">' + esc(L(m.chain.note)) + mark(m.chain.noteR) + '</p>' : '') + '</div>';
   if (m.rel) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Data releases' : 'Publications des données') + '</div><ol class="ms-tl ms-rel">' +
-    m.rel.map(function(r){ return '<li' + (r[6] ? ' class="plan"' : '') + '><span class="ms-d">' + esc(en ? r[1] : r[0]) + (r[6] ? '<small>' + (en ? 'planned' : 'prévue') + '</small>' : '') + '</span><div><strong>' + esc(r[2]) + '</strong>' + mark(r[5]) + '<p>' + esc(en ? r[4] : r[3]) + '</p></div></li>'; }).join('') + '</ol></div>';
+    m.rel.map(function(r){ return '<li' + (r[6] ? ' class="plan"' : '') + '><span class="ms-d">' + esc(en ? r[1] : r[0]) + (r[6] ? '<small>' + (en ? 'planned' : 'prévue') + '</small>' : '') + '</span><div><strong>' + esc(L(r[2])) + '</strong>' + mark(r[5]) + '<p>' + esc(en ? r[4] : r[3]) + '</p></div></li>'; }).join('') + '</ol></div>';
   var keys = Object.keys(nums).sort(function(a, b){ return nums[a] - nums[b]; }), d = m.checked.split('-');
   h += '<div class="spec-section"><div class="spec-section-title">Sources</div><ol class="refs">' +
     keys.map(function(x){ var r = refs[x]; return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + '</a> <span>' + esc(r.p) + '</span></li>'; }).join('') + '</ol>' +

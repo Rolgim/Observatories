@@ -129,8 +129,8 @@ var MISSION = {
     rel:[
       ['19 mars 2025','19 Mar 2025','Q1',"Première publication rapide : ≈ 63 deg² des champs profonds.","First quick release: ≈ 63 deg² of the deep fields.",['tl','q1'],false],
       ['24 juin 2026','24 Jun 2026','Q2',"Deuxième publication rapide.","Second quick release.",'tl',false],
-      ['12 nov. 2026','12 Nov 2026','DR1, première partie',"Données brutes, images calibrées, catalogues et spectres (LE1 et LE2) sur ≈ 1 900 deg².","Raw data, calibrated images, catalogues and spectra (LE1 and LE2) over ≈ 1,900 deg².",['tl','dr1tl'],false],
-      ['mi-2027','mid-2027','DR1 complète',"Ajoute les produits LE3 pour l'agrégation des galaxies et le cisaillement gravitationnel.","Adds the LE3 products for galaxy clustering and weak lensing.",'dr1tl',true],
+      ['12 nov. 2026','12 Nov 2026',['DR1, première partie','DR1, first part'],"Données brutes, images calibrées, catalogues et spectres (LE1 et LE2) sur ≈ 1 900 deg².","Raw data, calibrated images, catalogues and spectra (LE1 and LE2) over ≈ 1,900 deg².",['tl','dr1tl'],false],
+      ['mi-2027','mid-2027',['DR1 complète','Full DR1'],"Ajoute les produits LE3 pour l'agrégation des galaxies et le cisaillement gravitationnel.","Adds the LE3 products for galaxy clustering and weak lensing.",'dr1tl',true],
       ['juin 2029','June 2029','DR2',"Date provisoire.","Tentative date.",'tl',true],
       ['oct. 2031','Oct 2031','DR3',"Date provisoire.","Tentative date.",'tl',true]
     ]
