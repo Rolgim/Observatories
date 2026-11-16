@@ -30,7 +30,7 @@ var Optics = (function(){
     s += G(o.k1, pm) + G(o.k2, L(X(-o.d), Y(o.r2), X(-o.d), Y(-o.r2), INK, 4));
     o.rays.forEach(function(h){
       [1,-1].forEach(function(sg){
-        var h2 = h*o.r2/o.r1*0.92;
+        var z = sag(h), t = (-o.d - z)/(-o.R/2 - z), h2 = h*(1 - t);   /* rayon réfléchi vers le foyer du primaire, coupé au plan du secondaire */
         s += P([[X(o.z0), Y(sg*h)], [X(sag(h)), Y(sg*h)], [X(-o.d), Y(sg*h2)], [X(o.focus[0]), Y(o.focus[1])]], RAY, 1.2);
       });
     });

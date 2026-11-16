@@ -77,7 +77,7 @@ Corrections apportées :
 
 Les périodes des orbites de halo (≈ 175 jours pour JWST, ≈ 170 pour Euclid) sont mesurées sur les éphémérides JPL Horizons déjà utilisées par la page « Orbite ».
 
-Valeurs encore sans source, marquées « ? » sur le site : longueur focale et rapport focal de Hubble, longueur focale d'Euclid (24,5 m). Le pare-soleil de Gaia est sourcé depuis le 15 novembre (Ø 10,2 m, ESA).
+Plus aucune valeur des fiches sans source depuis le 16 novembre : longueur focale et rapport focal de Hubble (57,6 m, f/24) et écart de ses miroirs (4,9 m) d'après Lallo 2012 ; longueur focale d'Euclid (24,5 m, f/20,4) d'après Racca et al. 2016. Le schéma optique de Hubble trace désormais les rayons exactement : réfléchis vers le foyer du primaire (R = 11,04 m), coupés au plan du secondaire. Le pare-soleil de Gaia est sourcé depuis le 15 novembre (Ø 10,2 m, ESA).
 
 **Fait le 15 novembre 2026 : faits des 31 pièces.** Chaque fait est `[texte, clé de source]` dans `parts[].facts` ; la liste « Pièces » affiche l'appel de note et les sources de la pièce sous ses faits. Retirés faute de source : diamètre du volet de Hubble (≈ 3 m), masse du secondaire (12,4 kg), écart primaire–secondaire (4,9 m), « 10 baies », parabole de 1,3 m, nombre de panneaux et puissance d'Euclid. Corrigés : « 4 logements axiaux + 1 radial » de Hubble (le Primer donne 4 baies radiales : WFC3 et les 3 FGS), segment de JWST ≈ 20 kg (et non 20,1 kg), pare-soleil de Gaia Ø 10,2 m en 12 cadres et deux couvertures de 2 et 5 couches, panneaux de Gaia à triple jonction, 12,8 m², 1 910 W en fin de vie, plan focal de 938 millions de pixels. Le nombre de sources de Gaia DR3 est sourcé depuis le 14 novembre.
 

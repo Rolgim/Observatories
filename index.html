@@ -481,6 +481,7 @@ var TELESCOPES = [
     sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
     checked:'2026-11-13',
     refs:{
+      lallo:{ t:'M. D. Lallo 2012, Experience with the Hubble Space Telescope: twenty years of an archetype, Optical Engineering 51, 011011', p:'arXiv', u:'https://arxiv.org/abs/1203.0002' },
       opt:{ t:'Hubble Space Telescope : Optics', p:'NASA', u:'https://science.nasa.gov/mission/hubble/observatory/design/optics/' },
       mg3b:{ t:'Hubble Space Telescope Servicing Mission 3B, Media Reference Guide, section 1', p:'NASA', u:'https://lhea.gsfc.nasa.gov/archive/sm3b/art/pdf/media-guide/sec1.pdf' },
       bat:{ t:'SM4 : Batteries', p:'NASA Goddard', u:'https://asd.gsfc.nasa.gov/archive/sm4/technology/sm4_batteries.html' },
@@ -497,7 +498,7 @@ var TELESCOPES = [
         ['Pointage','sur 1 gyroscope depuis juin 2024 ; 3 des 6 encore en état','gyro'] ]},
       { title:'Optique', rows:[
         ['Type','Ritchey-Chrétien'], ['Miroir primaire','2,4 m · 828 kg','nasa'],
-        ['Miroir secondaire','0,3 m · 12,4 kg','nasa'], ['Longueur focale','57,6 m'], ['Rapport focal','f/24'],
+        ['Miroir secondaire','0,3 m · 12,4 kg','nasa'], ['Longueur focale','57,6 m','lallo'], ['Rapport focal','f/24','lallo'],
         ['Précision de pointage','0,007″','nasa'] ]},
       { title:'Instruments actifs', rows:[
         ['WFC3','caméra grand champ, ultraviolet à proche infrarouge'], ['ACS','caméra de relevés'],
@@ -516,7 +517,7 @@ var TELESCOPES = [
         facts:["Se referme seule si la visée approche du Soleil"] },
       { key:'ota', name:'Coque avant (miroir secondaire)', explode:[0,0,1,1.5],
         desc:"Le tube qui prolonge le télescope vers l'avant. Il contient les déflecteurs internes et, à l'intérieur, le miroir secondaire de 0,3 m, tenu en avant du miroir primaire par une structure presque insensible à la température.",
-        facts:[["Miroir secondaire : 0,3 m", "opt"], "Déflecteurs internes contre la lumière parasite"] },
+        facts:[["Miroir secondaire : 0,3 m", "opt"], ["À 4,9 m du miroir primaire", "lallo"], "Déflecteurs internes contre la lumière parasite"] },
       { key:'ssm', name:"Section d'équipements", explode:[0,0,0,0],
         desc:"L'anneau de baies qui ceinture le télescope. On y trouve les ordinateurs de bord, les batteries, les roues de réaction qui orientent le satellite et les équipements de communication. Les portes s'ouvrent pour que les astronautes puissent remplacer les boîtiers.",
         facts:[["4 roues de réaction", "mg3b"], ["6 batteries nickel-hydrogène, en deux modules de 3", "bat"]] },
@@ -624,6 +625,7 @@ var TELESCOPES = [
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
     refs:{
+      racca:{ t:'G. D. Racca et al. 2016, The Euclid mission design, Proc. SPIE 9904', p:'arXiv', u:'https://arxiv.org/abs/1610.05508' },
       vis:{ t:'Euclid Collaboration, Cropper et al. 2025, Euclid. II. The VIS instrument, A&A 697, A2', p:'A&A', u:'https://doi.org/10.1051/0004-6361/202450996' },
       nisp:{ t:'Euclid Collaboration, Jahnke et al. 2025, Euclid. III. The NISP instrument, A&A 697, A3', p:'A&A', u:'https://doi.org/10.1051/0004-6361/202450786' },
       e1:{ t:'Euclid Collaboration, Mellier et al. 2025, Euclid. I. Overview of the Euclid mission, A&A (arXiv:2405.13491)', p:'arXiv', u:'https://arxiv.org/abs/2405.13491' },
@@ -637,7 +639,7 @@ var TELESCOPES = [
         ['Mission nominale','≈ 6 ans','e1'], ['Maître d\'œuvre','Thales Alenia Space ; charge utile Airbus'] ]},
       { title:'Optique', rows:[
         ['Type','Korsch à trois miroirs'], ['Miroir primaire','1,2 m · carbure de silicium','e1'],
-        ['Longueur focale','24,5 m'], ['Champ commun','≈ 0,54 deg²','e1'],
+        ['Longueur focale','24,5 m · f/20,4','racca'], ['Champ commun','≈ 0,54 deg²','e1'],
         ['Température','≈ 126 K (miroir primaire) · 130 à 135 K (plaque de base)','e1'] ]},
       { title:'VIS (visible)', rows:[
         ['Détecteurs','36 CCD de 4132 × 4096 px (6 × 6) · ≈ 609 Mpx','e1'], ['Bande','530–920 nm','e1'],
@@ -1474,7 +1476,7 @@ var Optics = (function(){
     s += G(o.k1, pm) + G(o.k2, L(X(-o.d), Y(o.r2), X(-o.d), Y(-o.r2), INK, 4));
     o.rays.forEach(function(h){
       [1,-1].forEach(function(sg){
-        var h2 = h*o.r2/o.r1*0.92;
+        var z = sag(h), t = (-o.d - z)/(-o.R/2 - z), h2 = h*(1 - t);   /* rayon réfléchi vers le foyer du primaire, coupé au plan du secondaire */
         s += P([[X(o.z0), Y(sg*h)], [X(sag(h)), Y(sg*h)], [X(-o.d), Y(sg*h2)], [X(o.focus[0]), Y(o.focus[1])]], RAY, 1.2);
       });
     });
@@ -2352,7 +2354,7 @@ refs:{ gyro:'NASA to Change How It Points Hubble Space Telescope (release 2024-0
     ],
     parts:{
       door:{ name:'Aperture door and light shield', desc:"The entrance to the telescope. The door closes automatically if the line of sight strays too close to the Sun, to protect the optics. Behind it, the light shield blocks stray light from the Earth and the Moon.", facts:["Closes by itself if the line of sight nears the Sun"] },
-      ota:{ name:'Forward shell (secondary mirror)', desc:"The tube that extends the telescope forward. It holds the internal baffles and, inside, the 0.3 m secondary mirror, held in front of the primary by a structure that barely reacts to temperature.", facts:["Secondary mirror: 0.3 m", "Internal baffles against stray light"] },
+      ota:{ name:'Forward shell (secondary mirror)', desc:"The tube that extends the telescope forward. It holds the internal baffles and, inside, the 0.3 m secondary mirror, held in front of the primary by a structure that barely reacts to temperature.", facts:["Secondary mirror: 0.3 m", "4.9 m from the primary mirror", "Internal baffles against stray light"] },
       ssm:{ name:'Equipment section', desc:"The ring of bays around the telescope. It holds the flight computers, the batteries, the reaction wheels that turn the spacecraft and the communications equipment. The doors open so that astronauts could swap the units.", facts:["4 reaction wheels", "6 nickel-hydrogen batteries, in two modules of 3"] },
       aft:{ name:'Aft shroud (instruments)', desc:"The widest section. The 2.4 m primary mirror sits just ahead of it; behind the mirror, at the focus, are the science instruments, in axial bays, and four radial bays holding WFC3 and the three fine guidance sensors. The yellow handrails were for the astronauts.", facts:["Primary mirror: 2.4 m, 828 kg", "4 radial bays: WFC3 and the 3 Fine Guidance Sensors", "The other instruments sit in the axial bays"] },
       array_stbd:{ name:'Solar array (+V2)', desc:"One of the two rigid gallium-arsenide solar wings fitted in 2002. Smaller than the original flexible arrays, they nevertheless produce more power and shake less at each day–night crossing.", facts:["7.54 × 2.44 m", "Gallium arsenide", "Rigid panels, fitted in 2002 (SM3B)"] },
@@ -2397,7 +2399,7 @@ refs:{ hz:'JPL Horizons ephemerides (object -170), measured on this site' },
 refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
     sections:[
       { title:'Spacecraft', rows:[['Height','≈ 4.8 m'],['Diameter','≈ 3.74 m'],['Launch mass','1,988 kg'],['Nominal mission','≈ 6 years'],['Prime contractor','Thales Alenia Space; payload by Airbus']] },
-      { title:'Optics', rows:[['Design','three-mirror Korsch'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m'],['Common field','≈ 0.54 deg²'],['Temperature','≈ 126 K (primary mirror) · 130 to 135 K (baseplate)']] },
+      { title:'Optics', rows:[['Design','three-mirror Korsch'],['Primary mirror','1.2 m · silicon carbide'],['Focal length','24.5 m · f/20.4'],['Common field','≈ 0.54 deg²'],['Temperature','≈ 126 K (primary mirror) · 130 to 135 K (baseplate)']] },
       { title:'VIS (visible)', rows:[['Detectors','36 CCDs of 4132 × 4096 px (6 × 6) · ≈ 609 Mpx'],['Band','530–920 nm'],['Sampling','0.1″ per pixel'],['CCD temperature','153 K']] },
       { title:'NISP (near infrared)', rows:[['Detectors','16 H2RG arrays of 2048 × 2048 px (4 × 4)'],['Photometry','Y 950–1212 nm · J 1168–1567 nm · H 1522–2021 nm'],['Spectroscopy','blue grism 926–1366 nm (R ≳ 400) · red grism 1206–1892 nm (R ≳ 480)'],['Sampling','0.298″ per pixel'],['Detector temperature','≈ 95 K']] },
       { title:'Orbit and data', rows:[['Location','halo orbit around L2, amplitude ≈ 1 million km'],['Halo period','≈ 170 days'],['Survey','≈ 14,000 deg² in ≈ 6 years · deep fields 53 deg²'],['Science link','K band, 55 Mbit/s, 4 h per day'],['Volume','≈ 826 Gbit compressed per day'],['DR1','12 November 2026 · ≈ 1,900 deg² · more than a billion objects']] }
