@@ -148,7 +148,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 - Plans focaux : espaces entre détecteurs indicatifs ; la disposition de Gaia (colonne de contrôle, RVS) est à vérifier face à la documentation ESA.
 - Livré depuis : comparaison des plans focaux des quatre observatoires à la même échelle dans « Comparer » ; D3 sous forme de liens dans les deux sens (boutons « Voir dans la maquette 3D » sous chaque schéma, qui sélectionnent la pièce ; lien « Voir le trajet de la lumière » dans la description des pièces optiques).
 - D3, suite : **livré le 15 novembre**. Les éléments des schémas optiques sont reliés aux pièces (`data-el`). Venir d'une pièce par « Voir le trajet de la lumière » surligne l'élément et son bouton ; survoler ou parcourir au clavier un bouton « Voir dans la maquette 3D » surligne aussi l'élément correspondant. Vérifié par `tools/smoke.js`.
-- D4 (coupe ou transparence) : non commencé.
+- D4 (coupe) : **livré le 16 novembre** sous la forme d'un bouton « Coupe » dans la barre de la vue 3D : un plan de coupe, recalculé à chaque image, retire la moitié de la maquette tournée vers l'observateur (plan de coupe local de three.js, faces arrière affichées). Vérification maquette par maquette : Euclid montre l'intérieur du tube et la structure du miroir secondaire ; Gaia, l'intérieur de la tente ; Hubble, l'intérieur du tube (sans miroirs modélisés) ; Webb n'a pas d'intérieur fermé. Reste : les miroirs ne sont pas modélisés dans les maquettes, donc la coupe ne montre pas le trajet de la lumière.
 
 ### E. Vraies données
 

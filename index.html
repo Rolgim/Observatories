@@ -408,6 +408,10 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.4 1.4M11.6 11.6 13 13M3 13l1.4-1.4M11.6 4.4 13 3"/></svg>
           <span class="lbl">Soleil réel</span>
         </button>
+        <button class="tool" id="b-cut" aria-pressed="false" title="Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.5v13"/><path d="M8 3.5H3.5v9H8" stroke-dasharray="1.6 1.6"/><path d="M8 3.5h4.5v9H8"/></svg>
+          <span class="lbl">Coupe</span>
+        </button>
         <button class="tool" id="b-spin" aria-pressed="true" title="Rotation automatique">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13.5 8a5.5 5.5 0 1 1-1.7-4"/><path d="M12.4 1.4v3h-3"/></svg>
           <span class="lbl">Rotation</span>
@@ -2702,7 +2706,7 @@ var EN_REAL = {
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
   /* header, 3D view, panel */
-  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
+  "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "Coupe":"Cutaway", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
   "Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l'orbite à venir ; pointillé : celle qui vient de s'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.":"Position computed in your browser from the latest published orbital elements (CelesTrak TLE, SGP4 model). Solid line: the coming orbit; dotted: the one just completed. The shaded area is night. Land outline: Natural Earth.",
    "Les quatre observatoires à la même échelle":"The four observatories at the same scale", "Le ciel qu'il peut observer en ce moment":"The sky it can observe right now", "Le ciel qu'il balaie en ce moment":"The sky it is scanning right now", "Zone du ciel accessible selon la date":"Accessible part of the sky by date", "Jour de l'année à partir d'aujourd'hui":"Day of the year from today", "Soleil":"Sun", "accessible :":"accessible:", "bande balayée :":"scanned band:", "du ciel":"of the sky",
   "Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté. Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Hubble can point at anything more than 62.5° from the Sun (Cycle 34 rule, in reduced-gyro mode; HST Primer). On each 95-minute orbit the Earth also hides part of the sky: not shown. Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
@@ -3071,7 +3075,7 @@ function banner(msg){
 window.addEventListener('error', function(e){ if (e && e.message && !/ResizeObserver/.test(e.message)) banner('Erreur : ' + e.message); });
 
 var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, spin:!REDUCED,
+var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, cut:false, spin:!REDUCED,
           inst:false, instSel:null, filterIdx:0 };
 
 var stage = $('stage'), hasGL = !!(window.THREE && THREE.GLTFLoader);
@@ -3690,6 +3694,18 @@ function clickAt(x, y){
 $('explode').addEventListener('input', function(){ S.explodeGoal = this.value/100; touch(); });
 $('b-sun').addEventListener('click', function(){ S.sunReal = !S.sunReal; applyLighting(); });
 $('b-spin').addEventListener('click', function(){ S.spin = !S.spin; this.setAttribute('aria-pressed', String(S.spin)); C.last = 0; });
+/* coupe (D4) : un plan qui suit la caméra retire la moitié de la maquette tournée vers l'observateur */
+var cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), cutRoot = null, cutC = new THREE.Vector3();
+function applyCut(){
+  var on = !!(S.cut && S.mode === 'tele');
+  renderer.localClippingEnabled = on;
+  if (cutRoot && cutRoot !== (current && current.root)) cutRoot.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } }); });
+  cutRoot = current && current.root; if (cutRoot) cutC = new THREE.Box3().setFromObject(cutRoot).getCenter(new THREE.Vector3());
+  cutRoot && cutRoot.traverse(function(o){ if (!o.material) return; [].concat(o.material).forEach(function(m){
+    if (m.userData.side0 === undefined) m.userData.side0 = m.side;
+    m.clippingPlanes = on ? [cutPlane] : null; m.side = on ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; }); });
+}
+$('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
 $('b-spin').setAttribute('aria-pressed', String(S.spin));
 $('l-retry').addEventListener('click', function(){ show3D(true); });
@@ -3839,6 +3855,8 @@ function tick(now){
     cmp.items.forEach(function(it, i){ project(it.anchor, ls[i]); });
     project(cmp.rulerAnchor, ls[ls.length-1]);
   }
+  if (!!(S.cut && S.mode === 'tele') !== renderer.localClippingEnabled || (S.cut && current && current.root !== cutRoot)) applyCut();
+  if (renderer.localClippingEnabled){ var cn = cutC.clone().sub(camera.position).normalize(); cutPlane.set(cn, -cn.dot(cutC)); }
   renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
 }
 /* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */
@@ -3854,7 +3872,7 @@ canvas.addEventListener('keydown', function(e){
 });
 canvas.addEventListener('webglcontextlost', function(e){ e.preventDefault(); banner('Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.'); });
 
-window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
+window.__obs = { S:S, C:C, renderer:renderer, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
 route();
 requestAnimationFrame(tick);
 })();

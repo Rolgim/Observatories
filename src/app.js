@@ -15,7 +15,7 @@ function banner(msg){
 window.addEventListener('error', function(e){ if (e && e.message && !/ResizeObserver/.test(e.message)) banner('Erreur : ' + e.message); });
 
 var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, spin:!REDUCED,
+var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, cut:false, spin:!REDUCED,
           inst:false, instSel:null, filterIdx:0 };
 
 var stage = $('stage'), hasGL = !!(window.THREE && THREE.GLTFLoader);
@@ -634,6 +634,18 @@ function clickAt(x, y){
 $('explode').addEventListener('input', function(){ S.explodeGoal = this.value/100; touch(); });
 $('b-sun').addEventListener('click', function(){ S.sunReal = !S.sunReal; applyLighting(); });
 $('b-spin').addEventListener('click', function(){ S.spin = !S.spin; this.setAttribute('aria-pressed', String(S.spin)); C.last = 0; });
+/* coupe (D4) : un plan qui suit la caméra retire la moitié de la maquette tournée vers l'observateur */
+var cutPlane = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), cutRoot = null, cutC = new THREE.Vector3();
+function applyCut(){
+  var on = !!(S.cut && S.mode === 'tele');
+  renderer.localClippingEnabled = on;
+  if (cutRoot && cutRoot !== (current && current.root)) cutRoot.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } }); });
+  cutRoot = current && current.root; if (cutRoot) cutC = new THREE.Box3().setFromObject(cutRoot).getCenter(new THREE.Vector3());
+  cutRoot && cutRoot.traverse(function(o){ if (!o.material) return; [].concat(o.material).forEach(function(m){
+    if (m.userData.side0 === undefined) m.userData.side0 = m.side;
+    m.clippingPlanes = on ? [cutPlane] : null; m.side = on ? THREE.DoubleSide : m.userData.side0; m.needsUpdate = true; }); });
+}
+$('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
 $('b-spin').setAttribute('aria-pressed', String(S.spin));
 $('l-retry').addEventListener('click', function(){ show3D(true); });
@@ -783,6 +795,8 @@ function tick(now){
     cmp.items.forEach(function(it, i){ project(it.anchor, ls[i]); });
     project(cmp.rulerAnchor, ls[ls.length-1]);
   }
+  if (!!(S.cut && S.mode === 'tele') !== renderer.localClippingEnabled || (S.cut && current && current.root !== cutRoot)) applyCut();
+  if (renderer.localClippingEnabled){ var cn = cutC.clone().sub(camera.position).normalize(); cutPlane.set(cn, -cn.dot(cutC)); }
   renderer.clear(); renderer.render(bgScene, bgCam); renderer.clearDepth(); renderer.render(scene, camera);
 }
 /* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */
@@ -798,7 +812,7 @@ canvas.addEventListener('keydown', function(e){
 });
 canvas.addEventListener('webglcontextlost', function(e){ e.preventDefault(); banner('Le contexte graphique a été perdu. Recharger la page pour retrouver la vue 3D.'); });
 
-window.__obs = { S:S, C:C, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
+window.__obs = { S:S, C:C, renderer:renderer, models:models, cmp:cmp, pick:pick, camera:camera, get current(){ return current; } };
 route();
 requestAnimationFrame(tick);
 })();
