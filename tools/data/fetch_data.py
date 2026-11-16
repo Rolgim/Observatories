@@ -130,6 +130,7 @@ def mast_image(key, collection, instruments, ra, dec, radius=3, extra=None, name
             meta, url = mast_meta(row, collection, inst)
             meta.append(["Fichier d'origine", str(p["productFilename"])])
             target, filt = clean(row["target_name"]) or "cible non nommée", clean(row["filters"]) or ""
+            filt = "" if filt.upper() in ("OPEN", "CLEAR") else filt
             known = bool(expect) and expect in target.upper().replace(" ", "").replace("-", "")
             title = (name if known else "Cible " + target) + ", " + inst.replace("/IMAGE", "").replace("NIRCAM", "NIRCam") + (", filtre " + filt if filt else "")
             return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title=title, meta=meta, url=url,
@@ -629,6 +630,45 @@ def gaia_rvs_spectrum(key):
 M51, M83, Q3C273, HD209458, SMACS = (202.4696, 47.1952), (204.2538, -29.8658), (187.27792, 2.05239), (330.79489, 18.88432), (110.8375, -73.4540)
 ERO = dict(proposal_id="2736")  # premières images scientifiques de JWST, données publiques
 SM = "L'amas de galaxies SMACS 0723 : les arcs sont des galaxies lointaines dont l'image est déformée par la gravité de l'amas."
+def hubble_fgs(key):
+    """Courbe de lumière brute du capteur de guidage fin de Hubble pendant un transit de l'exoplanète HD 17156 b (programme 11945)."""
+    from astroquery.mast import Observations
+    from astropy.io import fits
+    obs = Observations.query_criteria(obs_collection="HST", obs_id="fb8u5502m")
+    prods = Observations.get_product_list(obs)
+    prime = None
+    dmf = prods[[str(x).upper() == "DMF" for x in prods["productSubGroupDescription"]]]
+    for sub in ("A2F", "A1F", "A3F"):
+        pr = prods[[str(x).upper() == sub for x in prods["productSubGroupDescription"]]]
+        if len(pr): prime = pr; break
+    local = os.path.join(TMP, str(prime[0]["productFilename"]))
+    if Observations.download_file(prime[0]["dataURI"], local_path=local)[0] != "COMPLETE":
+        raise RuntimeError("téléchargement impossible")
+    with fits.open(local) as h:
+        hdr = h[0].header; data = np.array(h[0].data, dtype=float); tab = h[1].data
+        names = [str(x).strip().upper() for x in tab["CTYPE1"]] if "CTYPE1" in tab.columns.names else []
+        print("   lignes du fichier :", names, data.shape, "FGS prime :", hdr.get("PRIMESI"))
+        dt = float(tab["CD1_1"][0]) if "CD1_1" in tab.columns.names else 0.025
+    pmt = [i for i, n in enumerate(names) if n.startswith("PMT")] or list(range(min(4, data.shape[0])))
+    print("   photomultiplicateurs utilisés :", [names[i] if names else i for i in pmt], "pas de temps :", dt)
+    flux = data[pmt].sum(axis=0); t = np.arange(flux.size) * dt / 3600.0
+    good = flux > 0.2 * np.median(flux[flux > 0])          # hors occultations par la Terre
+    nb = int(round(120 / dt))                                # cases de 2 min
+    m = flux.size // nb
+    fb = np.array([flux[i*nb:(i+1)*nb][good[i*nb:(i+1)*nb]].mean() if good[i*nb:(i+1)*nb].mean() > 0.8 else np.nan for i in range(m)])
+    tb = (np.arange(m) + 0.5) * nb * dt / 3600.0
+    ok = np.isfinite(fb); fb = fb / np.median(fb[ok])
+    lo, hi = np.percentile(fb[ok], [1, 99])
+    save_json("hubble-fgs.json", dict(type="line", x=rnd(tb[ok], 5), y=rnd(fb[ok], 6), ymin=float(lo - 0.004), ymax=float(hi + 0.004), xlabel="temps depuis le début de la pose (h)", ylabel="flux relatif", gaps=True))
+    meta = [["Archive", "MAST (STScI)"], ["Instrument", f"FGS ({str(hdr.get('PRIMESI', '')).strip()}), mode photométrique"], ["Identifiant d'observation", "fb8u5502m"],
+            ["Cible", "HD 17156, étoile hôte de l'exoplanète HD 17156 b"], ["Programme", "11945"], ["Début d'observation", "2008-12-23"],
+            ["Données", f"{fr(flux.size)} mesures à {fr(1/dt, 0)} Hz, somme des photomultiplicateurs, moyenne par tranches de 2 min"],
+            ["Traitement", "données brutes de niveau 1 ; aucune correction instrumentale ; trous : Terre entre Hubble et l'étoile"], ["Fichier d'origine", str(prime[0]["productFilename"])]]
+    return dict(type="plot", file="hubble-fgs.json", title="Transit de l'exoplanète HD 17156 b, vu par un capteur de guidage fin", meta=meta,
+                url="https://archive.stsci.edu/proposal_search.php?id=11945&mission=hst",
+                caption="Les FGS comptent les photons de l'étoile guide 40 fois par seconde. Utilisés en photomètres, ils suivent l'éclat de l'étoile pendant le passage de sa planète devant elle. Données brutes : les variations lentes viennent aussi de l'instrument.", credit="NASA, ESA, STScI", fetched=TODAY)
+
+LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
     "hubble/acs": lambda k: mast_image(k, "HST", ["ACS/WFC"], *M51, name="La galaxie du Tourbillon (M51)", expect="M51", about="Une région de la galaxie du Tourbillon."),
@@ -639,6 +679,9 @@ RECIPES = {
     "jwst/niriss": lambda k: mast_image(k, "JWST", ["NIRISS/IMAGE"], *SMACS, extra=ERO, name="SMACS 0723", expect="SMACS", about="Image directe du même amas prise par NIRISS."),
     "jwst/nirspec": lambda k: mast_spectrum(k, "JWST", ["NIRSPEC/MSA"], *SMACS, radius=3, subgroups=("X1D",), extra=dict(proposal_id="2736", calib_level=3), best_of=30, product_level=3,
                                             title="Spectre NIRSpec d'une source du champ de SMACS 0723", caption="Spectre extrait d'une des sources observées à travers les micro-volets, retenue automatiquement pour son rapport signal sur bruit."),
+    "hubble/fgs": hubble_fgs,
+    "jwst/fgs": lambda k: mast_image(k, "JWST", ["FGS/FGS1", "FGS/FGS2"], *LMC_ASTRO, radius=6, name="Champ d'étalonnage du Grand Nuage de Magellan", expect="LMC",
+                                    about="Le champ d'étoiles du Grand Nuage de Magellan qui sert à étalonner la géométrie des instruments de JWST."),
     "euclid/vis": euclid_vis, "euclid/nisp": euclid_nisp,
     "gaia/astro": gaia_astro, "gaia/bprp": gaia_bprp, "gaia/rvs": gaia_rvs,
     # produits supplémentaires d'un même instrument : clé « observatoire/instrument:nom »
