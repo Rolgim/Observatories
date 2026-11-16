@@ -810,5 +810,52 @@
   "caption": "Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).",
   "credit": "ESA/Euclid/Euclid Consortium/NASA",
   "fetched": "2026-11-15"
+ },
+ "hubble/fgs": {
+  "type": "plot",
+  "file": "hubble-fgs.json",
+  "title": "Transit de l'exoplanète HD 17156 b, vu par un capteur de guidage fin",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "FGS (FGS2), mode photométrique"
+   ],
+   [
+    "Identifiant d'observation",
+    "fb8u5502m"
+   ],
+   [
+    "Cible",
+    "HD 17156, étoile hôte de l'exoplanète HD 17156 b"
+   ],
+   [
+    "Programme",
+    "11945"
+   ],
+   [
+    "Début d'observation",
+    "2008-12-23"
+   ],
+   [
+    "Données",
+    "1 947 998 mesures à 40 Hz, somme des photomultiplicateurs, moyenne par tranches de 2 min"
+   ],
+   [
+    "Traitement",
+    "données brutes de niveau 1 ; aucune correction instrumentale ; trous : Terre entre Hubble et l'étoile"
+   ],
+   [
+    "Fichier d'origine",
+    "fb8u5502m_a2f.fits"
+   ]
+  ],
+  "url": "https://archive.stsci.edu/proposal_search.php?id=11945&mission=hst",
+  "caption": "Les FGS comptent les photons de l'étoile guide 40 fois par seconde. Utilisés en photomètres, ils suivent l'éclat de l'étoile pendant le passage de sa planète devant elle. Données brutes : les variations lentes viennent aussi de l'instrument.",
+  "credit": "NASA, ESA, STScI",
+  "fetched": "2026-11-16"
  }
 }
