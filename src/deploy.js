@@ -72,6 +72,15 @@ var DEPLOY = (function(){
   }
 
   var store = null;
+  /* les attributs glTF peuvent être entrelacés (position et normale dans un même tampon) : on passe par getX/setX */
+  var NORM = { Int8Array:127, Uint8Array:255, Int16Array:32767, Uint16Array:65535 };
+  function copy(at){
+    var arr = at.isInterleavedBufferAttribute ? at.data.array : at.array, k = at.normalized ? (NORM[arr.constructor.name] || 1) : 1;
+    var r = new Float32Array(at.count*3); for (var i=0;i<at.count;i++){ r[3*i] = at.getX(i)/k; r[3*i+1] = at.getY(i)/k; r[3*i+2] = at.getZ(i)/k; } return r;
+  }
+  /* remplace un attribut entrelacé ou entier (normales quantifiées du glTF) par un attribut en flottants, propre à cette géométrie */
+  function own(geo, name){ var at = geo.attributes[name]; if (!at) return null; var f = new THREE.BufferAttribute(copy(at), 3); geo.setAttribute(name, f); return f; }
+  function dirty(at){ if (at.isInterleavedBufferAttribute) at.data.needsUpdate = true; else at.needsUpdate = true; }
   /* mémorise les sommets d'origine et les passages repère local ↔ repère maquette (pièces à l'état éclaté 0) */
   function prepare(M){
     if (store && store.M === M) return store;
@@ -83,7 +92,7 @@ var DEPLOY = (function(){
       if (seen.has(o.geometry)) o.geometry = o.geometry.clone(); seen.add(o.geometry);
       if (o.userData.base) o.position.copy(o.userData.base); o.updateMatrixWorld(true);
       var m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), mi = new THREE.Matrix4().copy(m).invert();
-      var pos = o.geometry.attributes.position, nor = o.geometry.attributes.normal;
+      var pos = own(o.geometry, 'position'), nor = own(o.geometry, 'normal');
       list.push({ o:o, part:k, name:o.name, m:m, mi:mi, nm:new M3().getNormalMatrix(m), nmi:new M3().getNormalMatrix(mi),
         p0:pos.array.slice(0), n0:nor ? nor.array.slice(0) : null });
     });
@@ -95,15 +104,16 @@ var DEPLOY = (function(){
     var st = prepare(M); st.v = v;
     var g = {}; Object.keys(KEYS).forEach(function(k){ g[k] = ease(stage(v, k)); });
     st.list.forEach(function(e){
-      var pos = e.o.geometry.attributes.position, nor = e.o.geometry.attributes.normal, a = pos.array, b = nor && nor.array, i;
-      for (i=0;i<a.length;i+=3){
-        p.set(e.p0[i], e.p0[i+1], e.p0[i+2]).applyMatrix4(e.m);
-        if (b) n.set(e.n0[i], e.n0[i+1], e.n0[i+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
+      var pos = e.o.geometry.attributes.position, nor = e.o.geometry.attributes.normal, i, j;
+      for (i=0;i<pos.count;i++){
+        j = 3*i;
+        p.set(e.p0[j], e.p0[j+1], e.p0[j+2]).applyMatrix4(e.m);
+        if (nor) n.set(e.n0[j], e.n0[j+1], e.n0[j+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
         deform(e.part, e.name, p, n, g);
-        p.applyMatrix4(e.mi); a[i] = p.x; a[i+1] = p.y; a[i+2] = p.z;
-        if (b){ n.applyMatrix3(e.nmi).normalize(); b[i] = n.x; b[i+1] = n.y; b[i+2] = n.z; }
+        p.applyMatrix4(e.mi); pos.setXYZ(i, p.x, p.y, p.z);
+        if (nor){ n.applyMatrix3(e.nmi).normalize(); nor.setXYZ(i, n.x, n.y, n.z); }
       }
-      pos.needsUpdate = true; if (nor) nor.needsUpdate = true;
+      dirty(pos); if (nor) dirty(nor);
       e.o.geometry.computeBoundingSphere(); e.o.geometry.computeBoundingBox();
     });
   }
