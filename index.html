@@ -4199,6 +4199,7 @@ show3D = function(changed){
   $('explode').disabled = cmpMode; $('b-sun').disabled = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
   $('b-dep').hidden = cmpMode || S.id !== 'jwst'; if (dep.on && (cmpMode || S.id !== 'jwst')) depToggle(false);
+  $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
   $('b-cut').disabled = cmpMode; $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode)); $('explode').parentNode.style.opacity = cmpMode ? 0.4 : 1;
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
