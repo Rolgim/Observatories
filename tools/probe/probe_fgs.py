@@ -1,12 +1,18 @@
-"""Sonde : observations FGS (JWST et HST) disponibles dans MAST, pour un exemple de données."""
+"""Sonde : produits et structure d'une observation FGS de Hubble (transit de HD 17156 b)."""
 from astroquery.mast import Observations
-for coll, ins in (("JWST", "FGS*"), ("HST", "FGS*")):
-    try:
-        t = Observations.query_criteria(obs_collection=coll, instrument_name=ins, intentType="science")
-        print("\n==", coll, len(t), "observations ; instruments :", sorted(set(t["instrument_name"])))
-        print("   types :", sorted(set(t["dataproduct_type"])), "niveaux :", sorted(set(int(x) for x in t["calib_level"])))
-        t.sort("t_exptime", reverse=True)
-        for r in t[:15]:
-            print("  ", r["obs_id"], r["target_name"], r["dataproduct_type"], r["calib_level"], round(float(r["t_exptime"] or 0)), r["proposal_id"], round(float(r["s_ra"] or 0), 3), round(float(r["s_dec"] or 0), 3), r["filters"])
-    except Exception as e:
-        print(coll, "ÉCHEC", repr(e)[:300])
+from astropy.io import fits
+t = Observations.query_criteria(obs_collection="HST", obs_id="fb8u5502m")
+print(t["obs_id", "target_name", "t_min", "t_max", "t_exptime"])
+p = Observations.get_product_list(t)
+print(p["productFilename", "productSubGroupDescription", "size", "dataRights"])
+sub = p[[str(s).upper() in ("A1F", "DMF", "A2F", "A3F") for s in p["productSubGroupDescription"]]]
+m = Observations.download_products(sub, download_dir="/tmp/fgs", cache=False)
+for path in m["Local Path"]:
+    print("\n####", path)
+    with fits.open(path) as h:
+        h.info()
+        for x in h[:3]:
+            print(repr(x.header)[:2500])
+            if x.data is not None:
+                try: print("   colonnes :", x.columns.names, len(x.data))
+                except Exception: print("   données :", getattr(x.data, "shape", None))
