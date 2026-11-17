@@ -150,19 +150,28 @@ var Optics = (function(){
 
   /* ---------- plans focaux, en millimètres ---------- */
   function grid(nx, ny, w, h, gx, gy, color, lab){ var c = []; for (var j=0;j<ny;j++) for (var i=0;i<nx;i++){ var cc = typeof color === 'function' ? color(i, j) : color; if (cc) c.push({ x:i*(w+gx), y:j*(h+gy), w:w, h:h, c:cc }); } return { cells:c, w:nx*w+(nx-1)*gx, h:ny*h+(ny-1)*gy, lab:lab }; }
+  /* détecteurs placés par leur centre (mm, y vers le haut) : mosaïques non régulières */
+  function cells(list, w, h, color, lab){
+    var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+    list.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
+    return { cells:list.map(function(p){ return { x:p[0]-x0, y:y1-p[1], w:w, h:h, c:color }; }), w:x1-x0+w, h:y1-y0+h, lab:lab };
+  }
+  /* WFI : centres des 18 détecteurs dans le plan focal, en mm (GalSim, sca_positions_20210204.txt, d'après le projet Roman) */
+  var WFI_MM = [[-22.14,12.15],[-22.29,-37.03],[-22.44,-82.06],[-66.42,20.90],[-66.92,-28.28],[-67.42,-73.06],[-110.70,42.20],[-111.48,-6.98],[-112.64,-51.06],
+                [22.14,12.15],[22.29,-37.03],[22.44,-82.06],[66.42,20.90],[66.92,-28.28],[67.42,-73.06],[110.70,42.20],[111.48,-6.98],[112.64,-51.06]];
   var GC = { sm:'#7B858C', af:'#3D6BE0', bp:'#0F987A', rp:'#DB5A14', rvs:'#9A52D6', aux:'#C9A100' };
   var FP = {
-    hubble:{ groups:[ grid(1,2,61.4,30.8,0,1.5,DET,['WFC3 / UVIS','2 CCD de 4096 × 2051 px, 15 µm']), grid(1,2,61.4,30.7,0,1.5,'#0F987A',['ACS / WFC','2 CCD de 4096 × 2048 px, 15 µm']), grid(1,1,18.3,18.3,0,0,'#DB5A14',['WFC3 / IR','1014 × 1014 px, 18 µm']) ],
-             note:'Les trois détecteurs ne sont pas côte à côte dans le télescope : ils sont rapprochés ici pour comparer leur taille.' },
+    hubble:{ groups:[ grid(1,2,61.4,30.8,0,0.46,DET,['WFC3 / UVIS','2 CCD de 4096 × 2051 px, 15 µm']), grid(1,2,61.4,30.7,0,0.75,'#0F987A',['ACS / WFC','2 CCD de 4096 × 2048 px, 15 µm']), grid(1,1,18.3,18.3,0,0,'#DB5A14',['WFC3 / IR','1014 × 1014 px, 18 µm']) ],
+             note:'Les trois détecteurs ne sont pas côte à côte dans le télescope : ils sont rapprochés ici pour comparer leur taille. Écart entre les deux CCD de chaque caméra : environ 31 px pour WFC3, 50 px pour ACS (manuels des instruments).', gaps:true },
     jwst:{ groups:[ grid(2,2,36.7,36.7,3,3,DET,['NIRCam, voie courte','2 modules de 2 × 2 détecteurs']), grid(1,1,36.7,36.7,0,0,DET,['NIRCam, voie longue','1 détecteur par module']), grid(2,1,36.7,36.7,3,0,'#DB5A14',['NIRSpec','2 détecteurs']), grid(1,1,36.7,36.7,0,0,'#9A52D6',['NIRISS','1 détecteur']), grid(1,1,25.6,25.6,0,0,'#0F987A',['MIRI, imageur','1024 × 1024 px, 25 µm']) ],
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
-    euclid:{ groups:[ grid(6,6,49.2,49.6,2,2,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,6,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
-             note:'VIS mesure environ 30 cm de côté : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace.' },
-    roman:{ groups:[ grid(6,3,41,41,5,5,'#B8860B',['WFI','18 détecteurs de 4096 × 4096 px, 10 µm']) ],
-             note:'Sur le télescope, les 18 détecteurs sont disposés en arc, non en grille régulière.' },
-    gaia:{ groups:[ grid(17,7,45,59,4,1,function(i, j){ if (i===0) return j===3 ? null : (j===0||j===1||j===2) ? (j===2 ? GC.aux : GC.aux) : null; if (i<=2) return GC.sm; if (i<=10) return GC.af; if (i===11) return j===3 ? GC.aux : GC.af; if (i===12) return GC.bp; if (i===13) return GC.rp; return j<4 ? GC.rvs : null; }, ['Plan focal de Gaia','106 CCD de 4500 × 1966 px, 10 × 30 µm']) ],
+    euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
+             note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    roman:{ groups:[ cells(WFI_MM,40.9,40.9,'#B8860B',['WFI','18 détecteurs de 4096 × 4096 px, 10 µm']) ],
+             note:'Les 18 détecteurs forment six colonnes de trois, décalées en hauteur en arc. Positions des centres d\'après le modèle de champ du projet (GalSim).', gaps:true },
+    gaia:{ groups:[ grid(17,7,45,59,4,1,function(i, j){ if (i===0) return j===3 ? null : (j===0||j===1||j===2) ? (j===2 ? GC.aux : GC.aux) : null; if (i<=2) return GC.sm; if (i<=10) return GC.af; if (i===11) return j===3 ? GC.aux : GC.af; if (i===12) return GC.bp; if (i===13) return GC.rp; return j>=3 ? GC.rvs : null; }, ['Plan focal de Gaia','106 CCD de 4500 × 1966 px, 10 × 30 µm']) ],
            key:[[GC.aux,'contrôle (angle de base, front d\'onde)'],[GC.sm,'cartographe de ciel'],[GC.af,'champ astrométrique'],[GC.bp,'photomètre bleu'],[GC.rp,'photomètre rouge'],[GC.rvs,'spectromètre RVS']],
-           note:'Les étoiles traversent le plan focal de gauche à droite pendant que le satellite tourne : détection, puis astrométrie, photométrie et enfin spectroscopie.' }
+           note:'Les étoiles traversent le plan focal de gauche à droite pendant que le satellite tourne : détection, puis astrométrie, photométrie et enfin spectroscopie. 17 colonnes et 7 rangées ; le spectromètre occupe les rangées 4 à 7, un capteur de front d\'onde remplace le dernier CCD astrométrique de la rangée 4 (documentation de Gaia DR3). La place des trois autres CCD de contrôle, dans la première colonne, est indicative.' }
   };
   function focal(tid){
     var d = FP[tid], W = 560, gap = 34, tw = 0, th = 0;
@@ -178,13 +187,13 @@ var Optics = (function(){
     s += L(12, H-10, 12 + bar*k, H-10, INK, 2) + T(18 + bar*k, H-6, bar >= 100 ? (bar/10)+' cm' : bar+' mm');
     var leg = '<ul class="fov-leg">' + (d.key ? d.key.map(function(q){ return '<li><i style="background:'+q[0]+'"></i>'+q[1]+'</li>'; }) : d.groups.map(function(g){ return '<li><i style="background:'+g.cells[0].c+'"></i>'+g.lab[0]+'<span>'+g.lab[1]+'</span></li>'; })).join('') + '</ul>';
     return svg(W, H, s, 'Détecteurs du plan focal, à l\'échelle') + leg +
-      '<div class="cap">'+d.note+' Taille des détecteurs à l\'échelle ; les espaces entre détecteurs sont indicatifs.</div>';
+      '<div class="cap">'+d.note+' '+(d.gaps ? 'Détecteurs et espaces entre eux à l\'échelle.' : 'Taille des détecteurs à l\'échelle ; les espaces entre détecteurs sont indicatifs.')+'</div>';
   }
 
   /* tous les plans focaux à la même échelle, pour la page « Comparer » */
   function compareFocal(OBS, NAMES){
-    var W = 1000, k = 0.8, gap = 44, rows = [[], []], s = '';
-    ['gaia','euclid','roman','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' || t === 'roman' ? 0 : 1].push({ t:t, g:g }); }); });
+    var W = 1000, k = 0.8, gap = 40, rows = [[], [], []], s = '';
+    ['gaia','euclid','roman','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' || t === 'roman' ? 0 : t === 'euclid' ? 1 : 2].push({ t:t, g:g }); }); });
     var y = 10;
     rows.forEach(function(r){
       var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
@@ -200,7 +209,7 @@ var Optics = (function(){
     });
     s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
     return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des observatoires à la même échelle') +
-      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 30 cm de côté ; celui du WFI de Roman, environ 27 × 13 cm ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs ; un seul module de NIRCam est dessiné.</div></div>';
+      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 34 × 30 cm ; celui du WFI de Roman, environ 27 × 17 cm ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs pour Gaia et Webb ; un seul module de NIRCam est dessiné.</div></div>';
   }
 
   function render(tid, name, part){

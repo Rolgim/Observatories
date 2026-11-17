@@ -9,10 +9,23 @@ var InstrumentsUI = (function(){
   /* champs de vue ajoutés ici pour les relevés à grand champ (valeurs approchées) */
   (function(){
     var e = INST_DATA.euclid.instruments, g = INST_DATA.gaia.instruments;
-    e[0].fov = [ {l:'VIS', w:2830, h:2550} ];
-    e[1].fov = [ {l:'NISP', w:2750, h:2600} ];
+    /* mosaïques dessinées détecteur par détecteur : centres en secondes d'arc (x à droite, y en haut) */
+    function mosaic(l, list, cw, ch, solo){   /* solo : détecteurs dessinés seulement si l'instrument est seul sur la figure */
+      var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      list.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
+      var mx = (x0 + x1)/2, my = (y0 + y1)/2;
+      return { l:l, w:x1-x0+cw, h:y1-y0+ch, cw:cw, ch:ch, solo:!!solo, cells:list.map(function(p){ return [p[0]-mx, p[1]-my]; }) };
+    }
+    function gridAt(nx, ny, px, py){ var r = []; for (var j=0;j<ny;j++) for (var i=0;i<nx;i++) r.push([i*px, j*py]); return r; }
+    /* VIS : CCD de 49,6 × 49,2 mm, pas de 57,3 × 50,7 mm, 1″ = 120,57 µm (Euclid II, tableau 2) */
+    e[0].fov = [ mosaic('VIS', gridAt(6, 6, 475, 420.5), 411, 408, true) ];
+    /* NISP : 2040 px de 0,3″ ; espaces déduits du champ de 0,763 × 0,722° (Euclid I) */
+    e[1].fov = [ mosaic('NISP', gridAt(4, 4, 712, 662), 612, 612, true) ];
     g[0].fov = [ {l:'Champ d\'un télescope', w:2520, h:2520} ];
-    INST_DATA.roman.instruments[0].fov = [ {l:'WFI', w:2880, h:1440} ];
+    /* WFI : centres des 18 détecteurs sur le ciel, en degrés (GalSim, sca_positions_20210204.txt) ; 4088 px de 0,11″ */
+    var UV = [[-0.0680,-0.0356],[-0.0679,0.1108],[-0.0678,0.2417],[-0.2037,-0.0627],[-0.2037,0.0840],[-0.2036,0.2146],[-0.3390,-0.1283],[-0.3393,0.0191],[-0.3403,0.1486]];
+    UV = UV.concat(UV.map(function(p){ return [-p[0], p[1]]; }));
+    INST_DATA.roman.instruments[0].fov = [ mosaic('WFI', UV.map(function(p){ return [p[0]*3600, p[1]*3600]; }), 450, 450) ];
     /* couleurs catégorielles lisibles sur papier clair, attribuées par rang */
     var PAL = ['#3D6BE0', '#DB5A14', '#0F987A', '#9A52D6', '#7B858C'];
     for (var k in INST_DATA) INST_DATA[k].instruments.forEach(function(it, i){ it.color = it.bands ? PAL[i % 4] : PAL[4]; });
@@ -85,6 +98,11 @@ var InstrumentsUI = (function(){
   }
 
   /* ---------- champs de vue à l'échelle ---------- */
+  function cellRects(f, cx, cy, k, st){
+    return '<g '+st.replace('stroke-width="1.8"','stroke-width="1"').replace('stroke-width="1.6"','stroke-width="0.9"')+'>' + f.cells.map(function(p){
+      return '<rect x="'+(cx + (p[0] - f.cw/2)*k).toFixed(1)+'" y="'+(cy - (p[1] + f.ch/2)*k).toFixed(1)+'" width="'+(f.cw*k).toFixed(1)+'" height="'+(f.ch*k).toFixed(1)+'"/>';
+    }).join('') + '</g>';
+  }
   function fovBlock(tid, sel){
     var d = INST_DATA[tid], items = [];
     d.instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ if (!sel || sel===it.id) items.push({ it:it, f:f }); }); });
@@ -98,7 +116,7 @@ var InstrumentsUI = (function(){
     items.sort(function(a,b){ return b.f.w*b.f.h - a.f.w*a.f.h; }).forEach(function(o){
       var w = Math.max(2.5, o.f.w*k), h = Math.max(2.5, o.f.h*k), x = c + (o.f.dx||0)*k - w/2, y = c - h/2;
       var st = 'fill="'+o.it.color+'" fill-opacity="0.14" stroke="'+o.it.color+'" stroke-width="1.8" data-inst="'+o.it.id+'"';
-      s += o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" '+st+'/>';
+      s += o.f.cells && (!o.f.solo || items.length === 1) ? cellRects(o.f, c + (o.f.dx||0)*k, c, k, st) : o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" '+st+'/>';
     });
     var nice = [1,2,5,10,20,30,60,120,300,600,1200,1800,3600], bar = nice[0];
     for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
@@ -305,7 +323,7 @@ var InstrumentsUI = (function(){
     items.sort(function(a,b){ return b.f.w*b.f.h - a.f.w*a.f.h; }).forEach(function(o){
       var w = Math.max(2.5, o.f.w*k), h = Math.max(2.5, o.f.h*k), x = c + (o.f.dx||0)*k - w/2, yy = c - h/2;
       var st = 'fill="'+OBS[o.tid]+'" fill-opacity="0.12" stroke="'+OBS[o.tid]+'" stroke-width="1.6" data-jump="'+o.tid+':'+o.it.id+'"';
-      s += o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+yy+'" width="'+w+'" height="'+h+'" '+st+'/>';
+      s += o.f.cells && (!o.f.solo || items.length === 1) ? cellRects(o.f, c + (o.f.dx||0)*k, c, k, st) : o.f.circle ? '<circle cx="'+c+'" cy="'+c+'" r="'+(w/2)+'" '+st+'/>' : '<rect x="'+x+'" y="'+yy+'" width="'+w+'" height="'+h+'" '+st+'/>';
     });
     var nice = [1,2,5,10,20,30,60,120,300,600,1200,1800,3600], bar = nice[0];
     for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
@@ -322,7 +340,7 @@ var InstrumentsUI = (function(){
     var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
     s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Les cinq observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
-      '<div class="cap">À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d\'Euclid. Les champs d\'Euclid et de Gaia sont des valeurs approchées.</div></div>';
+      '<div class="cap">À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d\'Euclid. Le champ de Gaia est une valeur approchée ; celui du WFI de Roman est dessiné détecteur par détecteur.</div></div>';
     var rows = '';
     ORDER.forEach(function(tid){
       INST_DATA[tid].instruments.forEach(function(it, i){
