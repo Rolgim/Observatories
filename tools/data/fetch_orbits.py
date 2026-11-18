@@ -25,13 +25,17 @@ BODIES = {  # identifiants Horizons, période, pas
 def lookup(name):
     """Identifiant Horizons d'un engin spatial à partir de son nom (API horizons_lookup du JPL)."""
     import urllib.request, urllib.parse
-    url = "https://ssd-api.jpl.nasa.gov/api/horizons_lookup.api?" + urllib.parse.urlencode(dict(sstr=name, group="sct"))
-    with urllib.request.urlopen(url, timeout=60) as r:
-        res = json.load(r).get("result", [])
-    print("   recherche", name, ":", [(x.get("name"), x.get("spkid")) for x in res], flush=True)
-    for x in res:
-        if "roman" in (x.get("name") or "").lower() or "roman" in " ".join(x.get("alias") or []).lower():
-            return x["spkid"]
+    for sstr in (name, "Nancy Grace Roman", "Roman Space Telescope"):
+        url = "https://ssd.jpl.nasa.gov/api/horizons_lookup.api?" + urllib.parse.urlencode(dict(sstr=sstr, group="sct"))
+        try:
+            with urllib.request.urlopen(url, timeout=60) as r:
+                res = json.load(r).get("result", [])
+        except Exception as e:
+            print("   recherche", sstr, ": échec", e, flush=True); continue
+        print("   recherche", sstr, ":", [(x.get("name"), x.get("spkid")) for x in res], flush=True)
+        for x in res:
+            if "roman" in (x.get("name") or "").lower() or "roman" in " ".join(x.get("alias") or []).lower():
+                return x["spkid"]
     raise RuntimeError("aucun identifiant trouvé pour " + name)
 
 def vectors(body, start, stop, step):
