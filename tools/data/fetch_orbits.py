@@ -44,6 +44,8 @@ def vectors(body, start, stop, step):
     return np.array(t["datetime_jd"], dtype=float), np.array([t["x"], t["y"], t["z"]], dtype=float).T * AU
 
 def main():
+    prev = os.path.join(ROOT, "data", "orbits.json")
+    old = json.load(open(prev, encoding="utf-8")).get("bodies", {}) if os.path.exists(prev) else {}
     out = dict(frame="repère tournant Soleil–Terre, origine au centre de la Terre, milliers de km", source="JPL Horizons", fetched=TODAY.isoformat(), bodies={})
     for key, b in BODIES.items():
         print("==", key, flush=True)
@@ -64,6 +66,8 @@ def main():
                                       x=[int(round(v / 1000)) for v in x], y=[int(round(v / 1000)) for v in y], z=[int(round(v / 1000)) for v in z])
         except Exception as e:
             print("   ÉCHEC :", repr(e), flush=True)
+            if key in old:                                   # garder la série précédente plutôt que de perdre le corps
+                out["bodies"][key] = old[key]; print("   série précédente conservée", flush=True)
     os.makedirs(os.path.join(ROOT, "data"), exist_ok=True)
     with open(os.path.join(ROOT, "data", "orbits.json"), "w", encoding="utf-8") as fh:
         json.dump(out, fh, ensure_ascii=False, separators=(",", ":"))

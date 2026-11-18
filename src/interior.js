@@ -12,6 +12,7 @@
    Sources. Hubble : NASA, SM3B Media Reference Guide, section 5 (HST Systems).
    Euclid : Racca et al. 2016 (arXiv:1610.05508). Gaia : Gaia Collaboration, Prusti et al. 2016 ;
    ESA, Service module ; Spaceflight101, Gaia Spacecraft Overview. Webb : NASA et STScI (JDox), Spacecraft bus.
+   Roman : NASA Goddard, NTRS 2021 (Observatory Implementation) et 2024 (RST ACS Overview) ; NASA, Roman spacecraft.
 
    Formes : mirror (r, hole, h, R courbure) · disc/cyl (r, h) · cone (r1, r2, h) · box (s) · plate (s, n)
             sph (r) · tank (r, h : cylindre à fonds bombés) · torus (r, tube) · strut (a, b, r) · sector (r1, r2, a1, a2, h)
@@ -148,15 +149,33 @@ var INTERIOR = (function(){
     return a;
   }
 
-  var D = { hubble:hubble(), euclid:euclid(), gaia:gaia(), jwst:jwst() };
+  /* ---------------- Roman : axe optique = x (ouverture vers −x) ; module de service hexagonal de x ≈ 2,5 à 5,1 m,
+     faces à 0°, 60°… comptés de +y vers +z, apothème ≈ 2 m ---------------- */
+  function roman(){
+    var a = [], XC = 3.75;
+    function at(r, deg, x){ return [x, Math.cos(deg*rad)*r, Math.sin(deg*rad)*r]; }
+    a.push(mk(ind('Module de propulsion : ergols, vannes et conduites vers les 24 propulseurs', 'Propulsion module: propellant, valves and lines to the 24 thrusters'), { k:'bus', f:'cyl', p:[XC,0,0], r:0.42, h:2.1, ax:'x', m:SHELL }));
+    [45, 135, 225, 315].forEach(function(d){
+      a.push(mk(ind('Réservoir d\'hydrazine : 4 réservoirs', 'Hydrazine tank: 4 tanks'), { k:'bus', f:'tank', p:at(1.0, d, XC), r:0.4, h:1.5, ax:'x', m:TANK }));
+    });
+    for (var i=0;i<6;i++) a.push(mk(ind('Roue de réaction : 6 roues de 20 kg, à fort couple pour passer vite d\'un champ à l\'autre', 'Reaction wheel: 6 wheels of 20 kg, with high torque to slew quickly between fields'), { k:'bus', f:'disc', p:at(1.25, 30 + i*60, 4.75), r:0.21, h:0.14, ax:'x', m:WHEEL }));
+    for (var j=0;j<6;j++) a.push(mk(ind('Panneau d\'avionique : 6 panneaux qui portent ordinateurs, mémoire de 9 To, énergie, communications et pointage, et rayonnent leur chaleur vers l\'espace', 'Avionics panel: 6 panels carrying computers, the 9 TB recorder, power, communications and pointing, and radiating their heat to space'), { k:'bus', f:'box', p:at(1.82, j*60, 3.5), s:[1.4, 0.1, 1.2], rotX:j*60*rad, m:j%2 ? ELEC : COMM }));
+    a.push(mk(ind('Centrale inertielle : 4 gyroscopes en pyramide', 'Inertial reference unit: 4 gyroscopes in a pyramid'), { k:'bus', f:'box', p:[2.85,0,0], s:[0.35,0.4,0.4], m:BOX }));
+    return a;
+  }
+
+  var D = { hubble:hubble(), euclid:euclid(), gaia:gaia(), jwst:jwst(), roman:roman() };
   var SRC = {
     hubble:['NASA, guide de la mission SM3B, section 5', 'NASA, SM3B Media Reference Guide, section 5'],
     euclid:['Racca et al. 2016', 'Racca et al. 2016'],
     gaia:['Gaia Collaboration, Prusti et al. 2016 ; ESA ; Spaceflight101', 'Gaia Collaboration, Prusti et al. 2016; ESA; Spaceflight101'],
-    jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus']
+    jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus'],
+    roman:['NASA Goddard (NTRS 2021, 2024) ; NASA', 'NASA Goddard (NTRS 2021, 2024); NASA']
   };
   /* Webb : le module de service et le module d'instruments s'ouvrent, chacun avec son plan de coupe ; le bouclier et les miroirs restent entiers */
-  var CUT = { jwst:[{ parts:['bus'] }, { parts:['isim'], c:[0, 1.65, -0.45] }] };
+  var CUT = { jwst:[{ parts:['bus'] }, { parts:['isim'], c:[0, 1.65, -0.45] }],
+              /* Roman : le module de service, à l'arrière, a son propre plan ; sinon le plan central le laisserait fermé */
+              roman:[{ parts:['bus'], c:[3.75, 0, 0] }, { parts:['sass', 'barrel', 'cover', 'ota', 'instr'] }] };
 
   var AX = { x:[0, 0, -PI/2], y:[0, 0, 0], z:[PI/2, 0, 0] }, UP = new THREE.Vector3(0, 1, 0);
   function geom(e){
@@ -205,6 +224,7 @@ var INTERIOR = (function(){
         else if (e.radialY !== undefined) o.quaternion.setFromUnitVectors(UP, new THREE.Vector3(Math.cos(e.radialY*rad), 0, Math.sin(e.radialY*rad)));   /* axe radial autour de y */
         else if (e.rot !== undefined) o.rotation.z = e.rot;
         else if (e.rotY !== undefined) o.rotation.y = e.rotY;
+        else if (e.rotX !== undefined) o.rotation.x = e.rotX;
         else if (e.ax && e.f !== 'box' && e.f !== 'sector' && e.f !== 'sph') o.rotation.fromArray(AX[e.ax]);
       }
       o.castShadow = o.receiveShadow = true;

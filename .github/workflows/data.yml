@@ -26,8 +26,8 @@ jobs:
       - run: python tools/data/fetch_data.py ${{ github.event.inputs.recettes }}
       - run: python tools/data/fetch_tle.py
         continue-on-error: true
-      - run: python tools/data/fetch_orbits.py
-        if: github.event_name != 'schedule'
+      - run: python tools/data/fetch_orbits.py   # chaque jour aussi : la trajectoire de Roman s'allonge
+        continue-on-error: true
       - name: Commiter les données
         run: |
           git config user.name "github-actions[bot]"
