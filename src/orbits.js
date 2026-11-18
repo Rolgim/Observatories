@@ -29,7 +29,7 @@ var Orbits = (function(){
       notes:['L\'environnement thermique y est très stable, ce qui est indispensable pour mesurer la forme des galaxies au millième près.',
              'Le télescope observe toujours à peu près perpendiculairement à la direction du Soleil : la zone accessible fait le tour du ciel en un an.',
              'Des manœuvres d\'entretien d\'orbite ont lieu environ toutes les quatre semaines.'] },
-    roman:{ sum:'Roman rejoint lui aussi L2, à 1,5 million de km, sur une orbite de halo parcourue en six mois environ. Lancé le 30 août 2026, il est encore en début de mission.',
+    roman:{ sum:'Roman rejoint lui aussi L2, à 1,5 million de km, sur une orbite de halo parcourue en six mois environ. Lancé le 30 août 2026, il a fait le trajet en trois mois environ : la trajectoire ci-dessous part de sa première semaine de vol.',
       notes:['Comme Webb et Euclid, Roman garde le Soleil, la Terre et la Lune du même côté : son pare-soleil à panneaux solaires reste tourné vers eux.',
              'L\'éloignement permet de longues séries d\'observations sans interruption, indispensables pour suivre pendant des semaines les mêmes étoiles du bulbe galactique.',
              'Ses premières images publiques sont attendues début 2027.'],
@@ -118,7 +118,7 @@ var Orbits = (function(){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
       s += '<div class="isec"><h4>Où est Hubble en ce moment</h4>'+cv('track', 560, 300, 'Position de Hubble au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
       s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
-    } else if (t.noTraj && !(DATA && DATA.bodies && DATA.bodies[tid])){
+    } else if (t.noTraj && DATA && !(DATA.bodies && DATA.bodies[tid])){   /* données déjà chargées et sans ce corps ; sinon on tranche après chargement */
       s += '<div class="isec"><h4>Trajectoire</h4><p class="cap">'+t.noTraj+'</p></div>';
     } else {
       s += '<div class="isec"><h4>Vu depuis la Terre</h4>'+cv('front', 560, 430, 'Trajectoire autour de L2 vue depuis la Terre')+ctl+'<div class="cap">On regarde vers L2, dos au Soleil. Le cercle en pointillé donne, à la même échelle, la taille de l\'orbite de la Lune. Trajectoire réelle (éphémérides JPL Horizons).</div></div>';
@@ -193,6 +193,10 @@ var Orbits = (function(){
       if (my !== run) return;
       body = j && j.bodies && j.bodies[tid];
       var st = root.querySelector('[data-orb-stats]');
+      if (!body && TEXT[tid].noTraj){
+        var secs = [front, top, st].map(function(e){ return e && e.closest('.isec'); });
+        secs[0].innerHTML = '<h4>'+OBS_T('Trajectoire')+'</h4><p class="cap">'+TEXT[tid].noTraj+'</p>'; secs[1].remove(); secs[2].remove(); front = top = null; return;
+      }
       if (!body){ st.innerHTML = '<div class="cap">La trajectoire n\'a pas pu être chargée.</div>'; return; }
       var n = body.x.length, dmin = 1e9, dmax = 0, ymax = 0, zmax = 0, xmin = 1e9, xmax = -1e9;
       for (var i=0;i<n;i++){ var d = Math.hypot(body.x[i], body.y[i], body.z[i]); dmin = Math.min(dmin, d); dmax = Math.max(dmax, d); ymax = Math.max(ymax, Math.abs(body.y[i])); zmax = Math.max(zmax, Math.abs(body.z[i])); xmin = Math.min(xmin, body.x[i]); xmax = Math.max(xmax, body.x[i]); }
