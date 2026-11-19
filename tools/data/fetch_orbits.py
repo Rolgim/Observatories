@@ -22,6 +22,9 @@ BODIES = {  # identifiants Horizons, période, pas
     # Chandra : orbite terrestre très elliptique ; on garde la dernière orbite (≈ 63,5 h) dans un repère géocentrique fixe (écliptique)
     "chandra": dict(id="-151", start=(TODAY - datetime.timedelta(days=3)).isoformat(), stop=TODAY.isoformat(), step="20m", name="Chandra X-ray Observatory", inertial=True),
     "roman":  dict(id="?Roman",   start="2026-09-05", stop=TODAY.isoformat(), step="2d", name="Nancy Grace Roman Space Telescope"),
+    # orbites héliocentriques qui suivent la Terre (Spitzer, Kepler) : toute la mission, Soleil au centre, repère qui tourne avec la Terre
+    "spitzer": dict(id="-79",  start="2003-08-26", stop="2020-01-30", step="10d", name="Spitzer Space Telescope", helio=True),
+    "kepler":  dict(id="-227", start="2009-03-08", stop="2018-11-15", step="10d", name="Kepler", helio=True),
 }
 
 def lookup(name):
@@ -40,9 +43,9 @@ def lookup(name):
                 return x["spkid"]
     raise RuntimeError("aucun identifiant trouvé pour " + name)
 
-def vectors(body, start, stop, step):
+def vectors(body, start, stop, step, center="500@399"):
     from astroquery.jplhorizons import Horizons
-    t = Horizons(id=body, location="500@399", epochs=dict(start=start, stop=stop, step=step)).vectors(refplane="ecliptic")
+    t = Horizons(id=body, location=center, epochs=dict(start=start, stop=stop, step=step)).vectors(refplane="ecliptic")
     return np.array(t["datetime_jd"], dtype=float), np.array([t["x"], t["y"], t["z"]], dtype=float).T * AU
 
 def main():
@@ -55,6 +58,20 @@ def main():
             if b["id"].startswith("?"):
                 b["id"] = lookup(b["id"][1:])
             jd, r = vectors(b["id"], b["start"], b["stop"], b["step"])
+            if b.get("helio"):
+                # vecteurs héliocentriques de l'engin et de la Terre ; rotation qui ramène la Terre sur l'axe x (repère tournant), en UA
+                jd, r = vectors(b["id"], b["start"], b["stop"], b["step"], center="500@10")
+                jd2, e = vectors("399", b["start"], b["stop"], b["step"], center="500@10")
+                if len(jd) != len(jd2):
+                    raise RuntimeError("séries de longueurs différentes")
+                th = np.arctan2(e[:, 1], e[:, 0]); c, sn = np.cos(-th), np.sin(-th)
+                u = np.stack([c * r[:, 0] - sn * r[:, 1], sn * r[:, 0] + c * r[:, 1], r[:, 2]], 1) / AU
+                de = np.linalg.norm(r - e, axis=1) / AU
+                print(f"   {len(jd)} points, distance à la Terre {de.min():.3f} à {de.max():.3f} UA, au Soleil {np.linalg.norm(r, axis=1).min()/AU:.3f} à {np.linalg.norm(r, axis=1).max()/AU:.3f} UA")
+                out["bodies"][key] = dict(name=b["name"], horizons_id=b["id"], start=b["start"], frame="héliocentrique, écliptique, tournant avec la Terre (Terre sur l'axe x)", unit="UA",
+                                          step_days=float(jd[1] - jd[0]), jd0=float(jd[0]), x=[round(v, 4) for v in u[:, 0]], y=[round(v, 4) for v in u[:, 1]], z=[round(v, 4) for v in u[:, 2]],
+                                          d_earth=[round(v, 4) for v in de], earth_r=[round(float(v), 4) for v in np.linalg.norm(e, axis=1) / AU])
+                continue
             if b.get("inertial"):
                 d = np.linalg.norm(r, axis=1)
                 print(f"   {len(jd)} points, distance au centre de la Terre {d.min():,.0f} à {d.max():,.0f} km")
