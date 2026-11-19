@@ -4091,7 +4091,9 @@ var Glossary = (function(){
    Euclid : Racca et al. 2016 (arXiv:1610.05508). Gaia : Gaia Collaboration, Prusti et al. 2016 ;
    ESA, Service module ; Spaceflight101, Gaia Spacecraft Overview. Webb : NASA et STScI (JDox), Spacecraft bus.
    Roman : NASA Goddard, NTRS 2021 (Observatory Implementation) et 2024 (RST ACS Overview) ; NASA, Roman spacecraft.
+   Chandra : Weisskopf et al. 2000 (astro-ph/0004127) et 2005 (astro-ph/0503319) ; Canizares et al. 2005 (HETG, astro-ph/0507035) ; CXC, POG.
 
+   Repère : celui de la maquette recentrée, sauf liste marquée frame = 'file' (repère du fichier glTF).
    Formes : mirror (r, hole, h, R courbure) · disc/cyl (r, h) · cone (r1, r2, h) · box (s) · plate (s, n)
             sph (r) · tank (r, h : cylindre à fonds bombés) · torus (r, tube) · strut (a, b, r) · sector (r1, r2, a1, a2, h)
 ================================================================= */
@@ -4242,18 +4244,58 @@ var INTERIOR = (function(){
     return a;
   }
 
-  var D = { hubble:hubble(), euclid:euclid(), gaia:gaia(), jwst:jwst(), roman:roman() };
+  /* ---------------- Chandra : axe optique = x, la lumière entre côté porte (x < 0) et converge vers l'ISIM (x ≈ 10,3) ----------------
+     Miroirs : 4 paires Wolter I de 83,3 cm (Weisskopf et al. 2005), diamètres au plan nodal 1,23 / 0,99 / 0,87 / 0,65 m (POG),
+     focale 10,055 m ; plan nodal placé au milieu du boîtier de la maquette. HETG : Ø 1,1 m, à 8,6 m du plan focal, MEG derrière
+     les deux coques externes, HEG derrière les deux internes (Canizares et al. 2005). */
+  function chandra(){
+    var a = [], X0 = 0.25, F = 10.055, XF = X0 + F, L = 0.833, G = 0.02;
+    function at(r, deg, x){ return [x, Math.cos(deg*rad)*r, Math.sin(deg*rad)*r]; }
+    [[0.615, 1], [0.495, 3], [0.435, 4], [0.325, 6]].forEach(function(s, i){
+      var r = s[0], al = Math.atan(r/F)/4, n = s[1];
+      a.push({ k:'hrma', f:'cone', p:[X0 - G - L/2, 0, 0], r1:r, r2:r + L*Math.tan(al), h:L, ax:'x', open:true, clip:true, m:MIR,
+               l:'Paraboloïde de la paire ' + n + ' : Ø ' + (2*r).toFixed(2).replace('.', ',') + ' m au plan nodal, 83,3 cm de long, verre Zerodur poli et recouvert d\'iridium ; les rayons X l\'effleurent sous moins d\'un degré',
+               en:'Paraboloid of pair ' + n + ': Ø ' + (2*r).toFixed(2) + ' m at the node plane, 83.3 cm long, polished Zerodur glass coated with iridium; X-rays graze it at less than one degree' });
+      a.push({ k:'hrma', f:'cone', p:[X0 + G + L/2, 0, 0], r1:r - L*Math.tan(3*al), r2:r, h:L, ax:'x', open:true, clip:true, m:MIR,
+               l:'Hyperboloïde de la paire ' + n + ' : seconde réflexion, qui envoie les rayons X vers le foyer, 10,06 m plus loin',
+               en:'Hyperboloid of pair ' + n + ': second reflection, sending the X-rays to the focus, 10.06 m further on' });
+    });
+    /* réseau HETG inséré dans le faisceau : un anneau par coque, derrière chaque paire */
+    [[0.615, 'MEG'], [0.495, 'MEG'], [0.435, 'HEG'], [0.325, 'HEG']].forEach(function(s){
+      var r = s[0] - 0.02;
+      a.push({ k:'hrma', f:'sector', p:[XF - 8.6, 0, 0], r1:r - 0.05, r2:r + 0.02, a1:0, a2:360, h:0.04, rotY:PI/2, m:s[1] === 'MEG' ? INST : FGS,
+               l:'Réseau HETG, inséré dans le faisceau à 8,6 m du foyer : facettes ' + s[1] + ' (192 MEG derrière les deux coques externes, 144 HEG derrière les deux internes). Le réseau LETG (540 facettes) s\'insère au même endroit par un autre bras',
+               en:'HETG grating, swung into the beam 8.6 m from the focus: ' + s[1] + ' facets (192 MEG behind the two outer shells, 144 HEG behind the two inner ones). The LETG grating (540 facets) swings into the same place on another arm' });
+    });
+    /* ISIM : table de translation, ACIS au foyer, HRC à côté */
+    a.push(mk(ind('Table de translation du module d\'instruments (SIM) : amène ACIS ou HRC au foyer et règle la mise au point', 'Translation table of the instrument module (SIM): brings ACIS or HRC to the focus and adjusts the focus'), { k:'isim', f:'box', p:[XF + 0.27, -0.25, 0], s:[0.08, 1.5, 0.9], m:TRUSS }));
+    a.push(mk(ind('ACIS : 10 CCD de 1024 × 1024 pixels (ACIS-I 2 × 2, ACIS-S 1 × 6), refroidis à −120 °C', 'ACIS: 10 CCDs of 1024 × 1024 pixels (ACIS-I 2 × 2, ACIS-S 1 × 6), cooled to −120 °C'), { k:'isim', f:'box', p:[XF + 0.12, 0, 0], s:[0.22, 0.42, 0.42], m:INST }));
+    a.push(mk(ind('Plan focal d\'ACIS, au foyer des miroirs', 'ACIS focal plane, at the focus of the mirrors'), { k:'isim', f:'box', p:[XF - 0.002, 0, 0], s:[0.006, 0.2, 0.2], m:CCD }));
+    a.push(mk(ind('HRC : galettes de microcanaux, HRC-I (10 × 10 cm) pour l\'image, HRC-S (trois segments de 3 × 10 cm) pour lire le réseau LETG', 'HRC: microchannel plates, HRC-I (10 × 10 cm) for imaging, HRC-S (three 3 × 10 cm segments) to read out the LETG grating'), { k:'isim', f:'box', p:[XF + 0.12, -0.7, 0], s:[0.22, 0.36, 0.36], m:FGS }));
+    /* module de service autour du boîtier des miroirs */
+    for (var i=0;i<6;i++) a.push(mk(ind('Roue de réaction : 6 roues Teldix RDR-68 en pyramide, qui orientent l\'observatoire', 'Reaction wheel: 6 Teldix RDR-68 wheels in a pyramid, which point the observatory'), { k:'bus', f:'disc', p:at(1.3, 30 + i*60, 1.1), r:0.17, h:0.1, ax:'x', m:WHEEL }));
+    [100, 125].forEach(function(d){ a.push(mk(ind('Centrale inertielle : 2 unités de deux gyroscopes à deux axes, à l\'avant, sur le flanc du boîtier des miroirs', 'Inertial reference unit: 2 units of two 2-axis gyroscopes, at the front, on the side of the mirror housing'), { k:'bus', f:'box', p:at(1.0, d, -0.7), s:[0.3, 0.26, 0.26], m:BOX })); });
+    [200, 225, 250].forEach(function(d){ a.push(mk(ind('Batterie nickel-hydrogène : 3 batteries de 40 Ah', 'Nickel-hydrogen battery: 3 batteries of 40 Ah'), { k:'bus', f:'box', p:at(1.35, d, 0.2), s:[0.55, 0.3, 0.3], rotX:d*rad, m:BATT })); });
+    a.push(mk(ind('Enregistreur : 1,8 Gbit, soit 16,8 h d\'observation entre deux contacts avec le sol', 'Recorder: 1.8 Gbit, i.e. 16.8 h of observing between two ground contacts'), { k:'bus', f:'box', p:at(1.35, 320, 0.2), s:[0.4, 0.3, 0.12], rotX:320*rad, m:ELEC }));
+    a.frame = 'file';   /* coordonnées dans le repère du fichier glTF, avant recentrage de la maquette */
+    return a;
+  }
+
+  var D = { hubble:hubble(), euclid:euclid(), gaia:gaia(), jwst:jwst(), roman:roman(), chandra:chandra() };
   var SRC = {
     hubble:['NASA, guide de la mission SM3B, section 5', 'NASA, SM3B Media Reference Guide, section 5'],
     euclid:['Racca et al. 2016', 'Racca et al. 2016'],
     gaia:['Gaia Collaboration, Prusti et al. 2016 ; ESA ; Spaceflight101', 'Gaia Collaboration, Prusti et al. 2016; ESA; Spaceflight101'],
     jwst:['NASA et STScI, module de service', 'NASA and STScI, spacecraft bus'],
-    roman:['NASA Goddard (NTRS 2021, 2024) ; NASA', 'NASA Goddard (NTRS 2021, 2024); NASA']
+    roman:['NASA Goddard (NTRS 2021, 2024) ; NASA', 'NASA Goddard (NTRS 2021, 2024); NASA'],
+    chandra:['Weisskopf et al. 2000 et 2005 ; Canizares et al. 2005 ; CXC, guide de l\'observateur (POG)', 'Weisskopf et al. 2000 and 2005; Canizares et al. 2005; CXC, Proposers\' Observatory Guide (POG)']
   };
   /* Webb : le module de service et le module d'instruments s'ouvrent, chacun avec son plan de coupe ; le bouclier et les miroirs restent entiers */
   var CUT = { jwst:[{ parts:['bus'] }, { parts:['isim'], c:[0, 1.65, -0.45] }],
               /* Roman : le module de service, à l'arrière, a son propre plan ; sinon le plan central le laisserait fermé */
-              roman:[{ parts:['bus'], c:[3.75, 0, 0] }, { parts:['sass', 'barrel', 'cover', 'ota', 'instr'] }] };
+              roman:[{ parts:['bus'], c:[3.75, 0, 0] }, { parts:['sass', 'barrel', 'cover', 'ota', 'instr'] }],
+              /* Chandra : l'avant (module de service et miroirs), le tube et le module d'instruments ont chacun leur plan */
+              chandra:[{ parts:['bus', 'hrma'] }, { parts:['oba'] }, { parts:['isim'] }] };
 
   var AX = { x:[0, 0, -PI/2], y:[0, 0, 0], z:[PI/2, 0, 0] }, UP = new THREE.Vector3(0, 1, 0);
   function geom(e){
@@ -4288,6 +4330,7 @@ var INTERIOR = (function(){
   function build(M){
     var list = D[M.t.id]; if (!list) return null;
     var grp = new THREE.Group(); grp.name = 'interieur'; grp.visible = false;
+    if (list.frame === 'file'){ grp.position.copy(M.inner.position); grp.scale.setScalar(M.scale); }
     M.interior = []; M.cut = CUT[M.t.id] || null;
     list.forEach(function(e){
       var mat = new THREE.MeshStandardMaterial({ color:e.m.color, metalness:e.m.metalness, roughness:e.m.roughness, side:THREE.DoubleSide, emissive:e.m.em || 0x000000 });

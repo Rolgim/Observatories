@@ -33,7 +33,7 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
 ### Priorité 1 : nouveaux observatoires
 
-1. **Chandra : restes** [G, F] : vue en coupe sans intérieur reconstruit ; pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
+1. **Chandra : reste** [F] : pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
 2. **Navigation au-delà de six observatoires** [G3] : les onglets d'en-tête ne suffiront plus. Proposition : regroupement par domaine spectral (rayons X, visible et ultraviolet, infrarouge, astrométrie), avec un menu sur téléphone. À faire au plus tard avec le septième observatoire.
 3. Suite possible : XMM-Newton, Planck, Herschel (si la licence des maquettes ESA le permet), Spitzer, TESS, PLATO.
 
@@ -148,7 +148,7 @@ Produits affichés :
 
 - G1. Un observatoire n'est ajouté qu'avec une maquette de licence claire, un redécoupage vérifié, une fiche et des instruments sourcés.
 - G2. Procédure d'ajout documentée (`tools/models/README.md`). **Livré le 19 novembre**, avec le registre : `TELESCOPES` porte couleur, chiffre clé, encombrement, pièces optiques, place et orientation dans « Comparer », place dans la figure des plans focaux, fin de mission, déploiement ; matériaux dans `src/looks.js` ; `tools/smoke.js` liste ce qui manque à une entrée.
-- Chandra (19 novembre) : maquette NASA 3D Resources (0,8 Mo) redécoupée en six pièces (porte, module, miroirs HRMA, banc optique, module scientifique ISIM, panneaux solaires), fiche, ACIS, HRC, HETG et LETG avec axe spectral étendu aux rayons X (keV), schéma Wolter I à l'échelle, plans focaux ACIS et HRC-I, mission et traitements (niveaux 0 à 3, CSC 2.1), orbite très elliptique (Horizons, objet −151, schéma d'orbite à l'échelle). Le registre a suffi, sauf pour un nouveau type d'orbite (« heo ») ajouté au schéma d'orbite de l'application.
+- Chandra (19 novembre) : maquette NASA 3D Resources (0,8 Mo) redécoupée en six pièces (porte, module, miroirs HRMA, banc optique, module scientifique ISIM, panneaux solaires), fiche, ACIS, HRC, HETG et LETG avec axe spectral étendu aux rayons X (keV), schéma Wolter I à l'échelle, plans focaux ACIS et HRC-I, mission et traitements (niveaux 0 à 3, CSC 2.1), orbite très elliptique (Horizons, objet −151, schéma d'orbite à l'échelle). Le registre a suffi, sauf pour un nouveau type d'orbite (« heo ») ajouté au schéma d'orbite de l'application. Observations réelles de l'archive CDA. Vue en coupe : quatre paires de miroirs à l'échelle, réseau HETG à 8,6 m du foyer, ACIS et HRC sur la table de translation, six roues de réaction, deux centrales inertielles, trois batteries et l'enregistreur (Weisskopf et al. 2000 et 2005, Canizares et al. 2005) ; trois plans de coupe (avant, tube, module d'instruments). Les intérieurs peuvent désormais être décrits dans le repère du fichier glTF (`frame = 'file'`).
 - G3. Navigation au-delà de six ou sept observatoires. **À faire** (point 2).
 
 **Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js` : remplie.
