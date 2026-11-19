@@ -1302,5 +1302,52 @@
   "caption": "Deux familles se dessinent. Les sursauts longs, de plus de 2 s environ, accompagnent l'effondrement d'étoiles massives. Les courts viennent de la fusion d'étoiles à neutrons, comme celui détecté avec les ondes gravitationnelles de GW170817.",
   "credit": "NASA, collaboration Fermi-GBM",
   "fetched": "2026-11-19"
+ },
+ "tess/cams": {
+  "type": "plot",
+  "file": "tess-cams.json",
+  "title": "Les transits de la planète WASP-18 b, vus par TESS",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "caméra 2, CCD 2"
+   ],
+   [
+    "Cible",
+    "WASP-18 (TIC 100100827)"
+   ],
+   [
+    "Secteur",
+    "2"
+   ],
+   [
+    "Début d'observation",
+    "2018-08-23"
+   ],
+   [
+    "Données",
+    "PDCSAP_FLUX du pipeline SPOC, cadence de 2 min, points de qualité 0"
+   ],
+   [
+    "Traitement",
+    "division par la médiane, moyenne par paquets de 5 points (10 min)"
+   ],
+   [
+    "Points",
+    "18 299 dans le fichier, 3 659 tracés (moyenne par paquets)"
+   ],
+   [
+    "Fichier d'origine",
+    "tess2018234235059-s0002-0000000100100827-0121-s_lc.fits"
+   ]
+  ],
+  "url": "https://archive.stsci.edu/missions-and-data/tess",
+  "caption": "Chaque creux est le passage de la planète géante WASP-18 b devant son étoile, qui perd alors environ 1 % de son éclat. Le trou au milieu correspond au passage au périgée, quand TESS transmet ses données.",
+  "credit": "NASA, MIT, STScI",
+  "fetched": "2026-11-19"
  }
 }
