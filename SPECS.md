@@ -77,13 +77,25 @@ Principe : on compare **à l'intérieur d'une famille**, et le **type d'instrume
 3. **Fiche sans maquette** : un observatoire sans maquette 3D de licence connue a quand même sa fiche, ses instruments, son orbite et ses données ; la vue 3D affiche alors une vue de l'ESA ou de la NASA créditée, ou rien (voir question 3).
 4. **Contributions** : sur chaque fiche, « Qui a fait quoi », avec un filtre par agence dans la page Flotte ; contributions du CNES sourcées une par une.
 
-**Vagues d'ajout proposées** (à valider, question 4) :
+**Vagues d'ajout** (vague 1 validée le 19 novembre) :
 
 - **Vague 1**, maquettes disponibles, missions phares : Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton (CGRO), WMAP.
 - **Vague 2**, maquettes disponibles : ISO, LISA Pathfinder, Suzaku, FUSE, HETE-2, SWAS, NICER (instrument de la Station spatiale, à confirmer dans le périmètre).
 - **Vague 3**, sans maquette publique connue : NuSTAR, IXPE, SPHEREx, XRISM, CoRoT, SVOM, MICROSCOPE, COBE, IRAS, IUE, Hipparcos, EXOSAT, COS-B, GALEX, WISE, RXTE, et les premiers observatoires de la NASA (Uhuru, Copernicus, HEAO 1 à 3).
 
 **Acceptation.** Chaque mission de l'inventaire a au moins une fiche sourcée ; la page Flotte les montre toutes ; chaque contribution du CNES affichée a une source.
+
+### Priorité 3 bis : carte du ciel de toutes les acquisitions [S]
+
+Proposée le 19 novembre : une carte du ciel entier où chaque instrument laisse l'empreinte de ses acquisitions, sur l'accueil (entrée dans le site : cliquer une zone montre qui l'a observée et avec quel instrument) et reprise dans « Comparer » avec ses filtres.
+
+1. **Cartes de couverture précalculées** par instrument, sur un découpage HEALPix (format MOC des archives), calculées par l'intégration continue à partir de MAST (Hubble, Webb, TESS, Kepler), des tables du HEASARC (Chandra, XMM-Newton, Swift, Fermi, INTEGRAL…), d'IRSA (Spitzer, WISE, Euclid) et des archives de l'ESA ; cartes MOC du CDS quand elles existent. Quelques dizaines à centaines de ko par instrument.
+2. **Deux modes** : couvert ou non ; temps de pose cumulé.
+3. **Relevés du ciel entier** (Gaia, Planck, WMAP, WISE, Fermi) dans une couche à part, pour ne pas noyer les observatoires pointés.
+4. **Couleur selon le type d'instrument** (classification de la priorité 2), filtres par agence, domaine, famille d'orbite et époque, curseur temporel.
+5. **Échelle dite** : taille des cases indiquée ; au zoom, vraies empreintes quand l'archive les donne ; positions seules pour les missions anciennes, signalées comme telles.
+
+**Acceptation.** Chaque instrument du site a sa couche ou une mention « pas d'acquisitions pointées » ; chaque couche cite sa table d'archive et sa date de calcul.
 
 ### Priorité 4 : contenu encore approximatif
 
@@ -119,10 +131,9 @@ Principe : on compare **à l'intérieur d'une famille**, et le **type d'instrume
 1. **Licence du dépôt** (code et textes) : par exemple MIT pour le code, CC BY 4.0 pour les textes.
 2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
 3. **Observatoires sans maquette 3D** (vague 3) : fiche sans vue 3D, vue officielle (image) de l'agence créditée, ou maquette schématique construite d'après les dimensions publiées et signalée comme telle ?
-4. **Ordre des vagues** : celui proposé en 3 (priorité 3) convient-il ?
-5. **Instruments de la Station spatiale** (NICER, AMS-02, ACES/PHARAO, CALET) : dans le périmètre ou non ?
+4. **Instruments de la Station spatiale** (NICER, AMS-02, ACES/PHARAO, CALET) : dans le périmètre ou non ?
 
-Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; Spitzer, Fermi, TESS, Kepler, XMM-Newton (19 novembre) ; navigation par domaine spectral (19 novembre) ; maquette de l'ESA pour XMM-Newton, créditée faute de licence explicite (19 novembre) ; périmètre : flottes d'astrophysique NASA, ESA et CNES, missions en service et terminées, agences et contributions (19 novembre) ; intérieurs limités à ce qui est documenté (19 novembre) ; « Comparer » par familles comparables, type d'instrument visible (19 novembre).
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; Spitzer, Fermi, TESS, Kepler, XMM-Newton (19 novembre) ; navigation par domaine spectral (19 novembre) ; maquette de l'ESA pour XMM-Newton, créditée faute de licence explicite (19 novembre) ; périmètre : flottes d'astrophysique NASA, ESA et CNES, missions en service et terminées, agences et contributions (19 novembre) ; intérieurs limités à ce qui est documenté (19 novembre) ; « Comparer » par familles comparables, type d'instrument visible (19 novembre) ; vague 1 en premier (Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton, WMAP), ordre de travail : intérieurs, Comparer, vague 1 (19 novembre) ; carte du ciel des acquisitions (19 novembre).
 
 ## 5. Lots : exigences et état
 
