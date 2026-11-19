@@ -1158,8 +1158,8 @@
  "spitzer/irac": {
   "type": "image",
   "file": "spitzer-irac.jpg",
-  "width": 769,
-  "height": 1100,
+  "width": 1000,
+  "height": 1000,
   "title": "La galaxie du Tourbillon (M51), IRAC",
   "meta": [
    [
@@ -1203,8 +1203,8 @@
  "spitzer/mips": {
   "type": "image",
   "file": "spitzer-mips.jpg",
-  "width": 717,
-  "height": 1036,
+  "width": 245,
+  "height": 245,
   "title": "La galaxie du Tourbillon (M51), MIPS 24 µm",
   "meta": [
    [
