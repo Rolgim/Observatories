@@ -33,7 +33,7 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
 ### Priorité 1 : nouveaux observatoires
 
-1. **Chandra : restes** [G, E, F] : observation réelle en exemple (structure d'un fichier evt2 seulement pour l'instant) ; vue en coupe sans intérieur reconstruit ; pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
+1. **Chandra : restes** [G, F] : vue en coupe sans intérieur reconstruit ; pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
 2. **Navigation au-delà de six observatoires** [G3] : les onglets d'en-tête ne suffiront plus. Proposition : regroupement par domaine spectral (rayons X, visible et ultraviolet, infrarouge, astrométrie), avec un menu sur téléphone. À faire au plus tard avec le septième observatoire.
 3. Suite possible : XMM-Newton, Planck, Herschel (si la licence des maquettes ESA le permet), Spitzer, TESS, PLATO.
 
@@ -129,6 +129,9 @@ Produits affichés :
 | Euclid NISP | composition Y, J, H, spectre rouge combiné et couleur VIS − H (DR1) |
 | Gaia Astro | diagramme de Hertzsprung-Russell à moins de 100 pc |
 | Gaia BP/RP, RVS | spectres d'une étoile de type solaire, distributions de couleurs et de vitesses |
+| Chandra ACIS | image standard `cntr_img2` du reste de supernova Cassiopée A (ObsID 114, archive CDA) |
+| Chandra HRC | image HRC-I du centre de la galaxie d'Andromède (ObsID 1912 ; le Crabe, premier choix, n'a pas de pose HRC-I sans réseau) |
+| Chandra HETG, LETG | spectres `pha2` de l'étoile Capella, ordres ±1 additionnés (ObsID 1318 et 1248) |
 
 ### F. Orbites et temps — livré, avec des restes
 
