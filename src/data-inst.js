@@ -658,6 +658,101 @@ var INST_DATA = (function(){
   },
 
   /* -------------------------------------------------------------- GAIA */
+  spitzer: {
+    checked:'2026-11-19',
+    refs:{
+      hb:{ t:"Spitzer Telescope Handbook, chapitre 3 (instruments)", p:"IRSA (Caltech/IPAC)", u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/6/" },
+      w04:{ t:"Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1", p:"ApJS", u:"https://arxiv.org/abs/astro-ph/0406223" },
+      mo:{ t:"Spitzer Mission Overview", p:"IRSA (Caltech/IPAC)", u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview" }
+    },
+    axis: { min:3, max:200 },
+    summary: "Trois instruments partageaient le plan focal, dans une chambre refroidie à l'hélium derrière le miroir primaire : IRAC, une caméra à quatre voies dans le proche et moyen infrarouge, IRS, un spectrographe de 5 à 38 µm, et MIPS, un photomètre pour l'infrarouge lointain, jusqu'à 160 µm. Après l'épuisement de l'hélium en 2009, seules les deux voies les plus courtes d'IRAC ont continué de fonctionner.",
+    archives: [
+      { label:"Spitzer Heritage Archive (IRSA)", url:"https://irsa.ipac.caltech.edu/applications/Spitzer/SHA/", desc:"Toutes les observations de la mission, données brutes et traitées, à l'IRSA (Caltech/IPAC)." },
+      { label:"Spitzer Enhanced Imaging Products", url:"https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html", desc:"Mosaïques d'IRAC et de MIPS 24 µm homogènes sur toute la mission, et le catalogue de sources qui en est tiré." },
+      { label:"Documentation de Spitzer", url:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/", desc:"Manuels des instruments et du télescope, à l'IRSA." }
+    ],
+    instruments: [
+      { id:"irac", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
+        bands:[ {l:"3,6 µm",lo:3.19,hi:3.94}, {l:"4,5 µm",lo:4.00,hi:5.02}, {l:"5,8 µm",lo:4.98,hi:6.41}, {l:"8,0 µm",lo:6.45,hi:9.34} ],
+        use:"Photographier des galaxies lointaines, des nuages où naissent des étoiles et des exoplanètes en transit, à travers la poussière qui arrête la lumière visible.",
+        summary:"Quatre voies photographiées en même temps sur deux champs voisins : des séparatrices dichroïques envoient 3,6 et 5,8 µm vers l'un, 4,5 et 8,0 µm vers l'autre. Chaque voie a sa matrice de 256 × 256 pixels.",
+        specs:[
+          ["Voies", "3,6 · 4,5 · 5,8 · 8,0 µm", "hb"],
+          ["Détecteurs", "InSb (3,6 et 4,5 µm) · Si:As (5,8 et 8,0 µm) · 256 × 256 px", "hb"],
+          ["Pixels", "1,2″", "hb"],
+          ["Champ", "5,2′ × 5,2′ par voie, deux champs voisins", "hb"],
+          ["Mission chaude (2009–2020)", "3,6 et 4,5 µm seulement", "hb"]
+        ],
+        fov:[ {l:'3,6 et 5,8 µm', w:313, h:313, dx:-200}, {l:'4,5 et 8,0 µm', w:311, h:311, dx:200} ],
+        filtersTitle:"Voies",
+        filters:[ R("3,6 µm",3.19,3.94,"B","InSb"), R("4,5 µm",4.00,5.02,"B","InSb"), R("5,8 µm",4.98,6.41,"B","Si:As"), R("8,0 µm",6.45,9.34,"B","Si:As") ],
+        products:[
+          ["BCD (_bcd.fits)","image calibrée d'une seule pose, en MJy/sr"],
+          ["PBCD (_maic.fits)","mosaïque d'une observation, assemblée par le pipeline"],
+          ["SEIP","mosaïques homogènes de toute la mission et catalogue de sources (Spitzer Enhanced Imaging Products)"]
+        ],
+        example:{ real:false, title:"En-tête FITS d'une image BCD d'IRAC (extrait)", caption:"Mots-clés réels des produits de Spitzer ; les valeurs sont un exemple.", text:
+"TELESCOP= 'Spitzer '           / SPITZER Space Telescope\n" +
+"INSTRUME= 'IRAC    '           / SPITZER Space Telescope instrument ID\n" +
+"CHNLNUM =                    1 / 1 digit Instrument Channel Number\n" +
+"AORKEY  =             12345678 / AOR or IER key\n" +
+"EXPTIME =                 10.4 / [sec] Effective integration time per pixel\n" +
+"BUNIT   = 'MJy/sr  '           / Units of image data\n" +
+"FLUXCONV=               0.1069 / Flux Conv. factor (MJy/sr per DN/sec)" },
+        code:{ title:"Interroger l'IRSA avec astroquery", text:
+"from astroquery.ipac.irsa import Irsa\n" +
+"from astropy.coordinates import SkyCoord\n" +
+"import astropy.units as u\n\n" +
+"pos = SkyCoord.from_name(\"M51\")\n" +
+"# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)\n" +
+"im = Irsa.query_sia(pos=(pos, 5 * u.arcmin), collection=\"spitzer_seip\")\n" +
+"# catalogue de sources tiré des mêmes mosaïques\n" +
+"cat = Irsa.query_region(pos, catalog=\"slphotdr4\", spatial=\"Cone\", radius=2 * u.arcmin)" },
+        notes:[ "Pendant la mission chaude, le détecteur de 3,6 µm a servi à suivre des exoplanètes en transit avec une très grande stabilité : c'est ainsi qu'il a suivi en 2016 et 2017 les planètes du système TRAPPIST-1." ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
+
+      { id:"irs", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
+        bands:[ {l:"SL",lo:5.2,hi:14.5}, {l:"LL",lo:14.0,hi:38.0}, {l:"SH",lo:9.9,hi:19.6}, {l:"LH",lo:18.7,hi:37.2} ],
+        use:"Décomposer la lumière infrarouge en spectre, pour lire la composition de la poussière, des glaces et des molécules autour des étoiles jeunes et dans les galaxies.",
+        summary:"Quatre modules, chacun avec sa matrice de 128 × 128 pixels : deux à basse résolution, à fente longue (SL et LL), deux à haute résolution, en échelle (SH et LH). Deux petites fenêtres d'imagerie (« peak-up ») servaient à centrer la source dans la fente.",
+        specs:[
+          ["Modules", "SL 5,2–14,5 µm · LL 14,0–38,0 µm (R ≈ 64–128) · SH 9,9–19,6 µm · LH 18,7–37,2 µm (R ≈ 600)", "w04"],
+          ["Fentes", "SL 3,7″ × 57″ · LL 10,6″ × 168″ · SH 4,7″ × 11,3″ · LH 11,1″ × 22,3″", "hb"],
+          ["Détecteurs", "128 × 128 px par module", "hb"],
+          ["Imagerie de centrage", "13,3–18,7 µm et 18,5–26,0 µm, champ de 1′ × 1,2′", ["w04","hb"]],
+          ["Mission chaude", "hors service", "hb"]
+        ],
+        fov:[ {l:'LL', w:10.6, h:168}, {l:'SL', w:3.7, h:57, dx:30} ],
+        products:[
+          ["BCD (_bcd.fits)","image spectrale calibrée en 2D"],
+          ["_spect.tbl","spectre extrait, longueur d'onde et flux (Jy)"]
+        ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
+
+      { id:"mips", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
+        bands:[ {l:"24 µm",lo:21.5,hi:26.2}, {l:"70 µm",lo:62.5,hi:81.5}, {l:"160 µm",lo:139.5,hi:174.5}, {l:"SED",lo:55,hi:95} ],
+        use:"Mesurer la chaleur de la poussière froide : disques autour des étoiles, galaxies qui forment des étoiles à toute vitesse, nuages interstellaires.",
+        summary:"Trois matrices : Si:As à 24 µm, germanium dopé au gallium à 70 µm et germanium contraint à 160 µm. Un petit miroir mobile balayait le ciel sur les détecteurs ; un mode spectral (SED) donnait aussi un spectre grossier de 55 à 95 µm.",
+        specs:[
+          ["Bandes", "24 µm (21,5–26,2) · 70 µm (62,5–81,5) · 160 µm (139,5–174,5)", "w04"],
+          ["Détecteurs", "Si:As 128 × 128 · Ge:Ga 32 × 32 · Ge:Ga contraint", ["w04","hb"]],
+          ["Pixels", "2,55″ · 5,2″ ou 9,98″ · 16–18″", "hb"],
+          ["Champ", "5,4′ × 5,4′ · 5,2′ × 2,6′ · 0,53′ × 5,33′", "hb"],
+          ["Mode SED", "55–95 µm, R ≈ 15–25", "hb"],
+          ["Mission chaude", "hors service", "hb"]
+        ],
+        fov:[ {l:'24 µm', w:324, h:324}, {l:'70 µm', w:312, h:156, dx:330}, {l:'160 µm', w:32, h:320, dx:-200} ],
+        filtersTitle:"Bandes",
+        filters:[ R("24 µm",21.5,26.2,"B","Si:As"), R("70 µm",62.5,81.5,"B","Ge:Ga"), R("160 µm",139.5,174.5,"B","Ge:Ga contraint") ],
+        products:[
+          ["BCD (_bcd.fits)","image calibrée d'une seule pose"],
+          ["PBCD (_maic.fits)","mosaïque d'une observation"],
+          ["SEIP","mosaïques homogènes à 24 µm (Spitzer Enhanced Imaging Products)"]
+        ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] }
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

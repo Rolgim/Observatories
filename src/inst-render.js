@@ -52,7 +52,7 @@ var InstrumentsUI = (function(){
     var a = Math.log(min), b = Math.log(max);
     this.x = function(v){ v = Math.max(min, Math.min(max, v)); return x0 + (Math.log(v)-a)/(b-a)*(x1-x0); };
     this.min = min; this.max = max;
-    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30], out = [], last = -99;
+    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30,50,70,100,150,200], out = [], last = -99;
     for (var i=0;i<cand.length;i++){ var v = cand[i]; if (v < min*0.999 || v > max*1.001) continue; var px = this.x(v); if (px - last < 46) continue; out.push(v); last = px; }
     this.ticks = out;
     /* axe qui descend dans les rayons X : graduations avec leur unité (nm ou µm), et énergie en keV sur un axe purement X */
@@ -275,10 +275,10 @@ var InstrumentsUI = (function(){
   /* ---------- comparaison entre observatoires ---------- */
   /* champ le plus grand d'un observatoire au-delà de 1 200″ : la figure montre la pleine Lune (même règle que fovBlock) */
   function bigFovTele(tid){ var e = 0; INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); return e > 1200; }
-  var SAMP = { chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
+  var SAMP = { spitzer:{ irac:'1,2″', irs:'1,8″ à 5,1″', mips:'2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)' }, chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
                jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' }, roman:{ wfi:'0,11″', cgi:'sans objet' } };
-  var RES = { chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
+  var RES = { spitzer:{ irs:'64 à 128 (SL, LL) · ≈ 600 (SH, LH)', mips:'15 à 25 (mode SED)' }, chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 600 (grisme LW)', nirspec:'100 à 2 700', miri:'100 à 3 250', niriss:'150 à 700' },
               euclid:{ nisp:'> 480 (grismes rouges)' }, gaia:{ bprp:'prisme, 3–27 nm/px', rvs:'≈ 11 700' }, roman:{ wfi:'80 à 180 (prisme) · ≈ 460 à 890 (grisme)' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }

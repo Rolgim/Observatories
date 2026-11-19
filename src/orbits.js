@@ -41,6 +41,10 @@ var Orbits = (function(){
              'Loin de la Terre, de longues poses ininterrompues sont possibles, contrairement à Hubble que la Terre masque à chaque tour.',
              'L\'orbite se déforme lentement sous l\'attraction de la Lune et du Soleil : le périgée est descendu à 1 045 km en juillet 2023, puis remonté à environ 6 680 km en 2025.',
              'Pour protéger ses instruments de la chaleur, les longues observations sont découpées en tranches d\'au plus 30 ks environ.'] },
+    spitzer:{ sum:'Spitzer ne tournait pas autour de la Terre : il tournait autour du Soleil, sur une orbite un peu plus lente que celle de la Terre. Il est donc resté dans son sillage, en s\'en éloignant d\'environ 0,12 UA par an.',
+      notes:['Loin de la Terre, qui rayonne beaucoup d\'infrarouge, le télescope se refroidissait mieux et l\'hélium durait plus longtemps.',
+             'Le Soleil et la Terre restent à peu près du même côté : le panneau solaire faisait écran pour tout le télescope. Spitzer ne visait qu\'entre 82,5° et 120° du Soleil.',
+             'Plus il s\'éloignait, moins il pouvait transmettre de données (Spaceflight Now, mai 2019). La mission s\'est arrêtée le 30 janvier 2020.'] },
     gaia:{ sum:'De 2014 à 2025, Gaia a décrit une courbe de Lissajous autour de L2 : une boucle qui ne se referme pas, choisie pour ne pas traverser l\'ombre de la Terre pendant des années.',
       notes:['Les observations se sont arrêtées le 15 janvier 2025. Le satellite a ensuite été écarté de L2 et mis hors service le 27 mars 2025.',
              'La trajectoire tracée ici s\'arrête à ce départ.',
@@ -54,6 +58,7 @@ var Orbits = (function(){
     euclid:{ lo:87, hi:104, cap:'Euclid vise presque perpendiculairement au Soleil : angle d\'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D\'où une bande étroite, qui fait le tour du ciel en un an.' },
     chandra:{ lo:46.2, hi:180, cap:'Chandra ne vise jamais à moins de 46,2° du Soleil, contrainte qui ne peut être levée ; environ 15 % du ciel est inaccessible un jour donné, mais aucune région ne l\'est plus de trois mois. La Lune (6°) et le bord éclairé de la Terre (10°) ajoutent de petites exclusions, non représentées (POG, contraintes de visibilité).' },
     roman:{ lo:54, hi:126, cap:'Roman peut viser entre 54° et 126° du Soleil, en tournant librement autour de la direction du Soleil (NASA Goddard, Observatory Technical Overview).' },
+    spitzer:{ lo:82.5, hi:120, cap:'Spitzer ne visait qu\'entre 82,5° et 120° du Soleil, pour garder le télescope à l\'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).' },
     gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
   };
   function sunVec(jd){
@@ -128,6 +133,9 @@ var Orbits = (function(){
       s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
     } else if (T_ORBIT[tid] === 'heo'){
       s += '<div class="isec"><h4>Une orbite, vue du nord de l\'écliptique</h4>'+cv('heo', 560, 400, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à la même échelle (l\'orbite de la Lune, à 384 400 km, sort du cadre). Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s\'arrêtent.</div></div>';
+      s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
+    } else if (T_ORBIT[tid] === 'helio'){
+      s += '<div class="isec"><h4>Toute la mission, vue du nord de l\'écliptique</h4>'+cv('helio', 560, 440, 'Trajectoire de '+name+' autour du Soleil, dans un repère qui tourne avec la Terre')+ctl+'<div class="cap">Le Soleil est au centre, le cercle en pointillé est l\'orbite de la Terre. Le repère tourne avec la Terre, qui reste donc fixe à droite : la courbe montre comment l\'observatoire prend du retard sur elle, année après année. Positions réelles (éphémérides JPL Horizons), une tous les dix jours, distances à l\'échelle.</div></div>';
       s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
     } else if (t.noTraj && DATA && !(DATA.bodies && DATA.bodies[tid])){   /* données déjà chargées et sans ce corps ; sinon on tranche après chargement */
       s += '<div class="isec"><h4>Trajectoire</h4><p class="cap">'+t.noTraj+'</p></div>';
@@ -211,11 +219,29 @@ var Orbits = (function(){
     g.stroke();
   }
 
+  /* orbite héliocentrique (Spitzer, Kepler) : repère tournant avec la Terre (Terre sur l'axe x), en UA */
+  function drawHelio(c, b, i){
+    var g = prep(c), W = c._w, H = c._h, ink = css('--ink'), mute = css('--mute'), rule = css('--rule-2'), n = b.x.length, j;
+    g.clearRect(0, 0, W, H);
+    var rm = 1.05; for (j=0;j<n;j++) rm = Math.max(rm, Math.hypot(b.x[j], b.y[j]));
+    var k = (Math.min(W, H)/2 - 34)/rm, cx = W/2, cy = H/2;
+    function X(p){ return cx + b.x[p]*k; } function Y(p){ return cy - b.y[p]*k; }
+    g.setLineDash([3, 4]); g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, k, 0, 6.2832); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#FFD21F'; g.beginPath(); g.arc(cx, cy, 9, 0, 6.2832); g.fill(); g.fillStyle = ink; label(g, 'Soleil', cx, cy + 24, true, 'center');
+    g.fillStyle = '#2C5E9E'; g.beginPath(); g.arc(cx + k, cy, 5, 0, 6.2832); g.fill(); g.fillStyle = ink; label(g, 'Terre', cx + k + 10, cy + 4, true);
+    g.strokeStyle = mute; g.lineWidth = 1; g.beginPath(); g.moveTo(cx + k + 12, cy - 14); g.lineTo(cx + k + 12, cy - 44); g.stroke();
+    g.fillStyle = mute; g.beginPath(); g.moveTo(cx + k + 12, cy - 50); g.lineTo(cx + k + 8, cy - 42); g.lineTo(cx + k + 16, cy - 42); g.fill(); label(g, 'sens du mouvement', cx + k + 12, cy - 58, false, 'center');
+    g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); for (j=0;j<n;j++){ if (j) g.lineTo(X(j), Y(j)); else g.moveTo(X(j), Y(j)); } g.stroke();
+    g.strokeStyle = '#DB5A14'; g.lineWidth = 2; g.beginPath(); for (j=0;j<=i;j++){ if (j) g.lineTo(X(j), Y(j)); else g.moveTo(X(j), Y(j)); } g.stroke();
+    g.fillStyle = '#FFD21F'; g.strokeStyle = ink; g.lineWidth = 1.5; g.beginPath(); g.arc(X(i), Y(i), 6, 0, 6.2832); g.fill(); g.stroke();
+    var bar = 0.5*k; g.strokeStyle = ink; g.lineWidth = 2; g.beginPath(); g.moveTo(12, H - 12); g.lineTo(12 + bar, H - 12); g.stroke(); g.fillStyle = mute; label(g, '0,5 UA (75 millions de km)', 18 + bar, H - 8);
+  }
+
   function start(root, tid){
     var my = ++run, playing = true, t0 = performance.now(), sim = 0, last = t0;
     var play = root.querySelector('[data-orb-play]'), read = root.querySelector('[data-orb-read]');
     if (play) play.onclick = function(){ playing = !playing; play.textContent = playing ? 'Pause' : 'Lecture'; };
-    var heo = root.querySelector('[data-orb="heo"]'), leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
+    var helio = root.querySelector('[data-orb="helio"]'), heo = root.querySelector('[data-orb="heo"]'), leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
     var body = null, sg = null, sday = 0, sink = '';
     if (heo) load().then(function(j){
       if (my !== run) return;
@@ -225,6 +251,18 @@ var Orbits = (function(){
       var n = body.x.length, dmin = 1e9, dmax = 0, imin = 0, imax = 0;
       for (var i=0;i<n;i++){ var d = Math.hypot(body.x[i], body.y[i], body.z[i]); if (d < dmin){ dmin = d; imin = i; } if (d > dmax){ dmax = d; imax = i; } }
       st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance au centre de la Terre', 'de '+fr(dmin*1000)+' à '+fr(dmax*1000)+' km'], ['Altitude au plus près', '≈ '+fr(dmin*1000 - 6371)+' km'], ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+j.fetched.split('-').reverse().join('/')]]);
+    });
+    if (helio) load().then(function(j){
+      if (my !== run) return;
+      body = j && j.bodies && j.bodies[tid];
+      var st = root.querySelector('[data-orb-stats]');
+      if (!body){ st.innerHTML = '<div class="cap">La trajectoire n\'a pas pu être chargée.</div>'; return; }
+      var n = body.x.length, smin = 9, smax = 0;
+      for (var i=0;i<n;i++){ var r = Math.hypot(body.x[i], body.y[i], body.z[i]); smin = Math.min(smin, r); smax = Math.max(smax, r); }
+      var de = body.d_earth, yrs = (n - 1)*body.step_days/365.25;
+      st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance à la Terre à la fin', OBS_NUM(de[n-1].toFixed(2).replace('.', ','))+' UA · ≈ '+fr(de[n-1]*149.6)+' millions de km'],
+                           ['Éloignement moyen', '≈ '+OBS_NUM((de[n-1]/yrs).toFixed(2).replace('.', ','))+' UA par an'], ['Distance au Soleil', 'de '+OBS_NUM(smin.toFixed(3).replace('.', ','))+' à '+OBS_NUM(smax.toFixed(3).replace('.', ','))+' UA'],
+                           ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+date(2440587.5 + Date.parse(j.fetched)/86400000)]]);
     });
     if (front) load().then(function(j){
       if (my !== run) return;
@@ -316,12 +354,13 @@ var Orbits = (function(){
       } else if (skyT > 0.55){ skyI++; skyT = 0; }
     }
     function frame(now){
-      var main = leo || front || heo; if (my !== run || !root.isConnected || !main || !main.isConnected) return;
+      var main = leo || front || heo || helio; if (my !== run || !root.isConnected || !main || !main.isConnected) return;
       if (sky && skyD) skyFrame(Math.min(0.1, (now - last)/1000));
       requestAnimationFrame(frame);
       var dt = Math.min(0.1, (now - last)/1000); last = now; if (playing) sim += dt;
       if (leo){ var tm = sim*9.5 % 95, dark = drawLeo(leo, tm); if (read) read.textContent = 'minute ' + Math.floor(tm) + ' sur 95, ' + (dark ? 'dans l\'ombre' : 'au soleil'); }
-      if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
+      if (body && helio){ var nq = body.x.length, iq = Math.floor(sim*6) % nq; drawHelio(helio, body, iq); if (read) read.textContent = date(body.jd0 + iq*body.step_days) + ' · ' + OBS_NUM(body.d_earth[iq].toFixed(2).replace('.', ',')) + ' ' + OBS_T('UA de la Terre'); }
+      else if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
       else if (body){ var n = body.x.length, i = Math.floor(sim*36/body.step_days) % n; drawL2(front, body, i, 'front'); drawL2(top, body, i, 'top'); if (read) read.textContent = date(body.jd0 + i*body.step_days); }
       if (scan){
         var g = prep(scan), W = scan._w, H = scan._h, ink = css('--ink');

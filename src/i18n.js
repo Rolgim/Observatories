@@ -30,7 +30,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
       if (it.example && q.example){ it.example.title = q.example.title; it.example.caption = q.example.caption; if (q.example.text) it.example.text = q.example.text; }
       if (it.code){ if (q.code) it.code.title = q.code.title; EN_CODE.forEach(function(r){ it.code.text = it.code.text.split(r[0]).join(r[1]); }); }
       if (q.docs) it.docs.forEach(function(x, i){ if (q.docs[i]) x.l = q.docs[i]; });
-      (it.filters || []).forEach(function(f){ f.note = W(f.note); f.g = W(f.g); });
+      (it.filters || []).forEach(function(f){ f.n = W(f.n); f.note = W(f.note); f.g = W(f.g); });
       (it.bands || []).forEach(function(b){ b.l = W(b.l); });
       (it.fov || []).forEach(function(b){ b.l = W(b.l); });
     });

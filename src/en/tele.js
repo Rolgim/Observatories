@@ -99,6 +99,27 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  spitzer:{
+    agency:'NASA (JPL, Caltech)', launch:'Launched 25 August 2003, Delta II, Cape Canaveral',
+    sub:'Orbit around the Sun, trailing the Earth, infrared (2003–2020)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'4.5 m', dim:'4.5 m tall, Ø 2.1 m' },
+    desc:"To see in the infrared, a telescope must be colder than what it looks at. Spitzer carried liquid helium that held its 85 cm telescope at 5.6 K for almost six years. Instead of circling the Earth, it followed the Earth around the Sun, slowly drifting away: far from the Earth's heat, it also cooled by radiating into space. After the helium ran out in 2009, two of its cameras kept working until 2020.",
+    sourceNote:"NASA model (NASA 3D Resources repository), in metres. It has been re-segmented here into five assemblies from its geometry and materials; the primary mirror and the secondary support can be seen through the tube opening.",
+    refs:{ hb:'Spitzer Telescope Handbook, chapter 3 (instruments)', thb:'Spitzer Telescope Handbook (PDF, final version)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','4.5 m tall · Ø 2.1 m'],['Launch mass','861 kg (950 kg according to the JPL fact sheet)'],['Power','500 W solar array at launch · average consumption 375 W'],['Pointing','four reaction wheels in a pyramid, gyroscopes, star trackers · 0.03″ stability'],['Launch','25 August 2003, Delta II 7920H, Cape Canaveral'],['Builders','Lockheed Martin (spacecraft, solar array) · Ball Aerospace (cryogenic telescope assembly)']] },
+      { title:'Optics', rows:[['Design','Ritchey-Chrétien, two hyperbolic mirrors'],['Primary mirror','Ø 0.85 m · f/1.2 · central hole 0.32 m (14.2% of the area)'],['Focal length','10.2 m · f/12'],['Secondary','Ø 0.12 m, 0.888 m from the primary'],['Material','beryllium, mirrors and structure'],['Temperature','≈ 5.6 K (cold mission) · 27.5 K (warm mission)'],['Diffraction limit','5.5 µm']] },
+      { title:'Instruments', rows:[['IRAC','four-channel camera, 3.6 to 8 µm · 5.2′ field'],['IRS','spectrograph, 5.2 to 38 µm · R ≈ 64 to 600'],['MIPS','photometer at 24, 70 and 160 µm · spectra from 55 to 95 µm'],['Warm mission','IRAC at 3.6 and 4.5 µm only, from 2009 to 2020']] },
+      { title:'Orbit and data', rows:[['Orbit','around the Sun, trailing the Earth · drifts away by about 0.12 AU a year'],['Allowed pointing','between 82.5° and 120° from the Sun · ≈ 35% of the sky accessible at any one time'],['Downlink','X band, 2.2 Mbit/s · two contacts of about 45 min a day · 2 GB memory'],['Helium','ran out on 15 May 2009, after 5.75 years of cold mission'],['End of mission','30 January 2020']] }
+    ],
+    parts:{
+      cta:{ name:'Cryogenic telescope assembly (CTA)', desc:"The cryostat and the telescope. Spitzer was launched “warm”: only the instruments and the superfluid helium tank were cold at launch. The rest cooled down in space, by radiating to the sky and with the helium vapour. The outer shell gets down to 34 K by radiation alone.", facts:["≈ 350 L of superfluid helium at launch, at ≈ 1.2 K","“Warm” launch: a smaller cryostat than those of IRAS and ISO","Outer shell at ≈ 34 K by radiation","Helium boil-off: ≈ 22 g a day","Helium ran out on 15 May 2009"] },
+      tele:{ name:'Telescope', desc:"An 85 cm telescope made entirely of beryllium, mirrors and structure, so that it does not warp as it cools. A mechanism moves the secondary mirror to focus. The three instruments share the focal plane, in a chamber behind the primary mirror.", facts:["Ø 0.85 m, 10.2 m focal length (f/12)","12 cm secondary, 0.89 m from the primary","Beryllium","≈ 5.6 K during the cold mission"] },
+      bus:{ name:'Spacecraft bus', desc:"The octagonal module below the telescope, warm, built by Lockheed Martin. It carries the electronics, the four reaction wheels and the star trackers. Blankets and thermal shields limit the heat rising towards the cryostat.", facts:["Four reaction wheels in a pyramid","Attitude control gas: 15.59 kg of nitrogen at launch","2 GB memory"] },
+      hga:{ name:'High-gain antenna', desc:"A fixed X-band antenna under the spacecraft bus. The recorded data were sent down once or twice a day, through NASA's Deep Space Network.", facts:["2.2 Mbit/s","Two contacts of about 45 min a day","≈ 1.1 GB of data a day"] },
+      solar:{ name:'Solar array and sunshield', desc:"Always turned towards the Sun, it provides power and keeps the telescope in shade. It is cantilevered from the spacecraft bus, with no contact with the cold cryostat.", facts:["500 W at launch","Attached to the spacecraft bus only"] }
+    }
+  },
   chandra:{
     agency:'NASA, operated by the Smithsonian Astrophysical Observatory', launch:'Launched 23 July 1999, Space Shuttle Columbia',
     sub:'Highly elliptical Earth orbit, X-rays (since 1999)', src:'Model: NASA 3D Resources (public domain)',

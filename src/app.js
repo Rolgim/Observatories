@@ -43,6 +43,22 @@ function orbitSvg(t){
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
   var gone = !!t.ended;
+  if (t.orbit === 'helio'){
+    /* orbite autour du Soleil dans le sillage de la Terre (Spitzer, Kepler) : schéma de principe, Soleil au centre */
+    var cx = 64, cy = 64, r = 50, ae = -0.35, ao = 0.55;
+    function pt(a){ return (cx + r*Math.cos(a)).toFixed(1) + ' ' + (cy + r*Math.sin(a)).toFixed(1); }
+    return '<svg viewBox="0 0 340 136" role="img" aria-label="Orbite autour du Soleil, dans le sillage de la Terre">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#98A1A7" stroke-dasharray="3 3"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#FFD21F"/><text x="' + cx + '" y="' + (cy + 22) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +
+      '<path d="M' + pt(ae + 0.05) + ' A' + r + ' ' + r + ' 0 0 1 ' + pt(ao - 0.05) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+      '<circle cx="' + (cx + r*Math.cos(ae)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ae)).toFixed(1) + '" r="5" fill="#2C5E9E"/><text x="' + (cx + r*Math.cos(ae)).toFixed(1) + '" y="' + (cy + r*Math.sin(ae) - 10).toFixed(1) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+      '<circle cx="' + (cx + r*Math.cos(ao)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ao)).toFixed(1) + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      '<text x="150" y="44" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
+      '<text x="150" y="60" fill="#3A4147" font-size="11" ' + F + '>tourne autour du Soleil</text>' +
+      '<text x="150" y="74" fill="#3A4147" font-size="11" ' + F + '>dans le sillage de la Terre,</text>' +
+      '<text x="150" y="88" fill="#3A4147" font-size="11" ' + F + '>' + esc((t.helio && t.helio.drift) || '') + '.</text>' +
+      '<text x="150" y="110" fill="#667077" font-size="11" ' + F + '>Schéma de principe, vu du nord</text><text x="150" y="124" fill="#667077" font-size="11" ' + F + '>de l\'écliptique.</text></svg>';
+  }
   if (t.orbit === 'heo'){
     /* orbite terrestre très elliptique (Chandra) : périgée ≈ 6 680 km, apogée ≈ 142 000 km d'altitude ; Terre, orbite et Lune à l'échelle */
     var k = 250/384400, ex = 40, ey = 60, R = 6371, rp = R + 6680, ra = R + 142000, a2 = (rp + ra)/2, e2 = (ra - rp)/(ra + rp), b2 = a2*Math.sqrt(1 - e2*e2);
@@ -133,6 +149,15 @@ function missionHtml(t){
   return h;
 }
 window.OBS_MISSION = function(tid){ return missionHtml(tele(tid)); };
+/* rangée d'onglets plus large que l'écran : elle défile, se centre sur l'onglet actif, et un fondu au bord signale ce qui dépasse */
+function edgeScroll(el){
+  if (!el) return;
+  function marks(){ var over = el.scrollWidth > el.clientWidth + 1; el.classList.toggle('fade-r', over && el.scrollLeft + el.clientWidth < el.scrollWidth - 2); el.classList.toggle('fade-l', over && el.scrollLeft > 2); }
+  var a = el.querySelector('[aria-selected="true"], .on');
+  if (a && el.scrollWidth > el.clientWidth) el.scrollLeft = Math.max(0, a.offsetLeft - (el.clientWidth - a.offsetWidth)/2);
+  if (!el._edge){ el._edge = true; el.addEventListener('scroll', marks, { passive:true }); window.addEventListener('resize', marks); }
+  marks();
+}
 function renderTabs(){
   /* onglets groupés par domaine spectral (DOMAINS, teleGroups dans data-tele.js) ; le nom du groupe est écrit au-dessus de son premier onglet */
   var h = '';
@@ -144,6 +169,7 @@ function renderTabs(){
   });
   h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
   $('tabs').innerHTML = h;
+  edgeScroll($('tabs'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
   var ll = OBS_LANG === 'en' ? 'Lire en français' : 'Read in English';
@@ -210,7 +236,7 @@ function renderHud(){
 function renderInst(keepScroll){
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);

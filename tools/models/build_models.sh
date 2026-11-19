@@ -38,4 +38,10 @@ $GT copy $DL/chandra/chandra.glb $W/tmp/chandra_dec.glb >/dev/null
 $GT weld $W/tmp/chandra_dec.glb $W/tmp/chandra_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/chandra_w.glb','$W/tmp/chandra_seg.glb',require('$W/chandra_cls.js')).then(s=>console.log('chandra',JSON.stringify(s)))"
 $GT quantize $W/tmp/chandra_seg.glb $OUT/chandra.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+# ---------- Spitzer : maquette NASA (Draco), en mètres, redécoupée
+# attendu dans $DL : spitzer/spitzer.glb (« Spitzer Space Telescope.glb » du dépôt nasa/NASA-3D-Resources)
+$GT copy $DL/spitzer/spitzer.glb $W/tmp/spitzer_dec.glb >/dev/null
+$GT weld $W/tmp/spitzer_dec.glb $W/tmp/spitzer_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/spitzer_w.glb','$W/tmp/spitzer_seg.glb',require('$W/spitzer_cls.js')).then(s=>console.log('spitzer',JSON.stringify(s)))"
+$GT quantize $W/tmp/spitzer_seg.glb $OUT/spitzer.glb --quantize-position 14 --quantize-normal 10 >/dev/null 2>&1
 ls -la $OUT

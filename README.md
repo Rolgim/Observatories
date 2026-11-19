@@ -1,16 +1,16 @@
 # Observatoires en orbite
 
-*Observatories in orbit: an interactive 3D guide to Hubble, Chandra, Gaia, JWST, Euclid and Roman, in English (default) and French.*
+*Observatories in orbit: an interactive 3D guide to Hubble, Chandra, Spitzer, Gaia, JWST, Euclid and Roman, in English (default) and French.*
 
-Visualisation 3D de six télescopes spatiaux (Hubble, Chandra, Gaia, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
+Visualisation 3D de sept télescopes spatiaux (Hubble, Chandra, Spitzer, Gaia, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
   - trajet de la lumière (schéma optique, plan focal à l'échelle) ;
-  - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, carte des pointés réels) ;
-  - une fiche par instrument (21 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
+  - orbite (trajectoire réelle, y compris autour du Soleil pour Spitzer, position de Hubble en direct, ciel observable, carte des pointés réels) ;
+  - une fiche par instrument (24 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
   - une page de comparaison de tous les instruments.
 - Anglais par défaut et français, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…).
 
@@ -66,12 +66,13 @@ Une entrée dans le registre `TELESCOPES` (`src/data-tele.js`), une maquette dan
 | Euclid | ESA SciFleet (https://scifleet.esa.int/model/euclid), jeu de données Gaia Sky |
 | Gaia | Toni Sagristà, Gaia Sky |
 | Chandra | NASA 3D Resources, « Chandra X-ray Observatory » |
+| Spitzer | NASA 3D Resources, « Spitzer Space Telescope » |
 | Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (conception de 2015) |
 
 Les maquettes ont été converties en glTF binaire, allégées et redécoupées en pièces physiques. Leurs droits restent ceux de leurs auteurs :
 
 - Gaia : jeu de données créé par le projet Gaia Sky, sous licence CC BY 4.0 (https://gaiasky.space/licenses/).
-- Hubble, Chandra, JWST et Roman : contenus NASA, non soumis au droit d'auteur aux États-Unis ; voir les consignes d'utilisation des médias de la NASA.
+- Hubble, Chandra, Spitzer, JWST et Roman : contenus NASA, non soumis au droit d'auteur aux États-Unis ; voir les consignes d'utilisation des médias de la NASA.
 - Euclid : © ESA. Aucune licence explicite n'est affichée par SciFleet pour ce modèle ; il est repris ici à des fins éducatives et non commerciales, avec crédit.
 
 Les intérieurs de la vue en coupe sont reconstruits à partir de sources publiées (citées dans le site) ; leurs emplacements sont indicatifs.

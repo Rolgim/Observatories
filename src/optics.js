@@ -112,6 +112,20 @@ var Optics = (function(){
       s += L(24, H-16, 24+K, H-16, MID, 1) + L(24, H-20, 24, H-12, MID, 1) + L(24+K, H-20, 24+K, H-12, MID, 1) + T(24+K/2, H-22, '1 m', 'middle') + T(24+K+10, H-12, 'banc optique de ≈ 3 m', null);
       return svg(W, H, s, 'Schéma optique de Gaia, vue de dessus');
     },
+    /* Spitzer : prescription du Spitzer Telescope Handbook, tableau 3.3 (valeurs à 5,5 K) : primaire hyperbolique R = 2 040 mm,
+       Ø 850 mm, trou de 320 mm ; secondaire convexe Ø 120 mm à 887,528 mm du primaire ; foyer 437 mm derrière le sommet du primaire.
+       Chambre des instruments (MIC) : boîte indicative. */
+    spitzer: function(){
+      return twoMirror({ z0:-1.25, z1:0.85, half:0.5, R:2.04, r1:0.425, hole:0.16, r2:0.06, d:0.887528, rays:[0.42, 0.25], focus:[0.437, 0], dLabel:'0,888 m', k1:'tele', k2:'tele',
+        label:'Schéma optique de Spitzer, à l\'échelle',
+        tube:[[-1.2,0.49],[-0.05,0.49]],
+        after:function(X, Y){
+          var s = G('cta', '<rect x="'+f(X(0.12))+'" y="'+f(Y(0.36))+'" width="'+f(X(0.78)-X(0.12))+'" height="'+f(Y(-0.36)-Y(0.36))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(0.437), Y(0.05), X(0.437), Y(-0.05), DET, 4));
+          s += T(X(0)+8, Y(0.425)-6, 'Miroir primaire, 0,85 m', null, true) + T(X(-0.8875), Y(-0.06)+22, 'Secondaire, 0,12 m', 'middle', true);
+          s += T(X(0.45), Y(-0.36)+16, 'Chambre des instruments', 'middle', true) + T(X(0.437)+8, Y(0)+4, 'foyer', null);
+          return s;
+        } });
+    },
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
@@ -171,7 +185,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -197,6 +211,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    spitzer:{ title:'Un Ritchey-Chrétien en béryllium, refroidi à l\'hélium', scale:'Figure à l\'échelle, d\'après la prescription du Spitzer Telescope Handbook (tableau 3.3) : courbure et diamètre du primaire, trou central, diamètre et position du secondaire, position du foyer. La chambre des instruments, en pointillé, est indicative.',
+      steps:['La lumière infrarouge descend dans le tube jusqu\'au miroir primaire, concave, de 85 cm, très ouvert (f/1,2).',
+             'Le primaire la renvoie vers le secondaire, convexe, de 12 cm, placé 89 cm plus haut ; un mécanisme peut le déplacer pour la mise au point.',
+             'Le secondaire renvoie le faisceau à travers le trou central du primaire, de 32 cm. Le foyer est 44 cm derrière le primaire, dans la chambre des instruments posée sur le réservoir d\'hélium.',
+             'IRAC, IRS et MIPS se partagent ce plan focal de 32′ de diamètre. Tout le télescope est en béryllium et était tenu vers 5,6 K : sinon, sa propre chaleur aurait ébloui les détecteurs.'],
+      specs:[['Combinaison','Ritchey-Chrétien'],['Ouverture','0,85 m · trou central 0,32 m'],['Focale','10,2 m · f/12'],['Primaire','f/1,2 · rayon de courbure 2,04 m'],['Écart primaire–secondaire','0,888 m'],['Champ','32′ de diamètre'],['Domaine','3 à 180 µm']] },
     chandra:{ title:'Des miroirs en incidence rasante : quatre paires Wolter de type I', scale:'Figure à l\'échelle, avec la même échelle sur les deux axes : diamètres des quatre paires (1,23 à 0,65 m), longueur des miroirs (84 cm) et distance du foyer (10,05 m) d\'après le guide de l\'observateur (POG, chapitre 4). La pente de chaque miroir est déduite de son angle de sortie. Le tube du banc optique, en pointillé, est indicatif.',
       steps:['Les rayons X traversent la matière au lieu de s\'y réfléchir. Ils ne rebondissent que s\'ils frôlent une surface très lisse, sous un angle inférieur au degré.',
              'Chaque rayon frôle d\'abord un paraboloïde, puis un hyperboloïde : deux réflexions rasantes suffisent à former une image nette. Quatre paires emboîtées, de 1,23 à 0,65 m de diamètre, multiplient la surface collectrice.',
@@ -230,6 +250,10 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Spitzer : champs des instruments projetés sur le foyer du télescope (focale 10,2 m : 1′ ≈ 2,967 mm), Spitzer Telescope Handbook */
+    spitzer:{ groups:[ grid(2,1,15.46,15.46,1.5,0,'#2F6FDB',['IRAC','deux champs de 5,2′, quatre matrices de 256 × 256 px']), grid(1,1,16.0,16.0,0,0,'#9A52D6',['MIPS 24 µm','5,4′, 128 × 128 px']),
+                       grid(1,1,15.4,7.7,0,0,'#C77DDB',['MIPS 70 µm','5,2′ × 2,6′, 32 × 32 px']), grid(1,1,1.57,15.8,0,0,'#6B3FA0',['MIPS 160 µm','0,53′ × 5,33′']), grid(1,1,0.52,8.3,0,0,'#0F987A',['IRS, fente LL','10,6″ × 168″']) ],
+             note:'Champs projetés sur le plan focal du télescope, d\'après le champ de chaque instrument et la focale de 10,2 m (1′ ≈ 2,97 mm) ; IRAC et MIPS ont leurs propres optiques et des détecteurs plus petits. Les instruments sont rapprochés ici pour comparer leur taille ; l\'écart entre les deux champs d\'IRAC est indicatif.' },
     /* Chandra : CCD d'ACIS de 1024 × 1024 px de 24 µm ; HRC dessiné d'après son champ et l'échelle du foyer (1″ = 48,8 µm pour 10,07 m) */
     chandra:{ groups:[ grid(2,2,24.6,24.6,0.5,0.5,DET,['ACIS-I','4 CCD de 1024 × 1024 px, 24 µm']), grid(6,1,24.6,24.6,0.5,0,'#0F987A',['ACIS-S','6 CCD, dont 2 éclairés par l\'arrière']), grid(1,1,87.9,87.9,0,0,'#DB5A14',['HRC-I','galette à microcanaux, ≈ 30′ de côté']) ],
              note:'ACIS-I et ACIS-S sont montés côte à côte sur le même support, HRC sur la même table mobile ; ils sont rapprochés ici pour comparer leur taille. Taille de HRC-I déduite de son champ (≈ 30′) et de l\'échelle du foyer ; espaces entre CCD indicatifs.' },

@@ -44,6 +44,9 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
 #tabs{ display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
 #tabs::-webkit-scrollbar{ display:none; }
+#tabs.fade-r, .pills.fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+#tabs.fade-l, .pills.fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+#tabs.fade-l.fade-r, .pills.fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
 .tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
 /* groupes par domaine spectral : un trait plein entre les groupes, pointillé à l'intérieur, le nom du groupe au-dessus de son premier onglet */
 #tabs .tab:not(.g0):not(.cmp){ border-left-style:dotted; }
@@ -690,6 +693,69 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'spitzer', domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
+    agency:'NASA (JPL, Caltech)', launch:'Lancé le 25 août 2003, Delta II, Cap Canaveral',
+    sub:'Orbite autour du Soleil, dans le sillage de la Terre, infrarouge (2003–2020)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/spitzer.glb', bytes:1064244, axis:'y', size:4.5,
+    view:{ az:-2.4, el:0.3, dist:2.1 }, sun:[0.15,0.35,-0.92], orbit:'helio',
+    helio:{ drift:'s\'éloigne de ≈ 0,12 UA par an' },
+    hero:{ num:'5,6', unit:'K', label:'la température du télescope pendant la mission froide' },
+    cmp:{ tag:'4,5 m', dim:'4,5 m de haut, Ø 2,1 m', mirror:0.85, mass:861, len:4.5 },
+    color:'#B03A2E', highlight:['Miroir primaire','0,85','m'], footprint:['4,5','m de haut'], optical:['tele','cta'],
+    compare:{ order:3, rot:[0, 0, 0], fp:[1, 2] }, ended:true,
+    desc:"Pour voir l'infrarouge, un télescope doit être plus froid que ce qu'il regarde. Spitzer emportait de l'hélium liquide qui a tenu son télescope de 85 cm à 5,6 K pendant près de six ans. Au lieu de tourner autour de la Terre, il suivait la Terre autour du Soleil, en s'en éloignant peu à peu : loin de sa chaleur, il se refroidissait aussi en rayonnant vers l'espace. Après l'épuisement de l'hélium en 2009, deux de ses caméras ont continué de fonctionner jusqu'en 2020.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux ; le miroir primaire et le support du secondaire sont visibles par l'ouverture du tube.",
+    checked:'2026-11-19',
+    refs:{
+      w04:{ t:'Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1', p:'ApJS', u:'https://arxiv.org/abs/astro-ph/0406223' },
+      w06:{ t:'Werner et al. 2006, First Fruits of the Spitzer Space Telescope, ARA&A 44, 269', p:'ARA&A', u:'https://arxiv.org/abs/astro-ph/0606563' },
+      hb:{ t:'Spitzer Telescope Handbook, chapitre 3 (instruments)', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/6/' },
+      mo:{ t:'Spitzer Mission Overview', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview' },
+      qf:{ t:'Spitzer Space Telescope, Quick Facts', p:'NASA JPL', u:'https://www.jpl.nasa.gov/news/press_kits/spitzer/quick-facts' },
+      thb:{ t:'Spitzer Telescope Handbook (PDF, version finale)', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/Spitzer_Telescope_Handbook.pdf' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','4,5 m de haut · Ø 2,1 m','w04'], ['Masse au lancement','861 kg (950 kg selon la fiche du JPL)',['w04','qf']],
+        ['Énergie','panneau solaire de 500 W au lancement · consommation moyenne 375 W','w04'],
+        ['Pointage','quatre roues de réaction en pyramide, gyroscopes, viseurs d\'étoiles · stabilité 0,03″','w04'],
+        ['Lancement','25 août 2003, Delta II 7920H, Cap Canaveral',['qf','mo']],
+        ['Constructeurs','Lockheed Martin (module de service, panneau) · Ball Aerospace (ensemble cryogénique)','w06'] ]},
+      { title:'Optique', rows:[
+        ['Type','Ritchey-Chrétien, deux miroirs hyperboliques',['w06','thb']], ['Miroir primaire','Ø 0,85 m · ouvert à f/1,2 · trou central de 0,32 m (14,2 % de la surface)',['thb','w04']],
+        ['Focale','10,2 m · f/12','thb'], ['Secondaire','Ø 0,12 m, à 0,888 m du primaire','thb'], ['Matériau','béryllium, miroirs et structure','w04'],
+        ['Température','≈ 5,6 K (mission froide) · 27,5 K (mission chaude)',['w04','hb']], ['Limite de diffraction','5,5 µm','hb'] ]},
+      { title:'Instruments', rows:[
+        ['IRAC','caméra à quatre voies, 3,6 à 8 µm · champ de 5,2′','hb'], ['IRS','spectrographe, 5,2 à 38 µm · R ≈ 64 à 600','hb'],
+        ['MIPS','photomètre à 24, 70 et 160 µm · spectres de 55 à 95 µm','hb'],
+        ['Mission chaude','IRAC à 3,6 et 4,5 µm seulement, de 2009 à 2020','hb'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite','autour du Soleil, dans le sillage de la Terre · s\'en éloigne d\'environ 0,12 UA par an','w04'],
+        ['Pointage autorisé','entre 82,5° et 120° du Soleil · ≈ 35 % du ciel accessible à un instant donné',['thb','w06']],
+        ['Liaison','bande X, 2,2 Mbit/s · deux contacts d\'environ 45 min par jour · mémoire de 2 Go','w04'],
+        ['Hélium','épuisé le 15 mai 2009, après 5,75 ans de mission froide','mo'],
+        ['Fin de mission','30 janvier 2020','mo'] ]}
+    ],
+    parts:[
+      { key:'cta', name:'Ensemble cryogénique (CTA)', explode:[0,1,0,0.6],
+        desc:"Le cryostat et le télescope. Spitzer a été lancé « chaud » : seuls les instruments et le réservoir d'hélium superfluide étaient froids au départ. Le reste s'est refroidi dans l'espace, en rayonnant vers le ciel et grâce à la vapeur d'hélium. L'enveloppe extérieure descend à 34 K par son seul rayonnement.",
+        facts:[["≈ 350 L d'hélium superfluide au lancement, à ≈ 1,2 K", "thb"], ["Lancement « chaud » : cryostat plus petit que ceux d'IRAS et d'ISO", "w04"], ["Enveloppe à ≈ 34 K par rayonnement", "w06"], ["Évaporation de l'hélium : ≈ 22 g par jour", "w04"], ["Hélium épuisé le 15 mai 2009", "mo"]] },
+      { key:'tele', name:'Télescope', explode:[0,1,0,0.9],
+        desc:"Un télescope de 85 cm entièrement en béryllium, miroirs et structure, pour qu'il ne se déforme pas en refroidissant. Un mécanisme déplace le miroir secondaire pour faire la mise au point. Les trois instruments partagent le plan focal, dans une chambre placée derrière le miroir primaire.",
+        facts:[["Ø 0,85 m, focale 10,2 m (f/12)", "thb"], ["Secondaire de 12 cm, à 0,89 m du primaire", "thb"], ["Béryllium", "w04"], ["≈ 5,6 K en mission froide", "w04"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.5],
+        desc:"Le module octogonal sous le télescope, chaud, construit par Lockheed Martin. Il porte l'électronique, les quatre roues de réaction et les viseurs d'étoiles. Couvertures et écrans thermiques limitent la chaleur qui monte vers le cryostat.",
+        facts:[["Quatre roues de réaction en pyramide", "w04"], ["Gaz d'orientation : 15,59 kg d'azote au lancement", "w04"], ["Mémoire de 2 Go", "w04"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,-1,0,1.0],
+        desc:"Une antenne fixe en bande X, sous le module de service. Les données enregistrées étaient transmises une ou deux fois par jour, par le réseau d'antennes de l'espace lointain de la NASA.",
+        facts:[["2,2 Mbit/s", "w04"], ["Deux contacts d'environ 45 min par jour", "w04"], ["≈ 1,1 Go de données par jour", "w04"]] },
+      { key:'solar', name:'Panneau solaire et pare-soleil', explode:[0,0,-1,0.8],
+        desc:"Toujours tourné vers le Soleil, il fournit l'énergie et garde le télescope à l'ombre. Il est fixé en porte-à-faux sur le module de service, sans contact avec le cryostat froid.",
+        facts:[["500 W au lancement", "w04"], ["Fixé au module de service seulement", "w04"]] }
+    ]
+  },
+  {
     id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -699,7 +765,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:3, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -765,7 +831,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:4, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:5, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -841,7 +907,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:6, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -906,7 +972,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:6, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:7, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
@@ -1645,6 +1711,101 @@ var INST_DATA = (function(){
   },
 
   /* -------------------------------------------------------------- GAIA */
+  spitzer: {
+    checked:'2026-11-19',
+    refs:{
+      hb:{ t:"Spitzer Telescope Handbook, chapitre 3 (instruments)", p:"IRSA (Caltech/IPAC)", u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/6/" },
+      w04:{ t:"Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1", p:"ApJS", u:"https://arxiv.org/abs/astro-ph/0406223" },
+      mo:{ t:"Spitzer Mission Overview", p:"IRSA (Caltech/IPAC)", u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview" }
+    },
+    axis: { min:3, max:200 },
+    summary: "Trois instruments partageaient le plan focal, dans une chambre refroidie à l'hélium derrière le miroir primaire : IRAC, une caméra à quatre voies dans le proche et moyen infrarouge, IRS, un spectrographe de 5 à 38 µm, et MIPS, un photomètre pour l'infrarouge lointain, jusqu'à 160 µm. Après l'épuisement de l'hélium en 2009, seules les deux voies les plus courtes d'IRAC ont continué de fonctionner.",
+    archives: [
+      { label:"Spitzer Heritage Archive (IRSA)", url:"https://irsa.ipac.caltech.edu/applications/Spitzer/SHA/", desc:"Toutes les observations de la mission, données brutes et traitées, à l'IRSA (Caltech/IPAC)." },
+      { label:"Spitzer Enhanced Imaging Products", url:"https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html", desc:"Mosaïques d'IRAC et de MIPS 24 µm homogènes sur toute la mission, et le catalogue de sources qui en est tiré." },
+      { label:"Documentation de Spitzer", url:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/", desc:"Manuels des instruments et du télescope, à l'IRSA." }
+    ],
+    instruments: [
+      { id:"irac", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
+        bands:[ {l:"3,6 µm",lo:3.19,hi:3.94}, {l:"4,5 µm",lo:4.00,hi:5.02}, {l:"5,8 µm",lo:4.98,hi:6.41}, {l:"8,0 µm",lo:6.45,hi:9.34} ],
+        use:"Photographier des galaxies lointaines, des nuages où naissent des étoiles et des exoplanètes en transit, à travers la poussière qui arrête la lumière visible.",
+        summary:"Quatre voies photographiées en même temps sur deux champs voisins : des séparatrices dichroïques envoient 3,6 et 5,8 µm vers l'un, 4,5 et 8,0 µm vers l'autre. Chaque voie a sa matrice de 256 × 256 pixels.",
+        specs:[
+          ["Voies", "3,6 · 4,5 · 5,8 · 8,0 µm", "hb"],
+          ["Détecteurs", "InSb (3,6 et 4,5 µm) · Si:As (5,8 et 8,0 µm) · 256 × 256 px", "hb"],
+          ["Pixels", "1,2″", "hb"],
+          ["Champ", "5,2′ × 5,2′ par voie, deux champs voisins", "hb"],
+          ["Mission chaude (2009–2020)", "3,6 et 4,5 µm seulement", "hb"]
+        ],
+        fov:[ {l:'3,6 et 5,8 µm', w:313, h:313, dx:-200}, {l:'4,5 et 8,0 µm', w:311, h:311, dx:200} ],
+        filtersTitle:"Voies",
+        filters:[ R("3,6 µm",3.19,3.94,"B","InSb"), R("4,5 µm",4.00,5.02,"B","InSb"), R("5,8 µm",4.98,6.41,"B","Si:As"), R("8,0 µm",6.45,9.34,"B","Si:As") ],
+        products:[
+          ["BCD (_bcd.fits)","image calibrée d'une seule pose, en MJy/sr"],
+          ["PBCD (_maic.fits)","mosaïque d'une observation, assemblée par le pipeline"],
+          ["SEIP","mosaïques homogènes de toute la mission et catalogue de sources (Spitzer Enhanced Imaging Products)"]
+        ],
+        example:{ real:false, title:"En-tête FITS d'une image BCD d'IRAC (extrait)", caption:"Mots-clés réels des produits de Spitzer ; les valeurs sont un exemple.", text:
+"TELESCOP= 'Spitzer '           / SPITZER Space Telescope\n" +
+"INSTRUME= 'IRAC    '           / SPITZER Space Telescope instrument ID\n" +
+"CHNLNUM =                    1 / 1 digit Instrument Channel Number\n" +
+"AORKEY  =             12345678 / AOR or IER key\n" +
+"EXPTIME =                 10.4 / [sec] Effective integration time per pixel\n" +
+"BUNIT   = 'MJy/sr  '           / Units of image data\n" +
+"FLUXCONV=               0.1069 / Flux Conv. factor (MJy/sr per DN/sec)" },
+        code:{ title:"Interroger l'IRSA avec astroquery", text:
+"from astroquery.ipac.irsa import Irsa\n" +
+"from astropy.coordinates import SkyCoord\n" +
+"import astropy.units as u\n\n" +
+"pos = SkyCoord.from_name(\"M51\")\n" +
+"# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)\n" +
+"im = Irsa.query_sia(pos=(pos, 5 * u.arcmin), collection=\"spitzer_seip\")\n" +
+"# catalogue de sources tiré des mêmes mosaïques\n" +
+"cat = Irsa.query_region(pos, catalog=\"slphotdr4\", spatial=\"Cone\", radius=2 * u.arcmin)" },
+        notes:[ "Pendant la mission chaude, le détecteur de 3,6 µm a servi à suivre des exoplanètes en transit avec une très grande stabilité : c'est ainsi qu'il a suivi en 2016 et 2017 les planètes du système TRAPPIST-1." ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
+
+      { id:"irs", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
+        bands:[ {l:"SL",lo:5.2,hi:14.5}, {l:"LL",lo:14.0,hi:38.0}, {l:"SH",lo:9.9,hi:19.6}, {l:"LH",lo:18.7,hi:37.2} ],
+        use:"Décomposer la lumière infrarouge en spectre, pour lire la composition de la poussière, des glaces et des molécules autour des étoiles jeunes et dans les galaxies.",
+        summary:"Quatre modules, chacun avec sa matrice de 128 × 128 pixels : deux à basse résolution, à fente longue (SL et LL), deux à haute résolution, en échelle (SH et LH). Deux petites fenêtres d'imagerie (« peak-up ») servaient à centrer la source dans la fente.",
+        specs:[
+          ["Modules", "SL 5,2–14,5 µm · LL 14,0–38,0 µm (R ≈ 64–128) · SH 9,9–19,6 µm · LH 18,7–37,2 µm (R ≈ 600)", "w04"],
+          ["Fentes", "SL 3,7″ × 57″ · LL 10,6″ × 168″ · SH 4,7″ × 11,3″ · LH 11,1″ × 22,3″", "hb"],
+          ["Détecteurs", "128 × 128 px par module", "hb"],
+          ["Imagerie de centrage", "13,3–18,7 µm et 18,5–26,0 µm, champ de 1′ × 1,2′", ["w04","hb"]],
+          ["Mission chaude", "hors service", "hb"]
+        ],
+        fov:[ {l:'LL', w:10.6, h:168}, {l:'SL', w:3.7, h:57, dx:30} ],
+        products:[
+          ["BCD (_bcd.fits)","image spectrale calibrée en 2D"],
+          ["_spect.tbl","spectre extrait, longueur d'onde et flux (Jy)"]
+        ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
+
+      { id:"mips", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
+        bands:[ {l:"24 µm",lo:21.5,hi:26.2}, {l:"70 µm",lo:62.5,hi:81.5}, {l:"160 µm",lo:139.5,hi:174.5}, {l:"SED",lo:55,hi:95} ],
+        use:"Mesurer la chaleur de la poussière froide : disques autour des étoiles, galaxies qui forment des étoiles à toute vitesse, nuages interstellaires.",
+        summary:"Trois matrices : Si:As à 24 µm, germanium dopé au gallium à 70 µm et germanium contraint à 160 µm. Un petit miroir mobile balayait le ciel sur les détecteurs ; un mode spectral (SED) donnait aussi un spectre grossier de 55 à 95 µm.",
+        specs:[
+          ["Bandes", "24 µm (21,5–26,2) · 70 µm (62,5–81,5) · 160 µm (139,5–174,5)", "w04"],
+          ["Détecteurs", "Si:As 128 × 128 · Ge:Ga 32 × 32 · Ge:Ga contraint", ["w04","hb"]],
+          ["Pixels", "2,55″ · 5,2″ ou 9,98″ · 16–18″", "hb"],
+          ["Champ", "5,4′ × 5,4′ · 5,2′ × 2,6′ · 0,53′ × 5,33′", "hb"],
+          ["Mode SED", "55–95 µm, R ≈ 15–25", "hb"],
+          ["Mission chaude", "hors service", "hb"]
+        ],
+        fov:[ {l:'24 µm', w:324, h:324}, {l:'70 µm', w:312, h:156, dx:330}, {l:'160 µm', w:32, h:320, dx:-200} ],
+        filtersTitle:"Bandes",
+        filters:[ R("24 µm",21.5,26.2,"B","Si:As"), R("70 µm",62.5,81.5,"B","Ge:Ga"), R("160 µm",139.5,174.5,"B","Ge:Ga contraint") ],
+        products:[
+          ["BCD (_bcd.fits)","image calibrée d'une seule pose"],
+          ["PBCD (_maic.fits)","mosaïque d'une observation"],
+          ["SEIP","mosaïques homogènes à 24 µm (Spitzer Enhanced Imaging Products)"]
+        ],
+        docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] }
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{
@@ -2054,6 +2215,42 @@ var MISSION = {
     rel:null
   },
 
+  spitzer: {
+    checked:'2026-11-19',
+    refs:{
+      seip:{ t:'Spitzer Enhanced Imaging Products', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html' }
+    },
+    intro:["Spitzer, la dernière des quatre « grands observatoires » de la NASA, était géré par le JPL. Le Spitzer Science Center, au Caltech, choisissait les observations, traitait les données et les distribuait ; l'archive est aujourd'hui à l'IRSA, au Caltech/IPAC.",
+           "Spitzer, the last of NASA's four Great Observatories, was managed by JPL. The Spitzer Science Center, at Caltech, selected the observations, processed the data and distributed them; the archive is now at IRSA, at Caltech/IPAC."],
+    phases:[
+      ['25 août 2003','25 Aug 2003','Lancement','Launch',"Une fusée Delta II 7920H le lance depuis Cap Canaveral sur une orbite autour du Soleil, dans le sillage de la Terre.","A Delta II 7920H rocket launches it from Cape Canaveral into an orbit around the Sun, trailing the Earth.",['qf','mo']],
+      ['oct. 2003','Oct 2003','Télescope froid','Telescope cold',"Le télescope, lancé à température ambiante, atteint 5,6 K en 41 jours, en rayonnant vers l'espace et grâce à la vapeur d'hélium.","The telescope, launched at room temperature, reaches 5.6 K in 41 days, by radiating to space and with the helium vapour.",'w04'],
+      ['1er déc. 2003','1 Dec 2003','Début des observations','Science begins',"Après 63 jours de mise en service et 35 jours de vérification scientifique, les observations courantes commencent. En décembre, SIRTF prend le nom de Spitzer.","After 63 days of in-orbit checkout and 35 days of science verification, routine observations begin. In December, SIRTF is renamed Spitzer.",'thb'],
+      ['15 mai 2009','15 May 2009','Fin de l\'hélium','Helium runs out',"L'hélium s'épuise après 5,75 ans, cinq mois de plus que prévu : fin de la mission froide.","The helium runs out after 5.75 years, five months longer than expected: end of the cold mission.",['mo','qf']],
+      ['27 juil. 2009','27 Jul 2009','Mission chaude','Warm mission',"Le télescope se stabilise vers 28 K. Les voies à 3,6 et 4,5 µm d'IRAC continuent d'observer.","The telescope settles near 28 K. IRAC's 3.6 and 4.5 µm channels keep observing.",['mo','hb']],
+      ['30 janv. 2020','30 Jan 2020','Fin de mission','End of mission',"Le satellite est mis en sommeil sur commande du sol, après plus de seize ans dans l'espace.","The spacecraft is put to sleep by command from the ground, after more than sixteen years in space.",['thb','mo']]
+    ],
+    ops:[
+      ['Programme','Programme','NASA, Jet Propulsion Laboratory','NASA, Jet Propulsion Laboratory','qf'],
+      ['Science et données','Science and data','Spitzer Science Center (Caltech)','Spitzer Science Center (Caltech)','w04'],
+      ['Liaison','Downlink','deux contacts par jour, ≈ 1,1 Go de données par jour','two contacts a day, ≈ 1.1 GB of data a day','w04'],
+      ['Grands programmes','Large programmes','32 programmes Legacy, 8 691 h, pendant la mission froide · 42 programmes d\'exploration, 38 412 h, pendant la mission chaude','32 Legacy programmes, 8,691 h, during the cold mission · 42 exploration programmes, 38,412 h, during the warm mission','thb'],
+      ['Archive','Archive','Spitzer Heritage Archive, à l\'IRSA','Spitzer Heritage Archive, at IRSA','thb']
+    ],
+    chain:{
+      intro:["Le Spitzer Science Center rangeait les produits en niveaux, chaque niveau tiré du précédent par les pipelines de la mission.",
+             "The Spitzer Science Center organised the products into levels, each level derived from the previous one by the mission pipelines."],
+      steps:[
+        { lv:'L0', n:['Données brutes','Raw data'], x:['Les données non traitées, mises au format FITS.','The unprocessed data, packaged in FITS format.'], r:'thb' },
+        { lv:'L1', n:['BCD','BCD'], x:['Données de base calibrées : une image par pose, en MJy/sr, avec son image d\'incertitude et son masque.','Basic Calibrated Data: one image per exposure, in MJy/sr, with its uncertainty image and its mask.'], r:'thb' },
+        { lv:'L2', n:['Post-BCD','Post-BCD'], x:['Produits de plus haut niveau : mosaïques, poses additionnées, spectres extraits.','Higher-level products: mosaics, co-added exposures, extracted spectra.'], r:'thb' },
+        { lv:'L3', n:['Produits améliorés','Enhanced products'], x:['Après la mission : mosaïques homogènes d\'IRAC et de MIPS 24 µm sur toutes les observations, et leur catalogue de sources (SEIP).','After the mission: uniform IRAC and MIPS 24 µm mosaics of all the observations, and their source catalogue (SEIP).'], r:'seip' }
+      ]
+    },
+    rel:[
+      ['nov. 2009','Nov 2009',['Spitzer Heritage Archive','Spitzer Heritage Archive'],"L'interface web de l'archive sert aussi les données propriétaires et devient l'archive de Spitzer.","The archive's web interface also serves proprietary data and becomes the Spitzer archive.",'thb',false]
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{
@@ -2256,6 +2453,20 @@ var Optics = (function(){
       s += L(24, H-16, 24+K, H-16, MID, 1) + L(24, H-20, 24, H-12, MID, 1) + L(24+K, H-20, 24+K, H-12, MID, 1) + T(24+K/2, H-22, '1 m', 'middle') + T(24+K+10, H-12, 'banc optique de ≈ 3 m', null);
       return svg(W, H, s, 'Schéma optique de Gaia, vue de dessus');
     },
+    /* Spitzer : prescription du Spitzer Telescope Handbook, tableau 3.3 (valeurs à 5,5 K) : primaire hyperbolique R = 2 040 mm,
+       Ø 850 mm, trou de 320 mm ; secondaire convexe Ø 120 mm à 887,528 mm du primaire ; foyer 437 mm derrière le sommet du primaire.
+       Chambre des instruments (MIC) : boîte indicative. */
+    spitzer: function(){
+      return twoMirror({ z0:-1.25, z1:0.85, half:0.5, R:2.04, r1:0.425, hole:0.16, r2:0.06, d:0.887528, rays:[0.42, 0.25], focus:[0.437, 0], dLabel:'0,888 m', k1:'tele', k2:'tele',
+        label:'Schéma optique de Spitzer, à l\'échelle',
+        tube:[[-1.2,0.49],[-0.05,0.49]],
+        after:function(X, Y){
+          var s = G('cta', '<rect x="'+f(X(0.12))+'" y="'+f(Y(0.36))+'" width="'+f(X(0.78)-X(0.12))+'" height="'+f(Y(-0.36)-Y(0.36))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(0.437), Y(0.05), X(0.437), Y(-0.05), DET, 4));
+          s += T(X(0)+8, Y(0.425)-6, 'Miroir primaire, 0,85 m', null, true) + T(X(-0.8875), Y(-0.06)+22, 'Secondaire, 0,12 m', 'middle', true);
+          s += T(X(0.45), Y(-0.36)+16, 'Chambre des instruments', 'middle', true) + T(X(0.437)+8, Y(0)+4, 'foyer', null);
+          return s;
+        } });
+    },
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
@@ -2315,7 +2526,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -2341,6 +2552,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    spitzer:{ title:'Un Ritchey-Chrétien en béryllium, refroidi à l\'hélium', scale:'Figure à l\'échelle, d\'après la prescription du Spitzer Telescope Handbook (tableau 3.3) : courbure et diamètre du primaire, trou central, diamètre et position du secondaire, position du foyer. La chambre des instruments, en pointillé, est indicative.',
+      steps:['La lumière infrarouge descend dans le tube jusqu\'au miroir primaire, concave, de 85 cm, très ouvert (f/1,2).',
+             'Le primaire la renvoie vers le secondaire, convexe, de 12 cm, placé 89 cm plus haut ; un mécanisme peut le déplacer pour la mise au point.',
+             'Le secondaire renvoie le faisceau à travers le trou central du primaire, de 32 cm. Le foyer est 44 cm derrière le primaire, dans la chambre des instruments posée sur le réservoir d\'hélium.',
+             'IRAC, IRS et MIPS se partagent ce plan focal de 32′ de diamètre. Tout le télescope est en béryllium et était tenu vers 5,6 K : sinon, sa propre chaleur aurait ébloui les détecteurs.'],
+      specs:[['Combinaison','Ritchey-Chrétien'],['Ouverture','0,85 m · trou central 0,32 m'],['Focale','10,2 m · f/12'],['Primaire','f/1,2 · rayon de courbure 2,04 m'],['Écart primaire–secondaire','0,888 m'],['Champ','32′ de diamètre'],['Domaine','3 à 180 µm']] },
     chandra:{ title:'Des miroirs en incidence rasante : quatre paires Wolter de type I', scale:'Figure à l\'échelle, avec la même échelle sur les deux axes : diamètres des quatre paires (1,23 à 0,65 m), longueur des miroirs (84 cm) et distance du foyer (10,05 m) d\'après le guide de l\'observateur (POG, chapitre 4). La pente de chaque miroir est déduite de son angle de sortie. Le tube du banc optique, en pointillé, est indicatif.',
       steps:['Les rayons X traversent la matière au lieu de s\'y réfléchir. Ils ne rebondissent que s\'ils frôlent une surface très lisse, sous un angle inférieur au degré.',
              'Chaque rayon frôle d\'abord un paraboloïde, puis un hyperboloïde : deux réflexions rasantes suffisent à former une image nette. Quatre paires emboîtées, de 1,23 à 0,65 m de diamètre, multiplient la surface collectrice.',
@@ -2374,6 +2591,10 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Spitzer : champs des instruments projetés sur le foyer du télescope (focale 10,2 m : 1′ ≈ 2,967 mm), Spitzer Telescope Handbook */
+    spitzer:{ groups:[ grid(2,1,15.46,15.46,1.5,0,'#2F6FDB',['IRAC','deux champs de 5,2′, quatre matrices de 256 × 256 px']), grid(1,1,16.0,16.0,0,0,'#9A52D6',['MIPS 24 µm','5,4′, 128 × 128 px']),
+                       grid(1,1,15.4,7.7,0,0,'#C77DDB',['MIPS 70 µm','5,2′ × 2,6′, 32 × 32 px']), grid(1,1,1.57,15.8,0,0,'#6B3FA0',['MIPS 160 µm','0,53′ × 5,33′']), grid(1,1,0.52,8.3,0,0,'#0F987A',['IRS, fente LL','10,6″ × 168″']) ],
+             note:'Champs projetés sur le plan focal du télescope, d\'après le champ de chaque instrument et la focale de 10,2 m (1′ ≈ 2,97 mm) ; IRAC et MIPS ont leurs propres optiques et des détecteurs plus petits. Les instruments sont rapprochés ici pour comparer leur taille ; l\'écart entre les deux champs d\'IRAC est indicatif.' },
     /* Chandra : CCD d'ACIS de 1024 × 1024 px de 24 µm ; HRC dessiné d'après son champ et l'échelle du foyer (1″ = 48,8 µm pour 10,07 m) */
     chandra:{ groups:[ grid(2,2,24.6,24.6,0.5,0.5,DET,['ACIS-I','4 CCD de 1024 × 1024 px, 24 µm']), grid(6,1,24.6,24.6,0.5,0,'#0F987A',['ACIS-S','6 CCD, dont 2 éclairés par l\'arrière']), grid(1,1,87.9,87.9,0,0,'#DB5A14',['HRC-I','galette à microcanaux, ≈ 30′ de côté']) ],
              note:'ACIS-I et ACIS-S sont montés côte à côte sur le même support, HRC sur la même table mobile ; ils sont rapprochés ici pour comparer leur taille. Taille de HRC-I déduite de son champ (≈ 30′) et de l\'échelle du foyer ; espaces entre CCD indicatifs.' },
@@ -2488,6 +2709,10 @@ var Orbits = (function(){
              'Loin de la Terre, de longues poses ininterrompues sont possibles, contrairement à Hubble que la Terre masque à chaque tour.',
              'L\'orbite se déforme lentement sous l\'attraction de la Lune et du Soleil : le périgée est descendu à 1 045 km en juillet 2023, puis remonté à environ 6 680 km en 2025.',
              'Pour protéger ses instruments de la chaleur, les longues observations sont découpées en tranches d\'au plus 30 ks environ.'] },
+    spitzer:{ sum:'Spitzer ne tournait pas autour de la Terre : il tournait autour du Soleil, sur une orbite un peu plus lente que celle de la Terre. Il est donc resté dans son sillage, en s\'en éloignant d\'environ 0,12 UA par an.',
+      notes:['Loin de la Terre, qui rayonne beaucoup d\'infrarouge, le télescope se refroidissait mieux et l\'hélium durait plus longtemps.',
+             'Le Soleil et la Terre restent à peu près du même côté : le panneau solaire faisait écran pour tout le télescope. Spitzer ne visait qu\'entre 82,5° et 120° du Soleil.',
+             'Plus il s\'éloignait, moins il pouvait transmettre de données (Spaceflight Now, mai 2019). La mission s\'est arrêtée le 30 janvier 2020.'] },
     gaia:{ sum:'De 2014 à 2025, Gaia a décrit une courbe de Lissajous autour de L2 : une boucle qui ne se referme pas, choisie pour ne pas traverser l\'ombre de la Terre pendant des années.',
       notes:['Les observations se sont arrêtées le 15 janvier 2025. Le satellite a ensuite été écarté de L2 et mis hors service le 27 mars 2025.',
              'La trajectoire tracée ici s\'arrête à ce départ.',
@@ -2501,6 +2726,7 @@ var Orbits = (function(){
     euclid:{ lo:87, hi:104, cap:'Euclid vise presque perpendiculairement au Soleil : angle d\'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D\'où une bande étroite, qui fait le tour du ciel en un an.' },
     chandra:{ lo:46.2, hi:180, cap:'Chandra ne vise jamais à moins de 46,2° du Soleil, contrainte qui ne peut être levée ; environ 15 % du ciel est inaccessible un jour donné, mais aucune région ne l\'est plus de trois mois. La Lune (6°) et le bord éclairé de la Terre (10°) ajoutent de petites exclusions, non représentées (POG, contraintes de visibilité).' },
     roman:{ lo:54, hi:126, cap:'Roman peut viser entre 54° et 126° du Soleil, en tournant librement autour de la direction du Soleil (NASA Goddard, Observatory Technical Overview).' },
+    spitzer:{ lo:82.5, hi:120, cap:'Spitzer ne visait qu\'entre 82,5° et 120° du Soleil, pour garder le télescope à l\'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).' },
     gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
   };
   function sunVec(jd){
@@ -2575,6 +2801,9 @@ var Orbits = (function(){
       s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
     } else if (T_ORBIT[tid] === 'heo'){
       s += '<div class="isec"><h4>Une orbite, vue du nord de l\'écliptique</h4>'+cv('heo', 560, 400, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à la même échelle (l\'orbite de la Lune, à 384 400 km, sort du cadre). Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s\'arrêtent.</div></div>';
+      s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
+    } else if (T_ORBIT[tid] === 'helio'){
+      s += '<div class="isec"><h4>Toute la mission, vue du nord de l\'écliptique</h4>'+cv('helio', 560, 440, 'Trajectoire de '+name+' autour du Soleil, dans un repère qui tourne avec la Terre')+ctl+'<div class="cap">Le Soleil est au centre, le cercle en pointillé est l\'orbite de la Terre. Le repère tourne avec la Terre, qui reste donc fixe à droite : la courbe montre comment l\'observatoire prend du retard sur elle, année après année. Positions réelles (éphémérides JPL Horizons), une tous les dix jours, distances à l\'échelle.</div></div>';
       s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
     } else if (t.noTraj && DATA && !(DATA.bodies && DATA.bodies[tid])){   /* données déjà chargées et sans ce corps ; sinon on tranche après chargement */
       s += '<div class="isec"><h4>Trajectoire</h4><p class="cap">'+t.noTraj+'</p></div>';
@@ -2658,11 +2887,29 @@ var Orbits = (function(){
     g.stroke();
   }
 
+  /* orbite héliocentrique (Spitzer, Kepler) : repère tournant avec la Terre (Terre sur l'axe x), en UA */
+  function drawHelio(c, b, i){
+    var g = prep(c), W = c._w, H = c._h, ink = css('--ink'), mute = css('--mute'), rule = css('--rule-2'), n = b.x.length, j;
+    g.clearRect(0, 0, W, H);
+    var rm = 1.05; for (j=0;j<n;j++) rm = Math.max(rm, Math.hypot(b.x[j], b.y[j]));
+    var k = (Math.min(W, H)/2 - 34)/rm, cx = W/2, cy = H/2;
+    function X(p){ return cx + b.x[p]*k; } function Y(p){ return cy - b.y[p]*k; }
+    g.setLineDash([3, 4]); g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, k, 0, 6.2832); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#FFD21F'; g.beginPath(); g.arc(cx, cy, 9, 0, 6.2832); g.fill(); g.fillStyle = ink; label(g, 'Soleil', cx, cy + 24, true, 'center');
+    g.fillStyle = '#2C5E9E'; g.beginPath(); g.arc(cx + k, cy, 5, 0, 6.2832); g.fill(); g.fillStyle = ink; label(g, 'Terre', cx + k + 10, cy + 4, true);
+    g.strokeStyle = mute; g.lineWidth = 1; g.beginPath(); g.moveTo(cx + k + 12, cy - 14); g.lineTo(cx + k + 12, cy - 44); g.stroke();
+    g.fillStyle = mute; g.beginPath(); g.moveTo(cx + k + 12, cy - 50); g.lineTo(cx + k + 8, cy - 42); g.lineTo(cx + k + 16, cy - 42); g.fill(); label(g, 'sens du mouvement', cx + k + 12, cy - 58, false, 'center');
+    g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); for (j=0;j<n;j++){ if (j) g.lineTo(X(j), Y(j)); else g.moveTo(X(j), Y(j)); } g.stroke();
+    g.strokeStyle = '#DB5A14'; g.lineWidth = 2; g.beginPath(); for (j=0;j<=i;j++){ if (j) g.lineTo(X(j), Y(j)); else g.moveTo(X(j), Y(j)); } g.stroke();
+    g.fillStyle = '#FFD21F'; g.strokeStyle = ink; g.lineWidth = 1.5; g.beginPath(); g.arc(X(i), Y(i), 6, 0, 6.2832); g.fill(); g.stroke();
+    var bar = 0.5*k; g.strokeStyle = ink; g.lineWidth = 2; g.beginPath(); g.moveTo(12, H - 12); g.lineTo(12 + bar, H - 12); g.stroke(); g.fillStyle = mute; label(g, '0,5 UA (75 millions de km)', 18 + bar, H - 8);
+  }
+
   function start(root, tid){
     var my = ++run, playing = true, t0 = performance.now(), sim = 0, last = t0;
     var play = root.querySelector('[data-orb-play]'), read = root.querySelector('[data-orb-read]');
     if (play) play.onclick = function(){ playing = !playing; play.textContent = playing ? 'Pause' : 'Lecture'; };
-    var heo = root.querySelector('[data-orb="heo"]'), leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
+    var helio = root.querySelector('[data-orb="helio"]'), heo = root.querySelector('[data-orb="heo"]'), leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
     var body = null, sg = null, sday = 0, sink = '';
     if (heo) load().then(function(j){
       if (my !== run) return;
@@ -2672,6 +2919,18 @@ var Orbits = (function(){
       var n = body.x.length, dmin = 1e9, dmax = 0, imin = 0, imax = 0;
       for (var i=0;i<n;i++){ var d = Math.hypot(body.x[i], body.y[i], body.z[i]); if (d < dmin){ dmin = d; imin = i; } if (d > dmax){ dmax = d; imax = i; } }
       st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance au centre de la Terre', 'de '+fr(dmin*1000)+' à '+fr(dmax*1000)+' km'], ['Altitude au plus près', '≈ '+fr(dmin*1000 - 6371)+' km'], ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+j.fetched.split('-').reverse().join('/')]]);
+    });
+    if (helio) load().then(function(j){
+      if (my !== run) return;
+      body = j && j.bodies && j.bodies[tid];
+      var st = root.querySelector('[data-orb-stats]');
+      if (!body){ st.innerHTML = '<div class="cap">La trajectoire n\'a pas pu être chargée.</div>'; return; }
+      var n = body.x.length, smin = 9, smax = 0;
+      for (var i=0;i<n;i++){ var r = Math.hypot(body.x[i], body.y[i], body.z[i]); smin = Math.min(smin, r); smax = Math.max(smax, r); }
+      var de = body.d_earth, yrs = (n - 1)*body.step_days/365.25;
+      st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance à la Terre à la fin', OBS_NUM(de[n-1].toFixed(2).replace('.', ','))+' UA · ≈ '+fr(de[n-1]*149.6)+' millions de km'],
+                           ['Éloignement moyen', '≈ '+OBS_NUM((de[n-1]/yrs).toFixed(2).replace('.', ','))+' UA par an'], ['Distance au Soleil', 'de '+OBS_NUM(smin.toFixed(3).replace('.', ','))+' à '+OBS_NUM(smax.toFixed(3).replace('.', ','))+' UA'],
+                           ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+date(2440587.5 + Date.parse(j.fetched)/86400000)]]);
     });
     if (front) load().then(function(j){
       if (my !== run) return;
@@ -2763,12 +3022,13 @@ var Orbits = (function(){
       } else if (skyT > 0.55){ skyI++; skyT = 0; }
     }
     function frame(now){
-      var main = leo || front || heo; if (my !== run || !root.isConnected || !main || !main.isConnected) return;
+      var main = leo || front || heo || helio; if (my !== run || !root.isConnected || !main || !main.isConnected) return;
       if (sky && skyD) skyFrame(Math.min(0.1, (now - last)/1000));
       requestAnimationFrame(frame);
       var dt = Math.min(0.1, (now - last)/1000); last = now; if (playing) sim += dt;
       if (leo){ var tm = sim*9.5 % 95, dark = drawLeo(leo, tm); if (read) read.textContent = 'minute ' + Math.floor(tm) + ' sur 95, ' + (dark ? 'dans l\'ombre' : 'au soleil'); }
-      if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
+      if (body && helio){ var nq = body.x.length, iq = Math.floor(sim*6) % nq; drawHelio(helio, body, iq); if (read) read.textContent = date(body.jd0 + iq*body.step_days) + ' · ' + OBS_NUM(body.d_earth[iq].toFixed(2).replace('.', ',')) + ' ' + OBS_T('UA de la Terre'); }
+      else if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
       else if (body){ var n = body.x.length, i = Math.floor(sim*36/body.step_days) % n; drawL2(front, body, i, 'front'); drawL2(top, body, i, 'top'); if (read) read.textContent = date(body.jd0 + i*body.step_days); }
       if (scan){
         var g = prep(scan), W = scan._w, H = scan._h, ink = css('--ink');
@@ -2879,7 +3139,7 @@ var InstrumentsUI = (function(){
     var a = Math.log(min), b = Math.log(max);
     this.x = function(v){ v = Math.max(min, Math.min(max, v)); return x0 + (Math.log(v)-a)/(b-a)*(x1-x0); };
     this.min = min; this.max = max;
-    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30], out = [], last = -99;
+    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30,50,70,100,150,200], out = [], last = -99;
     for (var i=0;i<cand.length;i++){ var v = cand[i]; if (v < min*0.999 || v > max*1.001) continue; var px = this.x(v); if (px - last < 46) continue; out.push(v); last = px; }
     this.ticks = out;
     /* axe qui descend dans les rayons X : graduations avec leur unité (nm ou µm), et énergie en keV sur un axe purement X */
@@ -3102,10 +3362,10 @@ var InstrumentsUI = (function(){
   /* ---------- comparaison entre observatoires ---------- */
   /* champ le plus grand d'un observatoire au-delà de 1 200″ : la figure montre la pleine Lune (même règle que fovBlock) */
   function bigFovTele(tid){ var e = 0; INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); return e > 1200; }
-  var SAMP = { chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
+  var SAMP = { spitzer:{ irac:'1,2″', irs:'1,8″ à 5,1″', mips:'2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)' }, chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
                jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' }, roman:{ wfi:'0,11″', cgi:'sans objet' } };
-  var RES = { chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
+  var RES = { spitzer:{ irs:'64 à 128 (SL, LL) · ≈ 600 (SH, LH)', mips:'15 à 25 (mode SED)' }, chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 600 (grisme LW)', nirspec:'100 à 2 700', miri:'100 à 3 250', niriss:'150 à 700' },
               euclid:{ nisp:'> 480 (grismes rouges)' }, gaia:{ bprp:'prisme, 3–27 nm/px', rvs:'≈ 11 700' }, roman:{ wfi:'80 à 180 (prisme) · ≈ 460 à 890 (grisme)' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
@@ -3317,6 +3577,27 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       instr:{ name:'Instruments and carrier', desc:"The composite structure that holds the telescope and the two instruments: the wide-field camera (WFI) and the coronagraph. It reuses the technology of Webb's structure and runs near 213 K.", facts:["WFI: 18 detectors, ≈ 300 Mpx", "Coronagraph: technology demonstration", "Structure derived from Webb's, ≈ 213 K"] },
       bus:{ name:'Spacecraft bus', desc:"The hexagonal platform at the back: power, pointing, computers, memory and propulsion. Its six electronics bays also act as radiators.", facts:["≈ 4 m × 2 m, 3,800 kg", "Six reaction wheels", "Hydrazine: four tanks, 24 thrusters", "9 TB of memory"] },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
+    }
+  },
+  spitzer:{
+    agency:'NASA (JPL, Caltech)', launch:'Launched 25 August 2003, Delta II, Cape Canaveral',
+    sub:'Orbit around the Sun, trailing the Earth, infrared (2003–2020)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'4.5 m', dim:'4.5 m tall, Ø 2.1 m' },
+    desc:"To see in the infrared, a telescope must be colder than what it looks at. Spitzer carried liquid helium that held its 85 cm telescope at 5.6 K for almost six years. Instead of circling the Earth, it followed the Earth around the Sun, slowly drifting away: far from the Earth's heat, it also cooled by radiating into space. After the helium ran out in 2009, two of its cameras kept working until 2020.",
+    sourceNote:"NASA model (NASA 3D Resources repository), in metres. It has been re-segmented here into five assemblies from its geometry and materials; the primary mirror and the secondary support can be seen through the tube opening.",
+    refs:{ hb:'Spitzer Telescope Handbook, chapter 3 (instruments)', thb:'Spitzer Telescope Handbook (PDF, final version)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','4.5 m tall · Ø 2.1 m'],['Launch mass','861 kg (950 kg according to the JPL fact sheet)'],['Power','500 W solar array at launch · average consumption 375 W'],['Pointing','four reaction wheels in a pyramid, gyroscopes, star trackers · 0.03″ stability'],['Launch','25 August 2003, Delta II 7920H, Cape Canaveral'],['Builders','Lockheed Martin (spacecraft, solar array) · Ball Aerospace (cryogenic telescope assembly)']] },
+      { title:'Optics', rows:[['Design','Ritchey-Chrétien, two hyperbolic mirrors'],['Primary mirror','Ø 0.85 m · f/1.2 · central hole 0.32 m (14.2% of the area)'],['Focal length','10.2 m · f/12'],['Secondary','Ø 0.12 m, 0.888 m from the primary'],['Material','beryllium, mirrors and structure'],['Temperature','≈ 5.6 K (cold mission) · 27.5 K (warm mission)'],['Diffraction limit','5.5 µm']] },
+      { title:'Instruments', rows:[['IRAC','four-channel camera, 3.6 to 8 µm · 5.2′ field'],['IRS','spectrograph, 5.2 to 38 µm · R ≈ 64 to 600'],['MIPS','photometer at 24, 70 and 160 µm · spectra from 55 to 95 µm'],['Warm mission','IRAC at 3.6 and 4.5 µm only, from 2009 to 2020']] },
+      { title:'Orbit and data', rows:[['Orbit','around the Sun, trailing the Earth · drifts away by about 0.12 AU a year'],['Allowed pointing','between 82.5° and 120° from the Sun · ≈ 35% of the sky accessible at any one time'],['Downlink','X band, 2.2 Mbit/s · two contacts of about 45 min a day · 2 GB memory'],['Helium','ran out on 15 May 2009, after 5.75 years of cold mission'],['End of mission','30 January 2020']] }
+    ],
+    parts:{
+      cta:{ name:'Cryogenic telescope assembly (CTA)', desc:"The cryostat and the telescope. Spitzer was launched “warm”: only the instruments and the superfluid helium tank were cold at launch. The rest cooled down in space, by radiating to the sky and with the helium vapour. The outer shell gets down to 34 K by radiation alone.", facts:["≈ 350 L of superfluid helium at launch, at ≈ 1.2 K","“Warm” launch: a smaller cryostat than those of IRAS and ISO","Outer shell at ≈ 34 K by radiation","Helium boil-off: ≈ 22 g a day","Helium ran out on 15 May 2009"] },
+      tele:{ name:'Telescope', desc:"An 85 cm telescope made entirely of beryllium, mirrors and structure, so that it does not warp as it cools. A mechanism moves the secondary mirror to focus. The three instruments share the focal plane, in a chamber behind the primary mirror.", facts:["Ø 0.85 m, 10.2 m focal length (f/12)","12 cm secondary, 0.89 m from the primary","Beryllium","≈ 5.6 K during the cold mission"] },
+      bus:{ name:'Spacecraft bus', desc:"The octagonal module below the telescope, warm, built by Lockheed Martin. It carries the electronics, the four reaction wheels and the star trackers. Blankets and thermal shields limit the heat rising towards the cryostat.", facts:["Four reaction wheels in a pyramid","Attitude control gas: 15.59 kg of nitrogen at launch","2 GB memory"] },
+      hga:{ name:'High-gain antenna', desc:"A fixed X-band antenna under the spacecraft bus. The recorded data were sent down once or twice a day, through NASA's Deep Space Network.", facts:["2.2 Mbit/s","Two contacts of about 45 min a day","≈ 1.1 GB of data a day"] },
+      solar:{ name:'Solar array and sunshield', desc:"Always turned towards the Sun, it provides power and keeps the telescope in shade. It is cantilevered from the spacecraft bus, with no contact with the cold cryostat.", facts:["500 W at launch","Attached to the spacecraft bus only"] }
     }
   },
   chandra:{
@@ -3534,6 +3815,35 @@ EN_INST.roman = {
       docs:["Coronagraph (IPAC)"] }
   }
 };
+EN_INST.spitzer = {
+  summary:"Three instruments shared the focal plane, in a helium-cooled chamber behind the primary mirror: IRAC, a four-channel camera in the near and mid infrared, IRS, a spectrograph from 5 to 38 µm, and MIPS, a far-infrared photometer reaching 160 µm. After the helium ran out in 2009, only IRAC's two shortest channels kept working.",
+  archives:[["Spitzer Heritage Archive (IRSA)","Every observation of the mission, raw and processed data, at IRSA (Caltech/IPAC)."],["Spitzer Enhanced Imaging Products","Uniform IRAC and MIPS 24 µm mosaics over the whole mission, and the source catalogue drawn from them."],["Spitzer documentation","Instrument and telescope handbooks, at IRSA."]],
+  instruments:{
+    irac:{ kind:"Near- and mid-infrared camera",
+      use:"Photographing distant galaxies, clouds where stars are born and transiting exoplanets, through the dust that blocks visible light.",
+      summary:"Four channels imaged at the same time on two adjacent fields: dichroic beamsplitters send 3.6 and 5.8 µm to one, 4.5 and 8.0 µm to the other. Each channel has its own 256 × 256 pixel array.",
+      specs:[["Channels","3.6 · 4.5 · 5.8 · 8.0 µm"],["Detectors","InSb (3.6 and 4.5 µm) · Si:As (5.8 and 8.0 µm) · 256 × 256 px"],["Pixels","1.2″"],["Field","5.2′ × 5.2′ per channel, two adjacent fields"],["Warm mission (2009–2020)","3.6 and 4.5 µm only"]],
+      filtersTitle:"Channels",
+      products:[["BCD (_bcd.fits)","calibrated image of a single exposure, in MJy/sr"],["PBCD (_maic.fits)","mosaic of one observation, assembled by the pipeline"],["SEIP","uniform mosaics of the whole mission and a source catalogue (Spitzer Enhanced Imaging Products)"]],
+      example:{ title:"FITS header of an IRAC BCD image (excerpt)", caption:"Real keywords of Spitzer products; the values are an example." },
+      code:{ title:"Querying IRSA with astroquery" },
+      notes:["During the warm mission, the 3.6 µm detector was used to follow transiting exoplanets with very high stability: this is how it tracked the planets of the TRAPPIST-1 system in 2016 and 2017."],
+      docs:["Spitzer Telescope Handbook"] },
+    irs:{ kind:"Mid-infrared spectrograph",
+      use:"Splitting infrared light into a spectrum, to read the make-up of dust, ices and molecules around young stars and in galaxies.",
+      summary:"Four modules, each with its own 128 × 128 pixel array: two low-resolution long-slit modules (SL and LL) and two high-resolution echelle modules (SH and LH). Two small imaging windows (“peak-up”) were used to centre the source in the slit.",
+      specs:[["Modules","SL 5.2–14.5 µm · LL 14.0–38.0 µm (R ≈ 64–128) · SH 9.9–19.6 µm · LH 18.7–37.2 µm (R ≈ 600)"],["Slits","SL 3.7″ × 57″ · LL 10.6″ × 168″ · SH 4.7″ × 11.3″ · LH 11.1″ × 22.3″"],["Detectors","128 × 128 px per module"],["Centring imager","13.3–18.7 µm and 18.5–26.0 µm, 1′ × 1.2′ field"],["Warm mission","out of service"]],
+      products:[["BCD (_bcd.fits)","calibrated 2D spectral image"],["_spect.tbl","extracted spectrum, wavelength and flux (Jy)"]],
+      docs:["Spitzer Telescope Handbook"] },
+    mips:{ kind:"Far-infrared photometer",
+      use:"Measuring the heat of cold dust: discs around stars, galaxies forming stars at a furious pace, interstellar clouds.",
+      summary:"Three arrays: Si:As at 24 µm, gallium-doped germanium at 70 µm and stressed germanium at 160 µm. A small moving mirror scanned the sky across the detectors; a spectral mode (SED) also gave a coarse spectrum from 55 to 95 µm.",
+      specs:[["Bands","24 µm (21.5–26.2) · 70 µm (62.5–81.5) · 160 µm (139.5–174.5)"],["Detectors","Si:As 128 × 128 · Ge:Ga 32 × 32 · stressed Ge:Ga"],["Pixels","2.55″ · 5.2″ or 9.98″ · 16–18″"],["Field","5.4′ × 5.4′ · 5.2′ × 2.6′ · 0.53′ × 5.33′"],["SED mode","55–95 µm, R ≈ 15–25"],["Warm mission","out of service"]],
+      filtersTitle:"Bands",
+      products:[["BCD (_bcd.fits)","calibrated image of a single exposure"],["PBCD (_maic.fits)","mosaic of one observation"],["SEIP","uniform 24 µm mosaics (Spitzer Enhanced Imaging Products)"]],
+      docs:["Spitzer Telescope Handbook"] }
+  }
+};
 EN_INST.chandra = {
   summary:"Two cameras take turns at the focus, 10 m behind the mirrors: ACIS, a CCD mosaic that also measures the energy of each photon, and HRC, a microchannel-plate camera for the sharpest images. Two transmission gratings, HETG and LETG, can be moved in behind the mirrors to spread the X-rays into very detailed spectra. Chandra counts photons one by one: its basic data are event lists (position, time, energy), not images.",
   archives:[["Chandra Data Archive (ChaSeR)","Search and download of observations, at the Chandra X-ray Center."],["Chandra Source Catalog 2.1","Catalogue of 407,806 X-ray sources, from public observations up to the end of 2021."],["CIAO","Analysis software for Chandra data."],["HEASARC","NASA's high-energy archive, which also gives access to Chandra."]],
@@ -3619,9 +3929,9 @@ var EN_WORDS = {
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
   "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
-  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
+  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "3,6 µm":"3.6 µm", "4,5 µm":"4.5 µm", "5,8 µm":"5.8 µm", "8,0 µm":"8.0 µm", "3,6 et 5,8 µm":"3.6 and 5.8 µm", "4,5 et 8,0 µm":"4.5 and 8.0 µm", "24 µm":"24 µm", "Ge:Ga contraint":"stressed Ge:Ga", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
-var EN_CODE = [["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+var EN_CODE = [["# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)","# images from the Spitzer Enhanced Imaging Products (IRAC and MIPS 24 µm)"],["# catalogue de sources tiré des mêmes mosaïques","# source catalogue drawn from the same mosaics"],["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
 
@@ -3647,6 +3957,14 @@ var EN_OPTICS = {
     specs:[['Design','2 three-mirror anastigmats'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Mirrors','10 in all, in silicon carbide']],
     links:['optical bench','focal plane','viewing apertures'],
     fp:{ labs:[['Gaia focal plane','106 CCDs of 4500 × 1966 px, 10 × 30 µm']], key:['monitoring (basic angle, wavefront)','sky mapper','astrometric field','blue photometer','red photometer','RVS spectrometer'], note:'Stars cross the focal plane from left to right as the spacecraft turns: detection, then astrometry, photometry and finally spectroscopy. 17 strips and 7 rows; the spectrometer occupies rows 4 to 7, and a wavefront sensor replaces the last astrometric CCD of row 4 (Gaia DR3 documentation). The position of the three other monitoring CCDs, in the first strip, is indicative.' } },
+  spitzer:{ title:'A beryllium Ritchey-Chrétien, cooled by helium', scale:'Drawn to scale, from the prescription in the Spitzer Telescope Handbook (table 3.3): curvature and diameter of the primary, central hole, diameter and position of the secondary, position of the focus. The instrument chamber, dashed, is indicative.',
+    steps:['Infrared light travels down the tube to the 85 cm concave primary mirror, which is very fast (f/1.2).',
+           'The primary sends it up to the 12 cm convex secondary, 89 cm above; a mechanism can move it to focus.',
+           'The secondary sends the beam back through the 32 cm central hole of the primary. The focus lies 44 cm behind the primary, in the instrument chamber that sits on the helium tank.',
+           'IRAC, IRS and MIPS share this 32′ wide focal plane. The whole telescope is made of beryllium and was held near 5.6 K: otherwise its own heat would have blinded the detectors.'],
+    specs:[['Design','Ritchey-Chrétien'],['Aperture','0.85 m · central hole 0.32 m'],['Focal length','10.2 m · f/12'],['Primary','f/1.2 · radius of curvature 2.04 m'],['Primary–secondary spacing','0.888 m'],['Field','32′ across'],['Range','3 to 180 µm']],
+    links:['telescope','instrument chamber'],
+    fp:{ labs:[['IRAC','two 5.2′ fields, four 256 × 256 px arrays'],['MIPS 24 µm','5.4′, 128 × 128 px'],['MIPS 70 µm','5.2′ × 2.6′, 32 × 32 px'],['MIPS 160 µm','0.53′ × 5.33′'],['IRS, LL slit','10.6″ × 168″']], note:'Fields projected onto the telescope focal plane, from each instrument\'s field and the 10.2 m focal length (1′ ≈ 2.97 mm); IRAC and MIPS have their own optics and smaller detectors. The instruments are brought together here to compare their size; the gap between the two IRAC fields is indicative.' } },
   chandra:{ title:'Grazing-incidence mirrors: four Wolter type I pairs', scale:'Drawn to scale, with the same scale on both axes: diameters of the four pairs (1.23 to 0.65 m), mirror length (84 cm) and focal distance (10.05 m) from the Proposers\' Observatory Guide (POG, chapter 4). The slope of each mirror is derived from its exit angle. The optical bench tube, dashed, is indicative.',
     steps:['X-rays pass through matter instead of reflecting off it. They only bounce if they skim a very smooth surface, at an angle of less than a degree.',
            'Each ray first grazes a paraboloid, then a hyperboloid: two grazing reflections are enough to form a sharp image. Four nested pairs, 1.23 to 0.65 m across, multiply the collecting area.',
@@ -3668,6 +3986,10 @@ var EN_ORBITS = {
     notes:['At L2 the Sun, the Earth and the Moon always stay on the same side: one sunshield is enough to block all three.','The orbit is wide enough never to pass through the shadow of the Earth or the Moon: the solar array is always lit.','The position is unstable. A small thruster burn, about every three weeks, keeps Webb from drifting away.'] },
   euclid:{ sum:'Euclid also orbits L2, on a large orbit that takes about six months. It keeps its sunshield facing the Sun and scans the sky in strips.',
     notes:['The thermal environment there is very stable, which is essential for measuring galaxy shapes to one part in a thousand.','The telescope always observes roughly at right angles to the direction of the Sun: the accessible zone sweeps round the sky in a year.','Station-keeping manoeuvres take place about every four weeks.'] },
+  spitzer:{ sum:'Spitzer did not orbit the Earth: it orbited the Sun, on an orbit slightly slower than the Earth\'s. It therefore stayed in the Earth\'s wake, drifting away by about 0.12 AU a year.',
+    notes:['Far from the Earth, which radiates a lot of infrared, the telescope cooled better and the helium lasted longer.',
+           'The Sun and the Earth stay roughly on the same side: the solar array shaded the whole telescope. Spitzer only pointed between 82.5° and 120° from the Sun.',
+           'The farther it drifted, the less data it could send (Spaceflight Now, May 2019). The mission ended on 30 January 2020.'] },
   chandra:{ sum:'Chandra follows a very elongated orbit around the Earth: it passes a few thousand kilometres away at its closest, then climbs to about 142,000 km, more than a third of the way to the Moon. One orbit takes 63.5 hours.',
     notes:['About 70% of the time Chandra is above the radiation belts. Observations stop while it crosses these belts, which would damage the detectors.',
            'Far from the Earth, long uninterrupted exposures are possible, unlike Hubble, which the Earth blocks on every orbit.',
@@ -3729,7 +4051,7 @@ var EN_UI = {
   "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
   "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",
   "Fiche":"Overview", "Pièces":"Parts", "Instruments et données":"Instruments and data", "Mission et données":"Mission and data", "Voir les instruments et les données":"See the instruments and data", "Voir la mission et les données":"See the mission and data", "Mission et traitements":"Mission and processing", "Déroulé, exploitation, chaîne de traitement":"Timeline, operations, processing pipeline",
-  "Miroir primaire":"Primary mirror", "Focale":"Focal length", "Rayons X":"X-rays", "UV et visible":"UV and visible", "Infrarouge":"Infrared", "Astrométrie":"Astrometry", "UV, visible":"UV, visible", "Astrom.":"Astrom.", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
+  "Miroir primaire":"Primary mirror", "Focale":"Focal length", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "15 à 25 (mode SED)":"15 to 25 (SED mode)", "64 à 128 (SL, LL) · ≈ 600 (SH, LH)":"64 to 128 (SL, LL) · ≈ 600 (SH, LH)", "1,8″ à 5,1″":"1.8″ to 5.1″", "2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)":"2.55″ (24 µm) · 9.98″ (70 µm) · 16–18″ (160 µm)", "Toute la mission, vue du nord de l'écliptique":"The whole mission, seen from north of the ecliptic", "Distance à la Terre à la fin":"Distance from the Earth at the end", "Éloignement moyen":"Average drift", "Distance au Soleil":"Distance from the Sun", "sens du mouvement":"direction of motion", "0,5 UA (75 millions de km)":"0.5 AU (75 million km)", "UA de la Terre":"AU from the Earth", "tourne autour du Soleil":"orbits the Sun", "dans le sillage de la Terre,":"in the Earth's wake,", "s'éloigne de ≈ 0,12 UA par an.":"drifting away by ≈ 0.12 AU a year.", "Schéma de principe, vu du nord":"Schematic, seen from north", "de l'écliptique.":"of the ecliptic.", "Le Soleil est au centre, le cercle en pointillé est l'orbite de la Terre. Le repère tourne avec la Terre, qui reste donc fixe à droite : la courbe montre comment l'observatoire prend du retard sur elle, année après année. Positions réelles (éphémérides JPL Horizons), une tous les dix jours, distances à l'échelle.":"The Sun is at the centre, the dashed circle is the Earth's orbit. The frame turns with the Earth, which therefore stays fixed on the right: the curve shows how the observatory falls behind it, year after year. Real positions (JPL Horizons ephemerides), one every ten days, distances to scale.", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006).", "Chambre des instruments":"Instrument chamber", "Secondaire, 0,12 m":"Secondary, 0.12 m", "Miroir primaire, 0,85 m":"Primary mirror, 0.85 m", "Schéma optique de Spitzer, à l'échelle":"Spitzer optical diagram, to scale", "Orbite autour du Soleil, dans le sillage de la Terre":"Orbit around the Sun, trailing the Earth", "Ensemble cryogénique (CTA)":"Cryogenic telescope assembly (CTA)", "Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1":"Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1", "Rayons X":"X-rays", "UV et visible":"UV and visible", "Infrarouge":"Infrared", "Astrométrie":"Astrometry", "UV, visible":"UV, visible", "Astrom.":"Astrom.", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
   "Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s'assemblent.":"Click a part in the 3D view or in the list. The “Explode” slider pulls them apart to show how they fit together.",
   "Les pièces principales de l'observatoire.":"The main parts of the observatory.", "Voir le trajet de la lumière":"See the light path",
   "Vue 3D indisponible":"3D view unavailable", "Ce navigateur n'a pas pu ouvrir WebGL. Les fiches et les instruments restent consultables.":"This browser could not start WebGL. The overviews and instrument pages still work.",
@@ -3878,7 +4200,7 @@ var EN_RULES = [
   [/^(.+)\. Trajet de la lumière, filtres, exemples de données, accès aux archives\.$/, "$1. Light path, filters, data examples, archive access."],
   [/^Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments \((.+)\), exemples de données, accès aux archives\.$/, "Timeline and processing pipeline, orbit, light path, instruments ($1), data examples, archive access."],
   [/^JPL Horizons, objet (\S+), récupéré le (\d\d)\/(\d\d)\/(\d{4})$/, "JPL Horizons, object $1, retrieved $4-$3-$2"],
-  [/^(\d\d)\/(\d\d)\/(\d{4}) au (\d\d)\/(\d\d)\/(\d{4})$/, "$3-$2-$1 to $6-$5-$4"], [/^de ([\d,]+) à ([\d,]+) km$/, "from $1 to $2 km"],
+  [/^(\d\d)\/(\d\d)\/(\d{4}) au (\d\d)\/(\d\d)\/(\d{4})$/, "$3-$2-$1 to $6-$5-$4"], [/^de ([\d,]+) à ([\d,]+) km$/, "from $1 to $2 km"], [/^de ([\d.,]+) à ([\d.,]+) UA$/, "from $1 to $2 AU"], [/^([\d.,]+) UA · ≈ ([\d.,\s]+) millions de km$/, "$1 AU · ≈ $2 million km"], [/^≈ ([\d.,]+) UA par an$/, "≈ $1 AU a year"], [/^Trajectoire de (.+) autour du Soleil, dans un repère qui tourne avec la Terre$/, "Trajectory of $1 around the Sun, in a frame turning with the Earth"],
   [/^écart latéral ± (.+)$/, "sideways excursion ± $1"], [/^hors écliptique ± (.+)$/, "out of the ecliptic ± $1"],
   [/^([\d.,\s]+) dans le fichier, ([\d.,\s]+) tracés( \(moyenne par paquets\))?$/, function(_, a, b, c){ return OBS_NUM(a) + " in the file, " + OBS_NUM(b) + " plotted" + (c ? " (binned average)" : ""); }],
   [/^([\d.,\s]+) dans l'intervalle, ([\d.,\s]+) tracés \(somme par paquets de (\d+)\)$/, function(_, a, b, c){ return OBS_NUM(a) + " in the range, " + OBS_NUM(b) + " plotted (summed in groups of " + c + ")"; }],
@@ -3925,7 +4247,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
       if (it.example && q.example){ it.example.title = q.example.title; it.example.caption = q.example.caption; if (q.example.text) it.example.text = q.example.text; }
       if (it.code){ if (q.code) it.code.title = q.code.title; EN_CODE.forEach(function(r){ it.code.text = it.code.text.split(r[0]).join(r[1]); }); }
       if (q.docs) it.docs.forEach(function(x, i){ if (q.docs[i]) x.l = q.docs[i]; });
-      (it.filters || []).forEach(function(f){ f.note = W(f.note); f.g = W(f.g); });
+      (it.filters || []).forEach(function(f){ f.n = W(f.n); f.note = W(f.note); f.g = W(f.g); });
       (it.bands || []).forEach(function(b){ b.l = W(b.l); });
       (it.fov || []).forEach(function(b){ b.l = W(b.l); });
     });
@@ -4708,6 +5030,22 @@ function orbitSvg(t){
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
   var gone = !!t.ended;
+  if (t.orbit === 'helio'){
+    /* orbite autour du Soleil dans le sillage de la Terre (Spitzer, Kepler) : schéma de principe, Soleil au centre */
+    var cx = 64, cy = 64, r = 50, ae = -0.35, ao = 0.55;
+    function pt(a){ return (cx + r*Math.cos(a)).toFixed(1) + ' ' + (cy + r*Math.sin(a)).toFixed(1); }
+    return '<svg viewBox="0 0 340 136" role="img" aria-label="Orbite autour du Soleil, dans le sillage de la Terre">' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#98A1A7" stroke-dasharray="3 3"/>' +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#FFD21F"/><text x="' + cx + '" y="' + (cy + 22) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +
+      '<path d="M' + pt(ae + 0.05) + ' A' + r + ' ' + r + ' 0 0 1 ' + pt(ao - 0.05) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+      '<circle cx="' + (cx + r*Math.cos(ae)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ae)).toFixed(1) + '" r="5" fill="#2C5E9E"/><text x="' + (cx + r*Math.cos(ae)).toFixed(1) + '" y="' + (cy + r*Math.sin(ae) - 10).toFixed(1) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+      '<circle cx="' + (cx + r*Math.cos(ao)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ao)).toFixed(1) + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      '<text x="150" y="44" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
+      '<text x="150" y="60" fill="#3A4147" font-size="11" ' + F + '>tourne autour du Soleil</text>' +
+      '<text x="150" y="74" fill="#3A4147" font-size="11" ' + F + '>dans le sillage de la Terre,</text>' +
+      '<text x="150" y="88" fill="#3A4147" font-size="11" ' + F + '>' + esc((t.helio && t.helio.drift) || '') + '.</text>' +
+      '<text x="150" y="110" fill="#667077" font-size="11" ' + F + '>Schéma de principe, vu du nord</text><text x="150" y="124" fill="#667077" font-size="11" ' + F + '>de l\'écliptique.</text></svg>';
+  }
   if (t.orbit === 'heo'){
     /* orbite terrestre très elliptique (Chandra) : périgée ≈ 6 680 km, apogée ≈ 142 000 km d'altitude ; Terre, orbite et Lune à l'échelle */
     var k = 250/384400, ex = 40, ey = 60, R = 6371, rp = R + 6680, ra = R + 142000, a2 = (rp + ra)/2, e2 = (ra - rp)/(ra + rp), b2 = a2*Math.sqrt(1 - e2*e2);
@@ -4798,6 +5136,15 @@ function missionHtml(t){
   return h;
 }
 window.OBS_MISSION = function(tid){ return missionHtml(tele(tid)); };
+/* rangée d'onglets plus large que l'écran : elle défile, se centre sur l'onglet actif, et un fondu au bord signale ce qui dépasse */
+function edgeScroll(el){
+  if (!el) return;
+  function marks(){ var over = el.scrollWidth > el.clientWidth + 1; el.classList.toggle('fade-r', over && el.scrollLeft + el.clientWidth < el.scrollWidth - 2); el.classList.toggle('fade-l', over && el.scrollLeft > 2); }
+  var a = el.querySelector('[aria-selected="true"], .on');
+  if (a && el.scrollWidth > el.clientWidth) el.scrollLeft = Math.max(0, a.offsetLeft - (el.clientWidth - a.offsetWidth)/2);
+  if (!el._edge){ el._edge = true; el.addEventListener('scroll', marks, { passive:true }); window.addEventListener('resize', marks); }
+  marks();
+}
 function renderTabs(){
   /* onglets groupés par domaine spectral (DOMAINS, teleGroups dans data-tele.js) ; le nom du groupe est écrit au-dessus de son premier onglet */
   var h = '';
@@ -4809,6 +5156,7 @@ function renderTabs(){
   });
   h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
   $('tabs').innerHTML = h;
+  edgeScroll($('tabs'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
   var ll = OBS_LANG === 'en' ? 'Lire en français' : 'Read in English';
@@ -4875,7 +5223,7 @@ function renderHud(){
 function renderInst(keepScroll){
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav;
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);

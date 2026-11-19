@@ -165,6 +165,35 @@ EN_INST.roman = {
       docs:["Coronagraph (IPAC)"] }
   }
 };
+EN_INST.spitzer = {
+  summary:"Three instruments shared the focal plane, in a helium-cooled chamber behind the primary mirror: IRAC, a four-channel camera in the near and mid infrared, IRS, a spectrograph from 5 to 38 µm, and MIPS, a far-infrared photometer reaching 160 µm. After the helium ran out in 2009, only IRAC's two shortest channels kept working.",
+  archives:[["Spitzer Heritage Archive (IRSA)","Every observation of the mission, raw and processed data, at IRSA (Caltech/IPAC)."],["Spitzer Enhanced Imaging Products","Uniform IRAC and MIPS 24 µm mosaics over the whole mission, and the source catalogue drawn from them."],["Spitzer documentation","Instrument and telescope handbooks, at IRSA."]],
+  instruments:{
+    irac:{ kind:"Near- and mid-infrared camera",
+      use:"Photographing distant galaxies, clouds where stars are born and transiting exoplanets, through the dust that blocks visible light.",
+      summary:"Four channels imaged at the same time on two adjacent fields: dichroic beamsplitters send 3.6 and 5.8 µm to one, 4.5 and 8.0 µm to the other. Each channel has its own 256 × 256 pixel array.",
+      specs:[["Channels","3.6 · 4.5 · 5.8 · 8.0 µm"],["Detectors","InSb (3.6 and 4.5 µm) · Si:As (5.8 and 8.0 µm) · 256 × 256 px"],["Pixels","1.2″"],["Field","5.2′ × 5.2′ per channel, two adjacent fields"],["Warm mission (2009–2020)","3.6 and 4.5 µm only"]],
+      filtersTitle:"Channels",
+      products:[["BCD (_bcd.fits)","calibrated image of a single exposure, in MJy/sr"],["PBCD (_maic.fits)","mosaic of one observation, assembled by the pipeline"],["SEIP","uniform mosaics of the whole mission and a source catalogue (Spitzer Enhanced Imaging Products)"]],
+      example:{ title:"FITS header of an IRAC BCD image (excerpt)", caption:"Real keywords of Spitzer products; the values are an example." },
+      code:{ title:"Querying IRSA with astroquery" },
+      notes:["During the warm mission, the 3.6 µm detector was used to follow transiting exoplanets with very high stability: this is how it tracked the planets of the TRAPPIST-1 system in 2016 and 2017."],
+      docs:["Spitzer Telescope Handbook"] },
+    irs:{ kind:"Mid-infrared spectrograph",
+      use:"Splitting infrared light into a spectrum, to read the make-up of dust, ices and molecules around young stars and in galaxies.",
+      summary:"Four modules, each with its own 128 × 128 pixel array: two low-resolution long-slit modules (SL and LL) and two high-resolution echelle modules (SH and LH). Two small imaging windows (“peak-up”) were used to centre the source in the slit.",
+      specs:[["Modules","SL 5.2–14.5 µm · LL 14.0–38.0 µm (R ≈ 64–128) · SH 9.9–19.6 µm · LH 18.7–37.2 µm (R ≈ 600)"],["Slits","SL 3.7″ × 57″ · LL 10.6″ × 168″ · SH 4.7″ × 11.3″ · LH 11.1″ × 22.3″"],["Detectors","128 × 128 px per module"],["Centring imager","13.3–18.7 µm and 18.5–26.0 µm, 1′ × 1.2′ field"],["Warm mission","out of service"]],
+      products:[["BCD (_bcd.fits)","calibrated 2D spectral image"],["_spect.tbl","extracted spectrum, wavelength and flux (Jy)"]],
+      docs:["Spitzer Telescope Handbook"] },
+    mips:{ kind:"Far-infrared photometer",
+      use:"Measuring the heat of cold dust: discs around stars, galaxies forming stars at a furious pace, interstellar clouds.",
+      summary:"Three arrays: Si:As at 24 µm, gallium-doped germanium at 70 µm and stressed germanium at 160 µm. A small moving mirror scanned the sky across the detectors; a spectral mode (SED) also gave a coarse spectrum from 55 to 95 µm.",
+      specs:[["Bands","24 µm (21.5–26.2) · 70 µm (62.5–81.5) · 160 µm (139.5–174.5)"],["Detectors","Si:As 128 × 128 · Ge:Ga 32 × 32 · stressed Ge:Ga"],["Pixels","2.55″ · 5.2″ or 9.98″ · 16–18″"],["Field","5.4′ × 5.4′ · 5.2′ × 2.6′ · 0.53′ × 5.33′"],["SED mode","55–95 µm, R ≈ 15–25"],["Warm mission","out of service"]],
+      filtersTitle:"Bands",
+      products:[["BCD (_bcd.fits)","calibrated image of a single exposure"],["PBCD (_maic.fits)","mosaic of one observation"],["SEIP","uniform 24 µm mosaics (Spitzer Enhanced Imaging Products)"]],
+      docs:["Spitzer Telescope Handbook"] }
+  }
+};
 EN_INST.chandra = {
   summary:"Two cameras take turns at the focus, 10 m behind the mirrors: ACIS, a CCD mosaic that also measures the energy of each photon, and HRC, a microchannel-plate camera for the sharpest images. Two transmission gratings, HETG and LETG, can be moved in behind the mirrors to spread the X-rays into very detailed spectra. Chandra counts photons one by one: its basic data are event lists (position, time, energy), not images.",
   archives:[["Chandra Data Archive (ChaSeR)","Search and download of observations, at the Chandra X-ray Center."],["Chandra Source Catalog 2.1","Catalogue of 407,806 X-ray sources, from public observations up to the end of 2021."],["CIAO","Analysis software for Chandra data."],["HEASARC","NASA's high-energy archive, which also gives access to Chandra."]],
@@ -250,8 +279,8 @@ var EN_WORDS = {
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
   "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
-  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
+  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "3,6 µm":"3.6 µm", "4,5 µm":"4.5 µm", "5,8 µm":"5.8 µm", "8,0 µm":"8.0 µm", "3,6 et 5,8 µm":"3.6 and 5.8 µm", "4,5 et 8,0 µm":"4.5 and 8.0 µm", "24 µm":"24 µm", "Ge:Ga contraint":"stressed Ge:Ga", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
-var EN_CODE = [["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+var EN_CODE = [["# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)","# images from the Spitzer Enhanced Imaging Products (IRAC and MIPS 24 µm)"],["# catalogue de sources tiré des mêmes mosaïques","# source catalogue drawn from the same mosaics"],["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];

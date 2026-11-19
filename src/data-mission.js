@@ -173,6 +173,42 @@ var MISSION = {
     rel:null
   },
 
+  spitzer: {
+    checked:'2026-11-19',
+    refs:{
+      seip:{ t:'Spitzer Enhanced Imaging Products', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html' }
+    },
+    intro:["Spitzer, la dernière des quatre « grands observatoires » de la NASA, était géré par le JPL. Le Spitzer Science Center, au Caltech, choisissait les observations, traitait les données et les distribuait ; l'archive est aujourd'hui à l'IRSA, au Caltech/IPAC.",
+           "Spitzer, the last of NASA's four Great Observatories, was managed by JPL. The Spitzer Science Center, at Caltech, selected the observations, processed the data and distributed them; the archive is now at IRSA, at Caltech/IPAC."],
+    phases:[
+      ['25 août 2003','25 Aug 2003','Lancement','Launch',"Une fusée Delta II 7920H le lance depuis Cap Canaveral sur une orbite autour du Soleil, dans le sillage de la Terre.","A Delta II 7920H rocket launches it from Cape Canaveral into an orbit around the Sun, trailing the Earth.",['qf','mo']],
+      ['oct. 2003','Oct 2003','Télescope froid','Telescope cold',"Le télescope, lancé à température ambiante, atteint 5,6 K en 41 jours, en rayonnant vers l'espace et grâce à la vapeur d'hélium.","The telescope, launched at room temperature, reaches 5.6 K in 41 days, by radiating to space and with the helium vapour.",'w04'],
+      ['1er déc. 2003','1 Dec 2003','Début des observations','Science begins',"Après 63 jours de mise en service et 35 jours de vérification scientifique, les observations courantes commencent. En décembre, SIRTF prend le nom de Spitzer.","After 63 days of in-orbit checkout and 35 days of science verification, routine observations begin. In December, SIRTF is renamed Spitzer.",'thb'],
+      ['15 mai 2009','15 May 2009','Fin de l\'hélium','Helium runs out',"L'hélium s'épuise après 5,75 ans, cinq mois de plus que prévu : fin de la mission froide.","The helium runs out after 5.75 years, five months longer than expected: end of the cold mission.",['mo','qf']],
+      ['27 juil. 2009','27 Jul 2009','Mission chaude','Warm mission',"Le télescope se stabilise vers 28 K. Les voies à 3,6 et 4,5 µm d'IRAC continuent d'observer.","The telescope settles near 28 K. IRAC's 3.6 and 4.5 µm channels keep observing.",['mo','hb']],
+      ['30 janv. 2020','30 Jan 2020','Fin de mission','End of mission',"Le satellite est mis en sommeil sur commande du sol, après plus de seize ans dans l'espace.","The spacecraft is put to sleep by command from the ground, after more than sixteen years in space.",['thb','mo']]
+    ],
+    ops:[
+      ['Programme','Programme','NASA, Jet Propulsion Laboratory','NASA, Jet Propulsion Laboratory','qf'],
+      ['Science et données','Science and data','Spitzer Science Center (Caltech)','Spitzer Science Center (Caltech)','w04'],
+      ['Liaison','Downlink','deux contacts par jour, ≈ 1,1 Go de données par jour','two contacts a day, ≈ 1.1 GB of data a day','w04'],
+      ['Grands programmes','Large programmes','32 programmes Legacy, 8 691 h, pendant la mission froide · 42 programmes d\'exploration, 38 412 h, pendant la mission chaude','32 Legacy programmes, 8,691 h, during the cold mission · 42 exploration programmes, 38,412 h, during the warm mission','thb'],
+      ['Archive','Archive','Spitzer Heritage Archive, à l\'IRSA','Spitzer Heritage Archive, at IRSA','thb']
+    ],
+    chain:{
+      intro:["Le Spitzer Science Center rangeait les produits en niveaux, chaque niveau tiré du précédent par les pipelines de la mission.",
+             "The Spitzer Science Center organised the products into levels, each level derived from the previous one by the mission pipelines."],
+      steps:[
+        { lv:'L0', n:['Données brutes','Raw data'], x:['Les données non traitées, mises au format FITS.','The unprocessed data, packaged in FITS format.'], r:'thb' },
+        { lv:'L1', n:['BCD','BCD'], x:['Données de base calibrées : une image par pose, en MJy/sr, avec son image d\'incertitude et son masque.','Basic Calibrated Data: one image per exposure, in MJy/sr, with its uncertainty image and its mask.'], r:'thb' },
+        { lv:'L2', n:['Post-BCD','Post-BCD'], x:['Produits de plus haut niveau : mosaïques, poses additionnées, spectres extraits.','Higher-level products: mosaics, co-added exposures, extracted spectra.'], r:'thb' },
+        { lv:'L3', n:['Produits améliorés','Enhanced products'], x:['Après la mission : mosaïques homogènes d\'IRAC et de MIPS 24 µm sur toutes les observations, et leur catalogue de sources (SEIP).','After the mission: uniform IRAC and MIPS 24 µm mosaics of all the observations, and their source catalogue (SEIP).'], r:'seip' }
+      ]
+    },
+    rel:[
+      ['nov. 2009','Nov 2009',['Spitzer Heritage Archive','Spitzer Heritage Archive'],"L'interface web de l'archive sert aussi les données propriétaires et devient l'archive de Spitzer.","The archive's web interface also serves proprietary data and becomes the Spitzer archive.",'thb',false]
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

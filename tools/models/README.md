@@ -10,6 +10,7 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | Hubble | jeu de données Gaia Sky `spacecraft-hst` (modèle NASA VTAD) | textures 1024 px → `hst_tex.glb`, redécoupage (`seg_hst.js`), quantification |
 | Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (GLB Draco, conception AFTA 2015) | décodage Draco, soudure, simplification (`--ratio 0.08 --error 0.004`), redécoupage (`roman_cls.js`), puis `slim.mjs` : simplification sur les seules positions, normales recalculées par face, quantification (≈ 3 Mo au lieu de 7,8) |
 | Chandra | NASA 3D Resources, « Chandra X-ray Observatory » (GLB Draco, textures WebP, en mètres) | décodage Draco, soudure, redécoupage en six ensembles (`chandra_cls.js`), quantification (≈ 0,8 Mo) |
+| Spitzer | NASA 3D Resources, « Spitzer Space Telescope » (GLB Draco, en mètres) | décodage Draco, soudure, redécoupage en cinq ensembles (`spitzer_cls.js`), quantification (≈ 1,1 Mo) |
 
 ## Redécoupage en pièces
 
@@ -33,11 +34,11 @@ Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (ren
 `src/app.js` n'a pas à changer : tout part du registre `TELESCOPES` de `src/data-tele.js`, que lisent aussi `build.js` et `tools/smoke.js`.
 
 1. Maquette : convertir et redécouper (ci-dessus), déposer `models/<id>.glb`. Licence claire obligatoire (exigence G1).
-2. `src/data-tele.js` : une entrée avec `id`, noms, `file`, `axis`, `size`, `view`, `sun`, `orbit` (`leo`, `heo` ou `l2`), `domain` (groupe de l'en-tête, parmi `DOMAINS` en fin de fichier ; en ajouter un si aucun ne convient), `cmp` (avec `approx:true` si la masse est approchée), `parts`, `sections` et les champs de registre décrits en tête du fichier (`color`, `highlight`, `footprint`, `optical`, `compare`, éventuellement `ended`). Un nouveau domaine se traduit dans `src/en/ui.js` (nom long et nom court).
+2. `src/data-tele.js` : une entrée avec `id`, noms, `file`, `axis`, `size`, `view`, `sun`, `orbit` (`leo`, `heo`, `l2` ou `helio` : autour du Soleil, dans le sillage de la Terre, avec `helio.drift`), `domain` (groupe de l'en-tête, parmi `DOMAINS` en fin de fichier ; en ajouter un si aucun ne convient), `cmp` (avec `approx:true` si la masse est approchée), `parts`, `sections` et les champs de registre décrits en tête du fichier (`color`, `highlight`, `footprint`, `optical`, `compare`, éventuellement `ended`). Un nouveau domaine se traduit dans `src/en/ui.js` (nom long et nom court).
 3. `src/looks.js` : réglage des matériaux si la maquette rend mal sous l'éclairage du site (facultatif).
 4. `src/deploy.js` : si l'observatoire s'est déployé en vol, `deploy:true` dans le registre et une configuration dans `DEPLOY[id]` (étapes datées, pièces déformées, fonction de repliement) ; contrôle par `tools/deploy-check.js 0.25 <id>` (facultatif).
 4. `src/interior.js` : éléments internes pour la vue en coupe et, si besoin, plans de coupe propres (`CUT`) (facultatif).
 5. Textes et données : `INST_DATA` (`src/data-inst.js`), `MISSION` (`src/data-mission.js`), `TEXT`, `FP` et `LINK3D` (`src/optics.js`), `TEXT` (`src/orbits.js`) ; pages d'instruments propres à l'observatoire dans `src/inst-render.js` si un instrument a besoin d'une figure particulière.
 6. Anglais : `EN_TELE`, `EN_INST`, `EN_OPTICS`, `EN_ORBITS`, et les chaînes d'interface nouvelles dans `src/en/ui.js`.
-7. Données réelles : identifiant JPL Horizons dans `tools/data/fetch_orbits.py` pour un observatoire à L2, recettes d'exemples dans `tools/data/fetch_data.py`.
+7. Données réelles : identifiant JPL Horizons dans `tools/data/fetch_orbits.py` pour un observatoire à L2, sur orbite très elliptique (`inertial`) ou autour du Soleil (`helio`), recettes d'exemples dans `tools/data/fetch_data.py`.
 8. `node build.js`, puis `tools/smoke.js` : le test vérifie que chaque observatoire du registre a ses champs et ses textes, et en donne la liste manquante.

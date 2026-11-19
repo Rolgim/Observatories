@@ -31,6 +31,9 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
 #tabs{ display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
 #tabs::-webkit-scrollbar{ display:none; }
+#tabs.fade-r, .pills.fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+#tabs.fade-l, .pills.fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+#tabs.fade-l.fade-r, .pills.fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
 .tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
 /* groupes par domaine spectral : un trait plein entre les groupes, pointillé à l'intérieur, le nom du groupe au-dessus de son premier onglet */
 #tabs .tab:not(.g0):not(.cmp){ border-left-style:dotted; }

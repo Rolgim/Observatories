@@ -152,6 +152,69 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'spitzer', domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
+    agency:'NASA (JPL, Caltech)', launch:'Lancé le 25 août 2003, Delta II, Cap Canaveral',
+    sub:'Orbite autour du Soleil, dans le sillage de la Terre, infrarouge (2003–2020)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/spitzer.glb', bytes:1064244, axis:'y', size:4.5,
+    view:{ az:-2.4, el:0.3, dist:2.1 }, sun:[0.15,0.35,-0.92], orbit:'helio',
+    helio:{ drift:'s\'éloigne de ≈ 0,12 UA par an' },
+    hero:{ num:'5,6', unit:'K', label:'la température du télescope pendant la mission froide' },
+    cmp:{ tag:'4,5 m', dim:'4,5 m de haut, Ø 2,1 m', mirror:0.85, mass:861, len:4.5 },
+    color:'#B03A2E', highlight:['Miroir primaire','0,85','m'], footprint:['4,5','m de haut'], optical:['tele','cta'],
+    compare:{ order:3, rot:[0, 0, 0], fp:[1, 2] }, ended:true,
+    desc:"Pour voir l'infrarouge, un télescope doit être plus froid que ce qu'il regarde. Spitzer emportait de l'hélium liquide qui a tenu son télescope de 85 cm à 5,6 K pendant près de six ans. Au lieu de tourner autour de la Terre, il suivait la Terre autour du Soleil, en s'en éloignant peu à peu : loin de sa chaleur, il se refroidissait aussi en rayonnant vers l'espace. Après l'épuisement de l'hélium en 2009, deux de ses caméras ont continué de fonctionner jusqu'en 2020.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux ; le miroir primaire et le support du secondaire sont visibles par l'ouverture du tube.",
+    checked:'2026-11-19',
+    refs:{
+      w04:{ t:'Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1', p:'ApJS', u:'https://arxiv.org/abs/astro-ph/0406223' },
+      w06:{ t:'Werner et al. 2006, First Fruits of the Spitzer Space Telescope, ARA&A 44, 269', p:'ARA&A', u:'https://arxiv.org/abs/astro-ph/0606563' },
+      hb:{ t:'Spitzer Telescope Handbook, chapitre 3 (instruments)', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/6/' },
+      mo:{ t:'Spitzer Mission Overview', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview' },
+      qf:{ t:'Spitzer Space Telescope, Quick Facts', p:'NASA JPL', u:'https://www.jpl.nasa.gov/news/press_kits/spitzer/quick-facts' },
+      thb:{ t:'Spitzer Telescope Handbook (PDF, version finale)', p:'IRSA (Caltech/IPAC)', u:'https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/Spitzer_Telescope_Handbook.pdf' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','4,5 m de haut · Ø 2,1 m','w04'], ['Masse au lancement','861 kg (950 kg selon la fiche du JPL)',['w04','qf']],
+        ['Énergie','panneau solaire de 500 W au lancement · consommation moyenne 375 W','w04'],
+        ['Pointage','quatre roues de réaction en pyramide, gyroscopes, viseurs d\'étoiles · stabilité 0,03″','w04'],
+        ['Lancement','25 août 2003, Delta II 7920H, Cap Canaveral',['qf','mo']],
+        ['Constructeurs','Lockheed Martin (module de service, panneau) · Ball Aerospace (ensemble cryogénique)','w06'] ]},
+      { title:'Optique', rows:[
+        ['Type','Ritchey-Chrétien, deux miroirs hyperboliques',['w06','thb']], ['Miroir primaire','Ø 0,85 m · ouvert à f/1,2 · trou central de 0,32 m (14,2 % de la surface)',['thb','w04']],
+        ['Focale','10,2 m · f/12','thb'], ['Secondaire','Ø 0,12 m, à 0,888 m du primaire','thb'], ['Matériau','béryllium, miroirs et structure','w04'],
+        ['Température','≈ 5,6 K (mission froide) · 27,5 K (mission chaude)',['w04','hb']], ['Limite de diffraction','5,5 µm','hb'] ]},
+      { title:'Instruments', rows:[
+        ['IRAC','caméra à quatre voies, 3,6 à 8 µm · champ de 5,2′','hb'], ['IRS','spectrographe, 5,2 à 38 µm · R ≈ 64 à 600','hb'],
+        ['MIPS','photomètre à 24, 70 et 160 µm · spectres de 55 à 95 µm','hb'],
+        ['Mission chaude','IRAC à 3,6 et 4,5 µm seulement, de 2009 à 2020','hb'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite','autour du Soleil, dans le sillage de la Terre · s\'en éloigne d\'environ 0,12 UA par an','w04'],
+        ['Pointage autorisé','entre 82,5° et 120° du Soleil · ≈ 35 % du ciel accessible à un instant donné',['thb','w06']],
+        ['Liaison','bande X, 2,2 Mbit/s · deux contacts d\'environ 45 min par jour · mémoire de 2 Go','w04'],
+        ['Hélium','épuisé le 15 mai 2009, après 5,75 ans de mission froide','mo'],
+        ['Fin de mission','30 janvier 2020','mo'] ]}
+    ],
+    parts:[
+      { key:'cta', name:'Ensemble cryogénique (CTA)', explode:[0,1,0,0.6],
+        desc:"Le cryostat et le télescope. Spitzer a été lancé « chaud » : seuls les instruments et le réservoir d'hélium superfluide étaient froids au départ. Le reste s'est refroidi dans l'espace, en rayonnant vers le ciel et grâce à la vapeur d'hélium. L'enveloppe extérieure descend à 34 K par son seul rayonnement.",
+        facts:[["≈ 350 L d'hélium superfluide au lancement, à ≈ 1,2 K", "thb"], ["Lancement « chaud » : cryostat plus petit que ceux d'IRAS et d'ISO", "w04"], ["Enveloppe à ≈ 34 K par rayonnement", "w06"], ["Évaporation de l'hélium : ≈ 22 g par jour", "w04"], ["Hélium épuisé le 15 mai 2009", "mo"]] },
+      { key:'tele', name:'Télescope', explode:[0,1,0,0.9],
+        desc:"Un télescope de 85 cm entièrement en béryllium, miroirs et structure, pour qu'il ne se déforme pas en refroidissant. Un mécanisme déplace le miroir secondaire pour faire la mise au point. Les trois instruments partagent le plan focal, dans une chambre placée derrière le miroir primaire.",
+        facts:[["Ø 0,85 m, focale 10,2 m (f/12)", "thb"], ["Secondaire de 12 cm, à 0,89 m du primaire", "thb"], ["Béryllium", "w04"], ["≈ 5,6 K en mission froide", "w04"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.5],
+        desc:"Le module octogonal sous le télescope, chaud, construit par Lockheed Martin. Il porte l'électronique, les quatre roues de réaction et les viseurs d'étoiles. Couvertures et écrans thermiques limitent la chaleur qui monte vers le cryostat.",
+        facts:[["Quatre roues de réaction en pyramide", "w04"], ["Gaz d'orientation : 15,59 kg d'azote au lancement", "w04"], ["Mémoire de 2 Go", "w04"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,-1,0,1.0],
+        desc:"Une antenne fixe en bande X, sous le module de service. Les données enregistrées étaient transmises une ou deux fois par jour, par le réseau d'antennes de l'espace lointain de la NASA.",
+        facts:[["2,2 Mbit/s", "w04"], ["Deux contacts d'environ 45 min par jour", "w04"], ["≈ 1,1 Go de données par jour", "w04"]] },
+      { key:'solar', name:'Panneau solaire et pare-soleil', explode:[0,0,-1,0.8],
+        desc:"Toujours tourné vers le Soleil, il fournit l'énergie et garde le télescope à l'ombre. Il est fixé en porte-à-faux sur le module de service, sans contact avec le cryostat froid.",
+        facts:[["500 W au lancement", "w04"], ["Fixé au module de service seulement", "w04"]] }
+    ]
+  },
+  {
     id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -161,7 +224,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:3, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -227,7 +290,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:4, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:5, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -303,7 +366,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:6, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -368,7 +431,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:6, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:7, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
