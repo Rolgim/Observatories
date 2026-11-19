@@ -878,7 +878,7 @@ var INST_DATA = (function(){
 "lc.plot()" },
         notes:["Tous les trois mois, Kepler tournait de 90° pour garder ses panneaux face au Soleil : chaque étoile changeait alors de CCD, d'où le découpage des données en trimestres.",
                "Quatre viseurs de guidage, dans les coins du plan focal, sont lus dix fois par seconde pour tenir le pointage à quelques millièmes de seconde d'arc près."],
-        docs:[ {l:"Kepler Instrument Handbook",u:"https://archive.stsci.edu/kepler/manuals/KSCI-19033-001.pdf"}, {l:"Archive Kepler (MAST)",u:"https://archive.stsci.edu/missions-and-data/kepler"} ] }
+        docs:[ {l:"Kepler Instrument Handbook",u:"https://archive.stsci.edu/kepler/manuals/KSCI-19033-001.pdf"}, {l:"Dossier de presse du lancement",u:"https://www.jpl.nasa.gov/news/press_kits/Kepler-presskit-2-19-smfile.pdf"} ] }
     ]
   },
   tess: {

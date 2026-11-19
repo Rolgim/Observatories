@@ -179,7 +179,7 @@ EN_INST.kepler = {
 "TIME (BKJD)      SAP_FLUX (e⁻/s)   PDCSAP_FLUX (e⁻/s)   PDCSAP_FLUX_ERR   SAP_QUALITY\n352.37721        81024.6           81110.2               9.3               0\n352.39765        81019.8           81106.5               9.3               0\n\n→ one quarter ≈ 4,400 points, one every 29.4 min." },
       code:{ title:"Light curve with lightkurve" },
       notes:["Every three months Kepler rolled 90° to keep its panels facing the Sun: each star then moved to another CCD, hence the division of the data into quarters.","Four guide sensors, in the corners of the focal plane, are read out ten times a second to hold the pointing to within a few thousandths of an arcsecond."],
-      docs:["Kepler Instrument Handbook","Kepler archive (MAST)"] }
+      docs:["Kepler Instrument Handbook","Launch press kit"] }
   }
 };
 EN_INST.tess = {
