@@ -1006,6 +1006,116 @@ def kepler_lc(key, kic="010666592", name="HAT-P-7", quarter=4):
                     credit="NASA, Ames, STScI", fetched=TODAY)
     raise RuntimeError("aucune courbe de lumière Kepler téléchargée")
 
+# ---------- XMM-Newton : produits du pipeline (PPS) sur le miroir HEASARC de l'archive XMM ----------
+XMM_PPS = "https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{o}/PPS/"
+XMM_XSA = "https://nxsa.esac.esa.int/nxsa-web/#obsid={o}"
+
+def xmm_files(obsid):
+    import re
+    u = XMM_PPS.format(o=obsid)
+    r = requests.get(u, timeout=60); r.raise_for_status()
+    return u, re.findall(r'href="([^"?/][^"]*)"', r.text)
+
+def xmm_meta(h, obsid, inst, files, extra=()):
+    meta = [["Archive", "XMM-Newton Science Archive (ESA), miroir du HEASARC"], ["Instrument", inst], ["Identifiant d'observation", "ObsID " + obsid],
+            ["Cible", clean(h.get("OBJECT")) or "cible non nommée"], ["Début d'observation", str(h.get("DATE-OBS"))[:10]]]
+    meta += [list(x) for x in extra]
+    meta.append(["Fichier d'origine", files])
+    return meta
+
+def xmm_epic(key, obsid="0412180101", ra=350.8500, dec=58.8150, size_arcmin=10.0):
+    """Cas A en trois couleurs : images PPS par bande d'énergie, pn + MOS1 + MOS2 additionnées."""
+    from PIL import Image
+    from astropy.wcs import WCS
+    u, fs = xmm_files(obsid)
+    bands = {"R": ("2",), "G": ("3",), "B": ("4", "5")}       # 0,5–1 keV, 1–2 keV, 2–12 keV
+    used, chans, h0, expo = [], {}, None, 0.0
+    for col, bs in bands.items():
+        acc = None
+        for f in fs:
+            m = f[11:14]
+            if m in ("PNS", "M1S", "M2S") and f.endswith(".FTZ") and any(f.endswith("IMAGE_" + b + "000.FTZ") for b in bs):
+                with cda_fits(u + f) as hd:
+                    h = hd[0].header; d = np.nan_to_num(np.asarray(hd[0].data, float))
+                w = WCS(h); x, y = w.all_world2pix([[ra, dec]], 0)[0]
+                half = int(round(size_arcmin / 60 / abs(float(h["CDELT1"])) / 2))
+                cut = d[max(0, int(y) - half):int(y) + half, max(0, int(x) - half):int(x) + half]
+                if cut.shape != (2 * half, 2 * half):
+                    continue
+                acc = cut if acc is None else acc + cut
+                used.append(f)
+                if h0 is None or m == "PNS": h0 = h
+                if col == "G" and m == "PNS": expo = float(h.get("EXPOSURE", 0))
+        if acc is None:
+            raise RuntimeError("pas d'image pour la bande " + col)
+        chans[col] = acc
+    def st(c):
+        hi = np.percentile(c[c > 0], 99.8) if np.any(c > 0) else 1
+        return np.log1p(np.clip(c, 0, hi) / (hi / 60.0)) / np.log1p(60.0)
+    rgb = np.stack([st(chans[k]) for k in "RGB"], -1)
+    im = Image.fromarray((np.flipud(rgb) * 255).astype(np.uint8), "RGB").resize((600, 600), Image.LANCZOS)
+    fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=88, optimize=True)
+    pix = abs(float(h0["CDELT1"])) * 3600
+    meta = xmm_meta(h0, obsid, "EPIC (caméras pn, MOS1 et MOS2)", ", ".join(sorted(set(used))),
+                    extra=[["Bandes", "0,5–1 keV en rouge, 1–2 keV en vert, 2–12 keV en bleu"], ["Échelle", fr(pix, 1) + "″ par pixel, " + fr(size_arcmin) + "′ de côté"],
+                           ["Temps de pose (pn)", fr(expo) + " s"], ["Traitement", "images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×" + fr(600 / rgb.shape[0], 1) + " pour le site"]])
+    return dict(type="image", file=fname, width=600, height=600, title="Le reste de supernova Cassiopée A, EPIC", meta=meta, url=XMM_XSA.format(o=obsid),
+                caption="Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons.",
+                credit="ESA, XMM-Newton", fetched=TODAY)
+
+def xmm_rgs(key, obsid="0510780601"):
+    """Spectre « fluxed » des deux RGS (premier ordre) de Capella, produit du pipeline."""
+    u, fs = xmm_files(obsid)
+    f = [x for x in fs if "RGX000FLUXED" in x and x.endswith(".FTZ")]
+    if not f:
+        raise RuntimeError("pas de spectre FLUXED")
+    with cda_fits(u + f[0]) as hd:
+        d = hd["FLUXED"].data; w = np.asarray(d["CHANNEL"], float); fl = np.asarray(d["FLUX"], float)
+    src = [x for x in fs if x[11:14] == "R1S" and "SRSPEC1" in x and x.endswith(".FTZ")]
+    h = {}
+    if src:
+        with cda_fits(u + src[0]) as hd:
+            h = dict(hd[0].header); h.update({k: v for k, v in hd[1].header.items() if k in ("EXPOSURE",)})
+    ok = np.isfinite(fl) & (w >= 6) & (w <= 38); w, fl = w[ok], fl[ok]
+    fname = key.replace("/", "-") + ".json"
+    save_json(fname, dict(type="line", x=rnd(w, 5), y=rnd(fl, 4), ymin=0, xlabel="longueur d'onde (Å)", ylabel="flux (photons/s/cm²/Å)"))
+    meta = xmm_meta(h, obsid, "RGS1 et RGS2, premier ordre", f[0], extra=[["Données", "spectre « fluxed » du pipeline (rgsfluxer), 1 000 intervalles de 0,036 Å, de 6 à 38 Å tracés"],
+                                                                         ["Temps de pose", (fr(float(h["EXPOSURE"])) + " s") if h.get("EXPOSURE") else "non indiqué"]])
+    return dict(type="plot", file=fname, title="Spectre RGS de l'étoile Capella", meta=meta, url=XMM_XSA.format(o=obsid),
+                caption="La couronne de Capella, à plusieurs millions de degrés, émet des raies X : chaque pic est un élément chimique ionisé (fer, oxygène, néon…). Le RGS les sépare finement, entre 6 et 38 Å.",
+                credit="ESA, XMM-Newton", fetched=TODAY)
+
+def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, filt="UVW1"):
+    """Image du moniteur optique (pose la plus longue dans le filtre demandé), découpée autour de la galaxie."""
+    from PIL import Image
+    from astropy.wcs import WCS
+    u, fs = xmm_files(obsid)
+    best = None
+    for f in fs:
+        if f[11:14] == "OMS" and "SIMAGE" in f and f.endswith(".FTZ"):
+            with cda_fits(u + f) as hd:
+                h = hd[0].header
+                if str(h.get("FILTER")).strip() != filt: continue
+                d = np.asarray(hd[0].data, float); ex = np.asarray(hd["EXPOSURE"].data, float) if "EXPOSURE" in hd else None
+            w = WCS(h); x, y = w.all_world2pix([[ra, dec]], 0)[0]
+            if not (0 <= x < d.shape[1] and 0 <= y < d.shape[0]): continue
+            score = float(np.nanmax(ex)) if ex is not None else 0
+            if best is None or score > best[0]: best = (score, d, h, f, x, y)
+    if best is None:
+        raise RuntimeError("aucune image OM " + filt + " sur la cible")
+    score, d, h, f, x, y = best
+    half = int(round(size_arcmin / 60 / abs(float(h["CDELT1"])) / 2))
+    cut = d[max(0, int(y) - half):int(y) + half, max(0, int(x) - half):int(x) + half]
+    im = Image.fromarray((np.flipud(asinh_stretch(cut, 5, 99.7, 0.04)) * 255).astype(np.uint8), "L")
+    if max(im.size) > 1100: im.thumbnail((1100, 1100))
+    fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+    pix = abs(float(h["CDELT1"])) * 3600
+    meta = xmm_meta(h, obsid, "OM, filtre " + filt + " (≈ 291 nm)", f, extra=[["Cible", "M101, galaxie du Moulinet"], ["Échelle", fr(pix, 2) + "″ par pixel, " + fr(cut.shape[1] * pix / 60, 1) + "′ de côté"],
+                                                                              ["Temps de pose", "≈ " + fr(score) + " s"], ["Traitement", "image du ciel du pipeline, découpée, étirement asinh pour le site"]])
+    return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title="La galaxie du Moulinet (M101), OM en ultraviolet", meta=meta, url=XMM_XSA.format(o=obsid),
+                caption="Dans l'ultraviolet proche (filtre UVW1), le petit télescope OM voit surtout les étoiles jeunes et chaudes, qui dessinent les bras de la galaxie. Il observe en même temps que les caméras X, sur le même champ.",
+                credit="ESA, XMM-Newton", fetched=TODAY)
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -1027,6 +1137,9 @@ RECIPES = {
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
     "tess/cams": tess_lc,
     "kepler/phot": kepler_lc,
+    "xmm/epic": xmm_epic,
+    "xmm/rgs": xmm_rgs,
+    "xmm/om": xmm_om,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,

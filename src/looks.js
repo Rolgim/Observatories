@@ -23,6 +23,8 @@ var LOOKS = {
   },
   /* TESS (maquette NASA) : les matériaux « reflector » et « foil_silver » portent une carte de normales à la place de leur couleur
      (d'où un violet irisé) : couleur retirée, carte gardée comme relief ; couvertures argentées et antenne gris clair mats */
+  /* XMM-Newton (maquette ESA, un seul matériau texturé) : le métal par défaut de glTF (1) la rendait blanche comme un miroir */
+  xmm: function(m){ m.metalness = 0.15; m.roughness = 0.6; m.color.setHex(0xFFFFFF); if (m.userData.envK == null) m.userData.envK = 0.6; },
   tess: function(m, n, THREE){
     if (/reflector|foil_silver/.test(n) && m.map){ m.normalMap = m.map; m.map = null; if (THREE.LinearEncoding != null) m.normalMap.encoding = THREE.LinearEncoding; m.normalScale.set(0.4, 0.4); m.needsUpdate = true; }
     if (/foil_silver/.test(n)){ m.color.setHex(0xB9BDC2); m.metalness = 0.55; m.roughness = 0.5; }

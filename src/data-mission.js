@@ -318,6 +318,39 @@ var MISSION = {
       ['depuis 2018','since 2018',['Un secteur par mois','One sector a month'],"Les données de chaque secteur sont publiées à l'archive MAST, sans période réservée.","The data of each sector are released at the MAST archive, with no proprietary period.",'winn',false]
     ]
   },
+  xmm: {
+    checked:'2026-11-19',
+    refs:{
+      xsa:{ t:'XMM-Newton Science Archive', p:'ESA, ESAC', u:'https://nxsa.esac.esa.int/' },
+      apod:{ t:'XMM-Newton First Light: X-Rays from the LMC (APOD, 11 février 2000)', p:'NASA', u:'https://science.nasa.gov/image-article/apod-2000-february-11-xmm-newton-first-light-x-rays-from-the-lmc/' }
+    },
+    intro:["XMM-Newton est une mission de l'ESA. Elle est pilotée depuis l'ESOC, à Darmstadt ; le centre des opérations scientifiques, à l'ESAC près de Madrid, prépare les observations choisies par appel à propositions, traite les données et les archive. Les observateurs ont d'abord un accès réservé, puis les données deviennent publiques.",
+           "XMM-Newton is an ESA mission. It is flown from ESOC, in Darmstadt; the science operations centre, at ESAC near Madrid, prepares the observations selected through calls for proposals, processes the data and archives them. Observers first have reserved access, after which the data become public."],
+    phases:[
+      ['10 déc. 1999','10 Dec 1999','Lancement','Launch',"Premier lancement commercial d'Ariane 5, depuis Kourou, vers une orbite très allongée de 48 heures.","First commercial launch of Ariane 5, from Kourou, into a very elongated 48-hour orbit.",'fs'],
+      ['févr. 2000','Feb 2000','Premières images','First images',"L'ESA publie les premières images, dont une région de formation d'étoiles du Grand Nuage de Magellan, choisie pour tester les caméras X.","ESA releases the first images, including a star-forming region of the Large Magellanic Cloud, chosen to test the X-ray cameras.",'apod'],
+      ['mission étendue','extended mission','Bien au-delà de 10 ans','Well beyond 10 years',"Prévue pour dix ans, la mission est prolongée ; son exploitation est approuvée jusqu'à fin 2026, et sa durée de vie pourrait aller jusque dans les années 2030.","Designed for ten years, the mission has been extended; its operations are approved until the end of 2026, and its lifetime could reach into the 2030s.",'fs']
+    ],
+    ops:[
+      ['Agence','Agency','ESA','ESA','fs'],
+      ['Contrôle','Control','ESOC (Darmstadt) ; stations de Perth, Kourou et Santiago','ESOC (Darmstadt); Perth, Kourou and Santiago stations','fs'],
+      ['Construction','Construction','Dornier Satellitensysteme ; miroirs de Media Lario','Dornier Satellitensysteme; mirrors by Media Lario','fs'],
+      ['Archive','Archive','XMM-Newton Science Archive (ESAC) ; miroir au HEASARC','XMM-Newton Science Archive (ESAC); mirror at HEASARC','xsa']
+    ],
+    chain:{
+      intro:["Chaque observation est livrée en données brutes (ODF). Le pipeline du centre scientifique, bâti sur le logiciel SAS, en tire des produits standard (PPS) : listes d'événements, images, sources, spectres.",
+             "Each observation is delivered as raw data (ODF). The science centre's pipeline, built on the SAS software, derives standard products (PPS) from them: event lists, images, sources, spectra."],
+      steps:[
+        { lv:'ODF', n:['Données brutes','Raw data'], x:['Télémétrie de chaque instrument, rangée par observation.','Telemetry from each instrument, filed by observation.'], r:'xsa' },
+        { lv:'SAS', n:['Traitement','Processing'], x:['Étalonnage, listes d\'événements, filtrage.','Calibration, event lists, filtering.'], sw:'SAS', r:'xsa' },
+        { lv:'PPS', n:['Produits du pipeline','Pipeline products'], x:['Images par bande, listes de sources, spectres RGS et images OM.','Band images, source lists, RGS spectra and OM images.'], sw:'SAS', r:'xsa' },
+        { lv:'XSA', n:['Archive','Archive'], x:['Données brutes et produits rangés par observation, publics après la période réservée.','Raw data and products filed by observation, public after the reserved period.'], r:'xsa' }
+      ]
+    },
+    rel:[
+      ['depuis 2000','since 2000',['Par observation','By observation'],"Les données de chaque observation sont publiées à l'archive XSA, après la période réservée aux observateurs.","Each observation's data are released at the XSA archive, after the observers' reserved period.",'xsa',false]
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

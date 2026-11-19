@@ -158,6 +158,27 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       solar:{ name:'Solar arrays', desc:"Two wings deployed after launch. Since an anomaly in one array's drive mechanism in 2018, Fermi can hardly swing towards a burst on its own any more.", facts:["15 m span","Drive mechanism anomaly in 2018"] }
     }
   },
+  xmm:{
+    agency:'ESA', launch:'Launched 10 December 1999, Ariane 5, Kourou',
+    sub:'Highly elliptical 48-hour Earth orbit, X-rays (since 1999)', src:'Model: ESA, SPICE Service (for Cosmographia)',
+    cmp:{ tag:'10 m', dim:'10 m long, 16 m span' },
+    desc:"XMM-Newton has three X-ray telescopes side by side, each made of 58 nested tube-shaped mirrors that the X-rays graze. They collect a lot of light: it is the X-ray observatory of choice for spectra and faint objects, while Chandra is the one for the sharpest images. A small optical and ultraviolet telescope watches the same field at the same time.",
+    sourceNote:"ESA model, distributed by ESA's SPICE Service for the Cosmographia software (no licence is stated; credited here to ESA). It has been re-segmented into six assemblies from its geometry, and scaled to the published 16 m span. The mirrors are only visible through their apertures.",
+    refs:{ uhb:'XMM-Newton Users Handbook, basic characteristics', model:'XMM model for Cosmographia' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','10 m long · 16 m span, arrays deployed'],['Launch mass','3.8 t'],['Construction','Dornier Satellitensysteme, prime contractor; mirrors by Media Lario'],['Launch','10 December 1999, Ariane 5, Kourou']] },
+      { title:'Telescopes', rows:[['Mirrors','3 modules of 58 nested Wolter I shells, gold-coated nickel'],['Diameters','70 cm (outer shell) to 30.6 cm (inner) · 60 cm long'],['Focal length','7.5 m'],['Effective area','≈ 1,550 cm² per telescope at 1.5 keV'],['Instruments','EPIC (one pn camera, two MOS), two RGS, OM optical monitor']] },
+      { title:'Orbit and operations', rows:[['Orbit','≈ 7,000 × 114,000 km altitude · 48 h · inclined at 40°'],['Observing','above 46,000 km, up to ≈ 40 h at a stretch per orbit'],['Control','ESOC (Darmstadt); Perth, Kourou and Santiago stations'],['Mission','designed for 10 years; operations approved until the end of 2026']] }
+    ],
+    parts:{
+      mirrors:{ name:'Mirror modules', desc:"Three X-ray telescopes, each made of 58 nested gold-coated nickel shells. X-rays graze them at half a degree and converge 7.5 m further on. Behind two of the three modules, gratings divert almost half of them to the RGS spectrometers.", facts:["58 shells per module, Wolter I","7.5 m focal length","≈ 1,550 cm² per telescope at 1.5 keV"] },
+      om:{ name:'Optical Monitor (OM)', desc:"A small 30 cm telescope, mounted next to the X-ray mirrors. It watches the same field at the same time, in visible and ultraviolet light, from 180 to 600 nm.", facts:["30 cm","180 to 600 nm","17′ field"] },
+      svm:{ name:'Service module', desc:"It carries the mirrors, power, propulsion and communications; its sunshield protects the telescopes.", facts:["3.8 t at launch, all included"] },
+      solar:{ name:'Solar arrays', desc:"Two wings of three panels, which give the spacecraft its 16 m span.", facts:["16 m span"] },
+      tube:{ name:'Telescope tube', desc:"A long carbon-fibre tube links the mirrors to the focal plane, 7.5 m away, and keeps them aligned.", facts:["7.5 m focal length"] },
+      fpa:{ name:'Focal plane', desc:"At the end of the tube, the three EPIC cameras, one behind each telescope, and the two cameras of the RGS spectrometers. Radiators cool their CCDs.", facts:["EPIC: one pn camera, two MOS","RGS: two spectrometers"] }
+    }
+  },
   spitzer:{
     agency:'NASA (JPL, Caltech)', launch:'Launched 25 August 2003, Delta II, Cape Canaveral',
     sub:'Orbit around the Sun, trailing the Earth, infrared (2003–2020)', src:'Model: NASA 3D Resources (public domain)',

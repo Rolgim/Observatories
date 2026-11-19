@@ -935,6 +935,103 @@ var INST_DATA = (function(){
         docs:[ {l:"TESS Telescope Information",u:"https://heasarc.gsfc.nasa.gov/docs/tess/telescope_information.html"}, {l:"Observatory Guide",u:"https://heasarc.gsfc.nasa.gov/docs/tess/docs/TESS_observatory_guide_v1.1.pdf"} ] }
     ]
   },
+  xmm: {
+    checked:'2026-11-19',
+    refs:{
+      uhb:{ t:"XMM-Newton Users Handbook, caractéristiques de base", p:"ESA (copie du HEASARC)", u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html" },
+      mir:{ t:"The Telescopes of XMM-Newton", p:"ESA, XMM-Newton Science Operations Centre", u:"https://www.cosmos.esa.int/web/xmm-newton/technical-details-mirrors" },
+      fs:{ t:"XMM-Newton factsheet", p:"ESA", u:"https://www.esa.int/Science_Exploration/Space_Science/XMM-Newton/XMM-Newton_factsheet" }
+    },
+    axis: { min:0.0001, max:0.8 },
+    summary: "Six instruments observent en même temps. Derrière chacun des trois télescopes X, une caméra EPIC : une caméra pn et deux MOS. Derrière deux d'entre eux, des réseaux renvoient une partie des rayons X vers les deux spectromètres RGS. À côté, le petit télescope OM voit le même champ en visible et en ultraviolet.",
+    archives: [
+      { label:"XMM-Newton Science Archive (XSA)", url:"https://nxsa.esac.esa.int/", desc:"Archive de l'ESA : observations brutes (ODF) et produits du pipeline (PPS)." },
+      { label:"HEASARC, miroir de l'archive", url:"https://heasarc.gsfc.nasa.gov/docs/xmm/xmm.html", desc:"Copie des données à la NASA, avec la table des observations xmmmaster." },
+      { label:"SAS", url:"https://www.cosmos.esa.int/web/xmm-newton/what-is-sas", desc:"Logiciel d'analyse des données de XMM-Newton." }
+    ],
+    instruments: [
+      { id:"epic", name:"EPIC", full:"European Photon Imaging Camera", kind:"Caméras CCD imageuses et spectrométriques", color:"#2E7FA8",
+        bands:[ {l:"EPIC",lo:0.0001033,hi:0.008266} ],
+        use:"Photographier le ciel en rayons X en mesurant l'énergie de chaque photon, avec une grande surface collectrice : de quoi étudier des sources faibles, des amas de galaxies ou les variations rapides d'une étoile à neutrons.",
+        summary:"Trois caméras, une au foyer de chaque télescope : la caméra pn, à 12 CCD éclairés par l'arrière, et deux caméras MOS à 7 CCD, qui ne reçoivent qu'une partie de la lumière de leur télescope, le reste étant envoyé vers les RGS. Chaque photon est enregistré avec sa position, son instant et son énergie.",
+        specs:[
+          ["Domaine", "0,15 à 12 keV", "uhb"],
+          ["Champ", "30′ de diamètre", "uhb"],
+          ["Pixels", "MOS : 40 µm, 1,1″ · pn : 150 µm, 4,1″", "uhb"],
+          ["Netteté (largeur à mi-hauteur / demi-énergie)", "MOS : 5″ / 14″ · pn : 6″ / 15″", "uhb"],
+          ["Résolution en énergie", "≈ 70 eV (MOS) · ≈ 80 eV (pn)", "uhb"],
+          ["Résolution en temps", "1,75 ms (MOS) · 0,03 ms (pn)", "uhb"]
+        ],
+        fov:[ {l:'EPIC', w:1800, h:1800, circle:true} ],
+        filtersTitle:"Bandes d'énergie des produits du pipeline",
+        filters:[ R("1",0.0024797,0.0061992,"B","0,2–0,5 keV"), R("2",0.0012398,0.0024797,"B","0,5–1 keV"), R("3",0.00061992,0.0012398,"B","1–2 keV"), R("4",0.00027552,0.00061992,"B","2–4,5 keV"), R("5",0.00010332,0.00027552,"B","4,5–12 keV") ],
+        products:[
+          ["ODF","données brutes de l'observation, à traiter avec SAS"],
+          ["Liste d'événements (PIEVLI, MIEVLI)","chaque photon avec position, instant, énergie"],
+          ["Images par bande (IMAGE_1000 à 5000)","images du pipeline dans cinq bandes d'énergie"],
+          ["Liste de sources","sources détectées dans le champ, avec leurs flux"]
+        ],
+        example:{ real:false, title:"Une liste d'événements EPIC", caption:"Colonnes réelles d'une liste d'événements ; valeurs illustratives.", text:
+"TIME (s)          X (0,05″)   Y (0,05″)   PI (eV)   PATTERN   CCDNR\n" +
+"2.5912447e+08     25812       26103       1284      0         4\n" +
+"2.5912447e+08     26447       24920        612      2         7\n" +
+"\n" +
+"→ PATTERN indique combien de pixels voisins le photon a touchés." },
+        code:{ title:"Images du pipeline d'une observation (astroquery)", text:
+"from astroquery.esa.xmm_newton import XMMNewton\n\n" +
+"# produits du pipeline (PPS) d'une observation de Cassiopée A, depuis l'archive XSA\n" +
+"XMMNewton.download_data(\"0412180101\", level=\"PPS\", extension=\"FTZ\", filename=\"casa\")" },
+        notes:["Les deux caméras MOS ne reçoivent qu'environ la moitié de la lumière de leur télescope : l'autre partie est déviée par les réseaux vers les RGS.",
+               "Des protons de basse énergie, piégés autour de la Terre, provoquent parfois des « éruptions » de bruit : on retire ces moments des données."],
+        docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"}, {l:"The Telescopes of XMM-Newton",u:"https://www.cosmos.esa.int/web/xmm-newton/technical-details-mirrors"} ] },
+      { id:"rgs", name:"RGS", full:"Reflection Grating Spectrometer", kind:"Spectromètre à réseaux", color:"#7A4FB5",
+        bands:[ {l:"RGS",lo:0.0005,hi:0.0035} ],
+        use:"Décomposer les rayons X mous en un spectre très fin, où apparaissent les raies du carbone, de l'azote, de l'oxygène, du néon ou du fer : température, densité et composition du gaz chaud.",
+        summary:"Derrière deux des trois télescopes, une pile de réseaux en réflexion intercepte une partie des rayons X et les disperse selon leur longueur d'onde vers une rangée de CCD. Les deux spectromètres sont presque identiques.",
+        specs:[
+          ["Domaine", "0,35 à 2,5 keV · 5 à 35 Å (ordre −1)", "uhb"],
+          ["Champ", "≈ 5′", "uhb"],
+          ["Résolution", "0,04 Å / 0,025 Å (ordres −1 / −2)", "uhb"],
+          ["Pixels", "81 µm, soit ≈ 0,009 Å", "uhb"]
+        ],
+        fov:[ {l:'RGS', w:300, h:300} ],
+        products:[
+          ["Spectres par ordre (SRSPEC)","spectre de la source, ordres 1 et 2, pour chaque RGS"],
+          ["Spectre « fluxed » (FLUXED)","RGS1 et RGS2 combinés, en flux, pour un premier coup d'œil"]
+        ],
+        example:{ real:false, title:"Colonnes d'un spectre « fluxed »", caption:"Colonnes réelles du produit ; valeurs illustratives.", text:
+"CHANNEL (Å)   FLUX (photons/s/cm²/Å)   ERROR\n" +
+"18.962        0.0712                   0.0021\n" +
+"18.998        0.0284                   0.0013\n" +
+"\n" +
+"→ ici, le bord de la raie de l'oxygène O VIII, à 18,97 Å." },
+        notes:["Le spectre « fluxed » du pipeline sert d'aperçu ; une analyse se fait sur les spectres par ordre, avec leur matrice de réponse.",
+               "Quelques CCD sont hors service depuis le début de la mission, d'où des trous dans les spectres de chaque RGS."],
+        docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"} ] },
+      { id:"om", name:"OM", full:"Optical Monitor", kind:"Télescope visible et ultraviolet", color:"#C9A100",
+        bands:[ {l:"OM",lo:0.18,hi:0.60} ],
+        use:"Voir les mêmes objets que les caméras X, au même moment, en visible et en ultraviolet : pour relier ce qui se passe dans les deux domaines, ou repérer les étoiles et galaxies du champ.",
+        summary:"Un télescope Ritchey-Chrétien de 30 cm, avec une roue de filtres (trois visibles, trois ultraviolets) et deux grismes. Son détecteur amplifie chaque photon et en mesure la position.",
+        specs:[
+          ["Ouverture", "30 cm", "uhb"],
+          ["Domaine", "180 à 600 nm", "uhb"],
+          ["Champ", "17′", "uhb"],
+          ["Netteté", "1,4″ à 2,0″", "uhb"],
+          ["Pixels", "0,48″", "uhb"],
+          ["Sensibilité", "magnitude 20,7 en 1 000 s (5σ)", "uhb"]
+        ],
+        fov:[ {l:'OM', w:1020, h:1020} ],
+        filtersTitle:"Filtres",
+        filters:[ R("UVW2",0.18,0.225,"B","≈ 212 nm"), R("UVM2",0.2,0.26,"B","≈ 231 nm"), R("UVW1",0.245,0.32,"B","≈ 291 nm"), R("U",0.3,0.39,"B","≈ 344 nm"), R("B",0.39,0.49,"B","≈ 450 nm"), R("V",0.51,0.58,"B","≈ 543 nm") ],
+        products:[
+          ["Images du ciel (SIMAGE)","images de chaque pose, redressées sur le ciel"],
+          ["Liste de sources (OBSMLI)","sources détectées, avec leurs magnitudes"]
+        ],
+        notes:["L'OM observe toujours le même champ que les caméras X, en même temps : aucun temps d'observation supplémentaire n'est nécessaire.",
+               "Sur l'axe des longueurs d'onde, les bandes des filtres sont approchées ; leurs longueurs d'onde centrales sont indiquées à côté."],
+        docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"} ] }
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

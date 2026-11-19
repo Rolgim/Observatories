@@ -63,4 +63,12 @@ $GT copy $DL/kepler/kepler.glb $W/tmp/kepler_dec.glb >/dev/null
 $GT weld $W/tmp/kepler_dec.glb $W/tmp/kepler_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/kepler_w.glb','$W/tmp/kepler_seg.glb',require('$W/kepler_cls.js')).then(s=>console.log('kepler',JSON.stringify(s)))"
 $GT quantize $W/tmp/kepler_seg.glb $OUT/kepler.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+# ---------- XMM-Newton : maquette de l'ESA (service SPICE, misc/cosmo/xmm.obj + alb.png), convertie en GLB par trimesh
+# attendu dans $DL : xmm/xmm.obj, xmm/xmm.mtl, xmm/alb.png (tools/probe/fetch_xmm_model.py les récupère depuis la CI)
+python3 -c "import trimesh; trimesh.load('$DL/xmm/xmm.obj', force='mesh', process=False).export('$W/tmp/xmm_raw.glb')"
+$GT weld $W/tmp/xmm_raw.glb $W/tmp/xmm_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/xmm_w.glb','$W/tmp/xmm_seg.glb',require('$W/xmm_cls.js')).then(s=>console.log('xmm',JSON.stringify(s)))"
+$GT resize $W/tmp/xmm_seg.glb $W/tmp/xmm_rs.glb --width 2048 --height 2048 >/dev/null
+$GT webp $W/tmp/xmm_rs.glb $W/tmp/xmm_wp.glb >/dev/null
+$GT quantize $W/tmp/xmm_wp.glb $OUT/xmm.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 ls -la $OUT

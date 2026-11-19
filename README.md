@@ -1,8 +1,8 @@
 # Observatoires en orbite
 
-*Observatories in orbit: an interactive 3D guide to Hubble, Chandra, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid and Roman, in English (default) and French.*
+*Observatories in orbit: an interactive 3D guide to Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid and Roman, in English (default) and French.*
 
-Visualisation 3D de dix télescopes spatiaux (Hubble, Chandra, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
+Visualisation 3D de onze télescopes spatiaux (Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
@@ -68,6 +68,7 @@ Une entrée dans le registre `TELESCOPES` (`src/data-tele.js`), une maquette dan
 | Chandra | NASA 3D Resources, « Chandra X-ray Observatory » |
 | Spitzer | NASA 3D Resources, « Spitzer Space Telescope » |
 | Fermi | NASA 3D Resources, « Fermi Gamma-ray Large Area Space Telescope » |
+| XMM-Newton | ESA, service SPICE (maquette pour Cosmographia, `misc/cosmo/xmm.obj`) ; aucune licence indiquée, créditée à l'ESA |
 | Kepler | NASA 3D Resources, « Kepler (A) » |
 | TESS | NASA 3D Resources, « Transiting Exoplanet Survey Satellite (TESS) (B) » |
 | Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (conception de 2015) |

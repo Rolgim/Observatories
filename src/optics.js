@@ -146,6 +146,38 @@ var Optics = (function(){
       s += T(x0 - 12, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
       return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
     },
+    /* XMM-Newton : un des trois télescopes, en coupe (The Telescopes of XMM-Newton, ESA) : 58 coques Wolter I de 70 à 30,6 cm de diamètre,
+       60 cm de long, focale 7,5 m. Échelle radiale dilatée ×4 pour voir les coques ; 8 coques sur 58 dessinées. Réseaux RGA et caméra RGS :
+       position de principe. */
+    xmm: function(){
+      var W = 640, H = 310, k = 68, kr = 4*k, x0 = 60, cy = 160, F = 7.5, s = '';
+      function X(z){ return x0 + 40 + z*k; } function Y(r){ return cy - r*kr; }
+      var R = []; for (var i=0;i<8;i++) R.push(0.153 + i*(0.35-0.153)/7);
+      var m = '', t = '', g = '';
+      R.forEach(function(rc, i){
+        var a = rc/(4*F);
+        [1,-1].forEach(function(sg){
+          m += L(X(-0.3), Y(sg*(rc + a*0.3)), X(0), Y(sg*rc), INK, 1.4) + L(X(0), Y(sg*rc), X(0.3), Y(sg*(rc - 3*a*0.3)), INK, 1.4);
+          if (i % 2 === 0){
+            var r1 = rc + a*0.15, r2 = rc - 3*a*0.15;
+            if (sg > 0 && i >= 2){ var zg = 0.9, rg = r2*(1 - (zg - 0.15)/(F - 0.15));
+              t += P([[X(-0.9), Y(sg*r1)], [X(-0.15), Y(sg*r1)], [X(0.15), Y(sg*r2)], [X(zg), Y(rg)], [X(6.7), Y(-0.36 + (rg - 0.1)*0.3)]], '#7A4FB5', 1.1);
+              t += P([[X(zg), Y(rg)], [X(F), Y(0)]], RAY, 1.1, '3 3'); }
+            else t += P([[X(-0.9), Y(sg*r1)], [X(-0.15), Y(sg*r1)], [X(0.15), Y(sg*r2)], [X(F), Y(0)]], RAY, 1.1);
+          }
+        });
+      });
+      s += G('mirrors', m) + t;
+      s += G('mirrors', L(X(0.9), Y(0.05), X(0.9), Y(0.36), '#7A4FB5', 4));
+      s += G('tube', P([[X(0.4), Y(0.42)], [X(F - 0.2), Y(0.12)]], SOFT, 1.5, '4 3') + P([[X(0.4), Y(-0.42)], [X(F - 0.2), Y(-0.12)]], SOFT, 1.5, '4 3'));
+      s += G('fpa', L(X(F), Y(0.06), X(F), Y(-0.06), DET, 5) + L(X(6.7), Y(-0.3), X(6.7), Y(-0.42), '#7A4FB5', 5));
+      s += T(X(0), Y(0.38) - 22, '58 coques emboîtées (8 dessinées)', 'middle', true) + T(X(0), Y(0.38) - 8, 'Ø 70 à 30,6 cm · 60 cm de long', 'middle');
+      s += T(X(0.9) + 8, Y(0.2), 'réseaux RGA', null, true) + T(X(0.9) + 8, Y(0.2) + 14, '(deux télescopes sur trois)', null);
+      s += T(X(F) - 4, Y(0.06) - 10, 'EPIC', 'end', true) + T(X(6.7) - 6, Y(-0.42) + 16, 'RGS', 'end', true);
+      s += T(x0 - 20, cy + 4, 'rayons X', null);
+      s += dim(X(0), X(F), H - 14, 'focale 7,5 m');
+      return svg(W, H, s, 'Schéma optique d\'un télescope de XMM-Newton');
+    },
     /* Kepler : télescope de Schmidt (Kepler Instrument Handbook) : lame de 0,95 m, primaire sphérique de 1,4 m, focale 1 399 mm.
        Lame au centre de courbure du miroir (Schmidt classique), donc ≈ 2,8 m du miroir : déduit, non publié dans le manuel.
        Surface focale courbe de rayon ≈ focale, de Ø ≈ 0,39 m (16,1° × 1,40 m, déduit). Figure en mètres, même échelle sur les deux axes. */
@@ -243,7 +275,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], kepler:[['phot','photomètre']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], kepler:[['phot','photomètre']], xmm:[['mirrors','miroirs'],['tube','tube'],['fpa','plan focal']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -269,6 +301,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    xmm:{ title:'Trois télescopes à 58 miroirs emboîtés', legend:'Les rayons X qui vont vers EPIC sont tracés en orange, ceux que les réseaux dévient vers le RGS en violet ; les miroirs en noir, les détecteurs en bleu.', scale:'Un des trois télescopes, en coupe. À l\'échelle le long de l\'axe : longueur des miroirs (60 cm) et focale (7,5 m) ; dans le sens radial, l\'échelle est dilatée quatre fois pour que les coques se voient, et seules 8 des 58 coques sont dessinées (diamètres de 70 à 30,6 cm, The Telescopes of XMM-Newton). La position des réseaux et de la caméra RGS est un schéma de principe. Le tube, en pointillé, est indicatif.',
+      steps:['Comme pour Chandra, les rayons X ne se réfléchissent qu\'en frôlant une surface très lisse, sous un angle d\'un demi-degré environ.',
+             'Chaque télescope empile 58 coques de nickel doré, de 70 à 30,6 cm de diamètre : chaque rayon frôle un paraboloïde puis un hyperboloïde. Ces coques très fines, emboîtées serrées, donnent une grande surface collectrice.',
+             'Derrière deux des trois télescopes, une pile de réseaux intercepte une partie des rayons et les disperse vers une caméra RGS, décalée sur le côté ; le reste continue vers une caméra MOS.',
+             'Au foyer, 7,5 m plus loin, les caméras EPIC : la pn derrière le troisième télescope, qui n\'a pas de réseau, et les deux MOS derrière les autres.'],
+      specs:[['Combinaison','Wolter I, 3 télescopes'],['Coques','58 par télescope, nickel doré'],['Diamètres','70 à 30,6 cm'],['Focale','7,5 m'],['Surface efficace','≈ 1 550 cm² par télescope à 1,5 keV'],['Angle de frôlement','≈ 30′']] },
     kepler:{ title:'Un télescope de Schmidt, très ouvert', legend:'Les rayons sont tracés en orange, la lame correctrice en bleu clair, le miroir en noir, le plan focal en bleu.', scale:'Figure à l\'échelle, même échelle sur les deux axes : diamètres de la lame (0,95 m) et du miroir (1,4 m) et focale (1 399 mm) d\'après le Kepler Instrument Handbook. La position de la lame, au centre de courbure du miroir comme dans un Schmidt classique, et le diamètre du plan focal (16,1° de champ × 1,40 m) sont déduits. Le tube, en pointillé, est indicatif.',
       steps:['La lumière traverse d\'abord une lame de verre de 0,95 m, presque plate, dont la forme subtile corrige à l\'avance le défaut du miroir.',
              'Elle atteint au fond du tube un miroir sphérique de 1,4 m. Seul, un miroir sphérique donne une image floue ; avec la lame, l\'image est nette sur un champ immense, de 16° de diamètre.',
@@ -326,6 +364,11 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* XMM-Newton (Users Handbook) : EPIC pn, 12 CCD de 64 × 200 px de 150 µm (9,6 × 30 mm) en 2 rangées de 6 ; EPIC MOS, 7 CCD de 600 × 600 px de
+       40 µm (24 mm), un central et six autour ; RGS, 9 CCD de 1024 × 384 px de 27 µm en rangée. Dispositions simplifiées, espaces indicatifs. */
+    xmm:{ groups:[ grid(6,2,9.6,30,0.3,0.6,'#2E7FA8',['EPIC pn','12 CCD de 64 × 200 px, 150 µm']), cells([[0,0],[0,24.6],[0,-24.6],[24.6,12.3],[24.6,-12.3],[-24.6,12.3],[-24.6,-12.3]],24,24,'#4FA3C7',['EPIC MOS (une des deux)','7 CCD de 600 × 600 px, 40 µm']),
+                   grid(9,1,10.4,27.6,0.5,0,'#7A4FB5',['RGS (un des deux)','9 CCD de 1024 × 384 px, 27 µm']) ],
+          note:'Les caméras sont rapprochées ici pour comparer leur taille ; dans le satellite, chacune est au foyer de son télescope, et les CCD des RGS suivent la courbe de dispersion. Formats et tailles des pixels d\'après le Users Handbook ; disposition des CCD simplifiée.', gaps:true },
     /* Kepler : 21 modules de 2 CCD de 1044 × 2200 px de 27 µm (28,2 × 59,4 mm) sur une grille de 5 × 5 sans les coins, où sont les 4 viseurs
        (512 × 512 px de 13 µm, 6,7 mm) ; Kepler Instrument Handbook. Espaces entre CCD et modules indicatifs. */
     kepler:{ groups:[ grid(10,5,28.2,59.4,1.5,4,function(i, j){ return ((j === 0 || j === 4) && (i < 2 || i > 7)) ? null : '#6A8D2F'; }, ['Photomètre','42 CCD de 1044 × 2200 px, 27 µm, en 21 modules']), grid(2,2,6.7,6.7,50,50,'#C9A100',['Viseurs de guidage','4 CCD de 512 × 512 px, 13 µm']) ],
