@@ -1,14 +1,18 @@
 /* =================================================================
    RENDU DES MATÉRIAUX — réglages propres à chaque maquette, appliqués au chargement.
-   m : matériau three.js (MeshStandardMaterial), n : son nom dans le fichier 3D.
+   m : matériau three.js (MeshStandardMaterial), n : son nom dans le fichier 3D, part : la pièce (clé de data-tele.js) qui le porte.
+   Couleurs vérifiées le 19 novembre face aux illustrations de référence (articles Wikipédia, vues de la NASA et de l'ESA).
 ================================================================= */
+/* couverture dorée des maquettes NASA (bibliothèque commune à Chandra et Kepler) : la texture est d'un jaune pur, sans bleu,
+   qu'aucune teinte ne corrige ; elle sert de relief (froissé), et la couleur devient celle d'un or brun métallique */
+function goldFoil(m){ if (m.map){ m.bumpMap = m.map; m.bumpScale = 0.6; m.map = null; m.needsUpdate = true; } m.color.setHex(0x8F6424); m.metalness = 0.85; m.roughness = 0.38; m.userData.envK = 0.55; }
 var LOOKS = {
   /* Chandra (maquette NASA, textures et couleurs déjà en sRGB) : cellules solaires plus sombres, moins de reflets */
   chandra: function(m, n){
-    if (/shiny_panel/.test(n)){ m.color.setHex(0x1B2438); m.metalness = 0.2; m.roughness = 0.55; }
+    if (/shiny_panel/.test(n)){ m.color.setHex(0x2B4C92); m.metalness = 0.3; m.roughness = 0.45; }   /* cellules solaires bleues */
     else if (/tex_01/.test(n)){ m.color.setHex(0x3E4A66); m.roughness = 0.6; }   /* atlas des cellules solaires et des petits équipements */
-    else if (/foil_gold/.test(n)){ m.metalness = 0.6; m.roughness = 0.45; }
-    else if (/foil_silver/.test(n)){ m.color.setHex(0xC8CCD0); m.metalness = 0.3; m.roughness = 0.55; }
+    else if (/foil_gold/.test(n)){ goldFoil(m); }
+    else if (/foil_silver/.test(n)){ m.color.setRGB(2.6, 2.65, 2.75); m.metalness = 0.4; m.roughness = 0.42; m.userData.envK = 1.2; }   /* texture froissée très sombre : couleur relevée au-delà de 1 */   /* tube et modules : couverture argentée froissée */
   },
   /* Fermi (maquette NASA) : cellules solaires sombres, capot du LAT blanc mat, couvertures moins réfléchissantes */
   fermi: function(m, n, THREE){
@@ -30,9 +34,10 @@ var LOOKS = {
     var L = { svm:[0x2A2A2C, 0.3, 0.38, 0.5], tube:[0x202022, 0.3, 0.4, 0.5], fpa:[0x2A2A2C, 0.3, 0.38, 0.5], om:[0x4A4A4C, 0.2, 0.5, 0.4], solar:[0x4C4A3C, 0.05, 0.6, 0.25], mirrors:[0xB8964A, 0.55, 0.4, 0.6] }[n] || [0x2A2A2C, 0.3, 0.4, 0.5];
     m.color.setHex(L[0]); m.metalness = L[1]; m.roughness = L[2]; m.userData.envK = L[3];
   },
-  tess: function(m, n, THREE){
+  tess: function(m, n, THREE, part){
+    if (part === 'solar' && n === 'TESS'){ m.color.setHex(0x2B2018); m.metalness = 0.25; m.roughness = 0.5; m.userData.envK = 0.4; return; }   /* cellules brun sombre, pas l'atlas blanc */
     if (/reflector|foil_silver/.test(n) && m.map){ m.normalMap = m.map; m.map = null; if (THREE.LinearEncoding != null) m.normalMap.encoding = THREE.LinearEncoding; m.normalScale.set(0.4, 0.4); m.needsUpdate = true; }
-    if (/foil_silver/.test(n)){ m.color.setHex(0xB9BDC2); m.metalness = 0.55; m.roughness = 0.5; }
+    if (/foil_silver/.test(n)){ m.color.setHex(0xD4D7DB); m.metalness = 0.85; m.roughness = 0.36; }   /* écran conique : argent froissé */
     else if (/reflector/.test(n)){ m.color.setHex(0xD8D9DA); m.metalness = 0.1; m.roughness = 0.6; }
     if (m.userData.envK == null) m.userData.envK = 0.5;
   },
@@ -52,7 +57,13 @@ var LOOKS = {
     if (/Gold|Aluminum|Metal/.test(n)){ m.metalness = Math.max(m.metalness, 0.75); m.roughness = Math.min(m.roughness, 0.45); }
     if (/SolarArray/.test(n)){ m.metalness = 0.35; m.roughness = 0.35; }
   },
-  roman: function(m, n, THREE){
+  /* Kepler (maquette NASA, même bibliothèque de matériaux que Chandra) : or et argent métalliques, froissés par leur texture */
+  kepler: function(m, n){
+    if (/foil_gold/.test(n)){ goldFoil(m); }
+    else if (/foil_silver/.test(n)){ m.color.setRGB(2.6, 2.65, 2.75); m.metalness = 0.4; m.roughness = 0.42; m.userData.envK = 1.2; }   /* texture froissée très sombre : couleur relevée au-delà de 1 */
+  },
+  roman: function(m, n, THREE, part){
+    if ((part === 'barrel' || part === 'cover') && /grey[23]/.test(n)){ m.color.setHex(0xB9BDC1); m.metalness = 0.6; m.roughness = 0.45; return; }   /* tube extérieur argenté */
     /* Les couleurs du fichier NASA sont des valeurs sRGB que le chargeur lit comme linéaires :
        sous la lumière du site, tout virait au blanc. On les reconvertit, puis : cellules solaires
        sombres et mates, couvertures argentées, structure gris foncé. */

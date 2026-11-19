@@ -475,10 +475,10 @@ function unb64(src){
   else if (n - i === 3){ var w = (B64[src[i]] << 18) | (B64[src[i+1]] << 12) | (B64[src[i+2]] << 6); out[o++] = w >> 16; out[o++] = (w >> 8) & 255; }
   return out.buffer.slice(0, o);
 }
-function tweakMaterial(id, m){
+function tweakMaterial(id, m, part){
   var n = m.name || '';
   if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  if (window.LOOKS && LOOKS[id]) LOOKS[id](m, n, THREE);   /* réglages propres à chaque maquette : src/looks.js */
+  if (window.LOOKS && LOOKS[id]) LOOKS[id](m, n, THREE, part || null);   /* réglages propres à chaque maquette : src/looks.js */
   m.userData.env = 1;
 }
 
@@ -513,10 +513,11 @@ function prepare(t, gltf){
   inner.traverse(function(o){
     if (!o.isMesh) return;
     o.castShadow = true; o.receiveShadow = true;
-    o.material = o.material.clone(); tweakMaterial(t.id, o.material); M.mats.push(o.material);
+    var k = keyOf(o);
+    o.material = o.material.clone(); tweakMaterial(t.id, o.material, k); M.mats.push(o.material);
     if (o.material.transparent) o.castShadow = false;
     M.meshes.push(o);
-    var k = keyOf(o); if (k) attach(o, k); else orphans.push(o);
+    if (k) attach(o, k); else orphans.push(o);
   });
   function attach(o, k){ o.userData.part = k; M.parts[k].meshes.push(o); M.parts[k].box.expandByObject(o); }
   orphans.forEach(function(o){
