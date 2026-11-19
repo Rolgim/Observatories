@@ -168,7 +168,7 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
     sections:[
       { title:'Spacecraft', rows:[['Dimensions','10 m long · 16 m span, arrays deployed'],['Launch mass','3.8 t'],['Construction','Dornier Satellitensysteme, prime contractor; mirrors by Media Lario'],['Launch','10 December 1999, Ariane 5, Kourou']] },
       { title:'Telescopes', rows:[['Mirrors','3 modules of 58 nested Wolter I shells, gold-coated nickel'],['Diameters','70 cm (outer shell) to 30.6 cm (inner) · 60 cm long'],['Focal length','7.5 m'],['Effective area','≈ 1,550 cm² per telescope at 1.5 keV'],['Instruments','EPIC (one pn camera, two MOS), two RGS, OM optical monitor']] },
-      { title:'Orbit and operations', rows:[['Orbit','≈ 7,000 × 114,000 km altitude · 48 h · inclined at 40°'],['Observing','above 46,000 km, up to ≈ 40 h at a stretch per orbit'],['Control','ESOC (Darmstadt); Perth, Kourou and Santiago stations'],['Mission','designed for 10 years; operations approved until the end of 2026']] }
+      { title:'Orbit and operations', rows:[['Orbit','48 h · at launch ≈ 7,000 × 114,000 km altitude, inclined at 40°'],['Observing','above 46,000 km, up to ≈ 40 h at a stretch per orbit'],['Control','ESOC (Darmstadt); Perth, Kourou and Santiago stations'],['Mission','designed for 10 years; operations approved until the end of 2026']] }
     ],
     parts:{
       mirrors:{ name:'Mirror modules', desc:"Three X-ray telescopes, each made of 58 nested gold-coated nickel shells. X-rays graze them at half a degree and converge 7.5 m further on. Behind two of the three modules, gratings divert almost half of them to the RGS spectrometers.", facts:["58 shells per module, Wolter I","7.5 m focal length","≈ 1,550 cm² per telescope at 1.5 keV"] },

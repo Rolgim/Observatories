@@ -157,7 +157,7 @@ var TELESCOPES = [
     sub:'Orbite terrestre très elliptique de 48 heures, rayons X (depuis 1999)',
     src:'Maquette : ESA, service SPICE (pour Cosmographia)',
     file:'models/xmm.glb', bytes:416356, axis:'x', size:16,
-    view:{ az:-2.3, el:0.35, dist:1.25 }, sun:[0.1,-0.95,0.3], orbit:'heo', heo:{ rp:13371, ra:120371, apo:'≈ 114 000 km', per:'48 h', note:'Terre, orbite nominale et Lune à l\'échelle.' },
+    view:{ az:-2.3, el:0.35, dist:1.25 }, sun:[0.1,-0.95,0.3], orbit:'heo', heo:{ rp:13371, ra:120371, apo:'≈ 114 000 km', per:'48 h', note:'Terre, orbite initiale et Lune à l\'échelle.' },
     hero:{ num:'3 × 58', unit:'', label:'miroirs emboîtés, dans trois télescopes X' },
     cmp:{ tag:'10 m', dim:'10 m de long, 16 m d\'envergure', mirror:0.7, mass:3800, len:10 },
     color:'#2E7FA8', highlight:['Miroirs','3 × 58',''], footprint:['10','m de long'], optical:['mirrors','tube','fpa'],
@@ -183,7 +183,7 @@ var TELESCOPES = [
         ['Surface efficace','≈ 1 550 cm² par télescope à 1,5 keV','uhb'],
         ['Instruments','EPIC (une caméra pn, deux MOS), deux RGS, moniteur optique OM',['fs','uhb']] ]},
       { title:'Orbite et exploitation', rows:[
-        ['Orbite','≈ 7 000 × 114 000 km d\'altitude · 48 h · inclinée de 40°','fs'],
+        ['Orbite','48 h · au lancement ≈ 7 000 × 114 000 km d\'altitude, inclinée de 40°','fs'],
         ['Observation','au-dessus de 46 000 km, jusqu\'à ≈ 40 h d\'affilée par orbite','uhb'],
         ['Contrôle','ESOC (Darmstadt) ; stations de Perth, Kourou et Santiago','fs'],
         ['Mission','prévue pour 10 ans ; exploitation approuvée jusqu\'à fin 2026','fs'] ]}
