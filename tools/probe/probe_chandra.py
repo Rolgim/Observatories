@@ -8,9 +8,12 @@ TAP = "https://heasarc.gsfc.nasa.gov/xamin/vo/tap/sync"
 CDA = "https://cxc.cfa.harvard.edu/cdaftp/byobsid/{d}/{o}/primary/"
 
 def tap(adql):
-    r = requests.get(TAP, params=dict(REQUEST="doQuery", LANG="ADQL", FORMAT="csv", QUERY=adql), timeout=120)
-    print("   HTTP", r.status_code, len(r.content), "octets")
-    print("\n".join(r.text.splitlines()[:25]))
+    import pyvo
+    try:
+        t = pyvo.dal.TAPService("https://heasarc.gsfc.nasa.gov/xamin/vo/tap").search(adql).to_table()
+        t.pprint(max_lines=30, max_width=200)
+    except Exception as e:
+        print("   ÉCHEC", repr(e)[:300])
 
 print("== colonnes de chanmaster")
 tap("SELECT TOP 60 column_name, datatype FROM TAP_SCHEMA.columns WHERE table_name = 'chanmaster'")
@@ -41,7 +44,7 @@ def fits(url, maxmb=40):
     print("   ", url.rsplit("/", 1)[1], n // 1024, "ko")
     if n > maxmb * 2**20: print("    trop gros pour la sonde"); return
     raw = requests.get(url, timeout=300).content
-    if url.endswith(".gz"): raw = gzip.decompress(raw)
+    if raw[:2] == b"\x1f\x8b": raw = gzip.decompress(raw)
     with F.open(io.BytesIO(raw)) as hd:
         for e in hd:
             print("     HDU", e.name, type(e).__name__, getattr(e, "shape", None) if not hasattr(e, "columns") else "")
@@ -50,6 +53,10 @@ def fits(url, maxmb=40):
                 print("       lignes :", len(e.data))
             for k in ("OBJECT", "OBS_ID", "INSTRUME", "GRATING", "DETNAM", "DATE-OBS", "EXPOSURE", "TSTART", "OBSERVER", "TITLE", "RA_NOM", "DEC_NOM", "TLMIN11", "TLMAX11", "TCTYP11"):
                 if k in e.header: print("       ", k, "=", e.header[k])
+            if e.data is not None and not hasattr(e, "columns") and e.data.ndim == 2:
+                d = np.asarray(e.data, float); print(f"        image {d.shape}, total {d.sum():.0f} coups, max {d.max():.0f}")
+                for k in ("CRVAL1", "CRVAL2", "CDELT1", "CDELT2", "CTYPE1", "BUNIT"):
+                    if k in e.header: print("       ", k, "=", e.header[k])
             if e.name == "EVENTS":
                 d = e.data
                 for c in ("energy", "x", "y", "pha"):
@@ -61,11 +68,11 @@ def fits(url, maxmb=40):
                     cts = d["COUNTS"][i]; lo = d["BIN_LO"][i] if "BIN_LO" in names else None
                     print("        ligne", i, row, "coups", int(np.sum(cts)), "λ", (float(np.min(lo)), float(np.max(lo))) if lo is not None else "")
 
-for o in (114, 1318, 1248, 168):
+for o in (114, 1318, 1248, 168, 1851, 2700):
     print("\n== archive, ObsID", o)
     try:
         u, files = ls(o)
         for f in files:
-            if re.search(r"(evt2|pha2)\.fits(\.gz)?$", f): fits(u + f)
+            if re.search(r"(evt2|pha2|img2)\.fits(\.gz)?$", f): fits(u + f)
     except Exception as e:
         print("   ÉCHEC", repr(e))
