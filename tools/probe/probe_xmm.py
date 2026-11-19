@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Sonde XMM-Newton : catalogue des observations (HEASARC, table xmmmaster) et produits PPS du miroir HEASARC.
+"""Sonde XMM-Newton : produits PPS du miroir HEASARC pour quelques observations candidates (images EPIC par bande, spectres RGS, images OM).
 N'écrit rien dans le dépôt. Sert à choisir les observations des recettes xmm/* de fetch_data.py."""
-import re, requests
+import re, requests, io, gzip
 TAP = "https://heasarc.gsfc.nasa.gov/xamin/vo/tap"
 def tap(adql, n=20):
     import pyvo
@@ -9,18 +9,31 @@ def tap(adql, n=20):
         t = pyvo.dal.TAPService(TAP).search(adql).to_table(); t.pprint(max_lines=n, max_width=220); return t
     except Exception as e:
         print("   ÉCHEC", repr(e)[:300])
-res = {}
-for label, where in [(k, f"CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', {ra}, {de}, 0.05)) = 1") for k, ra, de in (("Cas A", 350.85, 58.815), ("Capella", 79.172, 45.998), ("Tycho", 6.334, 64.14), ("Crabe", 83.633, 22.0145), ("Zeta Puppis", 120.896, -40.003))]:
-    print("\n==", label)
-    res[label] = tap("SELECT TOP 10 obsid, name, ra, dec, time, duration, status, pi_lname FROM xmmmaster WHERE " + where + " AND status = 'archived' ORDER BY duration DESC")
+print("== M101 et M51 (images OM)")
+for k, ra, de in (("M101", 210.8023, 54.3489), ("M51", 202.4696, 47.1952)):
+    tap(f"SELECT TOP 6 obsid, name, duration FROM xmmmaster WHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', {ra}, {de}, 0.1)) = 1 AND status = 'archived' ORDER BY duration DESC")
+KEEP = re.compile(r"(IMAGE_|FLUXED|RGS|SRSPEC|SIMAG|LSIMAG|RSIMAG|FSIMAG|OMX|R1S|R2S|RGX)")
 def pps(obsid):
-    for u in (f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{obsid}/PPS/", f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev1/{obsid}/PPS/"):
-        r = requests.get(u, timeout=60); print("  ", u, r.status_code)
-        if r.ok:
-            fs = re.findall(r'href="([^"?/][^"]*)"', r.text)
-            for f in fs: print("     ", f)
-            return
-for label in ("Cas A", "Capella"):
-    t = res.get(label)
-    if t is not None and len(t):
-        print("\n== PPS de", label, t[0]["obsid"]); pps(str(t[0]["obsid"]).zfill(10))
+    u = f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{obsid}/PPS/"
+    r = requests.get(u, timeout=60); print("\n== PPS", obsid, r.status_code)
+    fs = re.findall(r'href="([^"?/][^"]*)"', r.text)
+    insts = sorted(set(f[11:14] for f in fs if f.startswith("P")))
+    print("   préfixes :", " ".join(insts))
+    for f in fs:
+        if KEEP.search(f) and not f.endswith(".PDF") and not f.endswith(".HTM"): print("     ", f)
+    return u, fs
+for o in ("0412180101", "0510780601", "0134721501", "0104260101", "0303420101"):
+    try:
+        u, fs = pps(o)
+        fl = [f for f in fs if "FLUXED" in f and f.endswith(".FTZ")]
+        if fl:
+            from astropy.io import fits
+            raw = requests.get(u + fl[0], timeout=120).content
+            if raw[:2] == b"\x1f\x8b": raw = gzip.decompress(raw)
+            with fits.open(io.BytesIO(raw)) as h:
+                for e in h:
+                    print("     HDU", e.name, getattr(e, "columns", None) and e.columns.names, None if e.data is None else len(e.data))
+                    for kk in ("OBJECT", "DATE-OBS", "EXPOSURE", "TELESCOP", "INSTRUME"):
+                        if kk in e.header: print("       ", kk, "=", e.header[kk])
+    except Exception as e:
+        print("   ÉCHEC", repr(e)[:300])
