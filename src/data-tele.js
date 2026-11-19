@@ -9,6 +9,7 @@
      optical    pièces qui ouvrent la page « Trajet de la lumière »
      compare    order (rang dans « Comparer », chronologique), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
+     orbit      leo (orbite basse), heo (orbite terrestre très elliptique) ou l2
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
 ================================================================= */
 var TELESCOPES = [
@@ -85,6 +86,71 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'chandra', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
+    agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
+    sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/chandra.glb', bytes:802076, axis:'x', size:13.8,
+    view:{ az:-2.5, el:0.35, dist:1.3 }, sun:[0.2,0.9,0.3], orbit:'heo',
+    hero:{ num:'0,5', unit:'″', label:'la netteté de ses images X (largeur à mi-hauteur)' },
+    cmp:{ tag:'13,8 m', dim:'13,8 m de long, 19,5 m d\'envergure', mirror:1.2, mass:4800, len:13.8 },
+    color:'#C2367A', highlight:['Focale','10','m'], footprint:['13,8','m de long'], optical:['hrma','oba','isim'],
+    compare:{ order:2, rot:[0, 0.5, -Math.PI/2], fp:[1, 1] },   /* ouverture vers le haut */
+    desc:"Les rayons X ne se réfléchissent que s'ils frôlent une surface. Chandra les concentre donc avec quatre paires de miroirs en forme de tubes emboîtés, qu'ils effleurent sous un angle très faible, puis les envoie 10 m plus loin sur ses détecteurs. Il observe depuis 1999 le gaz à des millions de degrés : restes de supernovae, amas de galaxies, matière autour des trous noirs. Son orbite très allongée l'emmène à plus du tiers de la distance de la Lune, loin des ceintures de radiations.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en six ensembles d'après sa géométrie et ses matériaux ; elle contient les quatre coquilles du miroir.",
+    checked:'2026-11-19',
+    refs:{
+      specs:{ t:'Chandra Specifications', p:'Chandra X-ray Center (SAO)', u:'https://www.chandra.si.edu/about/specs.html' },
+      cspecs:{ t:'Chandra Specifications (dossier de presse)', p:'Chandra X-ray Center (SAO)', u:'https://chandra.si.edu/press/chandra_specs.html' },
+      pog:{ t:'Proposers\' Observatory Guide, introduction', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/proposer/POG/html/INTRO.html' },
+      tvis:{ t:'Proposers\' Observatory Guide, contraintes de visibilité', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/proposer/POG/html/TVIS.html' },
+      about:{ t:'About Chandra (caractéristiques des instruments)', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/cdo/about_chandra/' },
+      miles:{ t:'Chandra Mission Milestones', p:'Chandra X-ray Center', u:'https://chandra.harvard.edu/about/mission_milestones.html' },
+      cuc:{ t:'Chandra Users\' Committee, mai 2026 (état de la mission)', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/cdo/cuc/cuc_file26/may6/Slane_CUC_May2026.pdf' },
+      cfp:{ t:'Chandra Call for Proposals, cycle 26', p:'Chandra X-ray Center', u:'https://cxc.harvard.edu/proposer/CfP/arc_pdfs/CfP_cyc26.pdf' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','13,8 m de long · 19,5 m d\'envergure, panneaux déployés','specs'], ['Masse','4 800 kg','specs'],
+        ['Énergie','deux ailes de trois panneaux, 2 350 W · trois batteries nickel-hydrogène','specs'],
+        ['Pointage','six roues de réaction · stabilité 0,25″','cspecs'], ['Lancement','23 juillet 1999, navette Columbia','miles'],
+        ['Constructeur','TRW ; programme géré par le centre Marshall de la NASA','cspecs'] ]},
+      { title:'Optique', rows:[
+        ['Type','Wolter de type I, incidence rasante','pog'], ['Miroirs','quatre paires paraboloïde–hyperboloïde emboîtées · 83,3 cm de long chacun','specs'],
+        ['Plus grand diamètre','1,2 m','specs'], ['Focale','10 m','specs'], ['Masse des miroirs','956,4 kg','specs'],
+        ['Netteté','largeur à mi-hauteur 0,5″','about'], ['Surface efficace','800 cm² à 0,25 keV · 400 cm² à 5 keV','about'] ]},
+      { title:'Instruments', rows:[
+        ['ACIS','10 CCD en deux réseaux · imagerie et spectroscopie','specs'], ['HRC','galettes à microcanaux, grand champ, haute résolution','specs'],
+        ['HETG','réseau de transmission, pouvoir de résolution 60 à 1 000','specs'], ['LETG','réseau basse énergie, pouvoir de résolution 40 à 2 000','specs'],
+        ['État en 2026','fonctionnement nominal, sauf HRC-S (arrêté depuis octobre 2025)','cuc'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite à l\'origine','10 000 × 140 161 km · inclinaison 28,5°','specs'], ['Orbite en 2025','périgée ≈ 6 680 km · apogée ≈ 142 000 km','pog'],
+        ['Période','63,5 h','pog'], ['Hors des ceintures de radiations','≈ 70 % du temps','pog'],
+        ['Pointage interdit','à moins de 46,2° du Soleil','tvis'], ['Enregistreur','1,8 Gbit · vidé toutes les 8 h environ','specs'],
+        ['Accès exclusif','six mois pour l\'observateur, puis public','cfp'] ]}
+    ],
+    parts:[
+      { key:'door', name:'Porte du pare-soleil', explode:[-1,-0.4,0,1.6],
+        desc:"Le couvercle qui protégeait les miroirs pendant le lancement. Il s'est ouvert une fois pour toutes le 12 août 1999 ; ouvert, il fait aussi écran contre la lumière du Soleil.",
+        facts:[["Ouverte le 12 août 1999", "miles"], ["≈ 2,7 m, 54 kg (9 pieds, 120 livres)", "miles"]] },
+      { key:'bus', name:'Module de service', explode:[0,1,0,1.6],
+        desc:"Le module octogonal qui entoure les miroirs. Il fournit l'énergie, le pointage, les communications et la propulsion. Ses moteurs ont porté Chandra sur son orbite très allongée après le largage par la navette.",
+        facts:[["Six roues de réaction, deux centrales inertielles", "cspecs"], ["Caméra de visée : champ de 1,4° × 1,4°", "cspecs"], ["Deux antennes à faible gain", "cspecs"], ["Enregistreur de 1,8 Gbit", "specs"]] },
+      { key:'hrma', name:'Miroirs (HRMA)', explode:[0,0,0,0],
+        desc:"Le cœur de Chandra : quatre paires de miroirs en forme de tubes emboîtés. Les rayons X frôlent d'abord un paraboloïde puis un hyperboloïde, sous un angle très faible, et convergent 10 m plus loin. Juste derrière, deux réseaux peuvent s'insérer dans le faisceau pour en faire un spectre.",
+        facts:[["Quatre paires imbriquées, 1,2 m de diamètre pour la plus grande", "specs"], ["Focale de 10 m", "specs"], ["956,4 kg", "specs"]] },
+      { key:'oba', name:'Banc optique', explode:[1,0,0,1.0],
+        desc:"Le long tube qui tient les détecteurs à 10 m derrière les miroirs, avec une grande stabilité. Les rayons X y voyagent sans rencontrer d'autre optique.",
+        facts:[["Sépare miroirs et foyer de 10 m", "specs"]] },
+      { key:'isim', name:'Module des instruments', explode:[1,0,0,2.4],
+        desc:"Au bout du tube, une table mobile place au foyer l'une des deux caméras : ACIS (CCD) ou HRC (galettes à microcanaux).",
+        facts:[["ACIS : 10 CCD", "specs"], ["HRC : imagerie à très haute résolution", "pog"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[0,-1,0,1.0],
+        desc:"Deux ailes de trois panneaux en silicium, déployées après le largage, et trois batteries pour stocker l'énergie.",
+        facts:[["2 350 W", "specs"], ["Trois batteries nickel-hydrogène de 40 Ah", "specs"]] }
+    ]
+  },
+  {
     id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -94,7 +160,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:2, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:3, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -160,7 +226,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:3, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:4, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -236,7 +302,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:4, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -301,7 +367,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['> 12','m de haut'], optical:['ota','instr'],
-    compare:{ order:5, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:6, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',

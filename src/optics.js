@@ -115,6 +115,42 @@ var Optics = (function(){
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
+    /* Chandra : quatre paires Wolter I, à l'échelle (POG, ch. 4) : diamètres 1,23, 0,99, 0,87, 0,65 m ; miroirs de 84 cm ;
+       foyer à 10,0548 m de la plaque centrale (CAP, z = 0). Pente des miroirs : un quart de l'angle de sortie moyen (θc + θd)/2. */
+    chandra: function(){
+      var PAIRS = [[1.23, 3.42, 3.50], [0.99, 2.75, 2.82], [0.87, 2.42, 2.49], [0.65, 1.80, 1.90]], LM = 0.84, ZF = 10.0548;
+      function shells(X, Y, half, rays, w){
+        var t = '', m = '';
+        PAIRS.forEach(function(p, i){
+          var rc = p[0]/2, a = (p[1] + p[2])/8*Math.PI/180;
+          [1,-1].forEach(function(sg){
+            if (half && sg < 0) return;
+            m += L(X(-LM), Y(sg*(rc + a*LM)), X(0), Y(sg*rc), INK, w) + L(X(0), Y(sg*rc), X(LM), Y(sg*(rc - 3*a*LM)), INK, w);
+            if (rays){ var r1 = rc + a*LM/2, r2 = rc - 1.5*a*LM;
+              t += P([[X(-1.2), Y(sg*r1)], [X(-LM/2), Y(sg*r1)], [X(LM/2), Y(sg*r2)], [X(Math.min(ZF, rays)), Y(sg*r2*(1 - (Math.min(ZF, rays) - LM/2)/(ZF - LM/2)))]], RAY, 1.1); }
+          });
+        });
+        return { m:m, t:t };
+      }
+      /* vue d'ensemble, même échelle sur les deux axes */
+      var W = 560, z0 = -1.4, z1 = 10.6, k = (W - 40)/(z1 - z0), H1 = Math.round(1.4*k + 40), cy = 20 + 0.7*k;
+      function X(z){ return 20 + (z - z0)*k; } function Y(r){ return cy - r*k; }
+      var a = shells(X, Y, false, ZF, 2.5), s = a.t + G('hrma', a.m);
+      s += G('isim', L(X(ZF), Y(0.06), X(ZF), Y(-0.06), DET, 4));
+      s += G('oba', L(X(0.9), Y(0.62), X(ZF + 0.3), Y(0.62), SOFT, 1, '4 3') + L(X(0.9), Y(-0.62), X(ZF + 0.3), Y(-0.62), SOFT, 1, '4 3'));
+      s += T(X(z0) + 2, 14, 'rayons X du ciel', null) + T(X(0), Y(-0.62) + 16, 'miroirs', 'middle', true) + T(X(ZF), Y(-0.62) + 16, 'foyer', 'middle', true);
+      s += dim(X(0), X(ZF), H1 + 18, '10,05 m');
+      /* agrandissement des miroirs, même échelle sur les deux axes (× 5) */
+      var k2 = k*5, zz0 = -1.1, oy = H1 + 50, cy2 = oy + 0.68*k2;
+      function X2(z){ return W/2 + (z - 0.0)*k2; } function Y2(r){ return cy2 - r*k2; }
+      var b = shells(X2, Y2, true, 1.15, 3), s2 = b.t + G('hrma', b.m);
+      s2 += L(X2(0), Y2(0.7), X2(0), Y2(0.02), SOFT, 1, '2 3') + T(X2(0) + 4, Y2(0.02) - 4, 'plaque centrale', null);
+      s2 += T(X2(-LM/2), Y2(0.13), 'paraboloïdes', 'middle', true) + T(X2(LM/2), Y2(0.13), 'hyperboloïdes', 'middle', true);
+      s2 += L(X2(-1.0), Y2(0), X2(1.15), Y2(0), SOFT, 1, '6 4') + T(X2(-1.0), Y2(0) + 14, 'axe', null);
+      var H = Math.round(cy2 + 26);
+      s += '<line x1="12" y1="' + f(H1 + 30) + '" x2="' + (W - 12) + '" y2="' + f(H1 + 30) + '" stroke="' + SOFT + '" stroke-width="1"/>' + T(14, H1 + 44, 'agrandi 5 fois, même échelle sur les deux axes', null);
+      return svg(W, H, s + s2, 'Schéma optique de Chandra, à l\'échelle');
+    },
     roman: function(){
       var ZC = 0.45;
       return twoMirror({ z0:-6.0, z1:3.6, half:1.75, R:5.76, r1:1.2, hole:0.28, r2:0.21, d:2.4, rays:[1.2, 0.62], focus:[ZC, 0], dLabel:'≈ 2,4 m', k1:'ota', k2:'ota',
@@ -135,7 +171,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -161,6 +197,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    chandra:{ title:'Des miroirs en incidence rasante : quatre paires Wolter de type I', scale:'Figure à l\'échelle, avec la même échelle sur les deux axes : diamètres des quatre paires (1,23 à 0,65 m), longueur des miroirs (84 cm) et distance du foyer (10,05 m) d\'après le guide de l\'observateur (POG, chapitre 4). La pente de chaque miroir est déduite de son angle de sortie. Le tube du banc optique, en pointillé, est indicatif.',
+      steps:['Les rayons X traversent la matière au lieu de s\'y réfléchir. Ils ne rebondissent que s\'ils frôlent une surface très lisse, sous un angle inférieur au degré.',
+             'Chaque rayon frôle d\'abord un paraboloïde, puis un hyperboloïde : deux réflexions rasantes suffisent à former une image nette. Quatre paires emboîtées, de 1,23 à 0,65 m de diamètre, multiplient la surface collectrice.',
+             'Les miroirs, en verre Zerodur revêtu d\'iridium, renvoient les rayons sur un cône très étroit : le foyer est à 10 m derrière eux, au bout du banc optique.',
+             'Au foyer, une table mobile place ACIS ou HRC. Pour un spectre, un réseau (HETG ou LETG) s\'insère juste derrière les miroirs et disperse les rayons X selon leur énergie.'],
+      specs:[['Combinaison','Wolter de type I, quatre paires emboîtées'],['Diamètres','1,23 · 0,99 · 0,87 · 0,65 m'],['Longueur des miroirs','84 cm chacun'],['Focale','10,070 m'],['Revêtement','iridium sur verre Zerodur'],['Surface efficace','≈ 800 cm² à 0,25 keV · 400 cm² à 5 keV'],['Champ sans images fantômes','30′ de diamètre']] },
     roman:{ title:'Un anastigmat à trois miroirs, construit autour d\'un télescope existant', scale:'Aucune prescription optique de Roman n\'est publique. Ouverture (2,4 m) et obstruction centrale (30,3 %) sont exactes ; écart entre les miroirs, trou du primaire et taille du secondaire sont mesurés sur la maquette 3D de la NASA (conception de 2015) et donc indicatifs. Optique arrière : schéma de principe. Les détecteurs, plus bas, sont à l\'échelle.',
       steps:['Le miroir primaire de 2,4 m, de la taille de celui de Hubble, et le secondaire forment l\'avant du télescope ; ils travaillent vers 265 K.',
              'Derrière le primaire, l\'optique arrière reprend le faisceau : un miroir orientable, un miroir de renvoi, puis le miroir tertiaire.',
@@ -188,6 +230,9 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Chandra : CCD d'ACIS de 1024 × 1024 px de 24 µm ; HRC dessiné d'après son champ et l'échelle du foyer (1″ = 48,8 µm pour 10,07 m) */
+    chandra:{ groups:[ grid(2,2,24.6,24.6,0.5,0.5,DET,['ACIS-I','4 CCD de 1024 × 1024 px, 24 µm']), grid(6,1,24.6,24.6,0.5,0,'#0F987A',['ACIS-S','6 CCD, dont 2 éclairés par l\'arrière']), grid(1,1,87.9,87.9,0,0,'#DB5A14',['HRC-I','galette à microcanaux, ≈ 30′ de côté']) ],
+             note:'ACIS-I et ACIS-S sont montés côte à côte sur le même support, HRC sur la même table mobile ; ils sont rapprochés ici pour comparer leur taille. Taille de HRC-I déduite de son champ (≈ 30′) et de l\'échelle du foyer ; espaces entre CCD indicatifs.' },
     roman:{ groups:[ cells(WFI_MM,40.9,40.9,'#B8860B',['WFI','18 détecteurs de 4096 × 4096 px, 10 µm']) ],
              note:'Les 18 détecteurs forment six colonnes de trois, décalées en hauteur en arc. Positions des centres d\'après le modèle de champ du projet (GalSim).', gaps:true },
     gaia:{ groups:[ grid(17,7,45,59,4,1,function(i, j){ if (i===0) return j===3 ? null : (j===0||j===1||j===2) ? (j===2 ? GC.aux : GC.aux) : null; if (i<=2) return GC.sm; if (i<=10) return GC.af; if (i===11) return j===3 ? GC.aux : GC.af; if (i===12) return GC.bp; if (i===13) return GC.rp; return j>=3 ? GC.rvs : null; }, ['Plan focal de Gaia','106 CCD de 4500 × 1966 px, 10 × 30 µm']) ],

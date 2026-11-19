@@ -32,4 +32,10 @@ $GT weld $W/tmp/roman_dec.glb $W/tmp/roman_w.glb >/dev/null
 $GT simplify $W/tmp/roman_w.glb $W/tmp/roman_s.glb --ratio 0.08 --error 0.004 >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/roman_s.glb','$W/tmp/roman_seg.glb',require('$W/roman_cls.js')).then(s=>console.log('roman',JSON.stringify(s)))"
 (cd $W && node slim.mjs $W/tmp/roman_seg.glb $OUT/roman.glb 0.25 0.002)
+# ---------- Chandra : maquette NASA (Draco, textures WebP), en mètres, redécoupée
+# attendu dans $DL : chandra/chandra.glb (« Chandra X-ray Observatory.glb » du dépôt nasa/NASA-3D-Resources)
+$GT copy $DL/chandra/chandra.glb $W/tmp/chandra_dec.glb >/dev/null
+$GT weld $W/tmp/chandra_dec.glb $W/tmp/chandra_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/chandra_w.glb','$W/tmp/chandra_seg.glb',require('$W/chandra_cls.js')).then(s=>console.log('chandra',JSON.stringify(s)))"
+$GT quantize $W/tmp/chandra_seg.glb $OUT/chandra.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 ls -la $OUT

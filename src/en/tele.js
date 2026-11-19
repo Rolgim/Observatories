@@ -99,6 +99,28 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  chandra:{
+    agency:'NASA, operated by the Smithsonian Astrophysical Observatory', launch:'Launched 23 July 1999, Space Shuttle Columbia',
+    sub:'Highly elliptical Earth orbit, X-rays (since 1999)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'13.8 m', dim:'13.8 m long, 19.5 m span' },
+    desc:"X-rays only reflect when they graze a surface. Chandra therefore focuses them with four pairs of nested, tube-shaped mirrors that they skim at a very shallow angle, then sends them 10 m further on to its detectors. Since 1999 it has observed gas at millions of degrees: supernova remnants, galaxy clusters, matter around black holes. Its very elongated orbit takes it more than a third of the way to the Moon, far from the radiation belts.",
+    sourceNote:"NASA model (NASA 3D Resources repository), in metres. It has been re-segmented here into six assemblies from its geometry and materials; it contains the four mirror shells.",
+    refs:{ cspecs:'Chandra Specifications (press kit)', pog:'Proposers\' Observatory Guide, introduction', tvis:'Proposers\' Observatory Guide, visibility constraints', about:'About Chandra (instrument characteristics)', cuc:'Chandra Users\' Committee, May 2026 (mission status)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','13.8 m long · 19.5 m span, arrays deployed'],['Mass','4,800 kg'],['Power','two wings of three panels, 2,350 W · three nickel-hydrogen batteries'],['Pointing','six reaction wheels · 0.25″ stability'],['Launch','23 July 1999, Space Shuttle Columbia'],['Builder','TRW; programme managed by NASA Marshall']] },
+      { title:'Optics', rows:[['Design','Wolter type I, grazing incidence'],['Mirrors','four nested paraboloid–hyperboloid pairs · each 83.3 cm long'],['Largest diameter','1.2 m'],['Focal length','10 m'],['Mirror mass','956.4 kg'],['Sharpness','0.5″ full width at half maximum'],['Effective area','800 cm² at 0.25 keV · 400 cm² at 5 keV']] },
+      { title:'Instruments', rows:[['ACIS','10 CCDs in two arrays · imaging and spectroscopy'],['HRC','microchannel plates, wide field, high resolution'],['HETG','transmission grating, resolving power 60 to 1,000'],['LETG','low-energy grating, resolving power 40 to 2,000'],['Status in 2026','nominal, except HRC-S (halted since October 2025)']] },
+      { title:'Orbit and data', rows:[['Original orbit','10,000 × 140,161 km · 28.5° inclination'],['Orbit in 2025','perigee ≈ 6,680 km · apogee ≈ 142,000 km'],['Period','63.5 h'],['Above the radiation belts','≈ 70% of the time'],['Forbidden pointing','within 46.2° of the Sun'],['Recorder','1.8 Gbit · emptied about every 8 h'],['Exclusive access','six months for the observer, then public']] }
+    ],
+    parts:{
+      door:{ name:'Sunshade door', desc:"The lid that protected the mirrors during launch. It opened once and for all on 12 August 1999; open, it also screens out sunlight.", facts:["Opened 12 August 1999","≈ 2.7 m, 54 kg (9 feet, 120 pounds)"] },
+      bus:{ name:'Spacecraft bus', desc:"The octagonal module around the mirrors. It provides power, pointing, communications and propulsion. Its engines took Chandra to its very elongated orbit after release from the Shuttle.", facts:["Six reaction wheels, two inertial reference units","Aspect camera: 1.4° × 1.4° field","Two low-gain antennas","1.8 Gbit recorder"] },
+      hrma:{ name:'Mirrors (HRMA)', desc:"Chandra's heart: four pairs of nested, tube-shaped mirrors. X-rays first graze a paraboloid, then a hyperboloid, at a very shallow angle, and converge 10 m further on. Just behind, two gratings can be moved into the beam to turn it into a spectrum.", facts:["Four nested pairs, 1.2 m across for the largest","10 m focal length","956.4 kg"] },
+      oba:{ name:'Optical bench', desc:"The long tube that holds the detectors 10 m behind the mirrors, very stably. X-rays travel through it without meeting any other optics.", facts:["Keeps mirrors and focus 10 m apart"] },
+      isim:{ name:'Science instrument module', desc:"At the end of the tube, a moving table puts one of the two cameras at the focus: ACIS (CCDs) or HRC (microchannel plates).", facts:["ACIS: 10 CCDs","HRC: very high resolution imaging"] },
+      solar:{ name:'Solar arrays', desc:"Two wings of three silicon panels, deployed after release, and three batteries to store the energy.", facts:["2,350 W","Three 40 Ah nickel-hydrogen batteries"] }
+    }
+  },
   gaia:{
     agency:'ESA', launch:'Launched 19 December 2013, Soyuz-Fregat, Kourou',
     sub:'Lagrange point L2 (2014–2025), astrometry in visible light', src:'Model: Toni Sagristà, Gaia Sky',

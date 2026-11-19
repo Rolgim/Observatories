@@ -532,6 +532,7 @@ function OBS_NUM(s){ return OBS_LANG === 'en' ? String(s).replace(/(\d),(\d)/g, 
      optical    pièces qui ouvrent la page « Trajet de la lumière »
      compare    order (rang dans « Comparer », chronologique), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
+     orbit      leo (orbite basse), heo (orbite terrestre très elliptique) ou l2
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
 ================================================================= */
 var TELESCOPES = [
@@ -608,6 +609,71 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'chandra', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
+    agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
+    sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/chandra.glb', bytes:802076, axis:'x', size:13.8,
+    view:{ az:-2.5, el:0.35, dist:1.3 }, sun:[0.2,0.9,0.3], orbit:'heo',
+    hero:{ num:'0,5', unit:'″', label:'la netteté de ses images X (largeur à mi-hauteur)' },
+    cmp:{ tag:'13,8 m', dim:'13,8 m de long, 19,5 m d\'envergure', mirror:1.2, mass:4800, len:13.8 },
+    color:'#C2367A', highlight:['Focale','10','m'], footprint:['13,8','m de long'], optical:['hrma','oba','isim'],
+    compare:{ order:2, rot:[0, 0.5, -Math.PI/2], fp:[1, 1] },   /* ouverture vers le haut */
+    desc:"Les rayons X ne se réfléchissent que s'ils frôlent une surface. Chandra les concentre donc avec quatre paires de miroirs en forme de tubes emboîtés, qu'ils effleurent sous un angle très faible, puis les envoie 10 m plus loin sur ses détecteurs. Il observe depuis 1999 le gaz à des millions de degrés : restes de supernovae, amas de galaxies, matière autour des trous noirs. Son orbite très allongée l'emmène à plus du tiers de la distance de la Lune, loin des ceintures de radiations.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en six ensembles d'après sa géométrie et ses matériaux ; elle contient les quatre coquilles du miroir.",
+    checked:'2026-11-19',
+    refs:{
+      specs:{ t:'Chandra Specifications', p:'Chandra X-ray Center (SAO)', u:'https://www.chandra.si.edu/about/specs.html' },
+      cspecs:{ t:'Chandra Specifications (dossier de presse)', p:'Chandra X-ray Center (SAO)', u:'https://chandra.si.edu/press/chandra_specs.html' },
+      pog:{ t:'Proposers\' Observatory Guide, introduction', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/proposer/POG/html/INTRO.html' },
+      tvis:{ t:'Proposers\' Observatory Guide, contraintes de visibilité', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/proposer/POG/html/TVIS.html' },
+      about:{ t:'About Chandra (caractéristiques des instruments)', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/cdo/about_chandra/' },
+      miles:{ t:'Chandra Mission Milestones', p:'Chandra X-ray Center', u:'https://chandra.harvard.edu/about/mission_milestones.html' },
+      cuc:{ t:'Chandra Users\' Committee, mai 2026 (état de la mission)', p:'Chandra X-ray Center', u:'https://cxc.cfa.harvard.edu/cdo/cuc/cuc_file26/may6/Slane_CUC_May2026.pdf' },
+      cfp:{ t:'Chandra Call for Proposals, cycle 26', p:'Chandra X-ray Center', u:'https://cxc.harvard.edu/proposer/CfP/arc_pdfs/CfP_cyc26.pdf' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','13,8 m de long · 19,5 m d\'envergure, panneaux déployés','specs'], ['Masse','4 800 kg','specs'],
+        ['Énergie','deux ailes de trois panneaux, 2 350 W · trois batteries nickel-hydrogène','specs'],
+        ['Pointage','six roues de réaction · stabilité 0,25″','cspecs'], ['Lancement','23 juillet 1999, navette Columbia','miles'],
+        ['Constructeur','TRW ; programme géré par le centre Marshall de la NASA','cspecs'] ]},
+      { title:'Optique', rows:[
+        ['Type','Wolter de type I, incidence rasante','pog'], ['Miroirs','quatre paires paraboloïde–hyperboloïde emboîtées · 83,3 cm de long chacun','specs'],
+        ['Plus grand diamètre','1,2 m','specs'], ['Focale','10 m','specs'], ['Masse des miroirs','956,4 kg','specs'],
+        ['Netteté','largeur à mi-hauteur 0,5″','about'], ['Surface efficace','800 cm² à 0,25 keV · 400 cm² à 5 keV','about'] ]},
+      { title:'Instruments', rows:[
+        ['ACIS','10 CCD en deux réseaux · imagerie et spectroscopie','specs'], ['HRC','galettes à microcanaux, grand champ, haute résolution','specs'],
+        ['HETG','réseau de transmission, pouvoir de résolution 60 à 1 000','specs'], ['LETG','réseau basse énergie, pouvoir de résolution 40 à 2 000','specs'],
+        ['État en 2026','fonctionnement nominal, sauf HRC-S (arrêté depuis octobre 2025)','cuc'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite à l\'origine','10 000 × 140 161 km · inclinaison 28,5°','specs'], ['Orbite en 2025','périgée ≈ 6 680 km · apogée ≈ 142 000 km','pog'],
+        ['Période','63,5 h','pog'], ['Hors des ceintures de radiations','≈ 70 % du temps','pog'],
+        ['Pointage interdit','à moins de 46,2° du Soleil','tvis'], ['Enregistreur','1,8 Gbit · vidé toutes les 8 h environ','specs'],
+        ['Accès exclusif','six mois pour l\'observateur, puis public','cfp'] ]}
+    ],
+    parts:[
+      { key:'door', name:'Porte du pare-soleil', explode:[-1,-0.4,0,1.6],
+        desc:"Le couvercle qui protégeait les miroirs pendant le lancement. Il s'est ouvert une fois pour toutes le 12 août 1999 ; ouvert, il fait aussi écran contre la lumière du Soleil.",
+        facts:[["Ouverte le 12 août 1999", "miles"], ["≈ 2,7 m, 54 kg (9 pieds, 120 livres)", "miles"]] },
+      { key:'bus', name:'Module de service', explode:[0,1,0,1.6],
+        desc:"Le module octogonal qui entoure les miroirs. Il fournit l'énergie, le pointage, les communications et la propulsion. Ses moteurs ont porté Chandra sur son orbite très allongée après le largage par la navette.",
+        facts:[["Six roues de réaction, deux centrales inertielles", "cspecs"], ["Caméra de visée : champ de 1,4° × 1,4°", "cspecs"], ["Deux antennes à faible gain", "cspecs"], ["Enregistreur de 1,8 Gbit", "specs"]] },
+      { key:'hrma', name:'Miroirs (HRMA)', explode:[0,0,0,0],
+        desc:"Le cœur de Chandra : quatre paires de miroirs en forme de tubes emboîtés. Les rayons X frôlent d'abord un paraboloïde puis un hyperboloïde, sous un angle très faible, et convergent 10 m plus loin. Juste derrière, deux réseaux peuvent s'insérer dans le faisceau pour en faire un spectre.",
+        facts:[["Quatre paires imbriquées, 1,2 m de diamètre pour la plus grande", "specs"], ["Focale de 10 m", "specs"], ["956,4 kg", "specs"]] },
+      { key:'oba', name:'Banc optique', explode:[1,0,0,1.0],
+        desc:"Le long tube qui tient les détecteurs à 10 m derrière les miroirs, avec une grande stabilité. Les rayons X y voyagent sans rencontrer d'autre optique.",
+        facts:[["Sépare miroirs et foyer de 10 m", "specs"]] },
+      { key:'isim', name:'Module des instruments', explode:[1,0,0,2.4],
+        desc:"Au bout du tube, une table mobile place au foyer l'une des deux caméras : ACIS (CCD) ou HRC (galettes à microcanaux).",
+        facts:[["ACIS : 10 CCD", "specs"], ["HRC : imagerie à très haute résolution", "pog"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[0,-1,0,1.0],
+        desc:"Deux ailes de trois panneaux en silicium, déployées après le largage, et trois batteries pour stocker l'énergie.",
+        facts:[["2 350 W", "specs"], ["Trois batteries nickel-hydrogène de 40 Ah", "specs"]] }
+    ]
+  },
+  {
     id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -617,7 +683,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:2, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:3, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -683,7 +749,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:3, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:4, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -759,7 +825,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:4, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -824,7 +890,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['> 12','m de haut'], optical:['ota','instr'],
-    compare:{ order:5, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:6, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
@@ -1544,6 +1610,110 @@ var INST_DATA = (function(){
   },
 
   /* -------------------------------------------------------------- GAIA */
+  chandra: {
+    checked:'2026-11-19',
+    refs:{
+      about:{ t:"About Chandra (caractéristiques des instruments)", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/" },
+      pog:{ t:"Proposers' Observatory Guide, introduction", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/proposer/POG/html/INTRO.html" },
+      specs:{ t:"Chandra Specifications", p:"Chandra X-ray Center (SAO)", u:"https://www.chandra.si.edu/about/specs.html" },
+      cuc:{ t:"Chandra Users' Committee, mai 2026 (état de la mission)", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/cdo/cuc/cuc_file26/may6/Slane_CUC_May2026.pdf" },
+      csc:{ t:"Chandra Source Catalog, Release 2.1", p:"Chandra X-ray Center (newsletter 35)", u:"https://cxc.harvard.edu/newsletters/news_35/article14.html" },
+      cfp:{ t:"Chandra Call for Proposals, cycle 26", p:"Chandra X-ray Center", u:"https://cxc.harvard.edu/proposer/CfP/arc_pdfs/CfP_cyc26.pdf" }
+    },
+    axis: { min:0.0001, max:0.02 },
+    summary: "Deux caméras se relaient au foyer, à 10 m derrière les miroirs : ACIS, une mosaïque de CCD qui mesure aussi l'énergie de chaque photon, et HRC, une caméra à galettes à microcanaux pour les images les plus nettes. Deux réseaux de transmission, HETG et LETG, peuvent s'insérer derrière les miroirs pour disperser les rayons X en spectres très détaillés. Chandra compte les photons un à un : ses données de base sont des listes d'événements (position, instant, énergie), pas des images.",
+    archives: [
+      { label:"Chandra Data Archive (ChaSeR)", url:"https://cda.harvard.edu/chaser/", desc:"Recherche et téléchargement des observations, au Chandra X-ray Center." },
+      { label:"Chandra Source Catalog 2.1", url:"https://cxc.cfa.harvard.edu/csc/", desc:"Catalogue de 407 806 sources X, tiré des observations publiques jusqu'à fin 2021." },
+      { label:"CIAO", url:"https://cxc.cfa.harvard.edu/ciao/", desc:"Logiciel d'analyse des données de Chandra." },
+      { label:"HEASARC", url:"https://heasarc.gsfc.nasa.gov/", desc:"Archive de la NASA pour les hautes énergies, qui donne aussi accès à Chandra." }
+    ],
+    instruments: [
+      { id:"acis", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
+        bands:[ {l:"CCD FI",lo:0.000155,hi:0.0015498}, {l:"CCD BI",lo:0.000155,hi:0.0041327} ],
+        use:"Photographier le ciel en rayons X tout en mesurant l'énergie de chaque photon. On obtient à la fois l'image d'un reste de supernova ou d'un amas de galaxies et la composition chimique et la température de son gaz.",
+        summary:"Dix CCD en deux réseaux : ACIS-I, un carré de 2 × 2 pour l'imagerie, et ACIS-S, une rangée de six, qui sert aussi à lire les spectres du réseau HETG. Chaque photon est enregistré avec sa position, son instant et son énergie.",
+        specs:[
+          ["Détecteurs", "10 CCD : ACIS-I (4) et ACIS-S (6, dont 2 éclairés par l'arrière)", ["specs","pog"]],
+          ["Pixels", "24 µm · 0,492″", "about"],
+          ["Champ", "ACIS-I 16,9′ × 16,9′ · ACIS-S 8,3′ × 50,6′", "about"],
+          ["Domaine (rendement > 30 %)", "0,8–8 keV (éclairés par l'avant) · 0,3–8 keV (par l'arrière)", "about"],
+          ["Temps de pose d'une trame", "3,2 s (0,2 à 10 s possibles)", "about"],
+          ["Surface efficace", "110 cm² à 0,5 keV · 600 cm² à 1,5 keV · 40 cm² à 8 keV", "about"]
+        ],
+        fov:[ {l:'ACIS-I', w:1014, h:1014}, {l:'ACIS-S', w:3036, h:498} ],
+        products:[
+          ["evt1","liste d'événements de niveau 1 : chaque photon avec position, instant, énergie"],
+          ["evt2","liste d'événements de niveau 2, filtrée et prête pour l'analyse"],
+          ["Catalogue CSC","sources détectées sur l'ensemble des observations publiques (407 806 dans la version 2.1)"]
+        ],
+        example:{ real:false, title:"Une liste d'événements (evt2)", caption:"Structure réelle d'un fichier evt2 d'ACIS ; valeurs illustratives.", text:
+"time (s)          ccd_id  chipx  chipy     x (px)     y (px)   energy (eV)  grade\n" +
+"6.4218302e+08     7       512    430       4096.3     4110.8    1520.4       0\n" +
+"6.4218302e+08     7       233    871       4241.9     4372.1     684.2       2\n" +
+"6.4218303e+08     6       901    112       3870.5     3922.6    6421.7       0\n" +
+"\n" +
+"→ une ligne par photon ; l'image et le spectre se construisent ensuite en regroupant les événements." },
+        code:{ title:"Analyse avec CIAO", text:
+"download_chandra_obsid <ObsID>          # télécharge les données d'une observation\n" +
+"chandra_repro <ObsID> outdir=repro      # retraitement standard (nouvel evt2)\n" +
+"dmcopy \"repro/acisf*_evt2.fits[energy=500:7000][bin sky=4]\" image.fits\n" +
+"specextract infile=\"repro/acisf*_evt2.fits[sky=region(src.reg)]\" outroot=spec" },
+        notes:[
+          "Le télescope oscille doucement en figure de Lissajous (« dither ») pendant la pose, pour répartir l'image sur de nombreux pixels ; la position de chaque photon est ensuite corrigée.",
+          "Un dépôt contaminant sur le filtre d'ACIS réduit peu à peu la sensibilité aux basses énergies ; il est suivi par l'étalonnage."
+        ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"}, {l:"Proposers' Observatory Guide",u:"https://cxc.cfa.harvard.edu/proposer/POG/"} ] },
+
+      { id:"hrc", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
+        bands:[ {l:"HRC",lo:0.000124,hi:0.0154975} ],
+        use:"Prendre les images X les plus nettes et dater chaque photon à quelques microsecondes près, par exemple pour suivre la rotation rapide d'un pulsar.",
+        summary:"Deux détecteurs à galettes à microcanaux : HRC-I, pour l'imagerie sur un grand champ, et HRC-S, une bande allongée qui lit les spectres du réseau LETG. Résolution en énergie très faible, mais grande netteté et datation très fine.",
+        specs:[
+          ["Détecteurs", "HRC-I (imagerie) · HRC-S (spectroscopie avec LETG)", "pog"],
+          ["Champ", "HRC-I ≈ 30′ × 30′ · HRC-S 6′ × 90′", "about"],
+          ["Résolution", "≈ 0,4″ à mi-hauteur", "about"],
+          ["Domaine", "0,08–10 keV", "about"],
+          ["Résolution en énergie", "E/ΔE ≈ 1 à 1 keV", "about"],
+          ["Datation", "16 µs", "about"],
+          ["État en 2026", "HRC-I en service · HRC-S arrêté depuis octobre 2025 (déclenchements du limiteur de haute tension)", "cuc"]
+        ],
+        fov:[ {l:'HRC-I', w:1800, h:1800} ],
+        products:[
+          ["evt1 / evt2","listes d'événements : position et instant de chaque photon"]
+        ],
+        notes:[ "Les poses avec HRC sont limitées à 14,5 ks d'un seul tenant, pour des raisons thermiques." ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
+
+      { id:"hetg", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
+        bands:[ {l:"HEG",lo:0.000124,hi:0.0015498}, {l:"MEG",lo:0.000248,hi:0.0030995} ],
+        use:"Décomposer les rayons X en un spectre très fin, où l'on voit les raies de chaque élément chimique : on mesure ainsi la température, la densité et la vitesse du gaz autour des étoiles et des trous noirs.",
+        summary:"Un ensemble de réseaux de transmission en or, inséré juste derrière les miroirs. Deux familles de réseaux (HEG et MEG) dispersent la lumière dans deux directions écartées de 10° ; le spectre est lu par ACIS-S.",
+        specs:[
+          ["Réseaux", "HEG (haute énergie) et MEG (énergie moyenne), dispersions écartées de 10°", "pog"],
+          ["HEG", "0,8–10 keV (15–1,2 Å) · E/ΔE de 65 à 1 070", "about"],
+          ["MEG", "0,4–5 keV (31–2,5 Å) · E/ΔE de 80 à 970", "about"],
+          ["Lecture", "ACIS-S", "pog"],
+          ["Surface efficace (HEG + MEG)", "59 cm² à 1 keV · 200 cm² à 1,5 keV", "about"]
+        ],
+        products:[ ["pha2","spectres par ordre de diffraction, extraits de l'evt2"] ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
+
+      { id:"letg", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
+        bands:[ {l:"LETG + HRC-S",lo:0.0001701,hi:0.0177114} ],
+        use:"Obtenir les spectres X les plus détaillés aux basses énergies, par exemple pour étudier l'atmosphère très chaude des étoiles ou le gaz entre les galaxies.",
+        summary:"Un réseau de transmission inséré derrière les miroirs, lu par HRC-S ou par ACIS-S. C'est l'instrument de Chandra qui a la plus haute résolution aux basses énergies.",
+        specs:[
+          ["Domaine", "1,7–170 Å (0,07–7,3 keV) avec HRC-S · 1,4–63 Å avec ACIS-S", "about"],
+          ["Pouvoir de résolution", "≥ 1 000 entre 50 et 160 Å", "about"],
+          ["Lecture", "HRC-S ou ACIS-S", "pog"],
+          ["État en 2026", "lecture par HRC-S interrompue depuis octobre 2025", "cuc"]
+        ],
+        products:[ ["pha2","spectres par ordre de diffraction"] ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] }
+    ]
+  },
+
   gaia: {
     checked:'2026-11-14',
     refs:{
@@ -1848,6 +2018,45 @@ var MISSION = {
     rel:null
   },
 
+  chandra: {
+    checked:'2026-11-19',
+    refs:{
+      sdp:{ t:'Standard Data Processing (niveaux de traitement)', p:'Chandra X-ray Center, CIAO', u:'https://cxc.cfa.harvard.edu/ciao3.4/data/sdp.html' },
+      csc:{ t:'Chandra Source Catalog, Release 2.1', p:'Chandra X-ray Center (newsletter 35)', u:'https://cxc.harvard.edu/newsletters/news_35/article14.html' }
+    },
+    intro:["Chandra est un programme de la NASA géré par le centre Marshall. Le Chandra X-ray Center, au Smithsonian Astrophysical Observatory à Cambridge (Massachusetts), le pilote, choisit les observations par appel à propositions, traite les données et les archive. Les observateurs ont six mois d'accès exclusif, puis les données deviennent publiques.",
+           "Chandra is a NASA programme managed by the Marshall Center. The Chandra X-ray Center, at the Smithsonian Astrophysical Observatory in Cambridge (Massachusetts), flies it, selects the observations through calls for proposals, processes the data and archives them. Observers get six months of exclusive use, after which the data become public."],
+    phases:[
+      ['23 juil. 1999','23 Jul 1999','Lancement','Launch',"La navette Columbia emporte Chandra et le largue le jour même ; un étage à poudre l'envoie ensuite vers son orbite allongée.","Space Shuttle Columbia carries Chandra and releases it the same day; a solid-fuel stage then sends it towards its elongated orbit.",'miles'],
+      ['7 août 1999','7 Aug 1999','Dernière manœuvre','Final burn',"Une poussée de 7 min 44 s relève le point bas de l'orbite à environ 9 700 km.","A 7 min 44 s burn raises the low point of the orbit to about 9,700 km.",'miles'],
+      ['12 août 1999','12 Aug 1999','Ouverture de la porte','Door opens',"La porte du pare-soleil s'ouvre : les rayons X atteignent les miroirs pour la première fois.","The sunshade door opens: X-rays reach the mirrors for the first time.",'miles'],
+      ['19 août 1999','19 Aug 1999','Première lumière','First light',"Première image officielle, prise par ACIS : Cassiopée A, reste d'une étoile qui a explosé il y a environ 320 ans.","First official image, taken by ACIS: Cassiopeia A, the remnant of a star that exploded about 320 years earlier.",'miles'],
+      ['2 avril 2024','2 Apr 2024','Catalogue CSC 2.1','CSC 2.1 catalogue',"Le catalogue de sources rassemble 407 806 sources X tirées de 15 533 observations publiques jusqu'à fin 2021.","The source catalogue gathers 407,806 X-ray sources from 15,533 public observations up to the end of 2021.",'csc'],
+      ['24 oct. 2025','24 Oct 2025','Arrêt de HRC-S','HRC-S halted',"Un déclenchement du limiteur de haute tension interrompt les observations avec HRC-S ; HRC-I reprend en décembre 2025.","A high-voltage current-limiter trip halts observations with HRC-S; HRC-I resumes in December 2025.",'cuc'],
+      ['2026','2026','Budget réduit','Reduced budget',"Le budget de l'exercice 2026 est fixé à 63 M$, environ 11 M$ de moins que le coût de la mission complète.","The fiscal year 2026 budget is set at $63M, about $11M below the cost of the full mission.",'cuc']
+    ],
+    ops:[
+      ['Programme','Programme','NASA, centre Marshall','NASA, Marshall Center','cspecs'],
+      ['Pilotage et science','Operations and science','Chandra X-ray Center (Smithsonian Astrophysical Observatory)','Chandra X-ray Center (Smithsonian Astrophysical Observatory)',['specs','cspecs']],
+      ['Données à bord','On-board data','enregistreur de 1,8 Gbit, vidé toutes les 8 h environ','1.8 Gbit recorder, emptied about every 8 h','specs'],
+      ['Accès','Access','six mois exclusifs pour l\'observateur, puis public','six months exclusive to the observer, then public','cfp'],
+      ['Logiciel','Software','CIAO, et catalogue de sources CSC','CIAO, and the CSC source catalogue',['sdp','csc']]
+    ],
+    chain:{
+      intro:["Le traitement standard du Chandra X-ray Center range les produits en niveaux. Chandra compte les photons un à un : le produit central est une liste d'événements, dont on tire images et spectres.",
+             "The Chandra X-ray Center's standard data processing organises the products into levels. Chandra counts photons one by one: the central product is an event list, from which images and spectra are built."],
+      steps:[
+        { lv:'L0', n:['Télémétrie découpée','Split telemetry'], x:['La télémétrie brute du satellite, découpée en fichiers FITS par observation. Pas pour l\'analyse.','Raw spacecraft telemetry, split into FITS files per observation. Not for analysis.'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L1', n:['Événements corrigés','Corrected events'], x:['Corrections propres à chaque instrument, dont la solution d\'attitude, sans modification irréversible (evt1).','Instrument-specific corrections, including the aspect solution, with no irreversible change (evt1).'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L1.5', n:['Réseaux : ordre zéro','Gratings: zeroth order'], x:['Pour les réseaux seulement : position de l\'ordre zéro des sources et liste d\'événements enrichie.','Gratings only: zeroth-order position of the sources and augmented event list.'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L2', n:['Liste d\'événements finale','Final event list'], x:['Filtrages standard, irréversibles : liste d\'événements « finie » (evt2), sources candidates, spectre dispersé pour les réseaux.','Standard, irreversible filtering: the “finished” event list (evt2), candidate sources, dispersed spectrum for the gratings.'], sw:'SDP, CIAO', r:'sdp' },
+        { lv:'L3', n:['Catalogue','Catalogue'], x:['Détection et caractérisation fines des sources, recoupées avec d\'autres catalogues : le Chandra Source Catalog.','Refined source detection and characterisation, cross-matched with other catalogues: the Chandra Source Catalog.'], sw:'CSC', r:['sdp','csc'] }
+      ]
+    },
+    rel:[
+      ['2 avril 2024','2 Apr 2024',['Chandra Source Catalog 2.1','Chandra Source Catalog 2.1'],"407 806 sources, 1 304 376 détections, 15 533 observations jusqu'à fin 2021.","407,806 sources, 1,304,376 detections, 15,533 observations up to the end of 2021.",'csc',false]
+    ]
+  },
   gaia: {
     checked:'2026-11-16',
     refs:{
@@ -2014,6 +2223,42 @@ var Optics = (function(){
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
+    /* Chandra : quatre paires Wolter I, à l'échelle (POG, ch. 4) : diamètres 1,23, 0,99, 0,87, 0,65 m ; miroirs de 84 cm ;
+       foyer à 10,0548 m de la plaque centrale (CAP, z = 0). Pente des miroirs : un quart de l'angle de sortie moyen (θc + θd)/2. */
+    chandra: function(){
+      var PAIRS = [[1.23, 3.42, 3.50], [0.99, 2.75, 2.82], [0.87, 2.42, 2.49], [0.65, 1.80, 1.90]], LM = 0.84, ZF = 10.0548;
+      function shells(X, Y, half, rays, w){
+        var t = '', m = '';
+        PAIRS.forEach(function(p, i){
+          var rc = p[0]/2, a = (p[1] + p[2])/8*Math.PI/180;
+          [1,-1].forEach(function(sg){
+            if (half && sg < 0) return;
+            m += L(X(-LM), Y(sg*(rc + a*LM)), X(0), Y(sg*rc), INK, w) + L(X(0), Y(sg*rc), X(LM), Y(sg*(rc - 3*a*LM)), INK, w);
+            if (rays){ var r1 = rc + a*LM/2, r2 = rc - 1.5*a*LM;
+              t += P([[X(-1.2), Y(sg*r1)], [X(-LM/2), Y(sg*r1)], [X(LM/2), Y(sg*r2)], [X(Math.min(ZF, rays)), Y(sg*r2*(1 - (Math.min(ZF, rays) - LM/2)/(ZF - LM/2)))]], RAY, 1.1); }
+          });
+        });
+        return { m:m, t:t };
+      }
+      /* vue d'ensemble, même échelle sur les deux axes */
+      var W = 560, z0 = -1.4, z1 = 10.6, k = (W - 40)/(z1 - z0), H1 = Math.round(1.4*k + 40), cy = 20 + 0.7*k;
+      function X(z){ return 20 + (z - z0)*k; } function Y(r){ return cy - r*k; }
+      var a = shells(X, Y, false, ZF, 2.5), s = a.t + G('hrma', a.m);
+      s += G('isim', L(X(ZF), Y(0.06), X(ZF), Y(-0.06), DET, 4));
+      s += G('oba', L(X(0.9), Y(0.62), X(ZF + 0.3), Y(0.62), SOFT, 1, '4 3') + L(X(0.9), Y(-0.62), X(ZF + 0.3), Y(-0.62), SOFT, 1, '4 3'));
+      s += T(X(z0) + 2, 14, 'rayons X du ciel', null) + T(X(0), Y(-0.62) + 16, 'miroirs', 'middle', true) + T(X(ZF), Y(-0.62) + 16, 'foyer', 'middle', true);
+      s += dim(X(0), X(ZF), H1 + 18, '10,05 m');
+      /* agrandissement des miroirs, même échelle sur les deux axes (× 5) */
+      var k2 = k*5, zz0 = -1.1, oy = H1 + 50, cy2 = oy + 0.68*k2;
+      function X2(z){ return W/2 + (z - 0.0)*k2; } function Y2(r){ return cy2 - r*k2; }
+      var b = shells(X2, Y2, true, 1.15, 3), s2 = b.t + G('hrma', b.m);
+      s2 += L(X2(0), Y2(0.7), X2(0), Y2(0.02), SOFT, 1, '2 3') + T(X2(0) + 4, Y2(0.02) - 4, 'plaque centrale', null);
+      s2 += T(X2(-LM/2), Y2(0.13), 'paraboloïdes', 'middle', true) + T(X2(LM/2), Y2(0.13), 'hyperboloïdes', 'middle', true);
+      s2 += L(X2(-1.0), Y2(0), X2(1.15), Y2(0), SOFT, 1, '6 4') + T(X2(-1.0), Y2(0) + 14, 'axe', null);
+      var H = Math.round(cy2 + 26);
+      s += '<line x1="12" y1="' + f(H1 + 30) + '" x2="' + (W - 12) + '" y2="' + f(H1 + 30) + '" stroke="' + SOFT + '" stroke-width="1"/>' + T(14, H1 + 44, 'agrandi 5 fois, même échelle sur les deux axes', null);
+      return svg(W, H, s + s2, 'Schéma optique de Chandra, à l\'échelle');
+    },
     roman: function(){
       var ZC = 0.45;
       return twoMirror({ z0:-6.0, z1:3.6, half:1.75, R:5.76, r1:1.2, hole:0.28, r2:0.21, d:2.4, rays:[1.2, 0.62], focus:[ZC, 0], dLabel:'≈ 2,4 m', k1:'ota', k2:'ota',
@@ -2034,7 +2279,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -2060,6 +2305,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    chandra:{ title:'Des miroirs en incidence rasante : quatre paires Wolter de type I', scale:'Figure à l\'échelle, avec la même échelle sur les deux axes : diamètres des quatre paires (1,23 à 0,65 m), longueur des miroirs (84 cm) et distance du foyer (10,05 m) d\'après le guide de l\'observateur (POG, chapitre 4). La pente de chaque miroir est déduite de son angle de sortie. Le tube du banc optique, en pointillé, est indicatif.',
+      steps:['Les rayons X traversent la matière au lieu de s\'y réfléchir. Ils ne rebondissent que s\'ils frôlent une surface très lisse, sous un angle inférieur au degré.',
+             'Chaque rayon frôle d\'abord un paraboloïde, puis un hyperboloïde : deux réflexions rasantes suffisent à former une image nette. Quatre paires emboîtées, de 1,23 à 0,65 m de diamètre, multiplient la surface collectrice.',
+             'Les miroirs, en verre Zerodur revêtu d\'iridium, renvoient les rayons sur un cône très étroit : le foyer est à 10 m derrière eux, au bout du banc optique.',
+             'Au foyer, une table mobile place ACIS ou HRC. Pour un spectre, un réseau (HETG ou LETG) s\'insère juste derrière les miroirs et disperse les rayons X selon leur énergie.'],
+      specs:[['Combinaison','Wolter de type I, quatre paires emboîtées'],['Diamètres','1,23 · 0,99 · 0,87 · 0,65 m'],['Longueur des miroirs','84 cm chacun'],['Focale','10,070 m'],['Revêtement','iridium sur verre Zerodur'],['Surface efficace','≈ 800 cm² à 0,25 keV · 400 cm² à 5 keV'],['Champ sans images fantômes','30′ de diamètre']] },
     roman:{ title:'Un anastigmat à trois miroirs, construit autour d\'un télescope existant', scale:'Aucune prescription optique de Roman n\'est publique. Ouverture (2,4 m) et obstruction centrale (30,3 %) sont exactes ; écart entre les miroirs, trou du primaire et taille du secondaire sont mesurés sur la maquette 3D de la NASA (conception de 2015) et donc indicatifs. Optique arrière : schéma de principe. Les détecteurs, plus bas, sont à l\'échelle.',
       steps:['Le miroir primaire de 2,4 m, de la taille de celui de Hubble, et le secondaire forment l\'avant du télescope ; ils travaillent vers 265 K.',
              'Derrière le primaire, l\'optique arrière reprend le faisceau : un miroir orientable, un miroir de renvoi, puis le miroir tertiaire.',
@@ -2087,6 +2338,9 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Chandra : CCD d'ACIS de 1024 × 1024 px de 24 µm ; HRC dessiné d'après son champ et l'échelle du foyer (1″ = 48,8 µm pour 10,07 m) */
+    chandra:{ groups:[ grid(2,2,24.6,24.6,0.5,0.5,DET,['ACIS-I','4 CCD de 1024 × 1024 px, 24 µm']), grid(6,1,24.6,24.6,0.5,0,'#0F987A',['ACIS-S','6 CCD, dont 2 éclairés par l\'arrière']), grid(1,1,87.9,87.9,0,0,'#DB5A14',['HRC-I','galette à microcanaux, ≈ 30′ de côté']) ],
+             note:'ACIS-I et ACIS-S sont montés côte à côte sur le même support, HRC sur la même table mobile ; ils sont rapprochés ici pour comparer leur taille. Taille de HRC-I déduite de son champ (≈ 30′) et de l\'échelle du foyer ; espaces entre CCD indicatifs.' },
     roman:{ groups:[ cells(WFI_MM,40.9,40.9,'#B8860B',['WFI','18 détecteurs de 4096 × 4096 px, 10 µm']) ],
              note:'Les 18 détecteurs forment six colonnes de trois, décalées en hauteur en arc. Positions des centres d\'après le modèle de champ du projet (GalSim).', gaps:true },
     gaia:{ groups:[ grid(17,7,45,59,4,1,function(i, j){ if (i===0) return j===3 ? null : (j===0||j===1||j===2) ? (j===2 ? GC.aux : GC.aux) : null; if (i<=2) return GC.sm; if (i<=10) return GC.af; if (i===11) return j===3 ? GC.aux : GC.af; if (i===12) return GC.bp; if (i===13) return GC.rp; return j>=3 ? GC.rvs : null; }, ['Plan focal de Gaia','106 CCD de 4500 × 1966 px, 10 × 30 µm']) ],
@@ -2172,6 +2426,8 @@ var Orbits = (function(){
   function cv(id, w, h, label){ return '<canvas class="orb" data-orb="'+id+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+label+'"></canvas>'; }
   function date(jd){ var d = new Date((jd - 2440587.5)*86400000); var dd = ('0'+d.getUTCDate()).slice(-2), mm = ('0'+(d.getUTCMonth()+1)).slice(-2); return OBS_LANG === 'en' ? d.getUTCFullYear()+'-'+mm+'-'+dd : dd+'/'+mm+'/'+d.getUTCFullYear(); }
 
+  /* type d'orbite de chaque observatoire : registre de data-tele.js */
+  var T_ORBIT = {}; TELESCOPES.forEach(function(t){ T_ORBIT[t.id] = t.orbit; });
   var TEXT = {
     hubble:{ sum:'Hubble tourne à environ 480 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
       notes:['La Terre masque la plupart des cibles pendant une partie de chaque orbite : une pose longue est découpée en tranches d\'une cinquantaine de minutes.',
@@ -2191,6 +2447,11 @@ var Orbits = (function(){
              'L\'éloignement permet de longues séries d\'observations sans interruption, indispensables pour suivre pendant des semaines les mêmes étoiles du bulbe galactique.',
              'Ses premières images publiques sont attendues début 2027.'],
       noTraj:'La trajectoire réelle de Roman s\'affichera ici dès que les éphémérides de JPL Horizons seront récupérées par la mise à jour quotidienne des données du site. En attendant, la carte du ciel observable montre déjà la partie du ciel qu\'il peut viser.' },
+    chandra:{ sum:'Chandra parcourt une orbite très allongée autour de la Terre : il passe à quelques milliers de kilomètres au plus près, puis s\'éloigne jusqu\'à environ 142 000 km, plus du tiers de la distance de la Lune. Un tour dure 63,5 heures.',
+      notes:['Environ 70 % du temps, Chandra est au-dessus des ceintures de radiations. Les observations s\'arrêtent pendant la traversée de ces ceintures, qui abîmeraient les détecteurs.',
+             'Loin de la Terre, de longues poses ininterrompues sont possibles, contrairement à Hubble que la Terre masque à chaque tour.',
+             'L\'orbite se déforme lentement sous l\'attraction de la Lune et du Soleil : le périgée est descendu à 1 045 km en juillet 2023, puis remonté à environ 6 680 km en 2025.',
+             'Pour protéger ses instruments de la chaleur, les longues observations sont découpées en tranches d\'au plus 30 ks environ.'] },
     gaia:{ sum:'De 2014 à 2025, Gaia a décrit une courbe de Lissajous autour de L2 : une boucle qui ne se referme pas, choisie pour ne pas traverser l\'ombre de la Terre pendant des années.',
       notes:['Les observations se sont arrêtées le 15 janvier 2025. Le satellite a ensuite été écarté de L2 et mis hors service le 27 mars 2025.',
              'La trajectoire tracée ici s\'arrête à ce départ.',
@@ -2202,6 +2463,7 @@ var Orbits = (function(){
     hubble:{ lo:62.5, hi:180, cap:'Hubble peut viser tout ce qui est à plus de 62,5° du Soleil (règle du cycle 34, en mode à gyroscope réduit ; HST Primer). Sur chaque orbite de 95 minutes, la Terre masque aussi une partie du ciel : non représenté.' },
     jwst:{ lo:85, hi:135, cap:'Webb doit garder son bouclier face au Soleil : il ne vise qu\'entre 85° et 135° du Soleil, soit environ 39 % du ciel un jour donné (JDox). Les pôles de l\'écliptique, à moins de 5°, restent visibles toute l\'année.' },
     euclid:{ lo:87, hi:104, cap:'Euclid vise presque perpendiculairement au Soleil : angle d\'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D\'où une bande étroite, qui fait le tour du ciel en un an.' },
+    chandra:{ lo:46.2, hi:180, cap:'Chandra ne vise jamais à moins de 46,2° du Soleil, contrainte qui ne peut être levée ; environ 15 % du ciel est inaccessible un jour donné, mais aucune région ne l\'est plus de trois mois. La Lune (6°) et le bord éclairé de la Terre (10°) ajoutent de petites exclusions, non représentées (POG, contraintes de visibilité).' },
     roman:{ lo:54, hi:126, cap:'Roman peut viser entre 54° et 126° du Soleil, en tournant librement autour de la direction du Soleil (NASA Goddard, Observatory Technical Overview).' },
     gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
   };
@@ -2275,6 +2537,9 @@ var Orbits = (function(){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
       s += '<div class="isec"><h4>Où est Hubble en ce moment</h4>'+cv('track', 560, 300, 'Position de Hubble au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
       s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
+    } else if (T_ORBIT[tid] === 'heo'){
+      s += '<div class="isec"><h4>Une orbite, vue du nord de l\'écliptique</h4>'+cv('heo', 560, 400, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre, orbite et orbite de la Lune à la même échelle. Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s\'arrêtent.</div></div>';
+      s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
     } else if (t.noTraj && DATA && !(DATA.bodies && DATA.bodies[tid])){   /* données déjà chargées et sans ce corps ; sinon on tranche après chargement */
       s += '<div class="isec"><h4>Trajectoire</h4><p class="cap">'+t.noTraj+'</p></div>';
     } else {
@@ -2328,6 +2593,23 @@ var Orbits = (function(){
     var bar = 500*k; g.strokeStyle = ink; g.lineWidth = 2; g.beginPath(); g.moveTo(12, H - 12); g.lineTo(12 + bar, H - 12); g.stroke(); g.fillStyle = mute; label(g, '500 000 km', 18 + bar, H - 8);
   }
 
+  /* orbite terrestre très elliptique, vue du nord de l'écliptique ; b en milliers de km, repère géocentrique fixe */
+  function drawHeo(c, b, i){
+    var g = prep(c), W = c._w, H = c._h, ink = css('--ink'), mute = css('--mute'), rule = css('--rule-2'), n = b.x.length, j;
+    g.clearRect(0, 0, W, H);
+    var xm = 0, ym = 0; for (j=0;j<n;j++){ xm = Math.max(xm, Math.abs(b.x[j])); ym = Math.max(ym, Math.abs(b.y[j])); }
+    var k = Math.min((W/2 - 30)/Math.max(xm, 1), (H/2 - 30)/Math.max(ym, 1)), cx = W/2, cy = H/2;
+    function X(p){ return cx + b.x[p]*k; } function Y(p){ return cy - b.y[p]*k; }
+    g.fillStyle = css('--rule'); g.globalAlpha = 0.45; g.beginPath(); g.arc(cx, cy, 6.371*4*k, 0, 6.2832); g.fill(); g.globalAlpha = 1;   /* ≈ 4 rayons terrestres : indicatif */
+    g.setLineDash([3, 4]); g.strokeStyle = rule; g.lineWidth = 1; g.beginPath(); g.arc(cx, cy, 384.4*k, 0, 6.2832); g.stroke(); g.setLineDash([]);
+    if (384.4*k < Math.hypot(W, H)/2){ g.fillStyle = mute; label(g, 'orbite de la Lune', cx, cy - 384.4*k - 6, false, 'center'); }
+    g.fillStyle = '#2C5E9E'; g.beginPath(); g.arc(cx, cy, Math.max(2.5, 6.371*k), 0, 6.2832); g.fill(); g.fillStyle = ink; label(g, 'Terre', cx, cy + 6.371*k + 16, true, 'center');
+    g.strokeStyle = rule; g.lineWidth = 0.9; g.beginPath(); for (j=0;j<n;j++){ if (j) g.lineTo(X(j), Y(j)); else g.moveTo(X(j), Y(j)); } g.stroke();
+    var tail = Math.round(0.4/b.step_days); g.strokeStyle = '#DB5A14'; g.lineWidth = 2; g.beginPath(); for (j=Math.max(0, i - tail); j<=i; j++){ if (j === Math.max(0, i - tail)) g.moveTo(X(j), Y(j)); else g.lineTo(X(j), Y(j)); } g.stroke();
+    g.fillStyle = '#FFD21F'; g.strokeStyle = ink; g.lineWidth = 1.5; g.beginPath(); g.arc(X(i), Y(i), 6, 0, 6.2832); g.fill(); g.stroke();
+    var bar = 50*k; g.strokeStyle = ink; g.lineWidth = 2; g.beginPath(); g.moveTo(12, H - 12); g.lineTo(12 + bar, H - 12); g.stroke(); g.fillStyle = mute; label(g, '50 000 km', 18 + bar, H - 8);
+  }
+
   function hammer(v, W, H){ var l = Math.atan2(v[1], v[0]), bb = Math.asin(Math.max(-1, Math.min(1, v[2]))), d = Math.sqrt(1 + Math.cos(bb)*Math.cos(l/2)); return [W/2 - (W/2 - 8)*Math.cos(bb)*Math.sin(l/2)/d, H/2 - (H/2 - 8)*Math.sin(bb)/d, l]; }
   function scanStep(g, W, H, day){
     var ls = 6.2832*day/365.25, ph = 6.2832*day/63, s = [Math.cos(ls), Math.sin(ls), 0], e1 = [-Math.sin(ls), Math.cos(ls), 0], q = Math.SQRT1_2;
@@ -2344,8 +2626,17 @@ var Orbits = (function(){
     var my = ++run, playing = true, t0 = performance.now(), sim = 0, last = t0;
     var play = root.querySelector('[data-orb-play]'), read = root.querySelector('[data-orb-read]');
     if (play) play.onclick = function(){ playing = !playing; play.textContent = playing ? 'Pause' : 'Lecture'; };
-    var leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
+    var heo = root.querySelector('[data-orb="heo"]'), leo = root.querySelector('[data-orb="leo"]'), front = root.querySelector('[data-orb="front"]'), top = root.querySelector('[data-orb="top"]'), scan = root.querySelector('[data-orb="scan"]');
     var body = null, sg = null, sday = 0, sink = '';
+    if (heo) load().then(function(j){
+      if (my !== run) return;
+      body = j && j.bodies && j.bodies[tid];
+      var st = root.querySelector('[data-orb-stats]');
+      if (!body){ st.innerHTML = '<div class="cap">La trajectoire n\'a pas pu être chargée.</div>'; return; }
+      var n = body.x.length, dmin = 1e9, dmax = 0, imin = 0, imax = 0;
+      for (var i=0;i<n;i++){ var d = Math.hypot(body.x[i], body.y[i], body.z[i]); if (d < dmin){ dmin = d; imin = i; } if (d > dmax){ dmax = d; imax = i; } }
+      st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance au centre de la Terre', 'de '+fr(dmin*1000)+' à '+fr(dmax*1000)+' km'], ['Altitude au plus près', '≈ '+fr(dmin*1000 - 6371)+' km'], ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+j.fetched.split('-').reverse().join('/')]]);
+    });
     if (front) load().then(function(j){
       if (my !== run) return;
       body = j && j.bodies && j.bodies[tid];
@@ -2436,12 +2727,13 @@ var Orbits = (function(){
       } else if (skyT > 0.55){ skyI++; skyT = 0; }
     }
     function frame(now){
-      if (my !== run || !root.isConnected || !(leo || front) || !(leo || front).isConnected) return;
+      var main = leo || front || heo; if (my !== run || !root.isConnected || !main || !main.isConnected) return;
       if (sky && skyD) skyFrame(Math.min(0.1, (now - last)/1000));
       requestAnimationFrame(frame);
       var dt = Math.min(0.1, (now - last)/1000); last = now; if (playing) sim += dt;
       if (leo){ var tm = sim*9.5 % 95, dark = drawLeo(leo, tm); if (read) read.textContent = 'minute ' + Math.floor(tm) + ' sur 95, ' + (dark ? 'dans l\'ombre' : 'au soleil'); }
-      if (body){ var n = body.x.length, i = Math.floor(sim*36/body.step_days) % n; drawL2(front, body, i, 'front'); drawL2(top, body, i, 'top'); if (read) read.textContent = date(body.jd0 + i*body.step_days); }
+      if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
+      else if (body){ var n = body.x.length, i = Math.floor(sim*36/body.step_days) % n; drawL2(front, body, i, 'front'); drawL2(top, body, i, 'top'); if (read) read.textContent = date(body.jd0 + i*body.step_days); }
       if (scan){
         var g = prep(scan), W = scan._w, H = scan._h, ink = css('--ink');
         if (!sg || sink !== ink || sday > 5*365){ sg = true; sink = ink; sday = 0; g.clearRect(0, 0, W, H); g.strokeStyle = css('--rule-2'); g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 8, H/2 - 8, 0, 0, 6.2832); g.moveTo(8, H/2); g.lineTo(W - 8, H/2); g.stroke(); }
@@ -2551,10 +2843,15 @@ var InstrumentsUI = (function(){
     var a = Math.log(min), b = Math.log(max);
     this.x = function(v){ v = Math.max(min, Math.min(max, v)); return x0 + (Math.log(v)-a)/(b-a)*(x1-x0); };
     this.min = min; this.max = max;
-    var cand = [0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30], out = [], last = -99;
+    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30], out = [], last = -99;
     for (var i=0;i<cand.length;i++){ var v = cand[i]; if (v < min*0.999 || v > max*1.001) continue; var px = this.x(v); if (px - last < 46) continue; out.push(v); last = px; }
     this.ticks = out;
+    /* axe qui descend dans les rayons X : graduations avec leur unité (nm ou µm), et énergie en keV sur un axe purement X */
+    this.xray = min < 0.05; this.xonly = max < 0.1;
+    this.lab = function(v){ return this.xray ? wl(v) : num(v, 2); };
   }
+  function keV(um){ var e = 0.0012398/um; return (e >= 10 ? num(e, 0) : e >= 1 ? num(e, 1) : num(e, 2)) + ' keV'; }
+  function unitText(ax){ return ax.xray ? 'longueur d\'onde, échelle logarithmique' + (ax.xonly ? ' · énergie des photons en dessous' : '') : 'longueur d\'onde (µm), échelle logarithmique'; }
   function visibleBand(ax, y, h){
     if (ax.max < 0.4 || ax.min > 0.75) return '';
     var a = ax.x(0.38), b = ax.x(0.75);
@@ -2580,11 +2877,11 @@ var InstrumentsUI = (function(){
       var h = lanes.length*17 + 9;
       rows.push({ it:it, y:y, h:h, placed:placed }); y += h;
     });
-    var H = y + 30, s = '<svg class="cov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale des instruments">' + GRAD;
+    var H = y + 30 + (ax.xonly ? 13 : 0), s = '<svg class="cov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale des instruments">' + GRAD;
     s += visibleBand(ax, 22, y-22);
     if (ax.max >= 0.4 && ax.min <= 0.75) s += '<text class="cov-vis" x="'+((ax.x(0.38)+ax.x(0.75))/2)+'" y="14" text-anchor="middle">visible</text>';
-    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="22" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+num(v,2)+'</text>'; });
-    s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+27)+'" text-anchor="end">longueur d\'onde (µm), échelle logarithmique</text>';
+    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="22" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+ax.lab(v)+'</text>' + (ax.xonly ? '<text class="cov-tick" x="'+x+'" y="'+(y+28)+'" text-anchor="middle">'+keV(v)+'</text>' : ''); });
+    s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+(ax.xonly ? 41 : 27))+'" text-anchor="end">'+unitText(ax)+'</text>';
     rows.forEach(function(r){
       s += '<g class="cov-row'+(r.it.id===sel?' sel':'')+'" data-inst="'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
       s += '<text class="cov-lab" x="4" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
@@ -2730,7 +3027,7 @@ var InstrumentsUI = (function(){
     s += '<div class="inst-cols">';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+coverage(tid, null)+'<div class="cap">Plages tirées des pages d\'instruments, où chaque valeur renvoie à sa source.</div></div>';
     var f = fovBlock(tid, null);
-    if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(tid==='euclid'||tid==='gaia'||tid==='roman' ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
+    if (f) s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+f+'<div class="cap">Empreinte de chaque instrument sur le ciel. '+(bigFovTele(tid) ? 'Le disque en pointillé donne la taille apparente de la pleine Lune (31′).' : 'À titre de repère, la pleine Lune mesure environ 1 860″ : elle déborderait largement de ce cadre.')+'</div></div>';
     s += '<div class="isec wide"><h4>Instruments</h4><div class="icards">' + d.instruments.map(function(it){
       var r = it.bands ? wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))) : 'guidage';
       return '<button class="icard" style="--c:'+it.color+'" data-inst="'+it.id+'"><span class="ic-n">'+esc(it.name)+'</span><span class="ic-k">'+esc(it.kind)+'</span><span class="ic-r">'+r+'</span></button>';
@@ -2767,17 +3064,21 @@ var InstrumentsUI = (function(){
   }
 
   /* ---------- comparaison entre observatoires ---------- */
-  var SAMP = { hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
+  /* champ le plus grand d'un observatoire au-delà de 1 200″ : la figure montre la pleine Lune (même règle que fovBlock) */
+  function bigFovTele(tid){ var e = 0; INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); return e > 1200; }
+  var SAMP = { chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
                jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' }, roman:{ wfi:'0,11″', cgi:'sans objet' } };
-  var RES = { hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
+  var RES = { chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 600 (grisme LW)', nirspec:'100 à 2 700', miri:'100 à 3 250', niriss:'150 à 700' },
               euclid:{ nisp:'> 480 (grismes rouges)' }, gaia:{ bprp:'prisme, 3–27 nm/px', rvs:'≈ 11 700' }, roman:{ wfi:'80 à 180 (prisme) · ≈ 460 à 890 (grisme)' } };
   function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 
   function cmpCoverage(){
-    var W = 1000, L = 172, R = 14, ax = new Axis(0.09, 30, L, W-R), y = 40, rows = [], seps = [];
+    /* axe commun : des rayons X (Chandra) à l'infrarouge moyen, si un observatoire du registre descend sous 0,09 µm */
+    var lo = 0.09; ORDER.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); });
+    var W = 1000, L = 172, R = 14, ax = new Axis(lo, 30, L, W-R), y = 40, rows = [], seps = [];
     ORDER.forEach(function(tid){
       var first = true; seps.push(y);
       INST_DATA[tid].instruments.forEach(function(it){
@@ -2792,12 +3093,12 @@ var InstrumentsUI = (function(){
       y += 6;
     });
     var H = y + 30, s = '<svg class="cov big" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale de tous les instruments">' + GRAD + visibleBand(ax, 32, y-32);
-    [['ultraviolet',0.09,0.38],['visible',0.38,0.75],['proche infrarouge',0.75,5],['infrarouge moyen',5,30]].forEach(function(r){
+    (lo < 0.05 ? [['rayons X',lo,0.01],['ultraviolet',0.01,0.38]] : [['ultraviolet',0.09,0.38]]).concat([['visible',0.38,0.75],['proche infrarouge',0.75,5],['infrarouge moyen',5,30]]).forEach(function(r){
       s += '<text class="cov-reg" x="'+((ax.x(r[1])+ax.x(r[2]))/2)+'" y="14" text-anchor="middle">'+r[0]+'</text>';
-      if (r[1] > 0.09) s += '<line class="cov-grid" stroke-dasharray="3 3" x1="'+ax.x(r[1])+'" y1="20" x2="'+ax.x(r[1])+'" y2="'+y+'"/>';
+      if (r[1] > lo) s += '<line class="cov-grid" stroke-dasharray="3 3" x1="'+ax.x(r[1])+'" y1="20" x2="'+ax.x(r[1])+'" y2="'+y+'"/>';
     });
-    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="32" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+num(v,2)+'</text>'; });
-    s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+28)+'" text-anchor="end">longueur d\'onde (µm), échelle logarithmique</text>';
+    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="32" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+ax.lab(v)+'</text>'; });
+    s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+28)+'" text-anchor="end">'+unitText(ax)+'</text>';
     seps.forEach(function(v){ s += '<line class="cov-sep" x1="0" y1="'+(v-3)+'" x2="'+(W-R)+'" y2="'+(v-3)+'"/>'; });
     rows.forEach(function(r){
       s += '<g class="cov-row" data-jump="'+r.tid+':'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
@@ -2836,7 +3137,7 @@ var InstrumentsUI = (function(){
 
   function compare(){
     var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<p class="inst-sum">Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
+      '<p class="inst-sum">Chandra observe les rayons X, des photons des dizaines à des milliers de fois plus énergétiques que la lumière visible. Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
     var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
     s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Tous les observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
@@ -2976,6 +3277,28 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       instr:{ name:'Instruments and carrier', desc:"The composite structure that holds the telescope and the two instruments: the wide-field camera (WFI) and the coronagraph. It reuses the technology of Webb's structure and runs near 213 K.", facts:["WFI: 18 detectors, ≈ 300 Mpx", "Coronagraph: technology demonstration", "Structure derived from Webb's, ≈ 213 K"] },
       bus:{ name:'Spacecraft bus', desc:"The hexagonal platform at the back: power, pointing, computers, memory and propulsion. Its six electronics bays also act as radiators.", facts:["≈ 4 m × 2 m, 3,800 kg", "Six reaction wheels", "Hydrazine: four tanks, 24 thrusters", "9 TB of memory"] },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
+    }
+  },
+  chandra:{
+    agency:'NASA, operated by the Smithsonian Astrophysical Observatory', launch:'Launched 23 July 1999, Space Shuttle Columbia',
+    sub:'Highly elliptical Earth orbit, X-rays (since 1999)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'13.8 m', dim:'13.8 m long, 19.5 m span' },
+    desc:"X-rays only reflect when they graze a surface. Chandra therefore focuses them with four pairs of nested, tube-shaped mirrors that they skim at a very shallow angle, then sends them 10 m further on to its detectors. Since 1999 it has observed gas at millions of degrees: supernova remnants, galaxy clusters, matter around black holes. Its very elongated orbit takes it more than a third of the way to the Moon, far from the radiation belts.",
+    sourceNote:"NASA model (NASA 3D Resources repository), in metres. It has been re-segmented here into six assemblies from its geometry and materials; it contains the four mirror shells.",
+    refs:{ cspecs:'Chandra Specifications (press kit)', pog:'Proposers\' Observatory Guide, introduction', tvis:'Proposers\' Observatory Guide, visibility constraints', about:'About Chandra (instrument characteristics)', cuc:'Chandra Users\' Committee, May 2026 (mission status)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','13.8 m long · 19.5 m span, arrays deployed'],['Mass','4,800 kg'],['Power','two wings of three panels, 2,350 W · three nickel-hydrogen batteries'],['Pointing','six reaction wheels · 0.25″ stability'],['Launch','23 July 1999, Space Shuttle Columbia'],['Builder','TRW; programme managed by NASA Marshall']] },
+      { title:'Optics', rows:[['Design','Wolter type I, grazing incidence'],['Mirrors','four nested paraboloid–hyperboloid pairs · each 83.3 cm long'],['Largest diameter','1.2 m'],['Focal length','10 m'],['Mirror mass','956.4 kg'],['Sharpness','0.5″ full width at half maximum'],['Effective area','800 cm² at 0.25 keV · 400 cm² at 5 keV']] },
+      { title:'Instruments', rows:[['ACIS','10 CCDs in two arrays · imaging and spectroscopy'],['HRC','microchannel plates, wide field, high resolution'],['HETG','transmission grating, resolving power 60 to 1,000'],['LETG','low-energy grating, resolving power 40 to 2,000'],['Status in 2026','nominal, except HRC-S (halted since October 2025)']] },
+      { title:'Orbit and data', rows:[['Original orbit','10,000 × 140,161 km · 28.5° inclination'],['Orbit in 2025','perigee ≈ 6,680 km · apogee ≈ 142,000 km'],['Period','63.5 h'],['Above the radiation belts','≈ 70% of the time'],['Forbidden pointing','within 46.2° of the Sun'],['Recorder','1.8 Gbit · emptied about every 8 h'],['Exclusive access','six months for the observer, then public']] }
+    ],
+    parts:{
+      door:{ name:'Sunshade door', desc:"The lid that protected the mirrors during launch. It opened once and for all on 12 August 1999; open, it also screens out sunlight.", facts:["Opened 12 August 1999","≈ 2.7 m, 54 kg (9 feet, 120 pounds)"] },
+      bus:{ name:'Spacecraft bus', desc:"The octagonal module around the mirrors. It provides power, pointing, communications and propulsion. Its engines took Chandra to its very elongated orbit after release from the Shuttle.", facts:["Six reaction wheels, two inertial reference units","Aspect camera: 1.4° × 1.4° field","Two low-gain antennas","1.8 Gbit recorder"] },
+      hrma:{ name:'Mirrors (HRMA)', desc:"Chandra's heart: four pairs of nested, tube-shaped mirrors. X-rays first graze a paraboloid, then a hyperboloid, at a very shallow angle, and converge 10 m further on. Just behind, two gratings can be moved into the beam to turn it into a spectrum.", facts:["Four nested pairs, 1.2 m across for the largest","10 m focal length","956.4 kg"] },
+      oba:{ name:'Optical bench', desc:"The long tube that holds the detectors 10 m behind the mirrors, very stably. X-rays travel through it without meeting any other optics.", facts:["Keeps mirrors and focus 10 m apart"] },
+      isim:{ name:'Science instrument module', desc:"At the end of the tube, a moving table puts one of the two cameras at the focus: ACIS (CCDs) or HRC (microchannel plates).", facts:["ACIS: 10 CCDs","HRC: very high resolution imaging"] },
+      solar:{ name:'Solar arrays', desc:"Two wings of three silicon panels, deployed after release, and three batteries to store the energy.", facts:["2,350 W","Three 40 Ah nickel-hydrogen batteries"] }
     }
   },
   gaia:{
@@ -3171,6 +3494,41 @@ EN_INST.roman = {
       docs:["Coronagraph (IPAC)"] }
   }
 };
+EN_INST.chandra = {
+  summary:"Two cameras take turns at the focus, 10 m behind the mirrors: ACIS, a CCD mosaic that also measures the energy of each photon, and HRC, a microchannel-plate camera for the sharpest images. Two transmission gratings, HETG and LETG, can be moved in behind the mirrors to spread the X-rays into very detailed spectra. Chandra counts photons one by one: its basic data are event lists (position, time, energy), not images.",
+  archives:[["Chandra Data Archive (ChaSeR)","Search and download of observations, at the Chandra X-ray Center."],["Chandra Source Catalog 2.1","Catalogue of 407,806 X-ray sources, from public observations up to the end of 2021."],["CIAO","Analysis software for Chandra data."],["HEASARC","NASA's high-energy archive, which also gives access to Chandra."]],
+  instruments:{
+    acis:{ kind:"Imaging and spectroscopic CCD camera",
+      use:"Photographing the sky in X-rays while measuring the energy of each photon. This gives both the image of a supernova remnant or a galaxy cluster and the chemical make-up and temperature of its gas.",
+      summary:"Ten CCDs in two arrays: ACIS-I, a 2 × 2 square for imaging, and ACIS-S, a row of six, which also reads out the HETG spectra. Every photon is recorded with its position, time and energy.",
+      specs:[["Detectors","10 CCDs: ACIS-I (4) and ACIS-S (6, 2 of them back-illuminated)"],["Pixels","24 µm · 0.492″"],["Field","ACIS-I 16.9′ × 16.9′ · ACIS-S 8.3′ × 50.6′"],["Range (efficiency > 30%)","0.8–8 keV (front-illuminated) · 0.3–8 keV (back-illuminated)"],["Frame time","3.2 s (0.2 to 10 s possible)"],["Effective area","110 cm² at 0.5 keV · 600 cm² at 1.5 keV · 40 cm² at 8 keV"]],
+      products:[["evt1","level 1 event list: every photon with position, time, energy"],["evt2","level 2 event list, filtered and ready for analysis"],["CSC catalogue","sources detected over all public observations (407,806 in release 2.1)"]],
+      example:{ title:"An event list (evt2)", caption:"Real structure of an ACIS evt2 file; illustrative values.", text:
+"time (s)          ccd_id  chipx  chipy     x (px)     y (px)   energy (eV)  grade\n6.4218302e+08     7       512    430       4096.3     4110.8    1520.4       0\n6.4218302e+08     7       233    871       4241.9     4372.1     684.2       2\n6.4218303e+08     6       901    112       3870.5     3922.6    6421.7       0\n\n→ one line per photon; the image and spectrum are then built by grouping the events." },
+      code:{ title:"Analysis with CIAO" },
+      notes:["The telescope gently wobbles in a Lissajous pattern (dither) during the exposure, to spread the image over many pixels; each photon's position is corrected afterwards.","A contaminant layer on the ACIS filter slowly reduces the sensitivity at low energies; it is tracked by the calibration."],
+      docs:["About Chandra (characteristics)","Proposers' Observatory Guide"] },
+    hrc:{ kind:"Microchannel-plate camera",
+      use:"Taking the sharpest X-ray images and timing each photon to a few microseconds, for instance to follow the fast spin of a pulsar.",
+      summary:"Two microchannel-plate detectors: HRC-I, for wide-field imaging, and HRC-S, an elongated strip that reads out the LETG spectra. Very poor energy resolution, but great sharpness and very fine timing.",
+      specs:[["Detectors","HRC-I (imaging) · HRC-S (spectroscopy with LETG)"],["Field","HRC-I ≈ 30′ × 30′ · HRC-S 6′ × 90′"],["Resolution","≈ 0.4″ full width at half maximum"],["Range","0.08–10 keV"],["Energy resolution","E/ΔE ≈ 1 at 1 keV"],["Timing","16 µs"],["Status in 2026","HRC-I in service · HRC-S halted since October 2025 (high-voltage current-limiter trips)"]],
+      products:[["evt1 / evt2","event lists: position and time of each photon"]],
+      notes:["Exposures with HRC are limited to 14.5 ks in one go, for thermal reasons."],
+      docs:["About Chandra (characteristics)"] },
+    hetg:{ kind:"High-energy spectroscopy grating",
+      use:"Splitting X-rays into a very fine spectrum showing the lines of each chemical element: this measures the temperature, density and speed of the gas around stars and black holes.",
+      summary:"A set of gold transmission gratings moved in just behind the mirrors. Two families of gratings (HEG and MEG) disperse the light in two directions 10° apart; the spectrum is read by ACIS-S.",
+      specs:[["Gratings","HEG (high energy) and MEG (medium energy), dispersions 10° apart"],["HEG","0.8–10 keV (15–1.2 Å) · E/ΔE from 65 to 1,070"],["MEG","0.4–5 keV (31–2.5 Å) · E/ΔE from 80 to 970"],["Readout","ACIS-S"],["Effective area (HEG + MEG)","59 cm² at 1 keV · 200 cm² at 1.5 keV"]],
+      products:[["pha2","spectra by diffraction order, extracted from the evt2"]],
+      docs:["About Chandra (characteristics)"] },
+    letg:{ kind:"Low-energy spectroscopy grating",
+      use:"Getting the most detailed X-ray spectra at low energies, for instance to study the very hot atmospheres of stars or the gas between galaxies.",
+      summary:"A transmission grating moved in behind the mirrors, read out by HRC-S or ACIS-S. It is Chandra's highest-resolution instrument at low energies.",
+      specs:[["Range","1.7–170 Å (0.07–7.3 keV) with HRC-S · 1.4–63 Å with ACIS-S"],["Resolving power","≥ 1,000 between 50 and 160 Å"],["Readout","HRC-S or ACIS-S"],["Status in 2026","readout by HRC-S interrupted since October 2025"]],
+      products:[["pha2","spectra by diffraction order"]],
+      docs:["About Chandra (characteristics)"] }
+  }
+};
 EN_INST.gaia = {
   summary:"Gaia has no separate instruments in the usual sense. A single focal plane of 106 CCDs, shared by the two telescopes, performs three functions that read the same stream of light as the spacecraft scans the sky.",
   archives:[["ESA, Gaia Archive","Official archive: ADQL queries on Gaia DR3, downloads, XP and RVS spectra."],["Gaia DR3 documentation","Full description of the catalogue and its tables."],["VizieR, Gaia DR3 (I/355)","CDS access to the catalogue."],["astroquery.gaia","Python access to the archive."]],
@@ -3216,14 +3574,14 @@ EN_INST.gaia = {
 /* Short labels shared by several instruments: filter notes, band and field names, code comments. */
 var EN_WORDS = {
   "coupure à 850 nm":"cut-on at 850 nm", "coupure à 115 nm":"cut-on at 115 nm", "FUV-MAMA, basse résolution":"FUV-MAMA, low resolution", "NUV-MAMA, basse résolution":"NUV-MAMA, low resolution",
-  "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
+  "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "échelle FUV, R ≈ 45 800":"FUV echelle, R ≈ 45,800", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
   "NUV, moyenne résolution":"NUV, medium resolution", "NUV, basse résolution":"NUV, low resolution", "H₂ 2,12 µm":"H₂ 2.12 µm", "H₂ 4,7 µm":"H₂ 4.7 µm", "très large":"extra wide", "R ≈ 1 000 / 2 700":"R ≈ 1,000 / 2,700",
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
   "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
   "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
-var EN_CODE = [["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+var EN_CODE = [["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
 
@@ -3249,6 +3607,14 @@ var EN_OPTICS = {
     specs:[['Design','2 three-mirror anastigmats'],['Primary mirrors','1.45 × 0.50 m each'],['Focal length','35 m'],['Basic angle','106.5°'],['Mirrors','10 in all, in silicon carbide']],
     links:['optical bench','focal plane','viewing apertures'],
     fp:{ labs:[['Gaia focal plane','106 CCDs of 4500 × 1966 px, 10 × 30 µm']], key:['monitoring (basic angle, wavefront)','sky mapper','astrometric field','blue photometer','red photometer','RVS spectrometer'], note:'Stars cross the focal plane from left to right as the spacecraft turns: detection, then astrometry, photometry and finally spectroscopy. 17 strips and 7 rows; the spectrometer occupies rows 4 to 7, and a wavefront sensor replaces the last astrometric CCD of row 4 (Gaia DR3 documentation). The position of the three other monitoring CCDs, in the first strip, is indicative.' } },
+  chandra:{ title:'Grazing-incidence mirrors: four Wolter type I pairs', scale:'Drawn to scale, with the same scale on both axes: diameters of the four pairs (1.23 to 0.65 m), mirror length (84 cm) and focal distance (10.05 m) from the Proposers\' Observatory Guide (POG, chapter 4). The slope of each mirror is derived from its exit angle. The optical bench tube, dashed, is indicative.',
+    steps:['X-rays pass through matter instead of reflecting off it. They only bounce if they skim a very smooth surface, at an angle of less than a degree.',
+           'Each ray first grazes a paraboloid, then a hyperboloid: two grazing reflections are enough to form a sharp image. Four nested pairs, 1.23 to 0.65 m across, multiply the collecting area.',
+           'The mirrors, Zerodur glass coated with iridium, send the rays along a very narrow cone: the focus lies 10 m behind them, at the end of the optical bench.',
+           'At the focus, a moving table places ACIS or HRC. For a spectrum, a grating (HETG or LETG) moves in just behind the mirrors and spreads the X-rays by energy.'],
+    specs:[['Design','Wolter type I, four nested pairs'],['Diameters','1.23 · 0.99 · 0.87 · 0.65 m'],['Mirror length','84 cm each'],['Focal length','10.070 m'],['Coating','iridium on Zerodur glass'],['Effective area','≈ 800 cm² at 0.25 keV · 400 cm² at 5 keV'],['Ghost-free field','30′ in diameter']],
+    links:['mirrors','optical bench','instrument module'],
+    fp:{ labs:[['ACIS-I','4 CCDs of 1024 × 1024 px, 24 µm'],['ACIS-S','6 CCDs, 2 of them back-illuminated'],['HRC-I','microchannel plate, ≈ 30′ across']], note:'ACIS-I and ACIS-S sit side by side on the same mount, HRC on the same moving table; they are brought together here to compare their sizes. Size of HRC-I derived from its field (≈ 30′) and the focal-plane scale; gaps between CCDs indicative.' } },
   roman:{ title:'A three-mirror anastigmat, built around an existing telescope', scale:'No optical prescription of Roman is public. The aperture (2.4 m) and central obstruction (30.3%) are exact; the mirror spacing, the hole in the primary and the size of the secondary are measured on NASA\'s 3D model (2015 design) and are therefore indicative. Aft optics: schematic. The detectors, below, are to scale.',
     steps:['The 2.4 m primary mirror, the size of Hubble\'s, and the secondary form the front of the telescope; they run near 265 K.','Behind the primary, the aft optics pick up the beam: a steerable mirror, a fold mirror, then the tertiary mirror.','The tertiary corrects the aberrations over a very wide field and forms the image, at f/7.9, on the WFI\'s 18 detectors.','Another branch, of five mirrors including a steerable one, sends a collimated beam to the coronagraph.'],
     specs:[['Design','three-mirror anastigmat'],['Aperture','2.4 m · effective 2.36 m'],['Primary–secondary spacing','≈ 2.4 m (NASA model)'],['Central obscuration','30.3% of the diameter'],['Beam to the WFI','f/7.9'],['Mirror temperature','≈ 265 K (primary and secondary)']],
@@ -3262,6 +3628,11 @@ var EN_ORBITS = {
     notes:['At L2 the Sun, the Earth and the Moon always stay on the same side: one sunshield is enough to block all three.','The orbit is wide enough never to pass through the shadow of the Earth or the Moon: the solar array is always lit.','The position is unstable. A small thruster burn, about every three weeks, keeps Webb from drifting away.'] },
   euclid:{ sum:'Euclid also orbits L2, on a large orbit that takes about six months. It keeps its sunshield facing the Sun and scans the sky in strips.',
     notes:['The thermal environment there is very stable, which is essential for measuring galaxy shapes to one part in a thousand.','The telescope always observes roughly at right angles to the direction of the Sun: the accessible zone sweeps round the sky in a year.','Station-keeping manoeuvres take place about every four weeks.'] },
+  chandra:{ sum:'Chandra follows a very elongated orbit around the Earth: it passes a few thousand kilometres away at its closest, then climbs to about 142,000 km, more than a third of the way to the Moon. One orbit takes 63.5 hours.',
+    notes:['About 70% of the time Chandra is above the radiation belts. Observations stop while it crosses these belts, which would damage the detectors.',
+           'Far from the Earth, long uninterrupted exposures are possible, unlike Hubble, which the Earth blocks on every orbit.',
+           'The orbit slowly changes shape under the pull of the Moon and the Sun: perigee dropped to 1,045 km in July 2023, then rose back to about 6,680 km in 2025.',
+           'To protect its instruments from heat, long observations are split into chunks of at most about 30 ks.'] },
   roman:{ sum:'Roman too is heading for L2, 1.5 million km away, on a halo orbit that takes about six months. Launched on 30 August 2026, it made the trip in about three months: the trajectory below starts in its first week of flight.',
     notes:['Like Webb and Euclid, Roman keeps the Sun, the Earth and the Moon on the same side: its solar array sunshield stays turned towards them.','The distance allows long uninterrupted series of observations, essential for following the same Galactic bulge stars for weeks.','Its first public images are expected in early 2027.'],
     noTraj:'Roman\'s real trajectory will appear here as soon as the JPL Horizons ephemerides are retrieved by the site\'s daily data update. Meanwhile, the map of the observable sky already shows which part of the sky it can point at.' },
@@ -3358,7 +3729,7 @@ var EN_UI = {
   "XP_SAMPLED : spectre BP/RP calibré, échantillonné tous les 2 nm":"XP_SAMPLED: calibrated BP/RP spectrum, sampled every 2 nm", "RVS : spectre moyen normalisé, 846 à 870 nm":"RVS: normalised mean spectrum, 846 to 870 nm",
   /* instrument comparison */
   "Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.":"All the observatories on the same axes. Click an instrument to open its page.",
-  "Hubble couvre l'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l'infrarouge moyen. Euclid et Gaia font l'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.":"Hubble covers the ultraviolet and the visible very sharply over a tiny field. Webb extends this into the mid infrared. Euclid and Gaia do the opposite: a narrow spectral range but a field hundreds of times larger, to map the whole sky.",
+  "Chandra observe les rayons X, des photons des dizaines à des milliers de fois plus énergétiques que la lumière visible. Hubble couvre l'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l'infrarouge moyen. Euclid et Gaia font l'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.":"Chandra observes X-rays, photons tens to thousands of times more energetic than visible light. Hubble covers the ultraviolet and the visible very sharply over a tiny field. Webb extends this into the mid infrared. Euclid and Gaia do the opposite: a narrow spectral range but a field hundreds of times larger, to map the whole sky.",
   "Tous les observatoires":"All the observatories", "Agrandissement : Hubble et Webb seuls":"Enlarged: Hubble and Webb only",
   "À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d'Euclid. Le champ de Gaia est une valeur approchée ; celui du WFI de Roman est dessiné détecteur par détecteur.":"On the left, the Hubble and Webb fields shrink to the small cluster of rectangles at the centre: each fits several hundred times into Euclid's. The Gaia field is an approximate value; Roman's WFI field is drawn detector by detector.",
   "Tableau comparatif":"Comparison table", "Instrument":"Instrument", "Type":"Type", "Domaine spectral":"Spectral range", "Échantillonnage par pixel":"Sampling per pixel", "Résolution spectrale R":"Spectral resolution R",
@@ -3375,6 +3746,41 @@ var EN_UI = {
   "Schéma optique de Hubble, à l'échelle":"Hubble optical layout, to scale", "Schéma optique de JWST":"JWST optical layout", "Schéma optique d'Euclid":"Euclid optical layout", "Schéma optique de Gaia, vue de dessus":"Gaia optical layout, seen from above",
   "Miroir primaire, 2,4 m":"Primary mirror, 2.4 m", "Miroir secondaire, 0,3 m":"Secondary mirror, 0.3 m", "Foyer":"Focus", "1,5 m derrière":"1.5 m behind", "le primaire":"the primary", "4,9 m":"4.9 m",
   "Humain":"Human",
+  "About Chandra (caractéristiques des instruments)":"About Chandra (instrument characteristics)",
+  "Chandra Users' Committee, mai 2026 (état de la mission)":"Chandra Users' Committee, May 2026 (mission status)",
+  "Standard Data Processing (niveaux de traitement)":"Standard Data Processing (processing levels)",
+  "Chandra Specifications (dossier de presse)":"Chandra Specifications (press kit)",
+  "Proposers' Observatory Guide, contraintes de visibilité":"Proposers' Observatory Guide, visibility constraints",
+  "Orbite terrestre très elliptique, à l'échelle":"Highly elliptical Earth orbit, to scale",
+  "apogée ≈ 142 000 km":"apogee ≈ 142,000 km",
+  "un tour en 63,5 h":"one orbit in 63.5 h",
+  "Terre, orbite et Lune à l'échelle (orbite de 2025).":"Earth, orbit and Moon to scale (2025 orbit).",
+  "Une orbite, vue du nord de l'écliptique":"One orbit, seen from north of the ecliptic",
+  "Orbite de Chandra autour de la Terre, à l'échelle":"Chandra's orbit around the Earth, to scale",
+  "Terre, orbite et orbite de la Lune à la même échelle. Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s'arrêtent.":"Earth, orbit and the Moon's orbit at the same scale. Last complete orbit, real positions (JPL Horizons ephemerides) in a fixed geocentric frame. The grey disc around the Earth roughly marks the radiation-belt region where observations stop.",
+  "Distance au centre de la Terre":"Distance from the Earth's centre",
+  "Altitude au plus près":"Altitude at closest approach",
+  "50 000 km":"50,000 km",
+  "rayons X du ciel":"X-rays from the sky",
+  "miroirs":"mirrors",
+  "10,05 m":"10.05 m",
+  "plaque centrale":"central aperture plate",
+  "paraboloïdes":"paraboloids",
+  "hyperboloïdes":"hyperboloids",
+  "axe":"axis",
+  "agrandi 5 fois, même échelle sur les deux axes":"enlarged 5 times, same scale on both axes",
+  "Schéma optique de Chandra, à l'échelle":"Optical layout of Chandra, to scale",
+  "longueur d'onde, échelle logarithmique":"wavelength, logarithmic scale",
+  "longueur d'onde, échelle logarithmique · énergie des photons en dessous":"wavelength, logarithmic scale · photon energy below",
+  "rayons X":"X-rays",
+  "0,492″":"0.492″",
+  "≈ 0,4″ (résolution)":"≈ 0.4″ (resolution)",
+  "lu par ACIS-S":"read by ACIS-S",
+  "lu par HRC-S ou ACIS-S":"read by HRC-S or ACIS-S",
+  "65 à 1 070 (HEG) · 80 à 970 (MEG)":"65 to 1,070 (HEG) · 80 to 970 (MEG)",
+  "≥ 1 000 entre 50 et 160 Å":"≥ 1,000 between 50 and 160 Å",
+  "E/ΔE ≈ 1 à 1 keV":"E/ΔE ≈ 1 at 1 keV",
+  "Chandra ne vise jamais à moins de 46,2° du Soleil, contrainte qui ne peut être levée ; environ 15 % du ciel est inaccessible un jour donné, mais aucune région ne l'est plus de trois mois. La Lune (6°) et le bord éclairé de la Terre (10°) ajoutent de petites exclusions, non représentées (POG, contraintes de visibilité). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Chandra never points within 46.2° of the Sun, a constraint that cannot be waived; about 15% of the sky is out of reach on any given day, but no region for more than three months. The Moon (6°) and the bright Earth limb (10°) add small exclusions, not shown (POG, visibility constraints). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
   "plaque de base, 2,5 m":"baseplate, 2.5 m", "renvois et tertiaire (0,54 m)":"folds and tertiary (0.54 m)", "foyer Cassegrain":"Cassegrain focus",
   "tertiaire (0,73 m) et pointage fin":"tertiary (0.73 m) and fine steering", "foyer":"focus", "Secondaire et son écran":"Secondary and its baffle",
   "Optique arrière et instruments":"Aft optics and instruments", "tertiaire":"tertiary", "banc optique de ≈ 3 m":"≈ 3 m optical bench", "1 m":"1 m",
@@ -3433,7 +3839,7 @@ var EN_RULES = [
   [/^([\d.,\s]+) sources tracées$/, function(_, a){ return OBS_NUM(a) + " sources plotted"; }], [/^([\d.,\s]+) étoiles$/, function(_, a){ return OBS_NUM(a) + " stars"; }],
   [/^([\d.,\s]+) tirées au hasard \(random_index\)$/, function(_, a){ return OBS_NUM(a) + " drawn at random (random_index)"; }],
   [/^Carte du ciel entier en coordonnées équatoriales\. Chaque point est une case de ([\d,]+)° où au moins une observation scientifique a commencé cette année-là ; les années s'accumulent\. Données réelles de l'archive MAST\. Contrairement à un télescope de relevé, (.+) va de cible en cible au gré des programmes acceptés\.$/, function(_, c, n){ return "Map of the whole sky in equatorial coordinates. Each point is a " + c.replace(",", ".") + "° cell in which at least one science observation started that year; the years add up. Real data from the MAST archive. Unlike a survey telescope, " + n + " moves from target to target as the accepted programmes dictate."; }],
-  [/ en fonction de /, " as a function of "], [/longueur d'onde/g, "wavelength"], [/nombre d'étoiles/, "number of stars"], [/nombre de sources/, "number of sources"], [/flux normalisé/, "normalised flux"], [/magnitude absolue/, "absolute magnitude"], [/couleur /g, "colour "], [/vitesse radiale/, "radial velocity"],
+  [/ en fonction de /, " as a function of "], [/longueur d'onde/g, "wavelength"], [/nombre d'étoiles/, "number of stars"], [/nombre de sources/, "number of sources"], [/flux normalisé/, "normalised flux"], [/flux relatif/, "relative flux"], [/temps depuis le début de la pose/, "time since start of exposure"], [/magnitude absolue/, "absolute magnitude"], [/couleur /g, "colour "], [/vitesse radiale/, "radial velocity"],
   [/^(.+), filtre (\S+)$/, "$1, filter $2"]
 ];
 
@@ -4121,6 +4527,13 @@ var DEPLOY = (function(){
    m : matériau three.js (MeshStandardMaterial), n : son nom dans le fichier 3D.
 ================================================================= */
 var LOOKS = {
+  /* Chandra (maquette NASA, textures et couleurs déjà en sRGB) : cellules solaires plus sombres, moins de reflets */
+  chandra: function(m, n){
+    if (/shiny_panel/.test(n)){ m.color.setHex(0x1B2438); m.metalness = 0.2; m.roughness = 0.55; }
+    else if (/tex_01/.test(n)){ m.color.setHex(0x3E4A66); m.roughness = 0.6; }   /* atlas des cellules solaires et des petits équipements */
+    else if (/foil_gold/.test(n)){ m.metalness = 0.6; m.roughness = 0.45; }
+    else if (/foil_silver/.test(n)){ m.color.setHex(0xC8CCD0); m.metalness = 0.3; m.roughness = 0.55; }
+  },
   jwst: function(m, n){
     if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
     else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }
@@ -4202,6 +4615,21 @@ function orbitSvg(t){
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
   var gone = !!t.ended;
+  if (t.orbit === 'heo'){
+    /* orbite terrestre très elliptique (Chandra) : périgée ≈ 6 680 km, apogée ≈ 142 000 km d'altitude ; Terre, orbite et Lune à l'échelle */
+    var k = 250/384400, ex = 40, ey = 60, R = 6371, rp = R + 6680, ra = R + 142000, a2 = (rp + ra)/2, e2 = (ra - rp)/(ra + rp), b2 = a2*Math.sqrt(1 - e2*e2);
+    var cxo = ex + (ra - a2)*k;
+    return '<svg viewBox="0 0 340 132" role="img" aria-label="Orbite terrestre très elliptique, à l\'échelle">' +
+      '<path d="M' + (ex + 250*Math.cos(-0.22)).toFixed(1) + ' ' + (ey + 250*Math.sin(-0.22)).toFixed(1) + ' A250 250 0 0 1 ' + (ex + 250*Math.cos(0.22)).toFixed(1) + ' ' + (ey + 250*Math.sin(0.22)).toFixed(1) + '" fill="none" stroke="#98A1A7" stroke-dasharray="3 3"/>' +
+      '<text x="' + (ex + 250*Math.cos(-0.22) - 6).toFixed(1) + '" y="' + (ey + 250*Math.sin(-0.22) + 4).toFixed(1) + '" text-anchor="end" fill="#3A4147" font-size="11" ' + F + '>orbite de la Lune</text>' +
+      '<ellipse cx="' + cxo.toFixed(1) + '" cy="' + ey + '" rx="' + (a2*k).toFixed(1) + '" ry="' + (b2*k).toFixed(1) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+      '<circle cx="' + ex + '" cy="' + ey + '" r="' + Math.max(2.2, R*k).toFixed(1) + '" fill="#2C5E9E"/><text x="' + (ex - 8) + '" y="' + (ey + 4) + '" text-anchor="end" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+      '<circle cx="' + (ex + ra*k).toFixed(1) + '" cy="' + ey + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey - 8) + '" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey + 8) + '" fill="#3A4147" font-size="11" ' + F + '>apogée ≈ 142 000 km</text>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey + 22) + '" fill="#3A4147" font-size="11" ' + F + '>un tour en 63,5 h</text>' +
+      '<text x="170" y="126" text-anchor="middle" fill="#667077" font-size="11" ' + F + '>Terre, orbite et Lune à l\'échelle (orbite de 2025).</text></svg>';
+  }
   return '<svg viewBox="0 0 340 122" role="img" aria-label="Position au point de Lagrange L2">' +
     '<path d="M2 62 H26" stroke="#14171A" stroke-width="1.5"/><path d="M2 62 l8 -4.5 v9 z" fill="#14171A"/>' +
     '<text x="2" y="84" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +

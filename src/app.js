@@ -43,6 +43,21 @@ function orbitSvg(t){
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
   var gone = !!t.ended;
+  if (t.orbit === 'heo'){
+    /* orbite terrestre très elliptique (Chandra) : périgée ≈ 6 680 km, apogée ≈ 142 000 km d'altitude ; Terre, orbite et Lune à l'échelle */
+    var k = 250/384400, ex = 40, ey = 60, R = 6371, rp = R + 6680, ra = R + 142000, a2 = (rp + ra)/2, e2 = (ra - rp)/(ra + rp), b2 = a2*Math.sqrt(1 - e2*e2);
+    var cxo = ex + (ra - a2)*k;
+    return '<svg viewBox="0 0 340 132" role="img" aria-label="Orbite terrestre très elliptique, à l\'échelle">' +
+      '<path d="M' + (ex + 250*Math.cos(-0.22)).toFixed(1) + ' ' + (ey + 250*Math.sin(-0.22)).toFixed(1) + ' A250 250 0 0 1 ' + (ex + 250*Math.cos(0.22)).toFixed(1) + ' ' + (ey + 250*Math.sin(0.22)).toFixed(1) + '" fill="none" stroke="#98A1A7" stroke-dasharray="3 3"/>' +
+      '<text x="' + (ex + 250*Math.cos(-0.22) - 6).toFixed(1) + '" y="' + (ey + 250*Math.sin(-0.22) + 4).toFixed(1) + '" text-anchor="end" fill="#3A4147" font-size="11" ' + F + '>orbite de la Lune</text>' +
+      '<ellipse cx="' + cxo.toFixed(1) + '" cy="' + ey + '" rx="' + (a2*k).toFixed(1) + '" ry="' + (b2*k).toFixed(1) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+      '<circle cx="' + ex + '" cy="' + ey + '" r="' + Math.max(2.2, R*k).toFixed(1) + '" fill="#2C5E9E"/><text x="' + (ex - 8) + '" y="' + (ey + 4) + '" text-anchor="end" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+      '<circle cx="' + (ex + ra*k).toFixed(1) + '" cy="' + ey + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey - 8) + '" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey + 8) + '" fill="#3A4147" font-size="11" ' + F + '>apogée ≈ 142 000 km</text>' +
+      '<text x="' + (ex + ra*k + 10).toFixed(1) + '" y="' + (ey + 22) + '" fill="#3A4147" font-size="11" ' + F + '>un tour en 63,5 h</text>' +
+      '<text x="170" y="126" text-anchor="middle" fill="#667077" font-size="11" ' + F + '>Terre, orbite et Lune à l\'échelle (orbite de 2025).</text></svg>';
+  }
   return '<svg viewBox="0 0 340 122" role="img" aria-label="Position au point de Lagrange L2">' +
     '<path d="M2 62 H26" stroke="#14171A" stroke-width="1.5"/><path d="M2 62 l8 -4.5 v9 z" fill="#14171A"/>' +
     '<text x="2" y="84" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +

@@ -9,6 +9,7 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | JWST | NASA 3D Resources, « James Webb Space Telescope (B) » (GLB Draco) | décodage Draco (`gltf-transform copy`), soudure → `jwst_src.glb`, redécoupage (`jwst_cls.js`), quantification |
 | Hubble | jeu de données Gaia Sky `spacecraft-hst` (modèle NASA VTAD) | textures 1024 px → `hst_tex.glb`, redécoupage (`seg_hst.js`), quantification |
 | Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (GLB Draco, conception AFTA 2015) | décodage Draco, soudure, simplification (`--ratio 0.08 --error 0.004`), redécoupage (`roman_cls.js`), puis `slim.mjs` : simplification sur les seules positions, normales recalculées par face, quantification (≈ 3 Mo au lieu de 7,8) |
+| Chandra | NASA 3D Resources, « Chandra X-ray Observatory » (GLB Draco, textures WebP, en mètres) | décodage Draco, soudure, redécoupage en six ensembles (`chandra_cls.js`), quantification (≈ 0,8 Mo) |
 
 ## Redécoupage en pièces
 

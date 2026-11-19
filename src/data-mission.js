@@ -173,6 +173,45 @@ var MISSION = {
     rel:null
   },
 
+  chandra: {
+    checked:'2026-11-19',
+    refs:{
+      sdp:{ t:'Standard Data Processing (niveaux de traitement)', p:'Chandra X-ray Center, CIAO', u:'https://cxc.cfa.harvard.edu/ciao3.4/data/sdp.html' },
+      csc:{ t:'Chandra Source Catalog, Release 2.1', p:'Chandra X-ray Center (newsletter 35)', u:'https://cxc.harvard.edu/newsletters/news_35/article14.html' }
+    },
+    intro:["Chandra est un programme de la NASA géré par le centre Marshall. Le Chandra X-ray Center, au Smithsonian Astrophysical Observatory à Cambridge (Massachusetts), le pilote, choisit les observations par appel à propositions, traite les données et les archive. Les observateurs ont six mois d'accès exclusif, puis les données deviennent publiques.",
+           "Chandra is a NASA programme managed by the Marshall Center. The Chandra X-ray Center, at the Smithsonian Astrophysical Observatory in Cambridge (Massachusetts), flies it, selects the observations through calls for proposals, processes the data and archives them. Observers get six months of exclusive use, after which the data become public."],
+    phases:[
+      ['23 juil. 1999','23 Jul 1999','Lancement','Launch',"La navette Columbia emporte Chandra et le largue le jour même ; un étage à poudre l'envoie ensuite vers son orbite allongée.","Space Shuttle Columbia carries Chandra and releases it the same day; a solid-fuel stage then sends it towards its elongated orbit.",'miles'],
+      ['7 août 1999','7 Aug 1999','Dernière manœuvre','Final burn',"Une poussée de 7 min 44 s relève le point bas de l'orbite à environ 9 700 km.","A 7 min 44 s burn raises the low point of the orbit to about 9,700 km.",'miles'],
+      ['12 août 1999','12 Aug 1999','Ouverture de la porte','Door opens',"La porte du pare-soleil s'ouvre : les rayons X atteignent les miroirs pour la première fois.","The sunshade door opens: X-rays reach the mirrors for the first time.",'miles'],
+      ['19 août 1999','19 Aug 1999','Première lumière','First light',"Première image officielle, prise par ACIS : Cassiopée A, reste d'une étoile qui a explosé il y a environ 320 ans.","First official image, taken by ACIS: Cassiopeia A, the remnant of a star that exploded about 320 years earlier.",'miles'],
+      ['2 avril 2024','2 Apr 2024','Catalogue CSC 2.1','CSC 2.1 catalogue',"Le catalogue de sources rassemble 407 806 sources X tirées de 15 533 observations publiques jusqu'à fin 2021.","The source catalogue gathers 407,806 X-ray sources from 15,533 public observations up to the end of 2021.",'csc'],
+      ['24 oct. 2025','24 Oct 2025','Arrêt de HRC-S','HRC-S halted',"Un déclenchement du limiteur de haute tension interrompt les observations avec HRC-S ; HRC-I reprend en décembre 2025.","A high-voltage current-limiter trip halts observations with HRC-S; HRC-I resumes in December 2025.",'cuc'],
+      ['2026','2026','Budget réduit','Reduced budget',"Le budget de l'exercice 2026 est fixé à 63 M$, environ 11 M$ de moins que le coût de la mission complète.","The fiscal year 2026 budget is set at $63M, about $11M below the cost of the full mission.",'cuc']
+    ],
+    ops:[
+      ['Programme','Programme','NASA, centre Marshall','NASA, Marshall Center','cspecs'],
+      ['Pilotage et science','Operations and science','Chandra X-ray Center (Smithsonian Astrophysical Observatory)','Chandra X-ray Center (Smithsonian Astrophysical Observatory)',['specs','cspecs']],
+      ['Données à bord','On-board data','enregistreur de 1,8 Gbit, vidé toutes les 8 h environ','1.8 Gbit recorder, emptied about every 8 h','specs'],
+      ['Accès','Access','six mois exclusifs pour l\'observateur, puis public','six months exclusive to the observer, then public','cfp'],
+      ['Logiciel','Software','CIAO, et catalogue de sources CSC','CIAO, and the CSC source catalogue',['sdp','csc']]
+    ],
+    chain:{
+      intro:["Le traitement standard du Chandra X-ray Center range les produits en niveaux. Chandra compte les photons un à un : le produit central est une liste d'événements, dont on tire images et spectres.",
+             "The Chandra X-ray Center's standard data processing organises the products into levels. Chandra counts photons one by one: the central product is an event list, from which images and spectra are built."],
+      steps:[
+        { lv:'L0', n:['Télémétrie découpée','Split telemetry'], x:['La télémétrie brute du satellite, découpée en fichiers FITS par observation. Pas pour l\'analyse.','Raw spacecraft telemetry, split into FITS files per observation. Not for analysis.'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L1', n:['Événements corrigés','Corrected events'], x:['Corrections propres à chaque instrument, dont la solution d\'attitude, sans modification irréversible (evt1).','Instrument-specific corrections, including the aspect solution, with no irreversible change (evt1).'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L1.5', n:['Réseaux : ordre zéro','Gratings: zeroth order'], x:['Pour les réseaux seulement : position de l\'ordre zéro des sources et liste d\'événements enrichie.','Gratings only: zeroth-order position of the sources and augmented event list.'], sw:'SDP (CXC)', r:'sdp' },
+        { lv:'L2', n:['Liste d\'événements finale','Final event list'], x:['Filtrages standard, irréversibles : liste d\'événements « finie » (evt2), sources candidates, spectre dispersé pour les réseaux.','Standard, irreversible filtering: the “finished” event list (evt2), candidate sources, dispersed spectrum for the gratings.'], sw:'SDP, CIAO', r:'sdp' },
+        { lv:'L3', n:['Catalogue','Catalogue'], x:['Détection et caractérisation fines des sources, recoupées avec d\'autres catalogues : le Chandra Source Catalog.','Refined source detection and characterisation, cross-matched with other catalogues: the Chandra Source Catalog.'], sw:'CSC', r:['sdp','csc'] }
+      ]
+    },
+    rel:[
+      ['2 avril 2024','2 Apr 2024',['Chandra Source Catalog 2.1','Chandra Source Catalog 2.1'],"407 806 sources, 1 304 376 détections, 15 533 observations jusqu'à fin 2021.","407,806 sources, 1,304,376 detections, 15,533 observations up to the end of 2021.",'csc',false]
+    ]
+  },
   gaia: {
     checked:'2026-11-16',
     refs:{

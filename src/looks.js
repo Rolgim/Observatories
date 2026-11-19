@@ -3,6 +3,13 @@
    m : matériau three.js (MeshStandardMaterial), n : son nom dans le fichier 3D.
 ================================================================= */
 var LOOKS = {
+  /* Chandra (maquette NASA, textures et couleurs déjà en sRGB) : cellules solaires plus sombres, moins de reflets */
+  chandra: function(m, n){
+    if (/shiny_panel/.test(n)){ m.color.setHex(0x1B2438); m.metalness = 0.2; m.roughness = 0.55; }
+    else if (/tex_01/.test(n)){ m.color.setHex(0x3E4A66); m.roughness = 0.6; }   /* atlas des cellules solaires et des petits équipements */
+    else if (/foil_gold/.test(n)){ m.metalness = 0.6; m.roughness = 0.45; }
+    else if (/foil_silver/.test(n)){ m.color.setHex(0xC8CCD0); m.metalness = 0.3; m.roughness = 0.55; }
+  },
   jwst: function(m, n){
     if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
     else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }

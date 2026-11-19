@@ -19,6 +19,8 @@ BODIES = {  # identifiants Horizons, période, pas
     "euclid": dict(id="-680",    start="2023-08-15", stop=TODAY.isoformat(), step="2d", name="Euclid"),
     "gaia":   dict(id="-139479", start="2014-02-01", stop="2025-03-15",      step="3d", name="Gaia"),
     # Roman : identifiant Horizons cherché par son nom (voir lookup) ; lancé le 30 août 2026
+    # Chandra : orbite terrestre très elliptique ; on garde la dernière orbite (≈ 63,5 h) dans un repère géocentrique fixe (écliptique)
+    "chandra": dict(id="-151", start=(TODAY - datetime.timedelta(days=3)).isoformat(), stop=TODAY.isoformat(), step="20m", name="Chandra X-ray Observatory", inertial=True),
     "roman":  dict(id="?Roman",   start="2026-09-05", stop=TODAY.isoformat(), step="2d", name="Nancy Grace Roman Space Telescope"),
 }
 
@@ -53,6 +55,12 @@ def main():
             if b["id"].startswith("?"):
                 b["id"] = lookup(b["id"][1:])
             jd, r = vectors(b["id"], b["start"], b["stop"], b["step"])
+            if b.get("inertial"):
+                d = np.linalg.norm(r, axis=1)
+                print(f"   {len(jd)} points, distance au centre de la Terre {d.min():,.0f} à {d.max():,.0f} km")
+                out["bodies"][key] = dict(name=b["name"], horizons_id=b["id"], start=b["start"], frame="géocentrique, écliptique (fixe)", step_days=float(jd[1] - jd[0]), jd0=float(jd[0]),
+                                          x=[round(v / 1000, 1) for v in r[:, 0]], y=[round(v / 1000, 1) for v in r[:, 1]], z=[round(v / 1000, 1) for v in r[:, 2]])
+                continue
             jd2, s = vectors("10", b["start"], b["stop"], b["step"])  # Soleil vu de la Terre
             if len(jd) != len(jd2):
                 raise RuntimeError("séries de longueurs différentes")

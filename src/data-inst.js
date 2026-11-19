@@ -658,6 +658,110 @@ var INST_DATA = (function(){
   },
 
   /* -------------------------------------------------------------- GAIA */
+  chandra: {
+    checked:'2026-11-19',
+    refs:{
+      about:{ t:"About Chandra (caractéristiques des instruments)", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/" },
+      pog:{ t:"Proposers' Observatory Guide, introduction", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/proposer/POG/html/INTRO.html" },
+      specs:{ t:"Chandra Specifications", p:"Chandra X-ray Center (SAO)", u:"https://www.chandra.si.edu/about/specs.html" },
+      cuc:{ t:"Chandra Users' Committee, mai 2026 (état de la mission)", p:"Chandra X-ray Center", u:"https://cxc.cfa.harvard.edu/cdo/cuc/cuc_file26/may6/Slane_CUC_May2026.pdf" },
+      csc:{ t:"Chandra Source Catalog, Release 2.1", p:"Chandra X-ray Center (newsletter 35)", u:"https://cxc.harvard.edu/newsletters/news_35/article14.html" },
+      cfp:{ t:"Chandra Call for Proposals, cycle 26", p:"Chandra X-ray Center", u:"https://cxc.harvard.edu/proposer/CfP/arc_pdfs/CfP_cyc26.pdf" }
+    },
+    axis: { min:0.0001, max:0.02 },
+    summary: "Deux caméras se relaient au foyer, à 10 m derrière les miroirs : ACIS, une mosaïque de CCD qui mesure aussi l'énergie de chaque photon, et HRC, une caméra à galettes à microcanaux pour les images les plus nettes. Deux réseaux de transmission, HETG et LETG, peuvent s'insérer derrière les miroirs pour disperser les rayons X en spectres très détaillés. Chandra compte les photons un à un : ses données de base sont des listes d'événements (position, instant, énergie), pas des images.",
+    archives: [
+      { label:"Chandra Data Archive (ChaSeR)", url:"https://cda.harvard.edu/chaser/", desc:"Recherche et téléchargement des observations, au Chandra X-ray Center." },
+      { label:"Chandra Source Catalog 2.1", url:"https://cxc.cfa.harvard.edu/csc/", desc:"Catalogue de 407 806 sources X, tiré des observations publiques jusqu'à fin 2021." },
+      { label:"CIAO", url:"https://cxc.cfa.harvard.edu/ciao/", desc:"Logiciel d'analyse des données de Chandra." },
+      { label:"HEASARC", url:"https://heasarc.gsfc.nasa.gov/", desc:"Archive de la NASA pour les hautes énergies, qui donne aussi accès à Chandra." }
+    ],
+    instruments: [
+      { id:"acis", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
+        bands:[ {l:"CCD FI",lo:0.000155,hi:0.0015498}, {l:"CCD BI",lo:0.000155,hi:0.0041327} ],
+        use:"Photographier le ciel en rayons X tout en mesurant l'énergie de chaque photon. On obtient à la fois l'image d'un reste de supernova ou d'un amas de galaxies et la composition chimique et la température de son gaz.",
+        summary:"Dix CCD en deux réseaux : ACIS-I, un carré de 2 × 2 pour l'imagerie, et ACIS-S, une rangée de six, qui sert aussi à lire les spectres du réseau HETG. Chaque photon est enregistré avec sa position, son instant et son énergie.",
+        specs:[
+          ["Détecteurs", "10 CCD : ACIS-I (4) et ACIS-S (6, dont 2 éclairés par l'arrière)", ["specs","pog"]],
+          ["Pixels", "24 µm · 0,492″", "about"],
+          ["Champ", "ACIS-I 16,9′ × 16,9′ · ACIS-S 8,3′ × 50,6′", "about"],
+          ["Domaine (rendement > 30 %)", "0,8–8 keV (éclairés par l'avant) · 0,3–8 keV (par l'arrière)", "about"],
+          ["Temps de pose d'une trame", "3,2 s (0,2 à 10 s possibles)", "about"],
+          ["Surface efficace", "110 cm² à 0,5 keV · 600 cm² à 1,5 keV · 40 cm² à 8 keV", "about"]
+        ],
+        fov:[ {l:'ACIS-I', w:1014, h:1014}, {l:'ACIS-S', w:3036, h:498} ],
+        products:[
+          ["evt1","liste d'événements de niveau 1 : chaque photon avec position, instant, énergie"],
+          ["evt2","liste d'événements de niveau 2, filtrée et prête pour l'analyse"],
+          ["Catalogue CSC","sources détectées sur l'ensemble des observations publiques (407 806 dans la version 2.1)"]
+        ],
+        example:{ real:false, title:"Une liste d'événements (evt2)", caption:"Structure réelle d'un fichier evt2 d'ACIS ; valeurs illustratives.", text:
+"time (s)          ccd_id  chipx  chipy     x (px)     y (px)   energy (eV)  grade\n" +
+"6.4218302e+08     7       512    430       4096.3     4110.8    1520.4       0\n" +
+"6.4218302e+08     7       233    871       4241.9     4372.1     684.2       2\n" +
+"6.4218303e+08     6       901    112       3870.5     3922.6    6421.7       0\n" +
+"\n" +
+"→ une ligne par photon ; l'image et le spectre se construisent ensuite en regroupant les événements." },
+        code:{ title:"Analyse avec CIAO", text:
+"download_chandra_obsid <ObsID>          # télécharge les données d'une observation\n" +
+"chandra_repro <ObsID> outdir=repro      # retraitement standard (nouvel evt2)\n" +
+"dmcopy \"repro/acisf*_evt2.fits[energy=500:7000][bin sky=4]\" image.fits\n" +
+"specextract infile=\"repro/acisf*_evt2.fits[sky=region(src.reg)]\" outroot=spec" },
+        notes:[
+          "Le télescope oscille doucement en figure de Lissajous (« dither ») pendant la pose, pour répartir l'image sur de nombreux pixels ; la position de chaque photon est ensuite corrigée.",
+          "Un dépôt contaminant sur le filtre d'ACIS réduit peu à peu la sensibilité aux basses énergies ; il est suivi par l'étalonnage."
+        ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"}, {l:"Proposers' Observatory Guide",u:"https://cxc.cfa.harvard.edu/proposer/POG/"} ] },
+
+      { id:"hrc", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
+        bands:[ {l:"HRC",lo:0.000124,hi:0.0154975} ],
+        use:"Prendre les images X les plus nettes et dater chaque photon à quelques microsecondes près, par exemple pour suivre la rotation rapide d'un pulsar.",
+        summary:"Deux détecteurs à galettes à microcanaux : HRC-I, pour l'imagerie sur un grand champ, et HRC-S, une bande allongée qui lit les spectres du réseau LETG. Résolution en énergie très faible, mais grande netteté et datation très fine.",
+        specs:[
+          ["Détecteurs", "HRC-I (imagerie) · HRC-S (spectroscopie avec LETG)", "pog"],
+          ["Champ", "HRC-I ≈ 30′ × 30′ · HRC-S 6′ × 90′", "about"],
+          ["Résolution", "≈ 0,4″ à mi-hauteur", "about"],
+          ["Domaine", "0,08–10 keV", "about"],
+          ["Résolution en énergie", "E/ΔE ≈ 1 à 1 keV", "about"],
+          ["Datation", "16 µs", "about"],
+          ["État en 2026", "HRC-I en service · HRC-S arrêté depuis octobre 2025 (déclenchements du limiteur de haute tension)", "cuc"]
+        ],
+        fov:[ {l:'HRC-I', w:1800, h:1800} ],
+        products:[
+          ["evt1 / evt2","listes d'événements : position et instant de chaque photon"]
+        ],
+        notes:[ "Les poses avec HRC sont limitées à 14,5 ks d'un seul tenant, pour des raisons thermiques." ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
+
+      { id:"hetg", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
+        bands:[ {l:"HEG",lo:0.000124,hi:0.0015498}, {l:"MEG",lo:0.000248,hi:0.0030995} ],
+        use:"Décomposer les rayons X en un spectre très fin, où l'on voit les raies de chaque élément chimique : on mesure ainsi la température, la densité et la vitesse du gaz autour des étoiles et des trous noirs.",
+        summary:"Un ensemble de réseaux de transmission en or, inséré juste derrière les miroirs. Deux familles de réseaux (HEG et MEG) dispersent la lumière dans deux directions écartées de 10° ; le spectre est lu par ACIS-S.",
+        specs:[
+          ["Réseaux", "HEG (haute énergie) et MEG (énergie moyenne), dispersions écartées de 10°", "pog"],
+          ["HEG", "0,8–10 keV (15–1,2 Å) · E/ΔE de 65 à 1 070", "about"],
+          ["MEG", "0,4–5 keV (31–2,5 Å) · E/ΔE de 80 à 970", "about"],
+          ["Lecture", "ACIS-S", "pog"],
+          ["Surface efficace (HEG + MEG)", "59 cm² à 1 keV · 200 cm² à 1,5 keV", "about"]
+        ],
+        products:[ ["pha2","spectres par ordre de diffraction, extraits de l'evt2"] ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
+
+      { id:"letg", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
+        bands:[ {l:"LETG + HRC-S",lo:0.0001701,hi:0.0177114} ],
+        use:"Obtenir les spectres X les plus détaillés aux basses énergies, par exemple pour étudier l'atmosphère très chaude des étoiles ou le gaz entre les galaxies.",
+        summary:"Un réseau de transmission inséré derrière les miroirs, lu par HRC-S ou par ACIS-S. C'est l'instrument de Chandra qui a la plus haute résolution aux basses énergies.",
+        specs:[
+          ["Domaine", "1,7–170 Å (0,07–7,3 keV) avec HRC-S · 1,4–63 Å avec ACIS-S", "about"],
+          ["Pouvoir de résolution", "≥ 1 000 entre 50 et 160 Å", "about"],
+          ["Lecture", "HRC-S ou ACIS-S", "pog"],
+          ["État en 2026", "lecture par HRC-S interrompue depuis octobre 2025", "cuc"]
+        ],
+        products:[ ["pha2","spectres par ordre de diffraction"] ],
+        docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] }
+    ]
+  },
+
   gaia: {
     checked:'2026-11-14',
     refs:{

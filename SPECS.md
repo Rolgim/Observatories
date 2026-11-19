@@ -14,14 +14,14 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
 ## 2. Ce que fait le site
 
-- **Cinq observatoires**, dans l'ordre chronologique de lancement : Hubble, Gaia, JWST, Euclid, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (38 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
+- **Six observatoires**, dans l'ordre chronologique de lancement : Hubble, Chandra, Gaia, JWST, Euclid, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (44 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
 - **Mission et données**, une page par observatoire :
   - mission et traitements (déroulé daté, exploitation, chaîne de traitement, publications des données) ;
   - trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ;
-  - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, pointés réels) ;
-  - 17 instruments : à quoi ça sert, couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès, liens d'archives.
+  - orbite (trajectoire réelle, orbite très elliptique de Chandra à l'échelle, position de Hubble en direct, ciel observable, pointés réels) ;
+  - 21 instruments : à quoi ça sert, couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès, liens d'archives.
 - **Comparer** : tailles (avec une silhouette humaine de 1,75 m comme référence), orbites autour de L2, couvertures spectrales, champs de vue, plans focaux et tableau des instruments.
 - **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre, téléphone, liens par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…), favicon.
 - Site statique sans serveur. Données réelles mises à jour par l'intégration continue (chaque jour pour les orbites, le TLE de Hubble et les observations).
@@ -33,7 +33,7 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
 ### Priorité 1 : nouveaux observatoires
 
-1. **Chandra** [G] : premier observatoire en rayons X, premier test du registre. Prérequis : une maquette 3D de licence claire (NASA 3D Resources à vérifier), un redécoupage en pièces, une fiche et des instruments sourcés (ACIS, HRC, réseaux HETG et LETG), une orbite (très elliptique, éphémérides Horizons ou TLE).
+1. **Chandra : restes** [G, E, F] : observation réelle en exemple (structure d'un fichier evt2 seulement pour l'instant) ; vue en coupe sans intérieur reconstruit ; pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
 2. **Navigation au-delà de six observatoires** [G3] : les onglets d'en-tête ne suffiront plus. Proposition : regroupement par domaine spectral (rayons X, visible et ultraviolet, infrarouge, astrométrie), avec un menu sur téléphone. À faire au plus tard avec le septième observatoire.
 3. Suite possible : XMM-Newton, Planck, Herschel (si la licence des maquettes ESA le permet), Spitzer, TESS, PLATO.
 
@@ -71,9 +71,9 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 1. **Licence du dépôt** (code et textes) : à choisir (par exemple MIT pour le code, CC BY 4.0 pour les textes).
 2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
 3. **Navigation** (G3) : regroupement par domaine spectral, par agence, ou par époque ?
-4. **Ordre des prochains observatoires** : Chandra d'abord, puis lesquels ?
+4. **Ordre des prochains observatoires** : après Chandra, lesquels (Spitzer, Planck, Kepler, TESS, XMM-Newton) ?
 
-Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra (19 novembre).
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre).
 
 ## 5. Lots : exigences et état
 
@@ -138,13 +138,14 @@ Produits affichés :
   - Webb : 13 étapes, du lancement (25 décembre 2021) à l'arrivée autour de L2 (24 janvier 2022) ; dates NASA.
   - Gaia (19 novembre) : 4 étapes, lancement (19 décembre 2013), séparation (+42 min), pare-soleil ouvert (+88 min, une dizaine de minutes ; 12 panneaux rectangulaires et 12 sections triangulaires), arrivée autour de L2 (8 janvier 2014) ; dates ESA et Astronomy. Repliement : panneaux relevés le long du satellite autour d'une charnière au bord du module de service, sections triangulaires rentrées en plis. Contact signalé le long de la charnière (anneau autour de l'antenne), attendu.
   - Roman : à décider. Étapes datées connues (panneaux solaires +1 h 23, antenne le 31 août, couvercle le 1er septembre 2026), mais la maquette est la conception de 2015 et le repliement des panneaux n'est pas documenté.
-- F4. Ciel observable à une date choisie, contraintes d'angle solaire sourcées pour les cinq observatoires.
+- F4. Ciel observable à une date choisie, contraintes d'angle solaire sourcées pour les six observatoires.
 - Cartes des pointés réels de Hubble et de JWST (MAST) et de l'avancée du relevé d'Euclid (DR1). Restes : points 16 et 17.
 
 ### G. Autres observatoires — Roman et registre livrés
 
 - G1. Un observatoire n'est ajouté qu'avec une maquette de licence claire, un redécoupage vérifié, une fiche et des instruments sourcés.
 - G2. Procédure d'ajout documentée (`tools/models/README.md`). **Livré le 19 novembre**, avec le registre : `TELESCOPES` porte couleur, chiffre clé, encombrement, pièces optiques, place et orientation dans « Comparer », place dans la figure des plans focaux, fin de mission, déploiement ; matériaux dans `src/looks.js` ; `tools/smoke.js` liste ce qui manque à une entrée.
+- Chandra (19 novembre) : maquette NASA 3D Resources (0,8 Mo) redécoupée en six pièces (porte, module, miroirs HRMA, banc optique, module scientifique ISIM, panneaux solaires), fiche, ACIS, HRC, HETG et LETG avec axe spectral étendu aux rayons X (keV), schéma Wolter I à l'échelle, plans focaux ACIS et HRC-I, mission et traitements (niveaux 0 à 3, CSC 2.1), orbite très elliptique (Horizons, objet −151, schéma d'orbite à l'échelle). Le registre a suffi, sauf pour un nouveau type d'orbite (« heo ») ajouté au schéma d'orbite de l'application.
 - G3. Navigation au-delà de six ou sept observatoires. **À faire** (point 2).
 
 **Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js` : remplie.

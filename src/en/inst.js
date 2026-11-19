@@ -165,6 +165,41 @@ EN_INST.roman = {
       docs:["Coronagraph (IPAC)"] }
   }
 };
+EN_INST.chandra = {
+  summary:"Two cameras take turns at the focus, 10 m behind the mirrors: ACIS, a CCD mosaic that also measures the energy of each photon, and HRC, a microchannel-plate camera for the sharpest images. Two transmission gratings, HETG and LETG, can be moved in behind the mirrors to spread the X-rays into very detailed spectra. Chandra counts photons one by one: its basic data are event lists (position, time, energy), not images.",
+  archives:[["Chandra Data Archive (ChaSeR)","Search and download of observations, at the Chandra X-ray Center."],["Chandra Source Catalog 2.1","Catalogue of 407,806 X-ray sources, from public observations up to the end of 2021."],["CIAO","Analysis software for Chandra data."],["HEASARC","NASA's high-energy archive, which also gives access to Chandra."]],
+  instruments:{
+    acis:{ kind:"Imaging and spectroscopic CCD camera",
+      use:"Photographing the sky in X-rays while measuring the energy of each photon. This gives both the image of a supernova remnant or a galaxy cluster and the chemical make-up and temperature of its gas.",
+      summary:"Ten CCDs in two arrays: ACIS-I, a 2 × 2 square for imaging, and ACIS-S, a row of six, which also reads out the HETG spectra. Every photon is recorded with its position, time and energy.",
+      specs:[["Detectors","10 CCDs: ACIS-I (4) and ACIS-S (6, 2 of them back-illuminated)"],["Pixels","24 µm · 0.492″"],["Field","ACIS-I 16.9′ × 16.9′ · ACIS-S 8.3′ × 50.6′"],["Range (efficiency > 30%)","0.8–8 keV (front-illuminated) · 0.3–8 keV (back-illuminated)"],["Frame time","3.2 s (0.2 to 10 s possible)"],["Effective area","110 cm² at 0.5 keV · 600 cm² at 1.5 keV · 40 cm² at 8 keV"]],
+      products:[["evt1","level 1 event list: every photon with position, time, energy"],["evt2","level 2 event list, filtered and ready for analysis"],["CSC catalogue","sources detected over all public observations (407,806 in release 2.1)"]],
+      example:{ title:"An event list (evt2)", caption:"Real structure of an ACIS evt2 file; illustrative values.", text:
+"time (s)          ccd_id  chipx  chipy     x (px)     y (px)   energy (eV)  grade\n6.4218302e+08     7       512    430       4096.3     4110.8    1520.4       0\n6.4218302e+08     7       233    871       4241.9     4372.1     684.2       2\n6.4218303e+08     6       901    112       3870.5     3922.6    6421.7       0\n\n→ one line per photon; the image and spectrum are then built by grouping the events." },
+      code:{ title:"Analysis with CIAO" },
+      notes:["The telescope gently wobbles in a Lissajous pattern (dither) during the exposure, to spread the image over many pixels; each photon's position is corrected afterwards.","A contaminant layer on the ACIS filter slowly reduces the sensitivity at low energies; it is tracked by the calibration."],
+      docs:["About Chandra (characteristics)","Proposers' Observatory Guide"] },
+    hrc:{ kind:"Microchannel-plate camera",
+      use:"Taking the sharpest X-ray images and timing each photon to a few microseconds, for instance to follow the fast spin of a pulsar.",
+      summary:"Two microchannel-plate detectors: HRC-I, for wide-field imaging, and HRC-S, an elongated strip that reads out the LETG spectra. Very poor energy resolution, but great sharpness and very fine timing.",
+      specs:[["Detectors","HRC-I (imaging) · HRC-S (spectroscopy with LETG)"],["Field","HRC-I ≈ 30′ × 30′ · HRC-S 6′ × 90′"],["Resolution","≈ 0.4″ full width at half maximum"],["Range","0.08–10 keV"],["Energy resolution","E/ΔE ≈ 1 at 1 keV"],["Timing","16 µs"],["Status in 2026","HRC-I in service · HRC-S halted since October 2025 (high-voltage current-limiter trips)"]],
+      products:[["evt1 / evt2","event lists: position and time of each photon"]],
+      notes:["Exposures with HRC are limited to 14.5 ks in one go, for thermal reasons."],
+      docs:["About Chandra (characteristics)"] },
+    hetg:{ kind:"High-energy spectroscopy grating",
+      use:"Splitting X-rays into a very fine spectrum showing the lines of each chemical element: this measures the temperature, density and speed of the gas around stars and black holes.",
+      summary:"A set of gold transmission gratings moved in just behind the mirrors. Two families of gratings (HEG and MEG) disperse the light in two directions 10° apart; the spectrum is read by ACIS-S.",
+      specs:[["Gratings","HEG (high energy) and MEG (medium energy), dispersions 10° apart"],["HEG","0.8–10 keV (15–1.2 Å) · E/ΔE from 65 to 1,070"],["MEG","0.4–5 keV (31–2.5 Å) · E/ΔE from 80 to 970"],["Readout","ACIS-S"],["Effective area (HEG + MEG)","59 cm² at 1 keV · 200 cm² at 1.5 keV"]],
+      products:[["pha2","spectra by diffraction order, extracted from the evt2"]],
+      docs:["About Chandra (characteristics)"] },
+    letg:{ kind:"Low-energy spectroscopy grating",
+      use:"Getting the most detailed X-ray spectra at low energies, for instance to study the very hot atmospheres of stars or the gas between galaxies.",
+      summary:"A transmission grating moved in behind the mirrors, read out by HRC-S or ACIS-S. It is Chandra's highest-resolution instrument at low energies.",
+      specs:[["Range","1.7–170 Å (0.07–7.3 keV) with HRC-S · 1.4–63 Å with ACIS-S"],["Resolving power","≥ 1,000 between 50 and 160 Å"],["Readout","HRC-S or ACIS-S"],["Status in 2026","readout by HRC-S interrupted since October 2025"]],
+      products:[["pha2","spectra by diffraction order"]],
+      docs:["About Chandra (characteristics)"] }
+  }
+};
 EN_INST.gaia = {
   summary:"Gaia has no separate instruments in the usual sense. A single focal plane of 106 CCDs, shared by the two telescopes, performs three functions that read the same stream of light as the spacecraft scans the sky.",
   archives:[["ESA, Gaia Archive","Official archive: ADQL queries on Gaia DR3, downloads, XP and RVS spectra."],["Gaia DR3 documentation","Full description of the catalogue and its tables."],["VizieR, Gaia DR3 (I/355)","CDS access to the catalogue."],["astroquery.gaia","Python access to the archive."]],
@@ -210,13 +245,13 @@ EN_INST.gaia = {
 /* Short labels shared by several instruments: filter notes, band and field names, code comments. */
 var EN_WORDS = {
   "coupure à 850 nm":"cut-on at 850 nm", "coupure à 115 nm":"cut-on at 115 nm", "FUV-MAMA, basse résolution":"FUV-MAMA, low resolution", "NUV-MAMA, basse résolution":"NUV-MAMA, low resolution",
-  "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
+  "CCD, basse résolution":"CCD, low resolution", "échelle FUV, R ≈ 45 000":"FUV echelle, R ≈ 45,000", "échelle FUV, R ≈ 45 800":"FUV echelle, R ≈ 45,800", "FUV, basse résolution":"FUV, low resolution", "FUV, moyenne résolution":"FUV, medium resolution",
   "NUV, moyenne résolution":"NUV, medium resolution", "NUV, basse résolution":"NUV, low resolution", "H₂ 2,12 µm":"H₂ 2.12 µm", "H₂ 4,7 µm":"H₂ 4.7 µm", "très large":"extra wide", "R ≈ 1 000 / 2 700":"R ≈ 1,000 / 2,700",
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
   "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
   "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
-var EN_CODE = [["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+var EN_CODE = [["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
