@@ -249,6 +249,39 @@ var MISSION = {
       ['2023','2023',['4FGL-DR4','4FGL-DR4'],"7 194 sources gamma, 14 ans de données, de 50 MeV à 1 TeV.","7,194 gamma-ray sources, 14 years of data, from 50 MeV to 1 TeV.",'dr4',false]
     ]
   },
+  kepler: {
+    checked:'2026-11-19',
+    refs:{},
+    intro:["Kepler est une mission Discovery de la NASA, dirigée par l'Ames Research Center ; le JPL a géré la construction du véhicule par Ball Aerospace. Le Science Operations Center d'Ames traitait les données, archivées à MAST ; la liste des candidats est tenue au NASA Exoplanet Archive.",
+           "Kepler is a NASA Discovery mission led by the Ames Research Center; JPL managed the construction of the spacecraft by Ball Aerospace. The Science Operations Center at Ames processed the data, archived at MAST; the candidate list is kept at the NASA Exoplanet Archive."],
+    phases:[
+      ['7 mars 2009','7 Mar 2009','Lancement','Launch',"Une Delta II le lance depuis Cap Canaveral vers une orbite autour du Soleil, dans le sillage de la Terre.","A Delta II launches it from Cape Canaveral into an orbit around the Sun, trailing the Earth.",'nasa'],
+      ['13 mai 2009','13 May 2009','Début des observations','Science begins',"Fin de la mise en service : le photomètre commence à fixer son champ entre le Cygne et la Lyre.","End of commissioning: the photometer starts staring at its field between Cygnus and Lyra.",'nasa'],
+      ['janv. 2010','Jan 2010','Premières planètes','First planets',"Cinq planètes géantes chaudes, Kepler-4 b à 8 b, trouvées dans les six premières semaines.","Five hot giant planets, Kepler-4 b to 8 b, found in the first six weeks.",'nasa'],
+      ['mai 2013','May 2013','Panne d\'une deuxième roue','Second wheel fails',"Après une première panne en juillet 2012, une deuxième roue de réaction lâche : Kepler ne peut plus fixer son champ.","After a first failure in July 2012, a second reaction wheel fails: Kepler can no longer hold its field.",'nasa'],
+      ['30 mai 2014','30 May 2014','Mission K2','K2 mission',"Kepler observe désormais des champs successifs le long de l'écliptique, en équilibrant la pression de la lumière du Soleil.","Kepler now observes successive fields along the ecliptic, balancing the pressure of sunlight.",'nasa'],
+      ['30 oct. 2018','30 Oct 2018','Fin de la mission','End of mission',"Ergols épuisés : la NASA met fin à la mission, avec plus de 2 600 planètes découvertes.","Out of propellant: NASA ends the mission, with more than 2,600 planets discovered.",'nasa']
+    ],
+    ops:[
+      ['Programme','Programme','NASA, programme Discovery ; Ames Research Center','NASA, Discovery programme; Ames Research Center','pk'],
+      ['Construction','Construction','Ball Aerospace ; gestion du projet par le JPL','Ball Aerospace; project managed by JPL','pk'],
+      ['Liaison','Downlink','bande Ka, un jour par mois','Ka band, one day a month','pk'],
+      ['Archives','Archives','MAST (données) · NASA Exoplanet Archive (candidats)','MAST (data) · NASA Exoplanet Archive (candidates)','kih']
+    ],
+    chain:{
+      intro:["Au sol, le pipeline du Science Operations Center calibre les pixels, mesure l'éclat de chaque cible, corrige les effets de l'instrument, puis cherche les transits ; les signaux retenus deviennent des « Kepler Objects of Interest » (KOI).",
+             "On the ground, the Science Operations Center pipeline calibrates the pixels, measures each target's brightness, corrects instrumental effects, then searches for transits; the signals kept become Kepler Objects of Interest (KOI)."],
+      steps:[
+        { lv:'CAL', n:['Calibration','Calibration'], x:['Pixels des cibles corrigés du biais, du courant d\'obscurité et du traînage.','Target pixels corrected for bias, dark current and smear.'], sw:'SOC', r:'kih' },
+        { lv:'PA', n:['Photométrie','Photometry'], x:['Somme des pixels de chaque étoile : flux SAP.','Sum of each star\'s pixels: SAP flux.'], sw:'SOC', r:'kih' },
+        { lv:'PDC', n:['Correction','Correction'], x:['Effets de l\'instrument retirés : flux PDCSAP.','Instrumental effects removed: PDCSAP flux.'], sw:'SOC', r:'kih' },
+        { lv:'KOI', n:['Candidats','Candidates'], x:['Transits repérés puis vérifiés : candidats planètes.','Transits found then vetted: planet candidates.'], r:'nasa' }
+      ]
+    },
+    rel:[
+      ['2009–2018','2009–2018',['Par trimestre','By quarter'],"Les données ont été publiées trimestre par trimestre à l'archive MAST ; elles sont toutes publiques.","The data were released quarter by quarter at the MAST archive; they are all public.",'kih',false]
+    ]
+  },
   tess: {
     checked:'2026-11-19',
     refs:{

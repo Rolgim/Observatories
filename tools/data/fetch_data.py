@@ -972,6 +972,40 @@ def tess_lc(key, tic="100100827", name="WASP-18"):
                     credit="NASA, MIT, STScI", fetched=TODAY)
     raise RuntimeError("aucune courbe de lumière téléchargée")
 
+def kepler_lc(key, kic="010666592", name="HAT-P-7", quarter=4):
+    """Courbe de lumière longue cadence (29,4 min) d'un trimestre de Kepler, pipeline SOC (PDCSAP_FLUX)."""
+    from astroquery.mast import Observations
+    from astropy.io import fits
+    obs = Observations.query_criteria(obs_collection="Kepler", target_name="kplr" + kic, dataproduct_type="timeseries")
+    if len(obs) == 0:
+        raise RuntimeError("aucune série temporelle Kepler pour KIC " + kic)
+    prods = Observations.get_product_list(obs)
+    llc = prods[[str(x).endswith("_llc.fits") for x in prods["productFilename"]]]
+    llc.sort("productFilename")
+    if len(llc) == 0:
+        raise RuntimeError("aucun fichier _llc.fits")
+    for p in list(llc[quarter:]) + list(llc[:quarter]):
+        local = os.path.join(TMP, str(p["productFilename"]))
+        if Observations.download_file(p["dataURI"], local_path=local)[0] != "COMPLETE":
+            continue
+        with fits.open(local) as hd:
+            d = hd[1].data; h0 = hd[0].header
+            t = np.array(d["TIME"], float); f = np.array(d["PDCSAP_FLUX"], float); q = np.array(d["SAP_QUALITY"])
+        ok = np.isfinite(t) & np.isfinite(f) & (q == 0)
+        if ok.sum() < 1000:
+            continue
+        t, f = t[ok], f[ok] / np.nanmedian(f[ok])
+        fname = key.replace("/", "-").replace(":", "-") + ".json"
+        save_json(fname, dict(type="line", x=rnd(t - t[0], 5), y=rnd(f, 6), xlabel="temps depuis le début du trimestre (jours)", ylabel="flux relatif"))
+        meta = [["Archive", "MAST (STScI)"], ["Instrument", "photomètre, module " + str(h0.get("MODULE")) + ", sortie " + str(h0.get("OUTPUT"))], ["Cible", name + " (KIC " + kic.lstrip("0") + ")"],
+                ["Trimestre", "Q" + str(h0.get("QUARTER"))], ["Données", "PDCSAP_FLUX du pipeline SOC, longue cadence (29,4 min), points de qualité 0"],
+                ["Traitement", "division par la médiane, aucun lissage"], ["Points", fr(len(t)) + " tracés"], ["Fichier d'origine", str(p["productFilename"])]]
+        return dict(type="plot", file=fname, title="Les transits de la planète HAT-P-7 b, vus par Kepler", meta=meta,
+                    url="https://archive.stsci.edu/missions-and-data/kepler",
+                    caption="Chaque creux est le passage de la planète géante HAT-P-7 b devant son étoile, tous les 2,2 jours ; l'étoile perd alors environ 0,7 % de son éclat. Les trous correspondent aux arrêts mensuels pour transmettre les données.",
+                    credit="NASA, Ames, STScI", fetched=TODAY)
+    raise RuntimeError("aucune courbe de lumière Kepler téléchargée")
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -992,6 +1026,7 @@ RECIPES = {
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
     "tess/cams": tess_lc,
+    "kepler/phot": kepler_lc,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,

@@ -829,6 +829,58 @@ var INST_DATA = (function(){
         docs:[ {l:"Meegan et al. 2009",u:"https://arxiv.org/abs/0908.0450"}, {l:"Instrument GBM",u:"https://fermi.gsfc.nasa.gov/science/instruments/gbm.html"} ] }
     ]
   },
+  kepler: {
+    checked:'2026-11-19',
+    refs:{
+      kih:{ t:"Kepler Instrument Handbook (KSCI-19033-001)", p:"NASA Ames, archive MAST", u:"https://archive.stsci.edu/kepler/manuals/KSCI-19033-001.pdf" },
+      pk:{ t:"Kepler, dossier de presse du lancement (février 2009)", p:"NASA / JPL", u:"https://www.jpl.nasa.gov/news/press_kits/Kepler-presskit-2-19-smfile.pdf" }
+    },
+    axis: { min:0.38, max:1.0 },
+    summary: "Un seul instrument : le photomètre, un télescope de Schmidt de 0,95 m dont le plan focal porte 42 CCD. Il ne faisait pas d'images au sens habituel : il mesurait l'éclat des étoiles choisies, toutes les demi-heures, pendant des années, à la recherche des transits de planètes.",
+    archives: [
+      { label:"MAST, archive de Kepler", url:"https://archive.stsci.edu/missions-and-data/kepler", desc:"Courbes de lumière et images de cibles, de 2009 à 2013, puis celles de K2." },
+      { label:"NASA Exoplanet Archive", url:"https://exoplanetarchive.ipac.caltech.edu/", desc:"Catalogues des objets d'intérêt Kepler (KOI) et des planètes confirmées." }
+    ],
+    instruments: [
+      { id:"phot", name:"Photomètre", full:"Photomètre à grand champ", kind:"Photométrie de précision", color:"#6A8D2F",
+        bands:[ {l:"Kepler",lo:0.42,hi:0.90} ],
+        use:"Repérer les planètes qui passent devant leur étoile, en mesurant à quelques dizaines de millionièmes près l'éclat de plus de 100 000 étoiles, sans interruption pendant des années.",
+        summary:"Le télescope de Schmidt forme une image sur un plan focal courbe de 21 modules de deux CCD ; une lentille de saphir sur chaque module ramène l'image courbe à plat. Chaque pose dure 6 s ; elles sont additionnées à bord par paquets de 29,4 min (longue cadence) ou de 58,85 s (courte cadence, pour quelques centaines de cibles).",
+        specs:[
+          ["Optique", "Schmidt · lame de 0,95 m · primaire de 1,4 m · f/1,47", "kih"],
+          ["Champ", "115,6 deg² de pixels actifs · Ø 16,1°", "kih"],
+          ["Détecteurs", "42 CCD de 1044 × 2200 px de 27 µm, en 21 modules · 4 viseurs de guidage", "kih"],
+          ["Pixels", "3,98″", "kih"],
+          ["Domaine", "420 à 900 nm", "kih"],
+          ["Poses", "6,02 s d'exposition, 0,52 s de lecture", "kih"],
+          ["Cadences", "longue : 29,4 min · courte : 58,85 s", "kih"]
+        ],
+        fov:[ {l:'champ', w:44200, h:44200} ],
+        filtersTitle:"Bande",
+        filters:[ R("Kepler",0.42,0.90,"B","bande large, sans filtre") ],
+        products:[
+          ["Courbe de lumière (_llc.fits)","éclat d'une étoile au cours d'un trimestre, longue cadence (pipeline SOC)"],
+          ["Courbe courte cadence (_slc.fits)","la même chose à 58,85 s, pour quelques centaines de cibles"],
+          ["Images de cibles (_lpd-targ.fits)","petites images autour de chaque étoile, à chaque cadence"],
+          ["KOI","candidats planètes, au NASA Exoplanet Archive"]
+        ],
+        example:{ real:false, title:"Colonnes d'une courbe de lumière Kepler (_llc.fits)", caption:"Colonnes réelles du produit ; valeurs illustratives.", text:
+"TIME (BKJD)      SAP_FLUX (e⁻/s)   PDCSAP_FLUX (e⁻/s)   PDCSAP_FLUX_ERR   SAP_QUALITY\n" +
+"352.37721        81024.6           81110.2               9.3               0\n" +
+"352.39765        81019.8           81106.5               9.3               0\n" +
+"\n" +
+"→ un trimestre ≈ 4 400 points, un toutes les 29,4 min." },
+        code:{ title:"Courbe de lumière avec lightkurve", text:
+"import lightkurve as lk\n\n" +
+"# un trimestre de longue cadence du pipeline Kepler, téléchargé depuis MAST\n" +
+"lc = lk.search_lightcurve(\"HAT-P-7\", mission=\"Kepler\", cadence=\"long\", quarter=4).download()\n" +
+"lc = lc.remove_nans().normalize()\n" +
+"lc.plot()" },
+        notes:["Tous les trois mois, Kepler tournait de 90° pour garder ses panneaux face au Soleil : chaque étoile changeait alors de CCD, d'où le découpage des données en trimestres.",
+               "Quatre viseurs de guidage, dans les coins du plan focal, sont lus dix fois par seconde pour tenir le pointage à quelques millièmes de seconde d'arc près."],
+        docs:[ {l:"Kepler Instrument Handbook",u:"https://archive.stsci.edu/kepler/manuals/KSCI-19033-001.pdf"}, {l:"Archive Kepler (MAST)",u:"https://archive.stsci.edu/missions-and-data/kepler"} ] }
+    ]
+  },
   tess: {
     checked:'2026-11-19',
     refs:{

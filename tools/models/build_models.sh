@@ -57,4 +57,10 @@ $GT copy $DL/tess/tess.glb $W/tmp/tess_dec.glb >/dev/null
 $GT weld $W/tmp/tess_dec.glb $W/tmp/tess_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/tess_w.glb','$W/tmp/tess_seg.glb',require('$W/tess_cls.js')).then(s=>console.log('tess',JSON.stringify(s)))"
 $GT quantize $W/tmp/tess_seg.glb $OUT/tess.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+# ---------- Kepler : maquette NASA (version A), en mètres, redécoupée
+# attendu dans $DL : kepler/kepler.glb (« Kepler (A).glb » du dépôt nasa/NASA-3D-Resources)
+$GT copy $DL/kepler/kepler.glb $W/tmp/kepler_dec.glb >/dev/null
+$GT weld $W/tmp/kepler_dec.glb $W/tmp/kepler_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/kepler_w.glb','$W/tmp/kepler_seg.glb',require('$W/kepler_cls.js')).then(s=>console.log('kepler',JSON.stringify(s)))"
+$GT quantize $W/tmp/kepler_seg.glb $OUT/kepler.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 ls -la $OUT

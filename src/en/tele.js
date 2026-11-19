@@ -99,6 +99,25 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  kepler:{
+    agency:'NASA (Ames, JPL), built by Ball Aerospace', launch:'Launched 7 March 2009, Delta II, Cape Canaveral',
+    sub:'Orbit around the Sun, trailing the Earth, exoplanet search (2009–2018)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'4.7 m', dim:'4.7 m tall, Ø 2.7 m' },
+    desc:"For four years Kepler stared at the same patch of sky, between Cygnus and Lyra, measuring the brightness of more than 100,000 stars every half hour. When a planet passes in front of its star, the brightness drops slightly: that is how it discovered more than 2,600 planets and showed that most stars have them. Its 0.95 m Schmidt telescope projected a 115 deg² field onto 42 CCDs.",
+    sourceNote:"NASA model (NASA 3D Resources repository, version A), in metres: 4.7 m tall without the antenna, as in the press kit. It has been re-segmented here into four assemblies from its geometry and materials.",
+    refs:{ pk:'Kepler, launch press kit (February 2009)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','4.7 m tall · Ø ≈ 2.7 m'],['Launch mass','1,052.4 kg'],['Power','fixed panels of 10.2 m², 2,860 cells, more than 1,100 W'],['Pointing','four reaction wheels; two failed (July 2012, May 2013)'],['Launch','7 March 2009 (UT), Delta II 7925-10L, Cape Canaveral']] },
+      { title:'Photometer', rows:[['Optics','Schmidt telescope · 0.95 m corrector · 1.4 m primary mirror'],['Focal length','1,399 mm · f/1.47'],['Detectors','42 CCDs of 1044 × 2200 px, 27 µm pixels, i.e. 3.98″'],['Field','115.6 deg² covered by active pixels · Ø 16.1°'],['Range','420 to 900 nm']] },
+      { title:'Orbit and data', rows:[['Orbit','around the Sun, 0.97 × 1.041 AU, trailing the Earth'],['Period','371 days'],['Downlink','Ka band, up to 4.3 Mbit/s · one day a month, observations paused to transmit'],['End','30 October 2018, propellant exhausted']] }
+    ],
+    parts:{
+      phot:{ name:'Photometer', desc:"A Schmidt telescope: a 0.95 m corrector plate at the entrance, a 1.4 m spherical mirror at the bottom, and the focal plane in the middle of the tube, facing the mirror. The sunshade, cut at an angle, protects the aperture from sunlight.", facts:["0.95 m corrector, 1.4 m primary","42 CCDs, 95 million pixels","115 deg² field"] },
+      solar:{ name:'Solar arrays', desc:"Four fixed panels, on the Sun side, which also shade the photometer. To keep them facing the Sun, Kepler rolled 90° every three months.", facts:["10.2 m², 2,860 cells","More than 1,100 W","90° roll every three months"] },
+      bus:{ name:'Spacecraft bus', desc:"Ball Aerospace's hexagonal bus carries the electronics, the four reaction wheels and the thrusters. After two wheels failed, the K2 mission held its pointing by leaning on the pressure of sunlight.", facts:["Four reaction wheels","K2 mission from 2014 to 2018"] },
+      hga:{ name:'High-gain antenna', desc:"A fixed Ka-band dish. Once a month, Kepler stopped observing for a day and turned its whole body towards the Earth to send down its data.", facts:["Ka band, up to 4.3 Mbit/s","One day of downlink a month"] }
+    }
+  },
   tess:{
     agency:'NASA, mission led by MIT', launch:'Launched 18 April 2018, Falcon 9, Cape Canaveral',
     sub:'Highly elliptical orbit in resonance with the Moon, exoplanet search (since 2018)', src:'Model: NASA 3D Resources (public domain)',

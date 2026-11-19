@@ -277,7 +277,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:5, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:6, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -334,6 +334,59 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'kepler', domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
+    agency:'NASA (Ames, JPL), construit par Ball Aerospace', launch:'Lancé le 7 mars 2009, Delta II, Cap Canaveral',
+    sub:'Orbite autour du Soleil, dans le sillage de la Terre, recherche d\'exoplanètes (2009–2018)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/kepler.glb', bytes:416912, axis:null, size:0,
+    view:{ az:-2.2, el:0.3, dist:2.0 }, sun:[-0.92,0.3,0.25], orbit:'helio',
+    helio:{ drift:'s\'est éloigné jusqu\'à ≈ 1,1 UA de la Terre en 2018' },
+    hero:{ num:'4', unit:'ans', label:'à fixer le même champ du ciel, entre le Cygne et la Lyre' },
+    cmp:{ tag:'4,7 m', dim:'4,7 m de haut, Ø 2,7 m', mirror:0.95, mass:1052, len:4.7 },
+    color:'#6A8D2F', highlight:['Champ','115','deg²'], footprint:['4,7','m de haut'], optical:['phot'],
+    compare:{ order:5, rot:[0, 0, 0], fp:[0, 1] }, ended:true,
+    desc:"Kepler a fixé pendant quatre ans le même coin du ciel, entre le Cygne et la Lyre, en mesurant toutes les demi-heures l'éclat de plus de 100 000 étoiles. Quand une planète passe devant son étoile, l'éclat baisse un peu : c'est ainsi qu'il a découvert plus de 2 600 planètes et montré que la plupart des étoiles en ont. Son télescope de Schmidt, de 0,95 m, projetait un champ de 115 deg² sur 42 CCD.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources, version A), en mètres : 4,7 m de haut sans l'antenne, comme dans le dossier de presse. Elle a été redécoupée ici en quatre ensembles d'après sa géométrie et ses matériaux.",
+    checked:'2026-11-19',
+    refs:{
+      pk:{ t:'Kepler, dossier de presse du lancement (février 2009)', p:'NASA / JPL', u:'https://www.jpl.nasa.gov/news/press_kits/Kepler-presskit-2-19-smfile.pdf' },
+      kih:{ t:'Kepler Instrument Handbook (KSCI-19033-001)', p:'NASA Ames, archive MAST', u:'https://archive.stsci.edu/kepler/manuals/KSCI-19033-001.pdf' },
+      nasa:{ t:'Kepler / K2, In Depth', p:'NASA Science', u:'https://science.nasa.gov/mission/kepler/in-depth/' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','4,7 m de haut · Ø ≈ 2,7 m','pk'], ['Masse au lancement','1 052,4 kg','pk'],
+        ['Énergie','panneaux fixes de 10,2 m², 2 860 cellules, plus de 1 100 W','pk'],
+        ['Pointage','quatre roues de réaction ; deux tombées en panne (juillet 2012, mai 2013)',['pk','nasa']],
+        ['Lancement','7 mars 2009 (TU), Delta II 7925-10L, Cap Canaveral',['nasa','pk']] ]},
+      { title:'Photomètre', rows:[
+        ['Optique','télescope de Schmidt · lame de 0,95 m · miroir primaire de 1,4 m','kih'],
+        ['Focale','1 399 mm · f/1,47','kih'],
+        ['Détecteurs','42 CCD de 1044 × 2200 px, pixels de 27 µm, soit 3,98″','kih'],
+        ['Champ','115,6 deg² couverts de pixels actifs · Ø 16,1°','kih'],
+        ['Domaine','420 à 900 nm','kih'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite','autour du Soleil, 0,97 × 1,041 UA, dans le sillage de la Terre','nasa'],
+        ['Période','371 jours','pk'],
+        ['Liaison','bande Ka, jusqu\'à 4,3 Mbit/s · un jour par mois, observations interrompues pour transmettre','pk'],
+        ['Fin','30 octobre 2018, ergols épuisés','nasa'] ]}
+    ],
+    parts:[
+      { key:'phot', name:'Photomètre', explode:[0,1,0,0.8],
+        desc:"Un télescope de Schmidt : une lame correctrice de 0,95 m à l'entrée, un miroir sphérique de 1,4 m au fond, et le plan focal au milieu du tube, face au miroir. Le pare-soleil, coupé en biseau, protège l'ouverture de la lumière du Soleil.",
+        facts:[["Lame de 0,95 m, primaire de 1,4 m", "kih"], ["42 CCD, 95 millions de pixels", "pk"], ["Champ de 115 deg²", "kih"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[-1,0,0,0.6],
+        desc:"Quatre panneaux fixes, du côté du Soleil, qui font aussi écran pour le photomètre. Pour les garder face au Soleil, Kepler tournait de 90° sur lui-même tous les trois mois.",
+        facts:[["10,2 m², 2 860 cellules", "pk"], ["Plus de 1 100 W", "pk"], ["Rotation de 90° tous les trois mois", "pk"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"Le module hexagonal de Ball Aerospace porte l'électronique, les quatre roues de réaction et les propulseurs. Après la panne de deux roues, la mission K2 a tenu le pointage en s'appuyant sur la pression de la lumière du Soleil.",
+        facts:[["Quatre roues de réaction", "pk"], ["Mission K2 de 2014 à 2018", "nasa"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,0,-1,0.6],
+        desc:"Une antenne parabolique fixe en bande Ka. Une fois par mois, Kepler cessait d'observer pendant un jour et se tournait tout entier vers la Terre pour transmettre ses données.",
+        facts:[["Bande Ka, jusqu'à 4,3 Mbit/s", "pk"], ["Un jour de transmission par mois", "pk"]] }
+    ]
+  },
+  {
     id:'tess', domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
     agency:'NASA, mission dirigée par le MIT', launch:'Lancé le 18 avril 2018, Falcon 9, Cap Canaveral',
     sub:'Orbite très elliptique en résonance avec la Lune, recherche d\'exoplanètes (depuis 2018)',
@@ -343,7 +396,7 @@ var TELESCOPES = [
     hero:{ num:'24° × 96°', unit:'', label:'la bande de ciel vue d\'un coup par ses quatre caméras' },
     cmp:{ tag:'3,9 m', dim:'3,9 × 1,2 × 1,5 m, déployé', mirror:0.105, lens:true, mass:325, len:3.9 },
     color:'#1F7A8C', highlight:['Champ','24° × 96°',''], footprint:['3,9','m, déployé'], optical:['cams'],
-    compare:{ order:6, rot:[0, 0.4, 0], fp:[0, 2] },
+    compare:{ order:7, rot:[0, 0.4, 0], fp:[0, 2] },
     desc:"TESS cherche des planètes autour des étoiles proches et brillantes, en guettant la petite baisse d'éclat qui se produit quand une planète passe devant son étoile. Ses quatre caméras, de petits objectifs de 10,5 cm, couvrent ensemble une bande de 24° sur 96° du ciel, qu'elles fixent pendant 27 jours avant de passer à la suivante. Son orbite très allongée, réglée sur celle de la Lune, l'emmène presque jusqu'à elle.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources, version B), redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux. Elle n'est pas en mètres : elle est mise à l'échelle sur la longueur déployée publiée de 3,9 m. Le grand écran conique autour des caméras vient de la maquette ; les documents de la mission décrivent surtout un capot sur chaque objectif.",
     checked:'2026-11-19',
@@ -400,7 +453,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:7, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:8, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -476,7 +529,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:8, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:9, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -541,7 +594,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:9, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:10, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',

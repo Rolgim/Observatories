@@ -146,6 +146,27 @@ var Optics = (function(){
       s += T(x0 - 12, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
       return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
     },
+    /* Kepler : télescope de Schmidt (Kepler Instrument Handbook) : lame de 0,95 m, primaire sphérique de 1,4 m, focale 1 399 mm.
+       Lame au centre de courbure du miroir (Schmidt classique), donc ≈ 2,8 m du miroir : déduit, non publié dans le manuel.
+       Surface focale courbe de rayon ≈ focale, de Ø ≈ 0,39 m (16,1° × 1,40 m, déduit). Figure en mètres, même échelle sur les deux axes. */
+    kepler: function(){
+      var W = 610, H = 320, k = 150, xc = 100, cy = 160, R = 2.8*k, xm = xc + R, xf = xc + R/2, s = '';
+      function Y(m){ return cy - m*k; }
+      function arc(rad, h){ var a = Math.asin(h*k/rad); return 'M'+f(xc + rad*Math.cos(a))+' '+f(cy - rad*Math.sin(a))+' A'+f(rad)+' '+f(rad)+' 0 0 1 '+f(xc + rad*Math.cos(a))+' '+f(cy + rad*Math.sin(a)); }
+      s += G('phot', P([[xc - 20, Y(0.75)], [xm + 6, Y(0.75)]], SOFT, 1.5, '4 3') + P([[xc - 20, Y(-0.75)], [xm + 6, Y(-0.75)]], SOFT, 1.5, '4 3'));
+      [0.42, 0.28, -0.28, -0.42].forEach(function(h){
+        var xh = xc + Math.sqrt(R*R - h*h*k*k);
+        s += P([[24, Y(h)], [xh, Y(h)], [xf, cy]], RAY, 1.1);
+      });
+      s += '<rect x="'+f(xc - 3)+'" y="'+f(Y(0.475))+'" width="6" height="'+f(0.95*k)+'" fill="#CFE3F0" fill-opacity="0.8" stroke="'+INK+'" stroke-width="1"/>';
+      s += '<path d="'+arc(R, 0.7)+'" fill="none" stroke="'+INK+'" stroke-width="4"/>';
+      s += G('phot', '<path d="'+arc(R/2, 0.195)+'" fill="none" stroke="'+DET+'" stroke-width="5"/>');
+      s += L(xf + 2, Y(0.2), xf + 2, Y(0.75), SOFT, 1, '2 3') + L(xf + 2, Y(-0.2), xf + 2, Y(-0.75), SOFT, 1, '2 3');
+      s += T(xc, Y(0.475) - 10, 'lame correctrice, 0,95 m', 'middle', true) + T(xm - 6, Y(0.7) - 8, 'miroir sphérique, 1,4 m', 'end', true);
+      s += T(xf - 8, cy + 4, 'plan focal courbe', 'end', true) + T(xf - 8, cy + 18, '42 CCD, Ø ≈ 0,39 m', 'end') + T(24, Y(-0.42) + 16, 'lumière des étoiles', null);
+      s += dim(xf, xm, H - 14, 'focale 1,40 m · f/1,47') + dim(xc, xm, 18, 'lame au centre de courbure : ≈ 2,8 m (déduit)');
+      return svg(W, H, s, 'Schéma optique du photomètre de Kepler');
+    },
     /* TESS : une caméra, de profil. Pupille de 10,5 cm et f/1,4 (TESS Science Support Center) : focale de ≈ 14,7 cm, déduite ;
        plan focal de 4 CCD de 30,7 mm écartés de ≈ 2 mm, soit ≈ 63 mm (24° de champ). Lentilles et capot : schéma de principe. */
     tess: function(){
@@ -222,7 +243,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], kepler:[['phot','photomètre']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -248,6 +269,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    kepler:{ title:'Un télescope de Schmidt, très ouvert', legend:'Les rayons sont tracés en orange, la lame correctrice en bleu clair, le miroir en noir, le plan focal en bleu.', scale:'Figure à l\'échelle, même échelle sur les deux axes : diamètres de la lame (0,95 m) et du miroir (1,4 m) et focale (1 399 mm) d\'après le Kepler Instrument Handbook. La position de la lame, au centre de courbure du miroir comme dans un Schmidt classique, et le diamètre du plan focal (16,1° de champ × 1,40 m) sont déduits. Le tube, en pointillé, est indicatif.',
+      steps:['La lumière traverse d\'abord une lame de verre de 0,95 m, presque plate, dont la forme subtile corrige à l\'avance le défaut du miroir.',
+             'Elle atteint au fond du tube un miroir sphérique de 1,4 m. Seul, un miroir sphérique donne une image floue ; avec la lame, l\'image est nette sur un champ immense, de 16° de diamètre.',
+             'Le miroir renvoie la lumière vers le plan focal, placé au milieu du tube : une surface courbe de 21 modules de deux CCD, chacun coiffé d\'une lentille de saphir qui aplatit l\'image.',
+             'Le plan focal bouche une partie de l\'ouverture, et ses câbles et son radiateur passent dans le faisceau : le prix d\'un champ aussi grand, à f/1,47.'],
+      specs:[['Combinaison','Schmidt'],['Lame correctrice','0,95 m'],['Miroir primaire','1,4 m, sphérique'],['Focale','1 399 mm · f/1,47'],['Champ','Ø 16,1° · 115,6 deg² actifs'],['Domaine','420 à 900 nm']] },
     tess:{ title:'Quatre objectifs photographiques', legend:'Les rayons sont tracés en orange, les lentilles en bleu clair, les détecteurs en bleu.', scale:'Une caméra, de profil. Pupille (10,5 cm) et ouverture (f/1,4) publiées ; focale déduite (≈ 147 mm) ; largeur du plan focal tirée des quatre CCD de 30,7 mm et de leurs espaces de 2 mm. Le nombre de lentilles (7) et de groupes (2) est exact ; leurs formes et positions sont un schéma de principe.',
       steps:['Chaque caméra est un objectif photographique très ouvert, à f/1,4, plutôt qu\'un télescope à miroirs : TESS veut un champ immense, pas un grand pouvoir de résolution.',
              'Un capot arrête la lumière de la Terre et de la Lune qui viendrait de côté ; sept lentilles, en deux groupes, forment une image nette sur un champ de 24°.',
@@ -299,6 +326,10 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Kepler : 21 modules de 2 CCD de 1044 × 2200 px de 27 µm (28,2 × 59,4 mm) sur une grille de 5 × 5 sans les coins, où sont les 4 viseurs
+       (512 × 512 px de 13 µm, 6,7 mm) ; Kepler Instrument Handbook. Espaces entre CCD et modules indicatifs. */
+    kepler:{ groups:[ grid(10,5,28.2,59.4,1.5,4,function(i, j){ return ((j === 0 || j === 4) && (i < 2 || i > 7)) ? null : '#6A8D2F'; }, ['Photomètre','42 CCD de 1044 × 2200 px, 27 µm, en 21 modules']), grid(2,2,6.7,6.7,50,50,'#C9A100',['Viseurs de guidage','4 CCD de 512 × 512 px, 13 µm']) ],
+             note:'Les 21 modules occupent une grille de 5 × 5 sans ses coins, où sont placés les quatre viseurs de guidage ; ceux-ci sont dessinés à part. Le plan focal réel est courbe, de ≈ 0,3 m de côté ; espaces entre CCD et entre modules indicatifs.', gaps:true },
     /* TESS : quatre caméras, chacune 2 × 2 CCD CCID-80 de 2048 × 2048 px de 15 µm (30,72 mm), écartés d'≈ 2 mm (Observatory Guide) */
     tess:{ groups:[ grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 1','4 CCD de 2048 × 2048 px, 15 µm']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 2','4 CCD']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 3','4 CCD']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 4','4 CCD']) ],
              note:'Les quatre caméras sont séparées dans le satellite ; elles sont rapprochées ici, dans l\'ordre de leur champ sur le ciel. Chaque plan focal mesure ≈ 63 mm de côté et voit 24° du ciel.', gaps:true },
