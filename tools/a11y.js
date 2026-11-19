@@ -19,6 +19,9 @@ const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid-instrumen
   let total = 0; const seen = {};
   for (const lang of ['fr', 'en']) for (const scheme of ['light', 'dark']) {
     const pg = await b.newPage({ viewport: { width: 1360, height: 860 }, colorScheme: scheme, locale: lang === 'en' ? 'en-GB' : 'fr-FR' });
+    /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
+    await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, lang === 'en' ? 'en' : 'fr');
+
     if (V) await pg.route('**/*', r => {
       const u = r.request().url();
       if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });

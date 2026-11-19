@@ -1,10 +1,10 @@
 # Observatoires en orbite
 
-*Observatories in orbit: an interactive 3D guide to Hubble, JWST, Euclid, Gaia and Roman, in French and English.*
+*Observatories in orbit: an interactive 3D guide to Hubble, Gaia, JWST, Euclid and Roman, in English (default) and French.*
 
-Visualisation 3D de cinq télescopes spatiaux (Hubble, JWST, Euclid, Gaia, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
+Visualisation 3D de cinq télescopes spatiaux (Hubble, Gaia, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
@@ -12,7 +12,7 @@ Visualisation 3D de cinq télescopes spatiaux (Hubble, JWST, Euclid, Gaia, Roman
   - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, carte des pointés réels) ;
   - une fiche par instrument (17 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
   - une page de comparaison de tous les instruments.
-- Français et anglais, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…).
+- Anglais par défaut et français, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…).
 
 Site statique, sans serveur. Dépendances à l'exécution : three.js r128 et son chargeur glTF (CDN) ; satellite.js 5.0.0, chargé seulement sur la page d'orbite de Hubble.
 

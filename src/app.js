@@ -145,7 +145,7 @@ function renderPanel(){
         '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
         TELESCOPES.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
-            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + String(x.cmp.mirror).replace('.',',') + ' m</div></td>' +
+            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m</div></td>' +
             '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
@@ -750,8 +750,18 @@ function layoutCompare(){
   });
   var all = new THREE.Box3();
   function place(it, cx, cy){ it.M.root.position.set(cx - it.c.x, cy - it.c.y, -it.c.z); it.M.root.updateMatrixWorld(true); it.anchor = new THREE.Vector3(cx, cy - it.sz.y/2, 0); it.cx = cx; it.M.root.parent !== cmp.group && cmp.group.add(it.M.root); all.expandByObject(it.M.root); }
+  /* référence humaine : silhouette de 1,75 m, posée sur le même sol que les observatoires */
+  if (!cmp.human){
+    var hm = new THREE.MeshStandardMaterial({ color:0xD8DEE6, roughness:0.8, metalness:0 }), H = cmp.human = new THREE.Group();
+    [[0.15,0.86,0.16, -0.1,0.43], [0.15,0.86,0.16, 0.1,0.43], [0.44,0.62,0.22, 0,1.16], [0.1,0.64,0.12, -0.29,1.15], [0.1,0.64,0.12, 0.29,1.15], [0.1,0.08,0.1, 0,1.5]].forEach(function(b){
+      var m = new THREE.Mesh(new THREE.BoxGeometry(b[0], b[1], b[2]), hm); m.position.set(b[3], b[4], 0); H.add(m); });
+    var hd = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), hm); hd.position.set(0, 1.63, 0); H.add(hd);
+    cmp.group.add(H);
+  }
   if (!portrait){
-    var x = 0; cmp.items.forEach(function(it){ place(it, x + it.sz.x/2, 0); x += it.sz.x + gap; });
+    /* observatoires posés sur un même sol (y = 0), l'humain à gauche du premier */
+    var x = 0; cmp.items.forEach(function(it){ place(it, x + it.sz.x/2, it.sz.y/2); x += it.sz.x + gap; });
+    cmp.human.position.set(-1.6, 0, 0);
   } else {
     /* téléphone : deux par rangée, le premier (Webb, le plus large) seul en haut si le nombre est impair */
     var it0 = cmp.items.slice(), rows = [], y = 0;
@@ -759,10 +769,13 @@ function layoutCompare(){
     while (it0.length) rows.push([it0.shift(), it0.pop()]);
     rows.forEach(function(r){
       var hmax = 0, wsum = gap*(r.length - 1); r.forEach(function(o){ hmax = Math.max(hmax, o.sz.y); wsum += o.sz.x; });
-      var x0 = -wsum/2; r.forEach(function(o){ place(o, x0 + o.sz.x/2, y - hmax/2); x0 += o.sz.x + gap; });
+      var x0 = -wsum/2; if (rows.indexOf(r) === 0) cmp.human.position.set(x0 - 1.6, y - hmax, 0);
+      r.forEach(function(o){ place(o, x0 + o.sz.x/2, y - hmax + o.sz.y/2); x0 += o.sz.x + gap; });
       y -= hmax + 5.2;
     });
   }
+  cmp.human.updateMatrixWorld(true); all.expandByObject(cmp.human);
+  cmp.humanAnchor = cmp.human.position.clone().add(new THREE.Vector3(0, 1.75, 0));
   var sz = all.getSize(new THREE.Vector3()); all.getCenter(cmp.center);
   if (cmp.ruler) cmp.group.remove(cmp.ruler);
   if (!portrait) cmp.items.forEach(function(it){ it.anchor.set(it.cx, all.min.y - 0.4, 0); });
@@ -772,7 +785,7 @@ function layoutCompare(){
   cmp.ruler = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color:0xEAF0F8 })); cmp.group.add(cmp.ruler);
   cmp.rulerAnchor = new THREE.Vector3(x0 + 5, y0, 0);
   cmp.center.y -= 0.6; cmp.w = sz.x + 2; cmp.h = sz.y + 8.5; cmp.depth = sz.z; cmp.radius = sz.length()/2 + 2;
-  $('cmp-labels').innerHTML = cmp.items.map(function(it, i){ return '<button class="cmp-label" data-go="' + it.M.t.id + '" data-i="' + i + '"><b>' + esc(it.M.t.short) + '</b><span>' + esc(it.M.t.cmp.tag) + '</span></button>'; }).join('') + '<div class="cmp-ruler">10 m</div>';
+  $('cmp-labels').innerHTML = cmp.items.map(function(it, i){ return '<button class="cmp-label" data-go="' + it.M.t.id + '" data-i="' + i + '"><b>' + esc(it.M.t.short) + '</b><span>' + esc(it.M.t.cmp.tag) + '</span></button>'; }).join('') + '<div class="cmp-ruler cmp-human">' + esc(OBS_T('Humain')) + '<br>' + esc(OBS_NUM('1,75 m')) + '</div><div class="cmp-ruler">10 m</div>';
   cmp.built = true; cmp.portrait = portrait;
 }
 
@@ -871,7 +884,7 @@ function tick(now){
   if (S.mode === 'compare' && cmp.built){
     var ls = $('cmp-labels').children;
     cmp.items.forEach(function(it, i){ project(it.anchor, ls[i]); });
-    project(cmp.rulerAnchor, ls[ls.length-1]);
+    project(cmp.humanAnchor, ls[ls.length-2]); project(cmp.rulerAnchor, ls[ls.length-1]);
   }
   if (!!(S.cut && S.mode === 'tele') !== renderer.localClippingEnabled || (S.cut && current && current.root !== cutRoot)) applyCut();
   if (renderer.localClippingEnabled) updateCut();

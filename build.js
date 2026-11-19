@@ -32,8 +32,8 @@ if (artifact) {
   console.log('dist/index.html');
 } else {
   fs.writeFileSync(path.join(__dirname, 'index.html'),
-    '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
-    '<meta name="description" content="Hubble, JWST, Euclid, Gaia et Roman en 3D : pièces cliquables, vue éclatée, comparaison à l\'échelle, instruments et archives.">\n' +
-    '<title>Observatoires en orbite</title>\n<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n<meta name="theme-color" content="#14171A">\n' + fonts + '\n<style>[hidden]{display:none!important}</style>\n' + style + '\n</head>\n<body>\n' + r('body.html') + scripts + '</body>\n</html>\n');
+    '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
+    '<meta name="description" content="Hubble, Gaia, JWST, Euclid and Roman in 3D: clickable parts, exploded views, deployments, true-scale comparison, instruments and archives. In English and French.">\n' +
+    '<title>Observatories in orbit</title>\n<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n<meta name="theme-color" content="#14171A">\n' + fonts + '\n<style>[hidden]{display:none!important}</style>\n' + style + '\n</head>\n<body>\n' + r('body.html') + scripts + '</body>\n</html>\n');
   console.log('index.html');
 }

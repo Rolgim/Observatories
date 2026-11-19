@@ -19,6 +19,9 @@ const srv = http.createServer((q, s) => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const steps = JSON.parse(process.argv[2]);
   const pg = await b.newPage({ viewport: process.argv[3] === 'phone' ? { width: 400, height: 800 } : { width: 1360, height: 820 }, deviceScaleFactor: 1, locale: process.env.LANG_SITE === 'en' ? 'en-GB' : 'fr-FR' });
+  /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
+  await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, process.env.LANG_SITE === 'en' ? 'en' : 'fr');
+
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_/.test(m.text())) console.log('[error]', m.text().slice(0, 300)); });
   pg.on('pageerror', e => console.log('PAGEERR', e.message));
   if (V) await pg.route('**/*', r => {

@@ -79,6 +79,7 @@ var EN_UI = {
   "Détecteurs du plan focal, à l'échelle":"Focal-plane detectors, to scale", "Voir dans la maquette 3D :":"See in the 3D model:", "lumière du ciel":"light from the sky",
   "Schéma optique de Hubble, à l'échelle":"Hubble optical layout, to scale", "Schéma optique de JWST":"JWST optical layout", "Schéma optique d'Euclid":"Euclid optical layout", "Schéma optique de Gaia, vue de dessus":"Gaia optical layout, seen from above",
   "Miroir primaire, 2,4 m":"Primary mirror, 2.4 m", "Miroir secondaire, 0,3 m":"Secondary mirror, 0.3 m", "Foyer":"Focus", "1,5 m derrière":"1.5 m behind", "le primaire":"the primary", "4,9 m":"4.9 m",
+  "Humain":"Human",
   "plaque de base, 2,5 m":"baseplate, 2.5 m", "renvois et tertiaire (0,54 m)":"folds and tertiary (0.54 m)", "foyer Cassegrain":"Cassegrain focus",
   "tertiaire (0,73 m) et pointage fin":"tertiary (0.73 m) and fine steering", "foyer":"focus", "Secondaire et son écran":"Secondary and its baffle",
   "Optique arrière et instruments":"Aft optics and instruments", "tertiaire":"tertiary", "banc optique de ≈ 3 m":"≈ 3 m optical bench", "1 m":"1 m",

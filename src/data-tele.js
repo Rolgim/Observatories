@@ -7,7 +7,7 @@
      color      couleur de l'observatoire dans les figures de comparaison
      highlight  [libellé, valeur, unité] : premier chiffre clé de la fiche ; footprint [valeur, unité] : encombrement
      optical    pièces qui ouvrent la page « Trajet de la lumière »
-     compare    order (rang dans « Comparer »), rot (rotation de la maquette dans la vue côte à côte),
+     compare    order (rang dans « Comparer », chronologique), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
 ================================================================= */
@@ -22,7 +22,7 @@ var TELESCOPES = [
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
     cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, len:13.2 },
     color:'#3D6BE0', highlight:['Miroir primaire','2,4','m'], footprint:['13,2','m de long'], optical:['ota','aft'],
-    compare:{ order:2, rot:[-Math.PI/2, 0, 0], fp:[2, 1] },
+    compare:{ order:1, rot:[-Math.PI/2, 0, 0], fp:[2, 1] },
     desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
     sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
     checked:'2026-11-13',
@@ -85,6 +85,72 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
+    agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
+    sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
+    src:'Maquette : Toni Sagristà, Gaia Sky',
+    file:'models/gaia.txt', bytes:1814984, axis:'x', size:10.2,
+    view:{ az:0.6, el:0.42, dist:1.35 }, sun:[0.5,-0.85,0.17], orbit:'l2',
+    hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
+    cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
+    color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
+    compare:{ order:2, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
+    sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
+    checked:'2026-11-13',
+    refs:{
+      shield:{ t:'Gaia : Deployable sunshield', p:'ESA', u:'https://sci.esa.int/web/gaia/-/45313-deployable-sunshield' },
+      torus:{ t:'Gaia : Schematic diagram of the Gaia torus', p:'ESA', u:'https://sci.esa.int/web/gaia/-/45335-schematic-diagram-of-the-gaia-torus' },
+      prusti:{ t:'Gaia Collaboration, Prusti et al. 2016, The Gaia mission, A&A 595, A1', p:'arXiv', u:'https://arxiv.org/abs/1609.04153' },
+      fs:{ t:'Gaia Fact Sheet', p:'ESA', u:'https://sci.esa.int/web/gaia/47354-fact-sheet' },
+      sc:{ t:'Gaia : Spacecraft', p:'ESA', u:'https://sci.esa.int/web/gaia/-/39993-spacecraft' },
+      doc:{ t:'Gaia DR2 documentation, 1.2 Spacecraft', p:'ESA Gaia Archive', u:'https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html' },
+      scan:{ t:'Gaia scanning the sky', p:'ESA', u:'https://sci.esa.int/web/gaia/-/51976-gaia-scanning-the-sky' },
+      dr3:{ t:'Gaia Data Release 3', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/dr3' },
+      end:{ t:'Gaia passivation (27 mars 2025)', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/home/-/asset_publisher/wEXKCCPdRxv0/content/2025-03-27-gaia-passivation' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Pare-soleil déployé','Ø 10,2 m','shield'], ['Masse au lancement','2 030 kg, dont 710 kg de charge utile et 400 kg d\'ergols','fs'],
+        ['Fin des observations','15 janvier 2025','end'], ['Mise hors service','27 mars 2025, sur une orbite autour du Soleil','end'] ]},
+      { title:'Optique', rows:[
+        ['Télescopes','2 anastigmats à trois miroirs, 10 miroirs au total','doc'], ['Miroirs primaires','1,45 × 0,50 m chacun','doc'],
+        ['Longueur focale','35 m','doc'], ['Angle de base','106,5°','doc'], ['Matériau','carbure de silicium'] ]},
+      { title:'Plan focal', rows:[
+        ['Détecteurs','106 CCD · près d\'un milliard de pixels','sc'], ['Dimensions','0,42 × 0,92 m','sc'], ['Température','170 K, refroidissement passif','sc'],
+        ['Répartition','62 astrométrie · 14 cartographe · 14 BP/RP · 12 RVS · 4 de contrôle','doc'], ['Échelle','58,9 × 176,8 mas par pixel','doc'] ]},
+      { title:'Loi de balayage', rows:[
+        ['Rotation','1 tour en 6 h','scan'], ['Axe de rotation','à 45° du Soleil','scan'],
+        ['Précession','≈ 63 jours','scan'], ['Orbite','Lissajous autour de L2, période ≈ 180 jours','fs'] ]},
+      { title:'Énergie et catalogues', rows:[
+        ['Panneaux solaires','12,8 m², jusqu\'à 1 910 W en fin de vie','sc'], ['Horloge','rubidium, 10 MHz','sc'],
+        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources','dr3'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
+    ],
+    parts:[
+      { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],
+        desc:"Une jupe de douze panneaux qui s'est ouverte comme une ombrelle après le lancement. Elle garde les télescopes dans une ombre permanente, à température constante : la moindre dilatation fausserait des mesures d'angle au millionième de degré.",
+        facts:[["Ø 10,2 m une fois déployé", "shield"], ["12 cadres rigides en composite de carbone", "shield"], ["Deux couvertures isolantes, de 2 et 5 couches", "shield"]] },
+      { key:'solar', name:'Panneaux solaires', nodes:['SolarPanels_Cube'], explode:[0,-1,0,1.9],
+        desc:"Les cellules sont posées sur la face ensoleillée, sous le satellite dans cette vue. Comme l'axe de Gaia garde un angle fixe de 45° avec le Soleil, l'éclairement ne varie jamais.",
+        facts:[["Cellules à triple jonction, 12,8 m²", "sc"], ["Jusqu'à 1 910 W en fin de vie", "sc"], ["Panneaux sur 8 des 12 cadres du pare-soleil", "shield"]] },
+      { key:'svmbase', name:'Antenne réseau à commande de phase', nodes:['Floor_Circle','Bottom-details_Cylinder'], explode:[0,-1,0,2.9],
+        desc:"Sous le satellite, face à la Terre. Une parabole orientable aurait fait vibrer Gaia : le faisceau est donc dirigé électroniquement, sans aucune pièce mobile, pendant que le satellite tourne.",
+        facts:[["Bande X, 8,7 Mbit/s", "prusti"], ["Aucune pièce mobile", "prusti"]] },
+      { key:'svm', name:'Module de service', nodes:['ServiceModule-bottom_Cylinder'], explode:[0,0,0,0],
+        desc:"L'anneau qui porte l'électronique, les réservoirs et une horloge atomique au rubidium pour dater chaque mesure. Des micro-propulseurs à azote froid maintiennent la rotation avec une régularité extrême.",
+        facts:[["Horloge atomique au rubidium (10 MHz)", "prusti"], ["2 × 6 micro-propulseurs à gaz froid", "prusti"]] },
+      { key:'tent', name:'Tente thermique', nodes:['TTS_Cylinder','TTS-inner_Cylinder','Top_Circle','Top-ceiling_Circle','GoldenBorders_Cylinder','GoldSquare_Cube'], explode:[0,1,0,2.6],
+        desc:"La coque qui enveloppe la charge utile. Elle la protège des micrométéorites et du rayonnement, et ne laisse que deux ouvertures par lesquelles regardent les deux télescopes.",
+        facts:[["Ouvertures pour les 2 télescopes et le plan focal", "prusti"], ["Sandwich composite carbone et aluminium", "prusti"]] },
+      { key:'torus', name:'Banc optique (tore)', nodes:['Torus_Torus'], explode:[0,1,0,1.1],
+        desc:"Un anneau de carbure de silicium d'environ 3 m, assemblé à partir de 17 segments brasés. Il porte les dix miroirs des deux télescopes et le plan focal, et garantit que l'angle entre les deux lignes de visée reste fixe.",
+        facts:[["Ø ≈ 3 m, quasi octogonal", "torus"], ["17 segments en carbure de silicium", "torus"], "Porte les deux télescopes et le plan focal"] },
+      { key:'focal', name:'Plan focal et instruments', nodes:['FocalPlane_Cube','Instr1_Cube','Instr2_Cube','InstrBG_Plane','Plane'], explode:[0,1,0,1.9],
+        desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
+        facts:[["106 CCD, 938 millions de pixels", "prusti"], ["0,42 × 0,92 m", "sc"]] }
+    ]
+  },
+  {
     id:'jwst', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
@@ -94,7 +160,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:1, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:3, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -170,7 +236,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:4, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -226,72 +292,6 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
-    agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
-    sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
-    src:'Maquette : Toni Sagristà, Gaia Sky',
-    file:'models/gaia.txt', bytes:1814984, axis:'x', size:10.2,
-    view:{ az:0.6, el:0.42, dist:1.35 }, sun:[0.5,-0.85,0.17], orbit:'l2',
-    hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
-    cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
-    color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
-    desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
-    sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
-    checked:'2026-11-13',
-    refs:{
-      shield:{ t:'Gaia : Deployable sunshield', p:'ESA', u:'https://sci.esa.int/web/gaia/-/45313-deployable-sunshield' },
-      torus:{ t:'Gaia : Schematic diagram of the Gaia torus', p:'ESA', u:'https://sci.esa.int/web/gaia/-/45335-schematic-diagram-of-the-gaia-torus' },
-      prusti:{ t:'Gaia Collaboration, Prusti et al. 2016, The Gaia mission, A&A 595, A1', p:'arXiv', u:'https://arxiv.org/abs/1609.04153' },
-      fs:{ t:'Gaia Fact Sheet', p:'ESA', u:'https://sci.esa.int/web/gaia/47354-fact-sheet' },
-      sc:{ t:'Gaia : Spacecraft', p:'ESA', u:'https://sci.esa.int/web/gaia/-/39993-spacecraft' },
-      doc:{ t:'Gaia DR2 documentation, 1.2 Spacecraft', p:'ESA Gaia Archive', u:'https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html' },
-      scan:{ t:'Gaia scanning the sky', p:'ESA', u:'https://sci.esa.int/web/gaia/-/51976-gaia-scanning-the-sky' },
-      dr3:{ t:'Gaia Data Release 3', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/dr3' },
-      end:{ t:'Gaia passivation (27 mars 2025)', p:'ESA Cosmos', u:'https://www.cosmos.esa.int/web/gaia/home/-/asset_publisher/wEXKCCPdRxv0/content/2025-03-27-gaia-passivation' }
-    },
-    sections:[
-      { title:'Véhicule', rows:[
-        ['Pare-soleil déployé','Ø 10,2 m','shield'], ['Masse au lancement','2 030 kg, dont 710 kg de charge utile et 400 kg d\'ergols','fs'],
-        ['Fin des observations','15 janvier 2025','end'], ['Mise hors service','27 mars 2025, sur une orbite autour du Soleil','end'] ]},
-      { title:'Optique', rows:[
-        ['Télescopes','2 anastigmats à trois miroirs, 10 miroirs au total','doc'], ['Miroirs primaires','1,45 × 0,50 m chacun','doc'],
-        ['Longueur focale','35 m','doc'], ['Angle de base','106,5°','doc'], ['Matériau','carbure de silicium'] ]},
-      { title:'Plan focal', rows:[
-        ['Détecteurs','106 CCD · près d\'un milliard de pixels','sc'], ['Dimensions','0,42 × 0,92 m','sc'], ['Température','170 K, refroidissement passif','sc'],
-        ['Répartition','62 astrométrie · 14 cartographe · 14 BP/RP · 12 RVS · 4 de contrôle','doc'], ['Échelle','58,9 × 176,8 mas par pixel','doc'] ]},
-      { title:'Loi de balayage', rows:[
-        ['Rotation','1 tour en 6 h','scan'], ['Axe de rotation','à 45° du Soleil','scan'],
-        ['Précession','≈ 63 jours','scan'], ['Orbite','Lissajous autour de L2, période ≈ 180 jours','fs'] ]},
-      { title:'Énergie et catalogues', rows:[
-        ['Panneaux solaires','12,8 m², jusqu\'à 1 910 W en fin de vie','sc'], ['Horloge','rubidium, 10 MHz','sc'],
-        ['Précision visée','jusqu\'à 24 µas','fs'], ['Gaia DR3 (2022)','≈ 1,8 milliard de sources','dr3'], ['Gaia DR4','prévu le 2 décembre 2026','end'] ]}
-    ],
-    parts:[
-      { key:'sunshield', name:'Pare-soleil déployable', nodes:['Sunshield-top_Circle','Sunshield-bottom_Circle','GoldenSquares_Cube'], explode:[0,-1,0,0.9],
-        desc:"Une jupe de douze panneaux qui s'est ouverte comme une ombrelle après le lancement. Elle garde les télescopes dans une ombre permanente, à température constante : la moindre dilatation fausserait des mesures d'angle au millionième de degré.",
-        facts:[["Ø 10,2 m une fois déployé", "shield"], ["12 cadres rigides en composite de carbone", "shield"], ["Deux couvertures isolantes, de 2 et 5 couches", "shield"]] },
-      { key:'solar', name:'Panneaux solaires', nodes:['SolarPanels_Cube'], explode:[0,-1,0,1.9],
-        desc:"Les cellules sont posées sur la face ensoleillée, sous le satellite dans cette vue. Comme l'axe de Gaia garde un angle fixe de 45° avec le Soleil, l'éclairement ne varie jamais.",
-        facts:[["Cellules à triple jonction, 12,8 m²", "sc"], ["Jusqu'à 1 910 W en fin de vie", "sc"], ["Panneaux sur 8 des 12 cadres du pare-soleil", "shield"]] },
-      { key:'svmbase', name:'Antenne réseau à commande de phase', nodes:['Floor_Circle','Bottom-details_Cylinder'], explode:[0,-1,0,2.9],
-        desc:"Sous le satellite, face à la Terre. Une parabole orientable aurait fait vibrer Gaia : le faisceau est donc dirigé électroniquement, sans aucune pièce mobile, pendant que le satellite tourne.",
-        facts:[["Bande X, 8,7 Mbit/s", "prusti"], ["Aucune pièce mobile", "prusti"]] },
-      { key:'svm', name:'Module de service', nodes:['ServiceModule-bottom_Cylinder'], explode:[0,0,0,0],
-        desc:"L'anneau qui porte l'électronique, les réservoirs et une horloge atomique au rubidium pour dater chaque mesure. Des micro-propulseurs à azote froid maintiennent la rotation avec une régularité extrême.",
-        facts:[["Horloge atomique au rubidium (10 MHz)", "prusti"], ["2 × 6 micro-propulseurs à gaz froid", "prusti"]] },
-      { key:'tent', name:'Tente thermique', nodes:['TTS_Cylinder','TTS-inner_Cylinder','Top_Circle','Top-ceiling_Circle','GoldenBorders_Cylinder','GoldSquare_Cube'], explode:[0,1,0,2.6],
-        desc:"La coque qui enveloppe la charge utile. Elle la protège des micrométéorites et du rayonnement, et ne laisse que deux ouvertures par lesquelles regardent les deux télescopes.",
-        facts:[["Ouvertures pour les 2 télescopes et le plan focal", "prusti"], ["Sandwich composite carbone et aluminium", "prusti"]] },
-      { key:'torus', name:'Banc optique (tore)', nodes:['Torus_Torus'], explode:[0,1,0,1.1],
-        desc:"Un anneau de carbure de silicium d'environ 3 m, assemblé à partir de 17 segments brasés. Il porte les dix miroirs des deux télescopes et le plan focal, et garantit que l'angle entre les deux lignes de visée reste fixe.",
-        facts:[["Ø ≈ 3 m, quasi octogonal", "torus"], ["17 segments en carbure de silicium", "torus"], "Porte les deux télescopes et le plan focal"] },
-      { key:'focal', name:'Plan focal et instruments', nodes:['FocalPlane_Cube','Instr1_Cube','Instr2_Cube','InstrBG_Plane','Plane'], explode:[0,1,0,1.9],
-        desc:"La plus grande caméra envoyée dans l'espace à son lancement. Les images des deux télescopes se superposent sur la même mosaïque de CCD ; les étoiles la traversent en file pendant que le satellite tourne.",
-        facts:[["106 CCD, 938 millions de pixels", "prusti"], ["0,42 × 0,92 m", "sc"]] }
-    ]
-  },
-  {
     id:'roman', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
     agency:'NASA (avec l\'ESA, la JAXA et le CNES)', launch:'Lancé le 30 août 2026, Falcon Heavy, Kennedy',
     sub:'Point de Lagrange L2, proche infrarouge grand champ',
@@ -301,7 +301,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['> 12','m de haut'], optical:['ota','instr'],
-    compare:{ order:3, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:5, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',

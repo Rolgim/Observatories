@@ -15,6 +15,9 @@ const fail = m => { errors.push(m); console.log('ÉCHEC', m); };
 
 async function open(b, vp, dark, lang){
   const pg = await b.newPage({ viewport: vp, colorScheme: dark ? 'dark' : 'light', locale: lang === 'en' ? 'en-GB' : 'fr-FR' });
+  /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
+  await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, lang === 'en' ? 'en' : 'fr');
+
   pg.on('pageerror', e => fail('erreur JavaScript : ' + e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_|Failed to load resource/.test(m.text())) fail('console : ' + m.text().slice(0, 200)); });
   if (V) await pg.route('**/*', r => { const u = r.request().url();

@@ -1,10 +1,10 @@
 /* Langue du site : français ou anglais.
-   Ordre de décision : préfixe du lien (#en-jwst, #fr-jwst), puis choix mémorisé, puis langue du navigateur.
+   Ordre de décision : préfixe du lien (#en-jwst, #fr-jwst), puis choix mémorisé, sinon anglais.
    Les textes français sont dans les sources ; les textes anglais sont dans src/en/ et appliqués par src/i18n.js. */
 var OBS_LANG = (function(){
   var m = /^#(en|fr)-/.exec(location.hash || ''), v = m && m[1];
   if (!v) try { v = localStorage.getItem('obs-lang'); } catch(e){}
-  if (v !== 'en' && v !== 'fr') v = /^fr/i.test(navigator.language || 'fr') ? 'fr' : 'en';
+  if (v !== 'en' && v !== 'fr') v = 'en';   /* anglais par défaut ; le français se choisit par le bouton FR ou un lien #fr-… */
   try { document.documentElement.lang = v; } catch(e){}
   return v;
 })();

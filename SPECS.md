@@ -14,7 +14,7 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
 ## 2. Ce que fait le site
 
-- **Cinq observatoires** : Hubble, JWST, Euclid, Gaia, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
+- **Cinq observatoires**, dans l'ordre chronologique de lancement : Hubble, Gaia, JWST, Euclid, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (38 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
 - **Mission et données**, une page par observatoire :
@@ -22,8 +22,8 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
   - trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ;
   - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, pointés réels) ;
   - 17 instruments : à quoi ça sert, couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès, liens d'archives.
-- **Comparer** : tailles, orbites autour de L2, couvertures spectrales, champs de vue, plans focaux et tableau des instruments.
-- Français et anglais, thèmes clair et sombre, téléphone, liens par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…), favicon.
+- **Comparer** : tailles (avec une silhouette humaine de 1,75 m comme référence), orbites autour de L2, couvertures spectrales, champs de vue, plans focaux et tableau des instruments.
+- **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre, téléphone, liens par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…), favicon.
 - Site statique sans serveur. Données réelles mises à jour par l'intégration continue (chaque jour pour les orbites, le TLE de Hubble et les observations).
 - Tests à chaque push : parcours complet du site au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
 
@@ -156,7 +156,7 @@ Roman (16 au 18 novembre) : maquette NASA de 2015 allégée à 3,1 Mo et redéco
 - H1. Tests automatiques à chaque push. **Livré** (`tools/smoke.js`, workflow « Tests », qui vérifie aussi que `index.html` correspond aux sources).
 - H2. Publication par l'intégration continue. **À faire** (point 18).
 - H3. Accessibilité. **Livré en partie** : axe-core sur huit vues, deux thèmes, deux langues ; onglets aux flèches selon le motif ARIA ; vue 3D au clavier (flèches entre les pièces, Échap). Reste : point 20.
-- H4. Version anglaise. **Livré** (`src/en/`, `src/i18n.js` ; `tools/i18n-scan.js` liste ce qui n'est pas traduit). À chaque ajout de texte, compléter `src/en/`. Non traduits : `README.md`, `SPECS.md`, les commentaires du code.
+- H4. Version anglaise. **Livré**, langue par défaut depuis le 19 novembre (le français se choisit par le bouton FR, mémorisé, ou un lien `#fr-…` ; les tests imposent leur langue par le stockage local) (`src/en/`, `src/i18n.js` ; `tools/i18n-scan.js` liste ce qui n'est pas traduit). À chaque ajout de texte, compléter `src/en/`. Non traduits : `README.md`, `SPECS.md`, les commentaires du code.
 - H5. Poids des maquettes. **À faire** (point 19).
 
 ### M. Mission et traitements — livré
