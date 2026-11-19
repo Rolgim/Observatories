@@ -685,6 +685,124 @@ def hubble_fgs(key):
                 url="https://archive.stsci.edu/proposal_search.php?id=11945&mission=hst",
                 caption="Les FGS comptent les photons de l'étoile 40 fois par seconde. Utilisés comme photomètres, ils mesurent son éclat sans interruption : l'étoile, proche du pôle de l'orbite, n'est jamais cachée par la Terre. Ce qui reste après correction de l'orbite donne la précision de la mesure.", credit="NASA, ESA, STScI", fetched=TODAY)
 
+# ---------- Chandra : produits standard de l'archive CDA (Chandra Data Archive, CXC) ----------
+# Images binnées par le pipeline (cntr_img2) et spectres extraits des réseaux (pha2), tels que l'archive les distribue.
+CDA = "https://cxc.cfa.harvard.edu/cdaftp/byobsid/{d}/{o}/primary/"
+CDA_TAP = "https://heasarc.gsfc.nasa.gov/xamin/vo/tap"
+
+def cda_files(obsid):
+    import re
+    u = CDA.format(d=str(obsid)[-1], o=obsid)
+    r = requests.get(u, timeout=60); r.raise_for_status()
+    return u, re.findall(r'href="([^"?/][^"]*)"', r.text)
+
+def cda_fits(url):
+    """Télécharge un FITS de l'archive (le serveur le décompresse parfois lui-même)."""
+    import gzip
+    from astropy.io import fits
+    raw = requests.get(url, timeout=600).content
+    if raw[:2] == b"\x1f\x8b":
+        raw = gzip.decompress(raw)
+    return fits.open(io.BytesIO(raw))
+
+def cda_url(obsid):
+    return f"https://cda.harvard.edu/chaser/startViewer.do?menuItem=details&obsid={obsid}"
+
+def cda_meta(h, fname, extra=()):
+    det = clean(h.get("DETNAM")) or ""
+    inst = clean(h.get("INSTRUME")) or ""
+    grat = clean(h.get("GRATING")) or "NONE"
+    if inst == "ACIS" and det.startswith("ACIS-"):
+        # numérotation des puces : 0 à 3 = ACIS-I (I0 à I3), 4 à 9 = ACIS-S (S0 à S5)
+        chips = [int(x) for x in det[5:] if x.isdigit()]
+        names = ["I" + str(c) if c < 4 else "S" + str(c - 4) for c in chips]
+        arr = "ACIS-S" if min(chips) >= 4 else "ACIS-I" if max(chips) <= 3 else "ACIS"
+        det = arr + (", puce " + names[0] if len(names) == 1 else ", puces " + " à ".join((names[0], names[-1])))
+        inst = ""
+    meta = [["Archive", "Chandra Data Archive (CXC)"], ["Instrument", (inst + " (" + det + ")" if inst and det and det != inst else inst or det) + ("" if grat == "NONE" else " + " + grat)],
+            ["Identifiant d'observation", "ObsID " + str(h.get("OBS_ID"))], ["Cible", clean(h.get("OBJECT")) or "cible non nommée"]]
+    if clean(h.get("TITLE")):
+        meta.append(["Programme", h["TITLE"].strip()])
+    if clean(h.get("OBSERVER")):
+        meta.append(["Responsable du programme", h["OBSERVER"].strip()])
+    meta.append(["Début d'observation", str(h.get("DATE-OBS"))[:10]])
+    meta.append(["Temps de pose", fr(float(h["EXPOSURE"])) + " s"])
+    meta += [list(x) for x in extra]
+    meta.append(["Fichier d'origine", fname])
+    return meta
+
+def chandra_image(key, obsids, name, about, cutoff=99.9):
+    from PIL import Image
+    for o in obsids:
+        try:
+            u, files = cda_files(o)
+        except Exception as e:
+            print("   ObsID", o, ":", e); continue
+        f = [x for x in files if x.endswith(("cntr_img2.fits", "cntr_img2.fits.gz"))]
+        if not f:
+            print("   ObsID", o, ": pas d'image cntr_img2"); continue
+        with cda_fits(u + f[0]) as hd:
+            h = hd[0].header; d = np.asarray(hd[0].data, dtype=float)
+        d = np.nan_to_num(d)
+        # étirement logarithmique : le ciel X est presque vide, les sources très brillantes
+        hi = np.percentile(d[d > 0], cutoff) if np.any(d > 0) else 1
+        v = np.log1p(np.clip(d, 0, hi) / (hi / 300.0)) / np.log1p(300.0)
+        im = Image.fromarray((np.flipud(v) * 255).astype(np.uint8), "L")
+        if max(im.size) > 1100:
+            im.thumbnail((1100, 1100))
+        fname = key.replace("/", "-").replace(":", "-") + ".jpg"
+        im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+        pix = abs(float(h.get("CDELT1", 0))) * 3600
+        side = pix * d.shape[1] / 60
+        meta = cda_meta(h, f[0].replace(".gz", ""), extra=[["Échelle", fr(pix, 3) + "″ par pixel, " + fr(side, 1) + "′ de côté"],
+                                                          ["Coups dans l'image", fr(float(d.sum()))],
+                                                          ["Traitement", "image binnée par le pipeline standard (toutes énergies), étirement logarithmique pour le site"]])
+        return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title=name + ", " + (clean(h.get("DETNAM")) if h.get("INSTRUME") == "HRC" else "ACIS"), meta=meta, url=cda_url(o),
+                    caption=about + " Chaque pixel compte les photons X reçus : noir là où il n'en arrive presque aucun.", credit="NASA, CXC, SAO", fetched=TODAY)
+    raise RuntimeError("aucune image exploitable")
+
+def chandra_hrc_obsids(target, n=6):
+    """ObsID publics HRC-I sans réseau sur une cible, les plus longues poses d'abord (catalogue chanmaster du HEASARC)."""
+    import pyvo
+    t = pyvo.dal.TAPService(CDA_TAP).search(
+        "SELECT TOP 20 obsid, exposure FROM chanmaster WHERE detector = 'HRC-I' AND grating = 'NONE' AND name LIKE '%" + target + "%' ORDER BY exposure DESC").to_table()
+    return [int(x) for x in t["obsid"][:n]]
+
+def chandra_grating(key, obsid, part, lo, hi, rebin, title, caption):
+    u, files = cda_files(obsid)
+    f = [x for x in files if x.endswith(("pha2.fits", "pha2.fits.gz"))]
+    if not f:
+        raise RuntimeError("pas de pha2")
+    with cda_fits(u + f[0]) as hd:
+        sp = hd["SPECTRUM"]; h = sp.header; d = sp.data
+        rows = [i for i in range(len(d)) if int(d["TG_PART"][i]) == part and abs(int(d["TG_M"][i])) == 1]
+        if len(rows) != 2:
+            raise RuntimeError("ordres ±1 introuvables")
+        w = 0.5 * (np.asarray(d["BIN_LO"][rows[0]], float) + np.asarray(d["BIN_HI"][rows[0]], float))
+        c = np.zeros_like(w)
+        for i in rows:
+            wi = 0.5 * (np.asarray(d["BIN_LO"][i], float) + np.asarray(d["BIN_HI"][i], float))
+            if not np.allclose(wi, w):
+                raise RuntimeError("grilles des ordres différentes")
+            c += np.asarray(d["COUNTS"][i], float)
+        step = abs(float(np.median(np.diff(w))))
+    o = np.argsort(w); w, c = w[o], c[o]
+    keep = (w >= lo) & (w <= hi); w, c = w[keep], c[keep]
+    total = float(c.sum())
+    n = len(w) // rebin * rebin
+    wb = w[:n].reshape(-1, rebin).mean(1); cb = c[:n].reshape(-1, rebin).sum(1)
+    fname = key.replace("/", "-").replace(":", "-") + ".json"
+    binw = step * rebin
+    save_json(fname, dict(type="line", x=rnd(wb, 5), y=[int(v) for v in cb], ymin=0, xlabel="longueur d'onde (Å)", ylabel="coups par intervalle de " + fr(binw, 3) + " Å"))
+    arm = {1: "HEG", 2: "MEG", 3: "LEG"}[part]
+    meta = cda_meta(h, f[0].replace(".gz", ""), extra=[["Données", "ordres +1 et −1 du bras " + arm + " additionnés, " + fr(lo) + " à " + fr(hi) + " Å"],
+                                                      ["Coups", fr(total)],
+                                                      ["Points", fr(len(w)) + " dans l'intervalle, " + fr(len(wb)) + " tracés (somme par paquets de " + str(rebin) + ")"]])
+    return dict(type="plot", file=fname, title=title, meta=meta, url=cda_url(obsid), caption=caption, credit="NASA, CXC, SAO", fetched=TODAY)
+
+CAS_A = "Le reste de la supernova Cassiopée A, dont la lumière de l'explosion nous est parvenue il y a environ 340 ans : une coquille de gaz à plusieurs millions de degrés, et au centre le point de l'étoile à neutrons, découverte par Chandra dès ses premières images."
+CAPELLA = "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon."
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -704,6 +822,13 @@ RECIPES = {
     # produits supplémentaires d'un même instrument : clé « observatoire/instrument:nom »
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
+    "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
+    "chandra/hrc": lambda k: chandra_image(k, chandra_hrc_obsids("CRAB"), "La nébuleuse du Crabe",
+                                           "La nébuleuse du Crabe, reste d'une supernova observée en 1054 : au centre, le pulsar, étoile à neutrons qui tourne 30 fois par seconde, entouré d'anneaux et de jets de particules."),
+    "chandra/hetg:spectre": lambda k: chandra_grating(k, 1318, 2, 2, 25, 4, "Spectre HETG de l'étoile Capella",
+                                                      CAPELLA + " Chaque pic est une raie d'émission ; leur finesse permet de mesurer température et densité du gaz."),
+    "chandra/letg:spectre": lambda k: chandra_grating(k, 1248, 3, 5, 175, 8, "Spectre LETG de l'étoile Capella",
+                                                      CAPELLA + " Le réseau LETG, lu par la caméra HRC-S, couvre les grandes longueurs d'onde, jusqu'aux rayons X les moins énergétiques."),
 }
 
 def main():
