@@ -26,13 +26,15 @@ BODIES = {  # identifiants Horizons, période, pas
     "tess": dict(id="-95", start=(TODAY - datetime.timedelta(days=14)).isoformat(), stop=TODAY.isoformat(), step="2h", name="TESS", inertial=True),
     # orbites héliocentriques qui suivent la Terre (Spitzer, Kepler) : toute la mission, Soleil au centre, repère qui tourne avec la Terre
     "spitzer": dict(id="-79",  start="2003-08-26", stop="2020-01-30", step="10d", name="Spitzer Space Telescope", helio=True),
+    # XMM-Newton : orbite terrestre très elliptique de ≈ 48 h ; identifiant cherché par son nom ; dernière orbite, repère géocentrique fixe
+    "xmm": dict(id="?XMM", start=(TODAY - datetime.timedelta(days=3)).isoformat(), stop=TODAY.isoformat(), step="20m", name="XMM-Newton", inertial=True, alts=("XMM-Newton", "X-ray Multi-Mirror")),
     "kepler":  dict(id="-227", start="2009-03-08", stop="2018-11-15", step="10d", name="Kepler", helio=True),
 }
 
-def lookup(name):
+def lookup(name, key="roman", alts=("Nancy Grace Roman", "Roman Space Telescope")):
     """Identifiant Horizons d'un engin spatial à partir de son nom (API horizons_lookup du JPL)."""
     import urllib.request, urllib.parse
-    for sstr in (name, "Nancy Grace Roman", "Roman Space Telescope"):
+    for sstr in (name,) + tuple(alts):
         url = "https://ssd.jpl.nasa.gov/api/horizons_lookup.api?" + urllib.parse.urlencode(dict(sstr=sstr, group="sct"))
         try:
             with urllib.request.urlopen(url, timeout=60) as r:
@@ -41,7 +43,7 @@ def lookup(name):
             print("   recherche", sstr, ": échec", e, flush=True); continue
         print("   recherche", sstr, ":", [(x.get("name"), x.get("spkid")) for x in res], flush=True)
         for x in res:
-            if "roman" in (x.get("name") or "").lower() or "roman" in " ".join(x.get("alias") or []).lower():
+            if key in (x.get("name") or "").lower() or key in " ".join(x.get("alias") or []).lower():
                 return x["spkid"]
     raise RuntimeError("aucun identifiant trouvé pour " + name)
 
@@ -58,7 +60,7 @@ def main():
         print("==", key, flush=True)
         try:
             if b["id"].startswith("?"):
-                b["id"] = lookup(b["id"][1:])
+                q = b["id"][1:]; b["id"] = lookup(q, q.lower(), b.get("alts", ("Nancy Grace Roman", "Roman Space Telescope")))
             jd, r = vectors(b["id"], b["start"], b["stop"], b["step"])
             if b.get("helio"):
                 # vecteurs héliocentriques de l'engin et de la Terre ; rotation qui ramène la Terre sur l'axe x (repère tournant), en UA

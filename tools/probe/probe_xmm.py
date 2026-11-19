@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
-"""Sonde XMM-Newton : maquettes 3D du service SPICE de l'ESA (dossier misc/cosmo) et leur licence. N'écrit rien dans le dépôt."""
+"""Sonde XMM-Newton : catalogue des observations (HEASARC, table xmmmaster) et produits PPS du miroir HEASARC.
+N'écrit rien dans le dépôt. Sert à choisir les observations des recettes xmm/* de fetch_data.py."""
 import re, requests
-BASE = "https://spiftp.esac.esa.int/data/SPICE/XMM/"
-def ls(u, depth=0):
+TAP = "https://heasarc.gsfc.nasa.gov/xamin/vo/tap"
+def tap(adql, n=20):
+    import pyvo
     try:
-        r = requests.get(u, timeout=60)
+        t = pyvo.dal.TAPService(TAP).search(adql).to_table(); t.pprint(max_lines=n, max_width=220); return t
     except Exception as e:
-        print("  " * depth, "ÉCHEC", u, repr(e)[:200]); return
-    print("  " * depth, u, r.status_code)
-    for href in re.findall(r'href="([^"?]+)"', r.text):
-        if href.startswith("/") or href.startswith("..") or href.startswith("http"): continue
-        v = u + href
-        if href.endswith("/"):
-            if depth < 3: ls(v, depth + 1)
-        else:
-            h = requests.head(v, timeout=60)
-            print("  " * (depth + 1), href, h.headers.get("Content-Length"))
-            if re.search(r"(readme|licen|aareadme|\.txt$|\.json$|\.cmod$)", href, re.I) and int(h.headers.get("Content-Length") or 0) < 200000 and not href.endswith(".cmod"):
-                print(requests.get(v, timeout=60).text[:3000])
-ls(BASE + "misc/")
-print("\n== aareadme du jeu XMM")
-for f in ("aareadme.txt", "AAREADME.TXT", "readme.txt"):
-    r = requests.get(BASE + f, timeout=60); print(f, r.status_code)
-    if r.ok: print(r.text[:4000]); break
+        print("   ÉCHEC", repr(e)[:300])
+print("== colonnes de xmmmaster")
+tap("SELECT TOP 80 column_name, datatype FROM TAP_SCHEMA.columns WHERE table_name = 'xmmmaster'", 80)
+res = {}
+for label, where in [("Cas A", "name LIKE '%CAS%A%'"), ("Capella", "name LIKE '%CAPELLA%'"), ("M31", "name LIKE '%M31%'"), ("Tycho", "name LIKE '%TYCHO%'"), ("Crabe", "name LIKE '%CRAB%'")]:
+    print("\n==", label)
+    res[label] = tap("SELECT TOP 10 obsid, name, ra, dec, time, duration, status, pi_lname FROM xmmmaster WHERE " + where + " ORDER BY duration DESC")
+def pps(obsid):
+    for u in (f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{obsid}/PPS/", f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev1/{obsid}/PPS/"):
+        r = requests.get(u, timeout=60); print("  ", u, r.status_code)
+        if r.ok:
+            fs = re.findall(r'href="([^"?/][^"]*)"', r.text)
+            for f in fs: print("     ", f)
+            return
+for label in ("Cas A", "Capella"):
+    t = res.get(label)
+    if t is not None and len(t):
+        print("\n== PPS de", label, t[0]["obsid"]); pps(str(t[0]["obsid"]).zfill(10))
