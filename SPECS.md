@@ -1,78 +1,110 @@
 # Observatoires en orbite : spécifications
 
-Document de travail, à jour au 19 novembre 2026. Ordre de lecture : objet et public (1), ce que fait le site (2), **ce qui reste à faire (3)**, questions à trancher (4), puis le détail de chaque lot, ses exigences et ce qui a été livré (5). Les tableaux de vérification des valeurs sont en annexe.
+Document de travail, revu le 19 novembre 2026. Ordre de lecture : objet, public et périmètre (1), ce que fait le site (2), **ce qui reste à faire (3)**, questions à trancher (4), puis le détail de chaque lot, ses exigences et ce qui a été livré (5). Les tableaux de vérification des valeurs sont en annexe.
 
-## 1. Objet et public
+## 1. Objet, public et périmètre
 
-Le site présente des télescopes spatiaux en 3D et explique comment ils sont construits, ce qu'ils mesurent et comment accéder à leurs données.
+Le site présente les télescopes spatiaux en 3D et explique comment ils sont construits, ce qu'ils mesurent et comment accéder à leurs données.
 
 Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
 - **Deux niveaux de lecture.** Chaque fiche se comprend sans prérequis (phrases complètes, termes définis) et donne en dessous les valeurs exactes qu'un expert vient chercher (unités, références).
 - **Rien d'approximatif sans le dire.** Une valeur arrondie, estimée, mesurée sur une maquette ou schématique est signalée comme telle.
 - **Toute valeur a une source.** Un expert doit pouvoir vérifier ; un étudiant doit pouvoir aller plus loin.
+- **Rien n'est montré en 3D sans être documenté.** Une pièce, un équipement intérieur ou une position n'apparaît dans la maquette que si sa forme, sa taille et sa place sont publiées (ou calculées à partir de valeurs publiées, calcul indiqué).
+
+**Périmètre (décidé le 19 novembre).**
+
+- **Flottes d'astrophysique de la NASA, de l'ESA et du CNES** : observatoires d'astrophysique et de physique fondamentale en orbite, dont ces agences sont maîtres d'œuvre ou partenaires. Hors périmètre : système solaire, Soleil, observation de la Terre, télescopes au sol et aéroportés (SOFIA).
+- **Époques** : missions en service et terminées. Les missions futures (PLATO, Ariel, LISA, NewAthena…) viennent après, avec des valeurs prévues signalées comme telles.
+- **Agences et contributions** : chaque observatoire dit qui l'a conduit et qui a fourni quoi (instruments, centres de données, lanceur). Le CNES est représenté par ses missions propres (CoRoT, SVOM, MICROSCOPE) et par ses contributions aux autres (par exemple l'imageur de MIRI sur Webb, des éléments d'Euclid, le traitement de Gaia), chacune sourcée.
 
 ## 2. Ce que fait le site
 
-- **Onze observatoires**, dans l'ordre chronologique de lancement : Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman, groupés dans l'en-tête par domaine spectral (rayons gamma, rayons X, UV et visible, infrarouge, astrométrie). Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (54 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
+- **Onze observatoires**, dans l'ordre chronologique de lancement : Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman. Navigation en deux rangées : domaines spectraux (rayons gamma, rayons X, UV et visible, infrarouge, astrométrie), boutons qui filtrent, puis observatoires du domaine choisi. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », Terre sous les observatoires en orbite basse, vue en coupe (à refaire, voir 3), déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
-- **Mission et données**, une page par observatoire :
-  - mission et traitements (déroulé daté, exploitation, chaîne de traitement, publications des données) ;
-  - trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ;
-  - orbite (trajectoire réelle, orbite très elliptique de Chandra à l'échelle, position de Hubble en direct, ciel observable, pointés réels) ;
-  - 26 instruments : à quoi ça sert, couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès, liens d'archives.
-- **Comparer** : tailles (avec une silhouette humaine de 1,75 m comme référence), orbites autour de L2, couvertures spectrales, champs de vue, plans focaux et tableau des instruments.
-- **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre, téléphone, liens par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…), favicon.
-- Site statique sans serveur. Données réelles mises à jour par l'intégration continue (chaque jour pour les orbites, le TLE de Hubble et les observations).
-- Tests à chaque push : parcours complet du site au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
+- **Mission et données**, une page par observatoire : mission et traitements ; trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ; orbite (trajectoire réelle, position en direct pour l'orbite basse, ciel observable) ; une page par instrument (à quoi ça sert, couverture spectrale, champ de vue, filtres, produits, observation réelle, code d'accès, archives).
+- **Comparer** : tailles, orbites, couvertures spectrales, champs de vue, plans focaux, tableau des instruments.
+- **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre ; téléphone ; liens par ancre.
+- Site statique sans serveur. Données réelles mises à jour par l'intégration continue (orbites et TLE chaque jour, observations quand une recette manque). Les archives et sites que le bac à sable n'atteint pas sont sondés depuis l'intégration continue (`tools/probe/`), qui peut déposer des fichiers sur la branche `probe-out`.
+- Tests à chaque push : parcours complet au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
 
 ## 3. Ce qui reste à faire
 
-Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
+Classé par priorité. Entre crochets : le lot concerné (section 5).
 
-### Priorité 1 : nouveaux observatoires
+### Priorité 1 : intérieurs, seulement ce qui est documenté [D4]
 
-1. **Chandra : reste** [F] : pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
-2. *Fait le 19 novembre.* **Navigation** [G3] : onglets groupés par domaine spectral (rayons X, UV et visible, infrarouge, astrométrie), nom du groupe au-dessus de son premier onglet, nom court sur téléphone ; mêmes groupes dans l'en-tête de « Mission et données ». Champ `domain` du registre, liste `DOMAINS`. Au-delà de huit observatoires environ, la rangée défile sur téléphone : prévoir alors un menu par groupe.
-3. **Observatoires en cours d'ajout** (choisis le 19 novembre) : Spitzer, Fermi, TESS, Kepler et XMM-Newton (faits). Au-delà de huit observatoires, la rangée d'onglets défile sur téléphone (fondu au bord, centrée sur l'onglet actif) ; vers dix, elle débordera aussi sur ordinateur : prévoir alors un menu par groupe.
+Constat (19 novembre) : les intérieurs reconstruits mêlent des éléments cotés (miroirs, coques de Chandra) et des blocs posés à des emplacements indicatifs (réservoirs, batteries, roues de réaction, boîtiers électroniques). Rendu peu crédible (empilements de boîtes et de sphères sur Euclid ; anneaux de Hubble qui sortent du tube) ; sur Webb, la coupe ne montre presque rien.
 
-### Priorité 2 : contenu encore approximatif
+Règle : la coupe ne montre que des éléments dont la forme, la taille **et** la position sont publiées, ou calculées à partir de valeurs publiées (calcul indiqué dans la légende). Chaque élément nomme sa source au survol.
 
-4. **Prescriptions optiques** [D1] : les schémas d'Euclid, de Gaia et de Roman ne sont à l'échelle que pour les éléments publiés ; courbures et positions des miroirs arrière manquent. À demander aux équipes (consortium Euclid, DPAC, projet Roman) ou à chercher dans des documents de conception. Le schéma de Gaia reste chargé.
-5. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb et Gaia ; rangée des trois CCD de contrôle de Gaia dans la première colonne non confirmée.
-6. *Fait le 19 novembre.* Roman : dimensions déployées (12,7 × 4,4 m) et masse à sec (≈ 8 000 kg) du dossier de presse de la NASA ; la masse avec ergols reste la prévision de 2021, signalée « ≈ » dans les comparaisons (comme Hubble et Webb, champ `cmp.approx`).
-7. *Fait le 19 novembre.* Bande G de Gaia : 330–1050 nm, Weiler 2018 (A&A).
-8. **Suffixes de fichiers de Webb et de Hubble** [M] : relire chaque tableau de produits de la documentation.
-9. **Licence de la maquette d'Euclid** [A3] : aucune licence explicite sur SciFleet ; demande à l'ESA. Si elle n'autorise pas la redistribution, remplacer la maquette.
-10. Relecture de la version anglaise par un anglophone du domaine [H4].
+1. **Inventaire par observatoire** : pour chaque élément de `src/interior.js`, classer en « coté et placé » (garder), « coté, place inconnue » ou « ni l'un ni l'autre » (retirer). Tableau en annexe, avec la source de chaque cote.
+2. **Garder et vérifier** ce qui est documenté, par exemple : miroirs primaire et secondaire de Hubble et leur écart (Lallo 2012) ; quatre paires de miroirs de Chandra, réseau HETG et position du foyer (POG) ; miroirs de Webb et leurs positions (McElwain et al. 2023) ; miroirs, plaque de base et renvois d'Euclid (Racca et al. 2016) ; banc optique de Gaia ; ouverture et obstruction de Roman.
+3. **Retirer** tous les blocs à emplacement indicatif. Les équipements correspondants passent dans un **schéma d'architecture 2D** de la page « Mission et données » : liste par sous-système (propulsion, énergie, pointage, télécommunications) avec nombre, masse ou capacité et source, sans position inventée.
+4. **Pas de coupe** pour un observatoire qui n'a pas assez d'éléments documentés : le bouton « Coupe » n'apparaît pas.
+5. Corriger les défauts relevés : éléments qui débordent de la coque (Hubble), coupe qui ne s'enclenche pas ou ne montre rien (Webb, à vérifier pour chaque observatoire).
 
-### Priorité 3 : vraies données
+**Acceptation.** Aucun élément intérieur sans source pour sa taille et sa position ; `tools/smoke.js` le vérifie à partir du champ source de chaque élément.
 
-11. **Images en couleurs** [E] : les aperçus actuels sont les vignettes en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition à plusieurs filtres).
-12. **Figer les observations** [E] : le choix est automatique (plus longue pose publique). Fixer les identifiants une fois validés, pour que le site ne change pas tout seul.
-13. **Roman** [E] : aucune donnée publique avant début 2027 ; ajouter alors un exemple réel et le code d'accès.
-14. **Requêtes en direct depuis le navigateur** [E3] : non commencé. Dépend des règles CORS de chaque archive.
+### Priorité 2 : flottes de la NASA, de l'ESA et du CNES [G5]
 
-### Priorité 4 : orbites et animations
+**Inventaire** (annexe « Flottes ») : toutes les missions d'astrophysique en orbite, en service ou terminées, avec agence maître d'œuvre, partenaires, dates, domaine, et disponibilité d'une maquette 3D de licence connue. Sources de l'inventaire : navigateur des missions de l'ESA, revue des missions en service de la NASA (Senior Review 2025), liste des missions actives du HEASARC, pages projets du CNES. Chaque statut est revérifié au moment de l'ajout.
 
-15. Gaia : comparer la carte de balayage simulée à la vraie couverture de Gaia DR3 (nombre de passages par source) [F2].
-16. Euclid : ordre des observations à l'intérieur d'un mois sur la carte du relevé, via les fichiers S3 d'IRSA [F].
-17. Afficher le facteur d'accélération des animations et permettre de choisir une date [F].
+**Ce qu'il faut ajouter au site.**
 
-### Priorité 5 : socle technique
+1. **Registre** : champs `agencies` (agence, rôle : maître d'œuvre, partenaire, instrument, centre de données ; source) et `status` (en service, terminé, avec dates). Le champ `domain` reste ; un observatoire peut couvrir deux domaines (INTEGRAL : gamma et X).
+2. **Page « Flotte »** (catalogue) : tous les observatoires sur une frise chronologique, une barre de la date de lancement à la fin de mission, filtrables par agence (NASA, ESA, CNES), domaine et statut ; ceux qui ont une maquette s'ouvrent en 3D, les autres sur leur fiche. La navigation en deux rangées de l'en-tête reste, avec défilement, et renvoie à cette page.
+3. **Fiche sans maquette** : un observatoire sans maquette 3D de licence connue a quand même sa fiche, ses instruments, son orbite et ses données ; la vue 3D affiche alors une vue de l'ESA ou de la NASA créditée, ou rien (voir question 3).
+4. **Contributions** : sur chaque fiche, « Qui a fait quoi », avec un filtre par agence dans la page Flotte ; contributions du CNES sourcées une par une.
 
-18. **Publication par l'intégration continue** [H2] : construire `index.html` dans GitHub Actions plutôt que le commiter.
-19. **Poids des maquettes** [H5] : Euclid fait 6,0 Mo, Hubble 3,4 Mo, JWST 4,0 Mo ; viser moins de 3 Mo (allègement comme pour Roman, ou textures adaptées au téléphone).
-20. **Tests** [H1, H3] : ajouter un test du parcours au clavier et un autre navigateur que Chromium.
+**Vagues d'ajout proposées** (à valider, question 4) :
+
+- **Vague 1**, maquettes disponibles, missions phares : Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton (CGRO), WMAP.
+- **Vague 2**, maquettes disponibles : ISO, LISA Pathfinder, Suzaku, FUSE, HETE-2, SWAS, NICER (instrument de la Station spatiale, à confirmer dans le périmètre).
+- **Vague 3**, sans maquette publique connue : NuSTAR, IXPE, SPHEREx, XRISM, CoRoT, SVOM, MICROSCOPE, COBE, IRAS, IUE, Hipparcos, EXOSAT, COS-B, GALEX, WISE, RXTE, et les premiers observatoires de la NASA (Uhuru, Copernicus, HEAO 1 à 3).
+
+**Acceptation.** Chaque mission de l'inventaire a au moins une fiche sourcée ; la page Flotte les montre toutes ; chaque contribution du CNES affichée a une source.
+
+### Priorité 3 : contenu encore approximatif
+
+1. **Prescriptions optiques** [D1] : schémas d'Euclid, de Gaia et de Roman à l'échelle seulement pour les éléments publiés ; courbures et positions des miroirs arrière manquent. Schéma de Gaia chargé.
+2. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb, Gaia, Kepler et XMM-Newton ; trois CCD de contrôle de Gaia non confirmés.
+3. **Suffixes de fichiers de Webb et de Hubble** [M] : relire chaque tableau de produits.
+4. **Licences des maquettes de l'ESA** [A3] : Euclid (SCIFLEET) et XMM-Newton (service SPICE) n'ont pas de licence explicite ; utilisées en les créditant (décision du 19 novembre pour XMM-Newton). Écrire à l'ESA (support SCIFLEET) pour l'ensemble des maquettes de la flotte ; à faire par l'utilisatrice.
+5. Relecture de la version anglaise par un anglophone du domaine [H4].
+6. Orbite de XMM-Newton : la fiche donne l'orbite du lancement (7 000 × 114 000 km), signalée comme telle ; trouver une source pour l'orbite actuelle.
+
+### Priorité 4 : vraies données [E]
+
+1. **Images en couleurs** : refaire les aperçus en niveaux de gris de Hubble et de Webb à partir des FITS (composition à plusieurs filtres).
+2. **Figer les observations** : fixer les identifiants une fois validés, pour que le site ne change pas tout seul.
+3. Spitzer : spectre IRS réel. XMM-Newton OM : une image qui couvre toute la galaxie (mosaïque de poses). Roman : premier exemple réel dès les données publiques (début 2027).
+4. **Requêtes en direct depuis le navigateur** [E3] : non commencé ; dépend des règles CORS de chaque archive.
+
+### Priorité 5 : orbites et animations [F]
+
+1. Gaia : comparer la carte de balayage simulée à la vraie couverture de Gaia DR3.
+2. Euclid : ordre des observations à l'intérieur d'un mois, via les fichiers S3 d'IRSA.
+3. Afficher le facteur d'accélération des animations et permettre de choisir une date.
+4. Déploiements : Roman (étapes datées connues, repliement non documenté) et Chandra (panneaux et porte) à décider.
+
+### Priorité 6 : socle technique [H]
+
+1. **Publication par l'intégration continue** : construire `index.html` dans GitHub Actions plutôt que le commiter.
+2. **Poids des maquettes** : Euclid 6,0 Mo, Hubble 3,4 Mo, JWST 4,0 Mo ; viser moins de 3 Mo. Avec la flotte complète, budget par maquette et chargement à la demande obligatoires (déjà à la demande dans la vue 3D ; à vérifier pour « Comparer »).
+3. **Tests** : parcours au clavier, un autre navigateur que Chromium, et test des éléments intérieurs sourcés (priorité 1).
 
 ## 4. Questions à trancher
 
-1. **Licence du dépôt** (code et textes) : à choisir (par exemple MIT pour le code, CC BY 4.0 pour les textes).
+1. **Licence du dépôt** (code et textes) : par exemple MIT pour le code, CC BY 4.0 pour les textes.
 2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
-3. **Ordre des prochains observatoires** : après Chandra, lesquels (Spitzer, Planck, Kepler, TESS, XMM-Newton) ?
+3. **Observatoires sans maquette 3D** (vague 3) : fiche sans vue 3D, vue officielle (image) de l'agence créditée, ou maquette schématique construite d'après les dimensions publiées et signalée comme telle ?
+4. **Ordre des vagues** : celui proposé en 3 (priorité 2) convient-il ?
+5. **Instruments de la Station spatiale** (NICER, AMS-02, ACES/PHARAO, CALET) : dans le périmètre ou non ?
 
-Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; navigation par domaine spectral (19 novembre).
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; Spitzer, Fermi, TESS, Kepler, XMM-Newton (19 novembre) ; navigation par domaine spectral (19 novembre) ; maquette de l'ESA pour XMM-Newton, créditée faute de licence explicite (19 novembre) ; périmètre : flottes d'astrophysique NASA, ESA et CNES, missions en service et terminées, agences et contributions (19 novembre) ; intérieurs limités à ce qui est documenté (19 novembre).
 
 ## 5. Lots : exigences et état
 
@@ -101,12 +133,12 @@ Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 nove
 - C2. « À quoi ça sert » en tête des 17 instruments (champ `use`).
 - C3. Un seul contenu, ordonné du plus accessible au plus pointu (règle de rédaction).
 
-### D. Trajet de la lumière et intérieur des télescopes — livré, avec des restes
+### D. Trajet de la lumière et intérieur des télescopes — livré, sauf D4 à refaire
 
 - D1. Schéma optique par observatoire. **Livré.** Entièrement à l'échelle pour Hubble (Lallo 2012) et JWST (McElwain et al. 2023, tableau 2 ; foyers calculés ; seuls les décalages latéraux de l'optique arrière sont agrandis). Euclid : diamètres, écart des miroirs, trou du primaire, plaque de base, tailles du tertiaire et des renvois (Racca et al. 2016). Gaia : banc, ouvertures, plan focal et angle de base. Roman : ouverture et obstruction publiées, écart des miroirs mesuré sur la maquette NASA. Reste : point 4.
 - D2. Plans focaux à l'échelle. **Livré** (revu le 17 novembre) : WFI de Roman en arc d'après les positions de GalSim, VIS et NISP avec leurs vrais espaces (Euclid I et II), écarts des CCD de WFC3 et d'ACS, RVS de Gaia en rangées 4 à 7 (documentation DR3). Reste : point 5.
 - D3. Lien dans les deux sens entre schéma et maquette 3D, avec surlignage. **Livré.**
-- D4. Vue en coupe. **Livré** : seule la coque est coupée ; intérieurs reconstruits (`src/interior.js`) d'après les sources publiées, emplacements indicatifs et dits comme tels ; plans de coupe propres pour les modules de Webb et de Roman.
+- D4. Vue en coupe. **À refaire** (priorité 1, section 3) : les intérieurs actuels (`src/interior.js`) mêlent des éléments cotés et des blocs à emplacement indicatif (réservoirs, batteries, roues, boîtiers) ; décidé le 19 novembre de n'y garder que ce qui est documenté.
 
 ### E. Vraies données — E1 et E2 livrés, E3 à faire
 
@@ -143,7 +175,7 @@ Produits affichés :
 - F4. Ciel observable à une date choisie, contraintes d'angle solaire sourcées pour chaque observatoire.
 - Cartes des pointés réels de Hubble et de JWST (MAST) et de l'avancée du relevé d'Euclid (DR1). Restes : points 16 et 17.
 
-### G. Autres observatoires — Roman et registre livrés
+### G. Autres observatoires — onze livrés, flottes à compléter
 
 - G1. Un observatoire n'est ajouté qu'avec une maquette de licence claire, un redécoupage vérifié, une fiche et des instruments sourcés.
 - G2. Procédure d'ajout documentée (`tools/models/README.md`). **Livré le 19 novembre**, avec le registre : `TELESCOPES` porte couleur, chiffre clé, encombrement, pièces optiques, place et orientation dans « Comparer », place dans la figure des plans focaux, fin de mission, déploiement ; matériaux dans `src/looks.js` ; `tools/smoke.js` liste ce qui manque à une entrée.
@@ -153,7 +185,9 @@ Produits affichés :
 - TESS (19 novembre) : maquette NASA 3D Resources (version B) redécoupée en cinq pièces (caméras, écran conique, module, antenne, panneaux), mise à l'échelle sur la longueur déployée (3,9 m) ; deux matériaux portaient une carte de normales comme couleur, corrigé dans `looks.js`. Orbite HEO réelle (JPL Horizons, -95, repère inertiel), schéma des quatre caméras et de leurs 16 CCD à l'échelle, coupe d'une caméra (focale déduite ≈ 147 mm), courbe de lumière réelle de WASP-18 (SPOC, 2 min). Écran conique : présent dans la maquette, signalé comme tel.
 - Kepler (19 novembre) : maquette NASA 3D Resources (version A), en mètres, redécoupée en quatre pièces (photomètre, panneaux, module, antenne). Orbite héliocentrique réelle (JPL Horizons, -227, 2009–2018), schéma de Schmidt à l'échelle (lame au centre de courbure et diamètre du plan focal déduits), plan focal de 42 CCD et 4 viseurs, courbe de lumière réelle de HAT-P-7 (un trimestre, longue cadence). Sources : dossier de presse 2009, Kepler Instrument Handbook, NASA Science.
 - XMM-Newton (19 novembre) : maquette de l'ESA (service SPICE, pour Cosmographia) ; aucune licence n'étant indiquée, l'utilisatrice a choisi de l'utiliser en la créditant à l'ESA. Récupérée par la sonde (le bac à sable n'atteint pas l'ESAC ; la sonde pousse ses fichiers sur la branche probe-out). Redécoupée en six pièces, mise à l'échelle sur l'envergure (16 m), métal ramené à 0,15 dans `looks.js`. Orbite HEO réelle (Horizons, identifiant cherché par nom), visibilité 70°–110° du Soleil, schéma d'un télescope (8 coques sur 58, échelle radiale ×4), plans focaux EPIC/RGS, données réelles du miroir HEASARC : Cas A en trois bandes (EPIC), spectre fluxed de Capella (RGS), M101 en UVW1 (OM).
-- G3. Navigation au-delà de six observatoires. **Livré le 19 novembre** (point 2) : groupes par domaine spectral.
+- G3. Navigation au-delà de six observatoires. **Livré le 19 novembre** : deux rangées, domaines spectraux (boutons qui filtrent) puis observatoires du domaine choisi ; même navigation dans « Mission et données ». À revoir pour la flotte complète (G5).
+- G4. Couleurs des maquettes vérifiées le 19 novembre face aux illustrations de référence (articles Wikipédia, NASA, ESA) : XMM-Newton (normales perdues à la conversion, rétablies ; teintes de la vue SCIFLEET), Chandra (couverture argentée, cellules bleues), Kepler (or froissé : la texture jaune sert de relief), TESS (cellules sombres, écran argenté), Roman (tube argenté). `looks.js` reçoit la pièce qui porte chaque matériau. Hubble, JWST, Gaia, Euclid, Fermi et Spitzer conformes.
+- G5. Flottes NASA, ESA et CNES. **À faire** (priorité 2, section 3).
 
 **Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js` : remplie.
 
@@ -173,7 +207,9 @@ Rubrique de la page « Mission et données » (`src/data-mission.js`) : déroul�
 
 ## 6. Hors périmètre pour l'instant
 
-- Télescopes au sol.
+- Missions du système solaire, du Soleil et d'observation de la Terre.
+- Télescopes au sol et aéroportés.
+- Missions futures (après la flotte en service et terminée).
 - Comptes utilisateurs, contenu modifiable en ligne.
 - Simulation physique (thermique, orbitographie précise).
 
@@ -224,5 +260,70 @@ Ajoutés ensuite avec leur source : focale et rapport focal de Hubble (57,6 m, f
 
 Retirés faute de source : diamètre du volet de Hubble, masse du secondaire, « 10 baies », parabole de 1,3 m, nombre de panneaux et puissance d'Euclid. Corrigés : baies radiales de Hubble (WFC3 et les trois FGS), segment de JWST ≈ 20 kg, pare-soleil de Gaia (Ø 10,2 m, 12 cadres, deux couvertures), panneaux de Gaia (triple jonction, 12,8 m², 1 910 W en fin de vie), plan focal de 938 millions de pixels.
 
-- Navigation par domaine spectral (19 novembre) : une rangée de domaines (gamma, X, UV et visible, infrarouge, astrométrie), boutons qui filtrent la rangée d'observatoires en dessous ; un point marque le domaine de l'observatoire ouvert. Même navigation dans les pages Mission et données. Remplace les étiquettes au-dessus des onglets, qui débordaient à onze observatoires.
-- Couleurs des maquettes vérifiées (19 novembre) face aux illustrations de référence (articles Wikipédia, NASA, ESA) : XMM-Newton (normales perdues à la conversion, rétablies ; teintes SCIFLEET), Chandra (couverture argentée du tube, cellules bleues), Kepler (or froissé : la texture jaune sert de relief), TESS (cellules sombres, écran conique argenté), Roman (tube argenté). `looks.js` reçoit désormais la pièce qui porte chaque matériau. Hubble, JWST, Gaia, Euclid, Fermi et Spitzer conformes (la coque de Spitzer est polie côté panneau, noire de l'autre, comme le vrai).
+
+## Annexe : flottes d'astrophysique (inventaire du 19 novembre, statuts à revérifier à chaque ajout)
+
+Légende des maquettes : **sur le site** ; NASA = dépôt NASA 3D Resources ; SCIFLEET = vue 3D de l'ESA (licence non précisée) ; — = aucune maquette publique trouvée.
+
+### NASA (maître d'œuvre ou partenaire principal)
+
+| Mission | Partenaires | Lancement – fin | Domaine | Maquette |
+|---|---|---|---|---|
+| Hubble | ESA | 1990 – en service | UV, visible, proche IR | **sur le site** |
+| Chandra | | 1999 – en service | X | **sur le site** |
+| Swift (Neil Gehrels) | Italie, Royaume-Uni | 2004 – en service (orbite en baisse, à vérifier) | gamma, X, UV | NASA |
+| Fermi | France, Italie, Japon, Suède, Allemagne | 2008 – en service | gamma | **sur le site** |
+| NuSTAR | | 2012 – en service | X durs | — |
+| TESS | | 2018 – en service | visible | **sur le site** |
+| NICER (Station spatiale) | | 2017 – en réparation | X | NASA (SEXTANT) |
+| IXPE | Italie (ASI) | 2021 – en service | X (polarimétrie) | — |
+| JWST | ESA, CSA ; CNES (MIRI) | 2021 – en service | IR | **sur le site** |
+| XRISM | JAXA (maître d'œuvre), ESA | 2023 – en service | X | — |
+| SPHEREx | | 2025 – en service | IR | — |
+| Roman | | 2026 – en service | IR | **sur le site** |
+| Spitzer | | 2003 – 2020 | IR | **sur le site** |
+| Kepler | | 2009 – 2018 | visible | **sur le site** |
+| WISE / NEOWISE | | 2009 – 2024 | IR | — |
+| GALEX | | 2003 – 2013 | UV | — |
+| WMAP | | 2001 – 2010 | micro-ondes | NASA |
+| FUSE | Canada, France | 1999 – 2007 | UV lointain | NASA |
+| RXTE | | 1995 – 2012 | X | — |
+| Compton (CGRO) | | 1991 – 2000 | gamma | NASA |
+| COBE | | 1989 – 1993 | micro-ondes, IR | — |
+| Suzaku | JAXA (maître d'œuvre) | 2005 – 2015 | X | NASA |
+| HETE-2 | Japon, France | 2000 – 2008 | gamma, X | NASA |
+| SWAS | | 1998 – 2005 | submillimétrique | NASA |
+| IRAS | Pays-Bas, Royaume-Uni | 1983 | IR | — |
+| IUE | ESA, Royaume-Uni | 1978 – 1996 | UV | — |
+| HEAO 1, 2 (Einstein), 3 | | 1977 – 1981 | X, gamma | — |
+| Copernicus (OAO-3) | | 1972 – 1981 | UV, X | — |
+| Uhuru | | 1970 – 1973 | X | — |
+
+### ESA (navigateur des missions scientifiques)
+
+| Mission | Partenaires | Lancement – fin | Domaine | Maquette |
+|---|---|---|---|---|
+| XMM-Newton | | 1999 – en service | X | **sur le site** (service SPICE) |
+| INTEGRAL | Russie, États-Unis ; CNES (SPI) | 2002 – observations arrêtées en 2025 | gamma, X | SCIFLEET |
+| Gaia | CNES (traitement des données) | 2013 – 2025 | astrométrie | **sur le site** |
+| CHEOPS | Suisse (partenariat avec l'ESA) | 2019 – en service | visible | SCIFLEET |
+| Euclid | NASA ; CNES | 2023 – en service | visible, proche IR | **sur le site** |
+| Herschel | NASA | 2009 – 2013 | IR lointain | SCIFLEET |
+| Planck | NASA ; CNES (HFI) | 2009 – 2013 | micro-ondes | SCIFLEET |
+| ISO | NASA, Japon | 1995 – 1998 | IR | SCIFLEET |
+| Hipparcos | | 1989 – 1993 | astrométrie | — |
+| EXOSAT | | 1983 – 1986 | X | — |
+| COS-B | | 1975 – 1982 | gamma | — |
+| LISA Pathfinder | NASA | 2015 – 2017 | physique fondamentale | SCIFLEET |
+| Participations : Hubble, JWST, XRISM, Einstein Probe (Chine), Roman | | | | |
+
+### CNES
+
+| Mission | Rôle du CNES | Lancement – fin | Domaine | Maquette |
+|---|---|---|---|---|
+| CoRoT | maître d'œuvre, avec l'ESA, l'Autriche, la Belgique, l'Allemagne, l'Espagne et le Brésil | 2006 – 2013 | visible (sismologie stellaire, exoplanètes) | — |
+| SVOM | coopération avec la Chine (CNSA) | 2024 – en service | gamma, X | — |
+| MICROSCOPE | maître d'œuvre, avec l'ONERA | 2016 – 2018 | physique fondamentale | — |
+| Contributions à sourcer | ISO, XMM-Newton, INTEGRAL (SPI), FUSE, HETE-2, Herschel, Planck (HFI), Fermi, Gaia (centre de traitement), JWST (MIRI), Euclid, CHEOPS ; futures : PLATO, Ariel, LISA, NewAthena (X-IFU) | | | |
+
+Sources : [ESA, navigateur des missions](https://www.esa.int/Science_Exploration/Space_Science/Mission_navigator) ; [NASA, Senior Review 2025](https://science.nasa.gov/astrophysics/resources/documents/2025-senior-review-of-operating-missions) ; [HEASARC, missions actives](https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/active.html) ; [CNES, projets](https://cnes.fr/projets-liste-alphabetique) ; [CNES, rapport COSPAR 2026](https://cnes.fr/sites/default/files/2026-05/rapport-cospar-2026.pdf). Dates de fin et partenaires non tirés de ces pages : à vérifier mission par mission lors de l'ajout.
