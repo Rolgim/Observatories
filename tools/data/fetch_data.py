@@ -767,7 +767,9 @@ def chandra_hrc_obsids(ra, dec, n=6):
     t = pyvo.dal.TAPService(CDA_TAP).search(
         "SELECT TOP 200 obsid, name, detector, grating, exposure, status FROM chanmaster WHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', "
         + str(ra) + ", " + str(dec) + ", 0.05)) = 1 ORDER BY exposure DESC").to_table()
-    print("   catalogue :", len(t), "observations ;", ", ".join(f"{r['obsid']} {r['name']}|{r['detector']}|{r['grating']}|{r['status']} {float(r['exposure']):.0f} s" for r in t[:12]))
+    dets = {}
+    for d, g in zip(t["detector"], t["grating"]): dets[f"{d}/{g}"] = dets.get(f"{d}/{g}", 0) + 1
+    print("   catalogue :", len(t), "observations ;", dets)
     ok = [str(d).replace(" ", "").upper().startswith("HRC-I") and str(g).strip().upper() in ("NONE", "") for d, g in zip(t["detector"], t["grating"])]
     return [int(x) for x in t[ok]["obsid"][:n]]
 
@@ -803,6 +805,27 @@ def chandra_grating(key, obsid, part, lo, hi, rebin, title, caption):
                                                       ["Points", fr(len(w)) + " dans l'intervalle, " + fr(len(wb)) + " tracés (somme par paquets de " + str(rebin) + ")"]])
     return dict(type="plot", file=fname, title=title, meta=meta, url=cda_url(obsid), caption=caption, credit="NASA, CXC, SAO", fetched=TODAY)
 
+HRC_TARGETS = (
+    (83.6331, 22.0145, "La nébuleuse du Crabe", "La nébuleuse du Crabe, reste d'une supernova observée en 1054 : au centre, le pulsar, étoile à neutrons qui tourne 30 fois par seconde, entouré d'anneaux et de jets de particules."),
+    (10.6847, 41.2690, "Le centre de la galaxie d'Andromède", "Le centre de la galaxie d'Andromède (M31) : chaque point est une source X, le plus souvent une étoile double où une étoile à neutrons ou un trou noir capte la matière de son compagnon."),
+    (83.8187, -5.3897, "L'amas du Trapèze, dans la nébuleuse d'Orion", "L'amas du Trapèze, au cœur de la nébuleuse d'Orion : chaque point est une étoile jeune, dont la couronne agitée brille en rayons X."),
+)
+
+def chandra_hrc(key):
+    """Image HRC-I : première cible de la liste qui a une pose HRC-I publique avec une image standard."""
+    for ra, dec, name, about in HRC_TARGETS:
+        print("   cible :", name)
+        try:
+            ids = chandra_hrc_obsids(ra, dec)
+        except Exception as e:
+            print("   catalogue refusé :", repr(e)[:200]); continue
+        if ids:
+            try:
+                return chandra_image(key, ids, name, about)
+            except RuntimeError as e:
+                print("  ", e)
+    raise RuntimeError("aucune cible avec une image HRC-I")
+
 CAS_A = "Le reste de la supernova Cassiopée A, dont la lumière de l'explosion nous est parvenue il y a environ 340 ans : une coquille de gaz à plusieurs millions de degrés, et au centre le point de l'étoile à neutrons, découverte par Chandra dès ses premières images."
 CAPELLA = "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon."
 
@@ -826,8 +849,7 @@ RECIPES = {
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
-    "chandra/hrc": lambda k: chandra_image(k, chandra_hrc_obsids(83.6331, 22.0145), "La nébuleuse du Crabe",
-                                           "La nébuleuse du Crabe, reste d'une supernova observée en 1054 : au centre, le pulsar, étoile à neutrons qui tourne 30 fois par seconde, entouré d'anneaux et de jets de particules."),
+    "chandra/hrc": chandra_hrc,
     "chandra/hetg:spectre": lambda k: chandra_grating(k, 1318, 2, 2, 25, 4, "Spectre HETG de l'étoile Capella",
                                                       CAPELLA + " Chaque pic est une raie d'émission ; leur finesse permet de mesurer température et densité du gaz."),
     "chandra/letg:spectre": lambda k: chandra_grating(k, 1248, 3, 5, 175, 8, "Spectre LETG de l'étoile Capella",
