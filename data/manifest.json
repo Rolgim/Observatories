@@ -1488,5 +1488,58 @@
   "caption": "Dans l'ultraviolet proche (filtre UVW1), le petit télescope OM voit surtout les étoiles jeunes et chaudes, qui dessinent les bras de la galaxie. Il observe en même temps que les caméras X, sur le même champ.",
   "credit": "ESA, XMM-Newton",
   "fetched": "2026-11-19"
+ },
+ "xmm/epic": {
+  "type": "image",
+  "file": "xmm-epic.jpg",
+  "width": 600,
+  "height": 600,
+  "title": "Le reste de supernova Cassiopée A, EPIC",
+  "meta": [
+   [
+    "Archive",
+    "XMM-Newton Science Archive (ESA), miroir du HEASARC"
+   ],
+   [
+    "Instrument",
+    "EPIC (caméras pn, MOS1 et MOS2)"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 0412180101"
+   ],
+   [
+    "Cible",
+    "Cas-A"
+   ],
+   [
+    "Début d'observation",
+    "2006-06-22"
+   ],
+   [
+    "Bandes",
+    "0,5–1 keV en rouge, 1–2 keV en vert, 2–12 keV en bleu"
+   ],
+   [
+    "Échelle",
+    "4,0″ par pixel, 10′ de côté"
+   ],
+   [
+    "Temps de pose (pn)",
+    "13 175 s"
+   ],
+   [
+    "Traitement",
+    "images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×4,0 pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "P0412180101M1S003IMAGE_2000.FTZ, P0412180101M1S003IMAGE_3000.FTZ, P0412180101M1S003IMAGE_4000.FTZ, P0412180101M1S003IMAGE_5000.FTZ, P0412180101M2S005IMAGE_2000.FTZ, P0412180101M2S005IMAGE_3000.FTZ, P0412180101M2S005IMAGE_4000.FTZ, P0412180101M2S005IMAGE_5000.FTZ, P0412180101PNS001IMAGE_2000.FTZ, P0412180101PNS001IMAGE_3000.FTZ, P0412180101PNS001IMAGE_4000.FTZ, P0412180101PNS001IMAGE_5000.FTZ"
+   ]
+  ],
+  "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0412180101",
+  "caption": "Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons.",
+  "credit": "ESA, XMM-Newton",
+  "fetched": "2026-11-19"
  }
 }
