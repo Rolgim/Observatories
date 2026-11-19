@@ -761,15 +761,15 @@ def chandra_image(key, obsids, name, about, cutoff=99.9):
                     caption=about + " Chaque pixel compte les photons X reçus : noir là où il n'en arrive presque aucun.", credit="NASA, CXC, SAO", fetched=TODAY)
     raise RuntimeError("aucune image exploitable")
 
-def chandra_hrc_obsids(target, n=6):
-    """ObsID publics HRC-I sans réseau sur une cible, les plus longues poses d'abord (catalogue chanmaster du HEASARC)."""
+def chandra_hrc_obsids(ra, dec, n=6):
+    """ObsID HRC-I sans réseau autour d'une position, les plus longues poses d'abord (catalogue chanmaster du HEASARC)."""
     import pyvo
-    names = " OR ".join("name LIKE '%" + v + "%'" for v in (target.upper(), target.capitalize(), target.lower()))
     t = pyvo.dal.TAPService(CDA_TAP).search(
-        "SELECT TOP 20 obsid, name, detector, grating, exposure FROM chanmaster WHERE detector LIKE 'HRC-I%' AND (" + names + ") ORDER BY exposure DESC").to_table()
-    print("   catalogue :", ", ".join(f"{r['obsid']} {r['name']} {r['detector']} {r['grating']} {r['exposure']:.0f} s" for r in t[:10]) or "rien")
-    t = t[[str(g).strip().upper() in ("NONE", "") for g in t["grating"]]]
-    return [int(x) for x in t["obsid"][:n]]
+        "SELECT TOP 200 obsid, name, detector, grating, exposure, status FROM chanmaster WHERE CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', "
+        + str(ra) + ", " + str(dec) + ", 0.05)) = 1 ORDER BY exposure DESC").to_table()
+    print("   catalogue :", len(t), "observations ;", ", ".join(f"{r['obsid']} {r['name']}|{r['detector']}|{r['grating']}|{r['status']} {float(r['exposure']):.0f} s" for r in t[:12]))
+    ok = [str(d).replace(" ", "").upper().startswith("HRC-I") and str(g).strip().upper() in ("NONE", "") for d, g in zip(t["detector"], t["grating"])]
+    return [int(x) for x in t[ok]["obsid"][:n]]
 
 def chandra_grating(key, obsid, part, lo, hi, rebin, title, caption):
     u, files = cda_files(obsid)
@@ -826,7 +826,7 @@ RECIPES = {
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
-    "chandra/hrc": lambda k: chandra_image(k, chandra_hrc_obsids("CRAB"), "La nébuleuse du Crabe",
+    "chandra/hrc": lambda k: chandra_image(k, chandra_hrc_obsids(83.6331, 22.0145), "La nébuleuse du Crabe",
                                            "La nébuleuse du Crabe, reste d'une supernova observée en 1054 : au centre, le pulsar, étoile à neutrons qui tourne 30 fois par seconde, entouré d'anneaux et de jets de particules."),
     "chandra/hetg:spectre": lambda k: chandra_grating(k, 1318, 2, 2, 25, 4, "Spectre HETG de l'étoile Capella",
                                                       CAPELLA + " Chaque pic est une raie d'émission ; leur finesse permet de mesurer température et densité du gaz."),
