@@ -1093,5 +1093,66 @@
   "caption": "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon. Le réseau LETG, lu par la caméra HRC-S, couvre les grandes longueurs d'onde, jusqu'aux rayons X les moins énergétiques.",
   "credit": "NASA, CXC, SAO",
   "fetched": "2026-11-19"
+ },
+ "chandra/hrc": {
+  "type": "image",
+  "file": "chandra-hrc.jpg",
+  "width": 1024,
+  "height": 1024,
+  "title": "Le centre de la galaxie d'Andromède, HRC-I",
+  "meta": [
+   [
+    "Archive",
+    "Chandra Data Archive (CXC)"
+   ],
+   [
+    "Instrument",
+    "HRC (HRC-I)"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 1912"
+   ],
+   [
+    "Cible",
+    "M31"
+   ],
+   [
+    "Programme",
+    "SEARCHING FOR X-RAY PULSARS IN M31"
+   ],
+   [
+    "Responsable du programme",
+    "Prof. Philip Kaaret"
+   ],
+   [
+    "Début d'observation",
+    "2001-10-31"
+   ],
+   [
+    "Temps de pose",
+    "46 732 s"
+   ],
+   [
+    "Échelle",
+    "0,132″ par pixel, 2,2′ de côté"
+   ],
+   [
+    "Coups dans l'image",
+    "33 077"
+   ],
+   [
+    "Traitement",
+    "image binnée par le pipeline standard (toutes énergies), étirement logarithmique pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "hrcf01912N008_cntr_img2.fits"
+   ]
+  ],
+  "url": "https://cda.harvard.edu/chaser/startViewer.do?menuItem=details&obsid=1912",
+  "caption": "Le centre de la galaxie d'Andromède (M31) : chaque point est une source X, le plus souvent une étoile double où une étoile à neutrons ou un trou noir capte la matière de son compagnon. Chaque pixel compte les photons X reçus : noir là où il n'en arrive presque aucun.",
+  "credit": "NASA, CXC, SAO",
+  "fetched": "2026-11-19"
  }
 }
