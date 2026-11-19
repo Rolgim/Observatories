@@ -51,64 +51,85 @@ var Optics = (function(){
             T(X(1.5)+8, Y(0)+4, 'Foyer', null, true) + T(X(1.5)+8, Y(0)+18, '1,5 m derrière', null) + T(X(1.5)+8, Y(0)+31, 'le primaire', null);
         } });
     },
+    /* JWST : positions le long de l'axe et rayons de courbure de McElwain et al. 2023, tableau 2 (repère V, origine au sommet du primaire).
+       Foyer Cassegrain et foyer final calculés par l'équation des miroirs (EFL obtenues : 59,6 m et 134 m, contre 59,4 et 131,4 publiés,
+       l'écart venant du champ hors d'axe). Les décalages latéraux de l'optique arrière, de quelques centimètres en réalité, sont agrandis. */
     jwst: function(){
-      return twoMirror({ z0:-8.3, z1:3.2, half:3.6, R:16.2, r1:3.25, hole:0.66, r2:0.37, d:7.17, rays:[3.25, 1.7], focus:[-1.55, 0], dLabel:'7,2 m', k1:'primary', k2:'secondary',
-        label:'Schéma optique de JWST',
+      var ZC = -1.382, ZT = 0.796, ZF = -1.048, ZI = 2.01;
+      return twoMirror({ z0:-8.0, z1:3.3, half:3.6, R:15.8797, r1:3.3, hole:0.66, r2:0.369, d:7.169, rays:[3.3, 1.7], focus:[ZC, 0], dLabel:'7,169 m', k1:'primary', k2:'secondary',
+        label:'Schéma optique de JWST, à l\'échelle',
         after:function(X, Y){
-          var s = G('aos', '<rect x="'+f(X(-2.0))+'" y="'+f(Y(0.55))+'" width="'+f(X(-0.1)-X(-2.0))+'" height="'+f(Y(-0.55)-Y(0.55))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(-0.25), Y(0.42), X(-0.25), Y(-0.16), INK, 4) + L(X(-1.2), Y(-0.2), X(-1.2), Y(-0.48), INK, 4));
-          s += G('isim', '<rect x="'+f(X(0.5))+'" y="'+f(Y(1.9))+'" width="'+f(X(2.9)-X(0.5))+'" height="'+f(Y(-1.9)-Y(1.9))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(1.6), Y(-0.6), X(1.6), Y(-1.2), DET, 4));
-          s += P([[X(-1.55), Y(0)], [X(-0.25), Y(0.3)], [X(-1.2), Y(-0.28)], [X(1.6), Y(-0.9)]], RAY, 1.2) + P([[X(-1.55), Y(0)], [X(-0.25), Y(-0.05)], [X(-1.2), Y(-0.4)], [X(1.6), Y(-0.9)]], RAY, 1.2);
-          s += T(X(0)+12, Y(3.25)+2, 'Miroir primaire, 6,5 m', null, true) + T(X(-7.17)+2, Y(-0.37)+26, 'Miroir secondaire, 0,74 m', null, true);
-          s += T(X(-2.0), Y(0.55)-20, 'Optique arrière', null, true) + T(X(-2.0), Y(0.55)-7, 'tertiaire et pointage fin', null) + T(X(1.7), Y(1.9)-7, 'Module d\'instruments', 'middle', true) + T(X(1.6)+9, Y(-0.9)+4, 'Plan focal', null);
+          var s = G('aos', '<rect x="'+f(X(-1.3))+'" y="'+f(Y(0.2))+'" width="'+f(X(1.0)-X(-1.3))+'" height="'+f(Y(-0.86)-Y(0.2))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' +
+            L(X(ZT-0.03), Y(-0.1), X(ZT+0.03), Y(-0.6), INK, 4) + L(X(ZF), Y(-0.65), X(ZF), Y(-0.75), INK, 4));
+          s += G('isim', '<rect x="'+f(X(1.35))+'" y="'+f(Y(-0.3))+'" width="'+f(X(3.1)-X(1.35))+'" height="'+f(Y(-1.9)-Y(-0.3))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(ZI), Y(-0.86), X(ZI), Y(-1.14), DET, 4));
+          [[-0.12, -0.66], [-0.58, -0.74]].forEach(function(r){ s += P([[X(ZC), Y(0)], [X(ZT), Y(r[0])], [X(ZF), Y(r[1])], [X(ZI), Y(-1.0)]], RAY, 1.2); });
+          s += '<circle cx="'+f(X(ZC))+'" cy="'+f(Y(0))+'" r="2.5" fill="'+INK+'"/>';
+          s += T(X(0)+12, Y(3.3)+2, 'Miroir primaire, 6,5 m', null, true) + T(X(-7.169)+2, Y(-0.369)+26, 'Miroir secondaire, 0,74 m', null, true);
+          s += T(X(ZC)-6, Y(0)-8, 'foyer Cassegrain', 'end') + T(X(-1.3), Y(0.2)-20, 'Optique arrière', null, true) + T(X(-1.3), Y(0.2)-7, 'tertiaire (0,73 m) et pointage fin', null);
+          s += T(X(2.2), Y(-1.9)+16, 'Module d\'instruments', 'middle', true) + T(X(ZI)+8, Y(-1.0)+4, 'foyer', null);
           return s;
         } });
     },
+    /* Euclid : diamètres (M1 1,25 m, trou de 0,37 m ; M2 0,35 m), écart M1–M2 (1,756 m), plaque de base (2,5 m) et tailles du
+       tertiaire et des miroirs de renvoi : Racca et al. 2016 et SPIE 11180. Rayons de courbure et positions de l'optique arrière
+       non publiés : courbure du primaire et trajet arrière de principe. */
     euclid: function(){
-      return twoMirror({ z0:-2.6, z1:1.9, half:0.95, R:5.2, r1:0.6, hole:0.11, r2:0.175, d:1.756, rays:[0.6, 0.3], focus:[0.42, 0], dLabel:'1,756 m', k1:'baffle', k2:'baffle',
+      return twoMirror({ z0:-2.4, z1:2.2, half:1.32, R:5.2, r1:0.625, hole:0.184, r2:0.175, d:1.756, rays:[0.6, 0.3], focus:[0.42, 0], dLabel:'1,756 m', k1:'baffle', k2:'baffle',
         label:'Schéma optique d\'Euclid',
-        tube:[[-2.45,0.75],[-0.05,0.75]],
+        tube:[[-2.3,0.75],[-0.05,0.75]],
         after:function(X, Y){
-          var s = P([[X(0.42), Y(0)], [X(0.7), Y(0)], [X(0.7), Y(-0.5)], [X(1.15), Y(-0.5)], [X(1.15), Y(0.1)], [X(1.6), Y(0.1)]], RAY, 1.2);
-          s += P([[X(1.15), Y(0.1)], [X(1.15), Y(0.62)]], RAY, 1.2);
-          s += L(X(0.63), Y(0.07), X(0.77), Y(-0.07), INK, 4) + L(X(0.63), Y(-0.43), X(0.77), Y(-0.57), INK, 4) + L(X(1.08), Y(-0.57), X(1.22), Y(-0.43), INK, 4);
-          s += G('instr', L(X(1.08), Y(0.03), X(1.22), Y(0.17), MID, 2.5) + L(X(1.02), Y(0.62), X(1.28), Y(0.62), DET, 4) + L(X(1.6), Y(0.23), X(1.6), Y(-0.03), DET, 4));
-          s += T(X(0)-8, Y(0.6)-8, 'Miroir primaire, 1,2 m', 'end', true) + T(X(-1.756), Y(0.175)-10, 'Miroir secondaire, 0,35 m', 'middle', true);
-          s += T(X(1.15), Y(0.62)-8, 'VIS', 'middle', true) + T(X(1.6)+7, Y(0.1)+4, 'NISP', null, true) + T(X(1.28), Y(0.1)-12, 'lame dichroïque', null) + T(X(0.95), Y(-0.5)+24, 'renvois et miroir tertiaire', 'middle');
+          function fold(z, y, half, d){ return L(X(z-half*0.707), Y(y+d*half*0.707), X(z+half*0.707), Y(y-d*half*0.707), INK, 4); }
+          var s = L(X(0.32), Y(1.25), X(0.32), Y(-1.25), SOFT, 3) + T(X(0.32)+6, Y(-1.25)+4, 'plaque de base, 2,5 m', null);
+          s += P([[X(0.42), Y(0)], [X(0.8), Y(0)], [X(0.8), Y(-0.75)], [X(1.45), Y(-0.75)], [X(1.45), Y(0.1)], [X(2.0), Y(0.1)]], RAY, 1.2);
+          s += P([[X(1.45), Y(0.1)], [X(1.45), Y(0.62)]], RAY, 1.2);
+          s += fold(0.8, 0, 0.179, 1) + fold(0.8, -0.75, 0.179, 1) + fold(1.45, -0.75, 0.268, -1);
+          s += G('instr', fold(1.45, 0.1, 0.059, -1) + L(X(1.33), Y(0.62), X(1.57), Y(0.62), DET, 4) + L(X(2.0), Y(0.23), X(2.0), Y(-0.03), DET, 4));
+          s += T(X(0), Y(0.75)-8, 'Miroir primaire, 1,2 m', 'end', true) + T(X(-1.756), Y(-0.175)+20, 'Miroir secondaire, 0,35 m', 'middle', true);
+          s += T(X(1.45), Y(0.62)-8, 'VIS', 'middle', true) + T(X(2.0)-4, Y(0.23)-8, 'NISP', 'middle', true) + T(X(1.53), Y(0.1)+16, 'lame dichroïque', null) + T(X(1.12), Y(-0.75)+30, 'renvois et tertiaire (0,54 m)', 'middle');
           return s;
         } });
     },
+    /* Gaia, vue de dessus : banc optique de ≈ 3 m (Gaia Collaboration 2016), ouvertures de 1,45 m, plan focal de 1 m dans le sens du
+       balayage (Airbus, SPIE 10567) et angle de base de 106,5° à l'échelle ; positions des miroirs M2 à M6 non publiées, trajet de principe. */
     gaia: function(){
-      var W = 560, H = 330, cx = 280, cy = 158, r = 112, a = 53.25*Math.PI/180, s = '';
+      var W = 560, H = 350, cx = 280, cy = 168, r = 112, K = r/1.5, a = 53.25*Math.PI/180, s = '';
       s += G('torus', '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+SOFT+'" stroke-width="10" opacity="0.5"/>');
       [[-1, RAY, 'Télescope 1'], [1, '#9A52D6', 'Télescope 2']].forEach(function(t){
         var sg = t[0], c = t[1], dx = sg*Math.sin(a), dy = -Math.cos(a);
         var m1 = [cx - dx*r, cy - dy*r], far = [cx + dx*(r+78), cy + dy*(r+78)], px = -dy, py = dx;
-        var ap = ''; [-22, 22].forEach(function(o){ ap += L(far[0]+px*o, far[1]+py*o, m1[0]+px*o, m1[1]+py*o, c, 1.2); }); s += G('tent', ap);
-        s += L(m1[0]+px*30, m1[1]+py*30, m1[0]-px*30, m1[1]-py*30, INK, 4);
+        var ap = ''; [-0.725*K, 0.725*K].forEach(function(o){ ap += L(far[0]+px*o, far[1]+py*o, m1[0]+px*o, m1[1]+py*o, c, 1.2); }); s += G('tent', ap);
+        s += L(m1[0]+px*0.74*K, m1[1]+py*0.74*K, m1[0]-px*0.74*K, m1[1]-py*0.74*K, INK, 4);
         var m2 = [cx + dx*r*0.72, cy + dy*r*0.72], m3 = [cx - dx*r*0.55, cy - dy*r*0.55 + 4], m4 = [cx + sg*9, cy - 54];
-        s += P([[m1[0]+px*22, m1[1]+py*22], m2, m3, m4], c, 1.2) + P([[m1[0]-px*22, m1[1]-py*22], m2], c, 1.2);
+        s += P([[m1[0]+px*0.725*K, m1[1]+py*0.725*K], m2, m3, m4], c, 1.2) + P([[m1[0]-px*0.725*K, m1[1]-py*0.725*K], m2], c, 1.2);
         s += L(m2[0]+px*9, m2[1]+py*9, m2[0]-px*9, m2[1]-py*9, INK, 4) + L(m3[0]+px*11, m3[1]+py*11, m3[0]-px*11, m3[1]-py*11, INK, 4);
         s += P([m4, [cx, cy - 6], [cx + 46, cy + 30], [cx, cy + r - 4]], c, 1.2);
         s += T(far[0] + sg*4, far[1] - 8, t[2], sg < 0 ? 'start' : 'end', true);
         s += T(m1[0] + sg*-0 + (sg < 0 ? 14 : -14), m1[1] + 30, sg < 0 ? 'M1' : 'M1′', sg < 0 ? 'start' : 'end');
       });
-      s += L(cx - 16, cy - 54, cx + 16, cy - 54, INK, 4) + L(cx - 9, cy - 6, cx + 9, cy - 6, INK, 4) + L(cx + 40, cy + 22, cx + 52, cy + 38, INK, 4) + G('focal', L(cx - 34, cy + r - 4, cx + 34, cy + r - 4, DET, 5));
+      s += L(cx - 16, cy - 54, cx + 16, cy - 54, INK, 4) + L(cx - 9, cy - 6, cx + 9, cy - 6, INK, 4) + L(cx + 40, cy + 22, cx + 52, cy + 38, INK, 4) + G('focal', L(cx - 0.5*K, cy + r - 4, cx + 0.5*K, cy + r - 4, DET, 5));
       s += T(cx, cy - 64, 'combineur de faisceaux', 'middle') + T(cx, cy + r + 16, 'Plan focal commun, 106 CCD', 'middle', true);
       s += T(cx, 16, 'angle entre les deux lignes de visée : 106,5°', 'middle');
+      s += L(24, H-16, 24+K, H-16, MID, 1) + L(24, H-20, 24, H-12, MID, 1) + L(24+K, H-20, 24+K, H-12, MID, 1) + T(24+K/2, H-22, '1 m', 'middle') + T(24+K+10, H-12, 'banc optique de ≈ 3 m', null);
       return svg(W, H, s, 'Schéma optique de Gaia, vue de dessus');
     },
-    /* Roman : schéma de principe (aucune prescription optique publique consultée) */
+    /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
+       (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
+       Foyer et optique arrière : trajet de principe. */
     roman: function(){
-      var W = 560, H = 250, s = '', y0 = 118;
-      s += P([[40, y0-80], [300, y0-80]], SOFT, 1, '4 3') + P([[40, y0+80], [300, y0+80]], SOFT, 1, '4 3');
-      s += G('ota', P([[300, y0-74], [306, y0-40], [308, y0-14]], INK, 4) + P([[300, y0+74], [306, y0+40], [308, y0+14]], INK, 4) + L(118, y0-20, 118, y0+20, INK, 4));
-      s += P([[20, y0-62], [304, y0-62], [118, y0-14], [330, y0+4]], RAY, 1.2) + P([[20, y0+62], [304, y0+62], [118, y0+14], [330, y0-4]], RAY, 1.2);
-      s += G('instr', L(340, y0-10, 352, y0+10, INK, 4) + P([[346, y0], [346, y0+70], [430, y0+70]], RAY, 1.2) + L(430, y0+58, 444, y0+82, INK, 4) +
-        P([[437, y0+70], [500, y0+30]], RAY, 1.2) + L(492, y0+18, 512, y0+42, DET, 5) +
-        P([[346, y0], [420, y0], [420, y0-60], [500, y0-60]], RAY, 1.2, '4 3') + L(500, y0-72, 500, y0-48, DET, 4));
-      s += T(298, y0-88, 'Miroir primaire, 2,4 m', 'end', true) + T(118, y0-30, 'secondaire', 'middle', true);
-      s += T(392, y0+100, 'optique arrière : tertiaire', 'middle') + T(516, y0+30, 'WFI', null, true) + T(492, y0-64, 'coronographe', 'end', true) + T(452, y0-48, 'faisceau collimaté', 'middle');
-      return svg(W, H, s, 'Schéma optique de Roman');
+      var ZC = 0.45;
+      return twoMirror({ z0:-6.0, z1:3.6, half:1.75, R:5.76, r1:1.2, hole:0.28, r2:0.21, d:2.4, rays:[1.2, 0.62], focus:[ZC, 0], dLabel:'≈ 2,4 m', k1:'ota', k2:'ota',
+        label:'Schéma optique de Roman',
+        tube:[[-5.7,1.55],[-0.2,1.55]],
+        after:function(X, Y){
+          var s = L(X(-2.4), Y(0.364), X(-2.4), Y(-0.364), SOFT, 2) ;
+          s += G('instr', '<rect x="'+f(X(0.3))+'" y="'+f(Y(0.9))+'" width="'+f(X(2.5)-X(0.3))+'" height="'+f(Y(-1.2)-Y(0.9))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' +
+            L(X(0.75)-6, Y(0.08), X(0.75)+6, Y(-0.08), INK, 4) + L(X(1.6), Y(-0.55)-10, X(1.6), Y(-0.55)+10, INK, 4) + L(X(2.3), Y(-0.95), X(2.3), Y(-0.45), DET, 5) +
+            L(X(1.45), Y(0.6)-8, X(1.45), Y(0.6)+8, DET, 4));
+          s += P([[X(ZC), Y(0)], [X(0.75), Y(0)], [X(1.6), Y(-0.55)], [X(2.3), Y(-0.7)]], RAY, 1.2) + P([[X(0.75), Y(0)], [X(1.0), Y(0.6)], [X(1.45), Y(0.6)]], RAY, 1.2, '4 3');
+          s += T(X(0)-8, Y(1.55)-8, 'Miroir primaire, 2,4 m', 'end', true) + L(X(-2.4), Y(-0.4), X(-2.4), Y(-1.45), SOFT, 1) + T(X(-2.4), Y(-1.55)+14, 'Secondaire et son écran', 'middle', true);
+          s += T(X(1.4), Y(-1.2)+16, 'Optique arrière et instruments', 'middle', true) + T(X(2.3)+6, Y(-0.7)+4, 'WFI', null, true) + T(X(1.45)+8, Y(0.6)+4, 'coronographe', null, true) + T(X(1.6), Y(-0.55)+24, 'tertiaire', 'middle');
+          return s;
+        } });
     }
   };
 
@@ -122,30 +143,30 @@ var Optics = (function(){
              'Le secondaire la renvoie à travers le trou central du primaire. Elle se concentre au foyer, 1,5 m derrière, où se trouvent les instruments.',
              'Les deux miroirs sont hyperboliques : cette combinaison corrige la coma et donne une image nette sur un champ plus large qu\'un Cassegrain classique.'],
       specs:[['Combinaison','Ritchey-Chrétien'],['Ouverture','2,4 m'],['Rapport focal du primaire','f/2,3'],['Longueur focale résultante','57,6 m · f/24'],['Écart primaire–secondaire','4,9 m'],['Échelle au foyer','3,58″ par mm']] },
-    jwst:{ title:'Un anastigmat à trois miroirs', scale:'Diamètres des deux premiers miroirs et écart entre eux à l\'échelle. Le trajet dans l\'optique arrière et jusqu\'au plan focal est un schéma de principe.',
+    jwst:{ title:'Un anastigmat à trois miroirs', scale:'Figure à l\'échelle le long de l\'axe : rayon de courbure du primaire, positions du secondaire, du tertiaire et du miroir de pointage fin d\'après la prescription publiée (McElwain et al. 2023, tableau 2) ; foyers calculés. Les décalages latéraux de l\'optique arrière, de quelques centimètres, sont agrandis pour séparer les faisceaux ; les modules en pointillé sont indicatifs.',
       steps:['Les 18 segments du miroir primaire se comportent comme un seul miroir concave de 6,5 m.',
              'Le miroir secondaire, convexe, de 0,74 m, tenu 7,2 m en avant par le trépied, renvoie le faisceau vers le centre du primaire.',
              'Le faisceau entre dans l\'optique arrière. Le miroir tertiaire y corrige les aberrations restantes ; le miroir de pointage fin, plan, stabilise l\'image.',
              'La lumière arrive enfin dans le module d\'instruments, derrière le primaire, où des miroirs de prélèvement la répartissent entre les quatre instruments.'],
-      specs:[['Combinaison','anastigmat à trois miroirs (Korsch)'],['Ouverture','6,5 m · 25,4 m² collecteurs'],['Longueur focale résultante','131,4 m · f/20,2'],['Écart primaire–secondaire','≈ 7,2 m'],['Miroirs','primaire, secondaire, tertiaire, pointage fin']] },
-    euclid:{ title:'Un Korsch à grand champ', scale:'Diamètres des deux premiers miroirs et écart entre eux à l\'échelle. Le trajet après le trou du primaire est un schéma de principe : en réalité il se replie sous le télescope.',
+      specs:[['Combinaison','anastigmat à trois miroirs (Korsch)'],['Ouverture','6,5 m · 25,4 m² collecteurs'],['Longueur focale résultante','131,4 m · f/20,2'],['Écart primaire–secondaire','7,169 m'],['Miroirs','primaire, secondaire, tertiaire, pointage fin']] },
+    euclid:{ title:'Un Korsch à grand champ', scale:'À l\'échelle : diamètres et écart des deux premiers miroirs, trou du primaire, plaque de base et tailles du tertiaire et des renvois (Racca et al. 2016). Les rayons de courbure et la position des miroirs arrière ne sont pas publiés : la courbure du primaire et le trajet après son trou sont un schéma de principe ; en réalité ce trajet se replie sous la plaque de base.',
       steps:['Le miroir primaire de 1,2 m et le secondaire de 0,35 m, distants de 1,756 m, forment une première image derrière le primaire.',
              'Des miroirs de renvoi replient le faisceau vers le miroir tertiaire, qui corrige les aberrations sur tout le champ de 0,5 deg².',
              'Une lame dichroïque partage alors la lumière : le visible est réfléchi vers VIS, le proche infrarouge traverse vers NISP.',
              'Les deux instruments voient donc exactement le même champ, au même instant.'],
       specs:[['Combinaison','Korsch à trois miroirs, champ hors d\'axe'],['Ouverture','1,2 m'],['Longueur focale résultante','24,5 m · f/20,4'],['Écart primaire–secondaire','1,756 m'],['Matériau','carbure de silicium, miroirs et structure']] },
-    gaia:{ title:'Deux télescopes, un seul plan focal', scale:'Schéma de principe, vue de dessus. Seul l\'angle entre les deux lignes de visée est exact.',
+    gaia:{ title:'Deux télescopes, un seul plan focal', scale:'Vue de dessus. À l\'échelle : banc optique de ≈ 3 m, largeur des ouvertures (1,45 m), longueur du plan focal (1 m) et angle de 106,5° entre les lignes de visée. La position des miroirs M2 à M6 n\'est pas publiée : leur trajet est un schéma de principe.',
       steps:['Deux télescopes identiques, montés sur le même anneau, visent deux directions séparées de 106,5°.',
              'Chacun a un miroir primaire rectangulaire de 1,45 × 0,50 m, puis un secondaire et un tertiaire.',
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
-    roman:{ title:'Un anastigmat à trois miroirs, construit autour d\'un télescope existant', scale:'Schéma de principe : ni les tailles ni les distances ne sont à l\'échelle. Seuls les détecteurs, plus bas, le sont.',
+    roman:{ title:'Un anastigmat à trois miroirs, construit autour d\'un télescope existant', scale:'Aucune prescription optique de Roman n\'est publique. Ouverture (2,4 m) et obstruction centrale (30,3 %) sont exactes ; écart entre les miroirs, trou du primaire et taille du secondaire sont mesurés sur la maquette 3D de la NASA (conception de 2015) et donc indicatifs. Optique arrière : schéma de principe. Les détecteurs, plus bas, sont à l\'échelle.',
       steps:['Le miroir primaire de 2,4 m, de la taille de celui de Hubble, et le secondaire forment l\'avant du télescope ; ils travaillent vers 265 K.',
              'Derrière le primaire, l\'optique arrière reprend le faisceau : un miroir orientable, un miroir de renvoi, puis le miroir tertiaire.',
              'Le tertiaire corrige les aberrations sur un champ très large et forme l\'image, ouverte à f/7,9, sur les 18 détecteurs du WFI.',
              'Une autre branche, de cinq miroirs dont un orientable, envoie un faisceau collimaté vers le coronographe.'],
-      specs:[['Combinaison','anastigmat à trois miroirs'],['Ouverture','2,4 m · utile 2,36 m'],['Obstruction centrale','30,3 % du diamètre'],['Faisceau vers WFI','f/7,9'],['Température des miroirs','≈ 265 K (primaire et secondaire)']] }
+      specs:[['Combinaison','anastigmat à trois miroirs'],['Ouverture','2,4 m · utile 2,36 m'],['Écart primaire–secondaire','≈ 2,4 m (maquette NASA)'],['Obstruction centrale','30,3 % du diamètre'],['Faisceau vers WFI','f/7,9'],['Température des miroirs','≈ 265 K (primaire et secondaire)']] }
   };
 
   /* ---------- plans focaux, en millimètres ---------- */

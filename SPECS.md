@@ -26,7 +26,7 @@ Limites connues :
 
 - Licence de la maquette Euclid (ESA SciFleet) non établie.
 - Maquette de Roman : conception de 2015 ; masse au lancement encore issue de la prévision de 2021.
-- Schémas optiques à l'échelle pour Hubble seulement ; espaces entre détecteurs indicatifs pour Webb et Gaia.
+- Schémas optiques entièrement à l'échelle pour Hubble et JWST seulement (pas de prescription publiée pour les autres) ; espaces entre détecteurs indicatifs pour Webb et Gaia.
 - Intérieurs de la vue en coupe : nature et nombre des équipements sourcés, emplacements indicatifs.
 - Tests limités à Chromium (bureau et téléphone émulé) ; parcours au clavier vérifié à la main, pas par un test.
 
@@ -150,7 +150,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 
 **Reste à faire**
 
-- Le schéma de Hubble est entièrement à l'échelle. Ceux de JWST et d'Euclid ne le sont que pour les deux premiers miroirs ; celui de Gaia est un schéma de principe, peu lisible à cause des faisceaux croisés. Les refaire à partir des prescriptions optiques publiées (rayons de courbure, positions des miroirs).
+- Schémas optiques revus le 19 novembre. Hubble et **JWST** sont à l'échelle (JWST : rayons de courbure et positions des quatre miroirs d'après McElwain et al. 2023, tableau 2 ; foyers calculés ; seuls les décalages latéraux de l'optique arrière sont agrandis). Euclid : diamètres, écart M1–M2, trou du primaire, plaque de base et tailles du tertiaire et des renvois à l'échelle (Racca et al. 2016) ; courbures et positions arrière non publiées. Gaia : banc de ≈ 3 m, ouvertures, plan focal et angle de base à l'échelle ; positions de M2 à M6 non publiées. Roman : aucune prescription publique ; ouverture et obstruction exactes, écart des miroirs mesuré sur la maquette NASA. Reste : chercher les prescriptions d'Euclid, de Gaia et de Roman (documents de conception, demande aux équipes) ; le schéma de Gaia reste chargé.
 - Plans focaux : **revus le 17 novembre**. WFI de Roman placé détecteur par détecteur (centres de GalSim, `sca_positions_20210204.txt`), sur le plan focal et sur le ciel ; VIS avec ses vrais espaces (Euclid II, tableau 2), NISP avec des espaces déduits de son champ (Euclid I) ; écarts entre CCD de WFC3 et d'ACS d'après les manuels ; Gaia : RVS en rangées 4 à 7 et capteur de front d'onde à la place d'AF9 en rangée 4 (documentation DR3, Sartoretti et al.). Reste indicatif : les espaces de Webb et de Gaia, et la rangée des trois autres CCD de contrôle de Gaia dans la première colonne.
 - Livré depuis : comparaison des plans focaux des quatre observatoires à la même échelle dans « Comparer » ; D3 sous forme de liens dans les deux sens (boutons « Voir dans la maquette 3D » sous chaque schéma, qui sélectionnent la pièce ; lien « Voir le trajet de la lumière » dans la description des pièces optiques).
 - D3, suite : **livré le 15 novembre**. Les éléments des schémas optiques sont reliés aux pièces (`data-el`). Venir d'une pièce par « Voir le trajet de la lumière » surligne l'élément et son bouton ; survoler ou parcourir au clavier un bouton « Voir dans la maquette 3D » surligne aussi l'élément correspondant. Vérifié par `tools/smoke.js`.
