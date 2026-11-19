@@ -1154,5 +1154,153 @@
   "caption": "Le centre de la galaxie d'Andromède (M31) : chaque point est une source X, le plus souvent une étoile double où une étoile à neutrons ou un trou noir capte la matière de son compagnon. Chaque pixel compte les photons X reçus : noir là où il n'en arrive presque aucun.",
   "credit": "NASA, CXC, SAO",
   "fetched": "2026-11-19"
+ },
+ "spitzer/irac": {
+  "type": "image",
+  "file": "spitzer-irac.jpg",
+  "width": 769,
+  "height": 1100,
+  "title": "La galaxie du Tourbillon (M51), IRAC",
+  "meta": [
+   [
+    "Archive",
+    "IRSA (Caltech/IPAC), Spitzer Enhanced Imaging Products"
+   ],
+   [
+    "Instrument",
+    "IRAC"
+   ],
+   [
+    "Bandes",
+    "8,0 µm en rouge, 4,5 µm en vert, 3,6 µm en bleu"
+   ],
+   [
+    "Échelle",
+    "0,60″ par pixel"
+   ],
+   [
+    "Cible",
+    "M51, galaxie du Tourbillon"
+   ],
+   [
+    "Champ",
+    "10′ de côté"
+   ],
+   [
+    "Traitement",
+    "découpes des mosaïques SEIP, étirement asinh par bande, superposées pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "50069620.50069620-0.IRAC.4.mosaic.fits, 50069620.50069620-0.IRAC.2.mosaic.fits, 50069620.50069620-0.IRAC.1.mosaic.fits"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html",
+  "caption": "En rouge, la lueur à 8 µm de la poussière et des grosses molécules (hydrocarbures aromatiques) chauffées par les étoiles jeunes : elle dessine les bras spiraux. En bleu et vert, à 3,6 et 4,5 µm, la lumière des étoiles anciennes.",
+  "credit": "NASA, JPL-Caltech, IRSA",
+  "fetched": "2026-11-19"
+ },
+ "spitzer/mips": {
+  "type": "image",
+  "file": "spitzer-mips.jpg",
+  "width": 717,
+  "height": 1036,
+  "title": "La galaxie du Tourbillon (M51), MIPS 24 µm",
+  "meta": [
+   [
+    "Archive",
+    "IRSA (Caltech/IPAC), Spitzer Enhanced Imaging Products"
+   ],
+   [
+    "Instrument",
+    "MIPS"
+   ],
+   [
+    "Bandes",
+    "24 µm"
+   ],
+   [
+    "Échelle",
+    "2,45″ par pixel"
+   ],
+   [
+    "Cible",
+    "M51, galaxie du Tourbillon"
+   ],
+   [
+    "Champ",
+    "10′ de côté"
+   ],
+   [
+    "Traitement",
+    "découpe de la mosaïque SEIP, étirement asinh pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "50065191.50065191-3.MIPS.1.mosaic.fits"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html",
+  "caption": "À 24 µm, MIPS voit la poussière tiède des régions où naissent les étoiles, en grumeaux le long des bras, et le noyau de la galaxie. Les images sont moins nettes qu'à 8 µm : la tache de diffraction grandit avec la longueur d'onde.",
+  "credit": "NASA, JPL-Caltech, IRSA",
+  "fetched": "2026-11-19"
+ },
+ "fermi/lat": {
+  "type": "plot",
+  "file": "fermi-lat.json",
+  "title": "Les sources gamma du catalogue 4FGL-DR4",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table fermilpsc"
+   ],
+   [
+    "Catalogue",
+    "4FGL-DR4, 14 ans de données du LAT"
+   ],
+   [
+    "Sources",
+    "7 195"
+   ],
+   [
+    "Points",
+    "7 195 tracés"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/fermi/fermilpsc.html",
+  "caption": "Chaque point est une source détectée par le LAT en 14 ans, sur une carte du ciel en coordonnées galactiques. La bande horizontale est le plan de notre Galaxie : pulsars et restes de supernovae. Ailleurs, la plupart des sources sont des noyaux actifs de galaxies lointaines, dont le jet pointe vers nous.",
+  "credit": "NASA, DOE, collaboration Fermi-LAT",
+  "fetched": "2026-11-19"
+ },
+ "fermi/gbm": {
+  "type": "plot",
+  "file": "fermi-gbm.json",
+  "title": "Durée des sursauts gamma vus par le GBM",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table fermigbrst"
+   ],
+   [
+    "Catalogue",
+    "sursauts gamma du GBM"
+   ],
+   [
+    "Sursauts",
+    "4 419 dont 744 de moins de 2 s"
+   ],
+   [
+    "Données",
+    "T90 : durée pendant laquelle arrivent 90 % des photons du sursaut"
+   ],
+   [
+    "Points",
+    "50 intervalles de 0,1 en puissance de dix"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/fermi/fermigbrst.html",
+  "caption": "Deux familles se dessinent. Les sursauts longs, de plus de 2 s environ, accompagnent l'effondrement d'étoiles massives. Les courts viennent de la fusion d'étoiles à neutrons, comme celui détecté avec les ondes gravitationnelles de GW170817.",
+  "credit": "NASA, collaboration Fermi-GBM",
+  "fetched": "2026-11-19"
  }
 }
