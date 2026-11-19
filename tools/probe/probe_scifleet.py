@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-"""Sonde SCIFLEET (ESA) : contextes « download », « mview », « models » dans le code, et vignette XMM-Newton (déposée dans _out)."""
-import os, re, requests
+"""Sonde SCIFLEET (ESA) : page de téléchargement des maquettes (ModelDownloads), liens des fichiers et conditions d'utilisation. N'écrit rien dans le dépôt."""
+import re, requests
 B = "https://scifleet.esa.int/"
-OUT = os.path.join(os.path.dirname(__file__), "_out"); os.makedirs(OUT, exist_ok=True)
-js = requests.get(B + "assets/index.313b998d.js", timeout=120).text
-seen = 0
-for kw in ("mview", "download", "Download", "models/", "/3d", "fbx", "FBX", "blend", "marmoset", "xmm_newton\"", "XMM-Newton", "xmm_newton:"):
-    for m in list(re.finditer(re.escape(kw), js))[:6]:
-        print("[" + kw + "]", js[max(0, m.start() - 220):m.end() + 220].replace("\n", " ")); seen += 1
-for f in ("assets/xmm_newton.49baba6b.png", "assets/xmm_newton.2294fe1c.png"):
-    r = requests.get(B + f, timeout=60); print(f, r.status_code, len(r.content))
-    if r.ok: open(os.path.join(OUT, f.split("/")[-1]), "wb").write(r.content)
+idx = requests.get(B, timeout=60).text
+main = re.findall(r'assets/index\.[0-9a-f]+\.js', idx)[0]
+js = requests.get(B + main, timeout=120).text
+md = sorted(set(re.findall(r'ModelDownloads\.[0-9a-f]+\.js', js))); ug = sorted(set(re.findall(r'UserGuide\.[0-9a-f]+\.js', js)))
+print("modules :", md, ug)
+for m in md + ug:
+    t = requests.get(B + "assets/" + m, timeout=120).text
+    print("\n==", m, len(t))
+    for kw in ("herschel", "planck", "integral", "cheops", "xmm", "licen", "terms", "copyright", "download", ".zip", ".fbx", ".blend", ".obj", "CC BY", "Creative"):
+        for mm in list(re.finditer(re.escape(kw), t, re.I))[:4]:
+            print("[" + kw + "]", t[max(0, mm.start() - 200):mm.end() + 200].replace("\n", " "))
