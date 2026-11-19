@@ -842,14 +842,19 @@ def seip_cutout(ra, dec, band, size_arcmin):
     ok = [r for r in res if str(r["dataproduct_subtype"]) == "science" and str(r["energy_bandpassname"]) == band and str(r["access_url"]).endswith(".mosaic.fits")]
     if not ok:
         raise RuntimeError("pas de mosaïque SEIP " + band)
+    # la mosaïque entière, puis une découpe centrée sur la cible d'après son repère céleste (le service de découpe de l'IRSA renvoie la mosaïque complète)
+    from astropy.nddata import Cutout2D
+    from astropy.wcs import WCS
     url = str(ok[0]["access_url"])
-    r = requests.get(url + f"?center={ra},{dec}&size={size_arcmin}arcmin", timeout=600); r.raise_for_status()
-    hd = fits.open(io.BytesIO(r.content)); h = hd[0].header; d = np.nan_to_num(np.asarray(hd[0].data, dtype=float))
-    return d, h, url.rsplit("/", 1)[1], str(ok[0]["obs_id"])
+    r = requests.get(url, timeout=900); r.raise_for_status()
+    hd = fits.open(io.BytesIO(r.content)); h = hd[0].header
+    cut = Cutout2D(np.asarray(hd[0].data, dtype=float), SkyCoord(ra, dec, unit="deg"), size_arcmin * u.arcmin, wcs=WCS(h), mode="partial", fill_value=np.nan)
+    return cut.data, h, url.rsplit("/", 1)[1], str(ok[0]["obs_id"])
 
 def asinh_stretch(d, lo_pct=1.0, hi_pct=99.7, soft=0.05):
-    lo, hi = np.percentile(d, lo_pct), np.percentile(d, hi_pct)
-    v = np.clip((d - lo) / max(hi - lo, 1e-12), 0, 1)
+    good = d[np.isfinite(d) & (d != 0)]          # percentiles sur les seuls pixels observés
+    lo, hi = np.percentile(good, lo_pct), np.percentile(good, hi_pct)
+    v = np.clip((np.nan_to_num(d, nan=lo) - lo) / max(hi - lo, 1e-12), 0, 1)
     return np.arcsinh(v / soft) / np.arcsinh(1 / soft)
 
 def seip_meta(h, files, bands, extra=()):
