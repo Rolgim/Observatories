@@ -3,6 +3,9 @@
 import os, requests
 OUT = os.path.join(os.path.dirname(__file__), "_out"); os.makedirs(OUT, exist_ok=True)
 for f in ("xmm.obj", "xmm.mtl", "alb.png", "xmm.fbx", "xmm.3ds"):
-    r = requests.get("https://spiftp.esac.esa.int/data/SPICE/XMM/misc/cosmo/" + f, timeout=120); r.raise_for_status()
+    for k in range(5):
+        try:
+            r = requests.get("https://spiftp.esac.esa.int/data/SPICE/XMM/misc/cosmo/" + f, timeout=120); r.raise_for_status(); break
+        except Exception as e:
+            print("   nouvel essai", f, repr(e)[:120]); __import__("time").sleep(10)
     open(os.path.join(OUT, f), "wb").write(r.content); print(f, len(r.content))
-r = requests.get("https://spiftp.esac.esa.int/data/SPICE/XMM/xmm.html", timeout=60); print(r.status_code); print(r.text[:6000])
