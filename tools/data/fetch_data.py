@@ -845,11 +845,23 @@ def seip_cutout(ra, dec, band, size_arcmin):
     # la mosaïque entière, puis une découpe centrée sur la cible d'après son repère céleste (le service de découpe de l'IRSA renvoie la mosaïque complète)
     from astropy.nddata import Cutout2D
     from astropy.wcs import WCS
-    url = str(ok[0]["access_url"])
-    r = requests.get(url, timeout=900); r.raise_for_status()
-    hd = fits.open(io.BytesIO(r.content)); h = hd[0].header
-    cut = Cutout2D(np.asarray(hd[0].data, dtype=float), SkyCoord(ra, dec, unit="deg"), size_arcmin * u.arcmin, wcs=WCS(h), mode="partial", fill_value=np.nan)
-    return cut.data, h, url.rsplit("/", 1)[1], str(ok[0]["obs_id"])
+    best = None
+    for row in ok[:6]:                           # plusieurs mosaïques recouvrent la position : on garde celle qui couvre le mieux la découpe
+        url = str(row["access_url"])
+        try:
+            r = requests.get(url, timeout=900); r.raise_for_status()
+            hd = fits.open(io.BytesIO(r.content)); h = hd[0].header
+            cut = Cutout2D(np.asarray(hd[0].data, dtype=float), SkyCoord(ra, dec, unit="deg"), size_arcmin * u.arcmin, wcs=WCS(h), mode="partial", fill_value=np.nan)
+        except Exception as e:
+            print("   mosaïque ignorée :", url.rsplit("/", 1)[1], repr(e)[:120]); continue
+        cov = float(np.mean(np.isfinite(cut.data) & (cut.data != 0)))
+        print("   ", url.rsplit("/", 1)[1], "couverture", round(cov, 3))
+        if best is None or cov > best[0]:
+            best = (cov, cut.data, h, url.rsplit("/", 1)[1], str(row["obs_id"]))
+        if cov > 0.97: break
+    if best is None or best[0] < 0.5:
+        raise RuntimeError("aucune mosaïque " + band + " ne couvre la cible")
+    return best[1], best[2], best[3], best[4]
 
 def asinh_stretch(d, lo_pct=1.0, hi_pct=99.7, soft=0.05):
     good = d[np.isfinite(d) & (d != 0)]          # percentiles sur les seuls pixels observés
