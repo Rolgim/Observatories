@@ -252,7 +252,7 @@ Reste : les suffixes de fichiers de Webb et de Hubble sont donnés d'après les 
 - Trajectoire réelle : **livrée le 18 novembre** (JPL Horizons, objet −211, trouvé par son nom), mise à jour chaque jour ; en cas d'échec, la série précédente est gardée.
 - Masse au lancement : prévision de 2021 (≈ 10 500 kg). Les chiffres publiés au lancement divergent (≈ 8 200 kg pour Spaceflight Now, sans préciser s'il s'agit de la masse au lancement) : à remplacer par une valeur de la NASA.
 - Intérieur en coupe : **livré le 18 novembre** pour le module de service (module de propulsion, quatre réservoirs d'hydrazine, six roues de réaction, six panneaux d'avionique, centrale inertielle ; NTRS 2021 et 2024, NASA), avec son propre plan de coupe ; emplacements indicatifs. La maquette contient déjà miroirs et structure porteuse.
-- Ajouter un observatoire touche encore plusieurs tables codées en dur (`app.js`, `inst-render.js`, `optics.js`, `orbits.js`, `build.js`, tests) : l'exigence d'acceptation n'est pas encore remplie.
+- Registre des observatoires : **livré le 19 novembre**. `TELESCOPES` (`src/data-tele.js`) porte désormais couleur, chiffre clé, encombrement, pièces optiques, rang et orientation dans « Comparer », rang dans la figure des plans focaux, fin de mission et animation de déploiement ; le rendu des matériaux est passé dans `src/looks.js`. `app.js`, `build.js`, `inst-render.js`, la figure des plans focaux, les orbites comparées et les tests lisent le registre ; `tools/smoke.js` vérifie que chaque entrée a ses champs et ses textes. L'acceptation (aucune modification de `app.js`) est remplie ; procédure dans `tools/models/README.md` (G2). Reste G3 : la navigation par onglets au-delà de six ou sept observatoires.
 
 ### H. Socle technique
 

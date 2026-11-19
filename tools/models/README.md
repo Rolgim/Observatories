@@ -26,3 +26,16 @@ Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (ren
 
 - Le site décode les maquettes sans Draco (pas de décodeur chargé) : seule l'extension `KHR_mesh_quantization` est utilisée.
 - three.js r128 ne dénormalise pas les attributs entiers côté CPU ; `src/app.js` convertit donc les positions en flottants au chargement pour que le clic sur une pièce tombe juste.
+
+## Ajouter un observatoire
+
+`src/app.js` n'a pas à changer : tout part du registre `TELESCOPES` de `src/data-tele.js`, que lisent aussi `build.js` et `tools/smoke.js`.
+
+1. Maquette : convertir et redécouper (ci-dessus), déposer `models/<id>.glb`. Licence claire obligatoire (exigence G1).
+2. `src/data-tele.js` : une entrée avec `id`, noms, `file`, `axis`, `size`, `view`, `sun`, `orbit` (`leo` ou `l2`), `cmp`, `parts`, `sections` et les champs de registre décrits en tête du fichier (`color`, `highlight`, `footprint`, `optical`, `compare`, éventuellement `ended`).
+3. `src/looks.js` : réglage des matériaux si la maquette rend mal sous l'éclairage du site (facultatif).
+4. `src/interior.js` : éléments internes pour la vue en coupe et, si besoin, plans de coupe propres (`CUT`) (facultatif).
+5. Textes et données : `INST_DATA` (`src/data-inst.js`), `MISSION` (`src/data-mission.js`), `TEXT`, `FP` et `LINK3D` (`src/optics.js`), `TEXT` (`src/orbits.js`) ; pages d'instruments propres à l'observatoire dans `src/inst-render.js` si un instrument a besoin d'une figure particulière.
+6. Anglais : `EN_TELE`, `EN_INST`, `EN_OPTICS`, `EN_ORBITS`, et les chaînes d'interface nouvelles dans `src/en/ui.js`.
+7. Données réelles : identifiant JPL Horizons dans `tools/data/fetch_orbits.py` pour un observatoire à L2, recettes d'exemples dans `tools/data/fetch_data.py`.
+8. `node build.js`, puis `tools/smoke.js` : le test vérifie que chaque observatoire du registre a ses champs et ses textes, et en donne la liste manquante.

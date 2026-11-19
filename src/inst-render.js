@@ -2,8 +2,10 @@
    INSTRUMENTS — rendu HTML/SVG (aucune dépendance à three.js)
 ================================================================= */
 var InstrumentsUI = (function(){
-  var ORDER = ['hubble','jwst','euclid','gaia','roman'];
-  var NAMES = { hubble:'Hubble', jwst:'JWST', euclid:'Euclid', roman:'Roman', gaia:'Gaia' };
+  /* liste, noms et couleurs des observatoires : registre de data-tele.js */
+  var ORDER = TELESCOPES.map(function(t){ return t.id; });
+  var NAMES = {}, OBS = {};
+  TELESCOPES.forEach(function(t){ NAMES[t.id] = t.short; OBS[t.id] = t.color; });
   var copyStore = [];
 
   /* champs de vue ajoutés ici pour les relevés à grand champ (valeurs approchées) */
@@ -266,7 +268,6 @@ var InstrumentsUI = (function(){
   }
 
   /* ---------- comparaison entre observatoires ---------- */
-  var OBS = { hubble:'#3D6BE0', jwst:'#DB5A14', euclid:'#0F987A', gaia:'#9A52D6', roman:'#B8860B' };
   var SAMP = { hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
                jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' }, roman:{ wfi:'0,11″', cgi:'sans objet' } };
@@ -335,11 +336,11 @@ var InstrumentsUI = (function(){
   }
 
   function compare(){
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Les cinq observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
+    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
       '<p class="inst-sum">Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
     var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
-    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Les cinq observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
+    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Tous les observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
       '<div class="cap">À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d\'Euclid. Le champ de Gaia est une valeur approchée ; celui du WFI de Roman est dessiné détecteur par détecteur.</div></div>';
     var rows = '';
     ORDER.forEach(function(tid){

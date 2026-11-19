@@ -5,6 +5,7 @@
 'use strict';
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+var DEP_ID = (TELESCOPES.filter(function(t){ return t.deploy; })[0] || {}).id;   /* maquette animée par deploy.js */
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
 function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 
@@ -15,7 +16,7 @@ function banner(msg){
 window.addEventListener('error', function(e){ if (e && e.message && !/ResizeObserver/.test(e.message)) banner('Erreur : ' + e.message); });
 
 var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S = { mode:'tele', id:'hubble', ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, cut:false, spin:!REDUCED,
+var S = { mode:'tele', id:TELESCOPES[0].id, ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, cut:false, spin:!REDUCED,
           inst:false, instSel:null, filterIdx:0 };
 
 var stage = $('stage'), hasGL = !!(window.THREE && THREE.GLTFLoader);
@@ -42,7 +43,7 @@ function orbitSvg(t){
       '<text x="190" y="93" fill="#3A4147" font-size="12" ' + F + '>Terre et orbite dessinées</text>' +
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
-  var gone = t.id === 'gaia';
+  var gone = !!t.ended;
   return '<svg viewBox="0 0 340 122" role="img" aria-label="Position au point de Lagrange L2">' +
     '<path d="M2 62 H26" stroke="#14171A" stroke-width="1.5"/><path d="M2 62 l8 -4.5 v9 z" fill="#14171A"/>' +
     '<text x="2" y="84" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +
@@ -61,8 +62,8 @@ function orbitSvg(t){
 
 function lines(v){ return esc(v).split(' · ').join('<br>'); }
 function facts(t){
-  var hl = { hubble:['Miroir primaire','2,4 <small>m</small>'], jwst:['Miroir primaire','6,5 <small>m</small>'], euclid:['Miroir primaire','1,2 <small>m</small>'], gaia:['Plan focal','106 <small>CCD</small>'], roman:['Miroir primaire','2,4 <small>m</small>'] }[t.id];
-  var sz = { hubble:'13,2 <small>m de long</small>', jwst:'21,2 × 14,2 <small>m</small>', euclid:'4,7 <small>m de haut</small>', gaia:'≈ 10 <small>m de diamètre</small>', roman:'> 12 <small>m de haut</small>' }[t.id];
+  var hl = [t.highlight[0], t.highlight[1] + ' <small>' + t.highlight[2] + '</small>'];
+  var sz = t.footprint[0] + ' <small>' + t.footprint[1] + '</small>';
   return [hl, ['Encombrement', sz], ['Masse au lancement', fr(t.cmp.mass) + ' <small>kg</small>'], ['Lancement', t.year]];
 }
 /* thème : suit le système (ou l'hôte), sauf choix explicite mémorisé */
@@ -135,14 +136,13 @@ function renderTabs(){
   $('utils').innerHTML = h;
 }
 
-var OPTICAL = { hubble:['ota','aft'], jwst:['primary','secondary','aos','isim'], euclid:['baffle','instr'], gaia:['torus','focal','tent'], roman:['ota','instr'] };
 function renderPanel(){
   var pt = $('ptabs'), pb = $('pbody'), t = tele(S.id), h = '';
   if (S.mode === 'compare'){
     pt.innerHTML = '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" aria-selected="true">À la même échelle</button></div>';
     var maxM = 6.5, maxK = 11110;
-    h = '<h2>Cinq observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
-        '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau des 17 instruments sur les mêmes axes.</small></button>' +
+    h = '<h2>Tous les observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
+        '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau de tous les instruments sur les mêmes axes.</small></button>' +
         '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
         TELESCOPES.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
@@ -175,7 +175,7 @@ function renderPanel(){
     h = '<p class="parts-intro">' + (renderer ? 'Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s\'assemblent.' : 'Les pièces principales de l\'observatoire.') + '</p>' +
         t.parts.map(function(p){
           return '<div class="part' + (S.part===p.key ? ' on' : '') + '" data-part="' + p.key + '"><button aria-expanded="' + (S.part===p.key) + '"><span class="dot"></span>' + esc(p.name) + '</button>' +
-            '<div class="pd">' + esc(p.desc) + partFacts(t, p) + (OPTICAL[t.id].indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
+            '<div class="pd">' + esc(p.desc) + partFacts(t, p) + ((t.optical || []).indexOf(p.key) >= 0 ? '<button class="plink" data-open-optique="1">Voir le trajet de la lumière</button>' : '') + '</div></div>';
         }).join('');
   }
   pb.innerHTML = h;
@@ -183,7 +183,7 @@ function renderPanel(){
 
 function renderHud(){
   var t = tele(S.id);
-  if (S.mode === 'compare'){ $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = 'Hubble, JWST, Euclid, Gaia et Roman côte à côte, en taille réelle'; $('t-src').textContent = ''; }
+  if (S.mode === 'compare'){ $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = 'Tous les observatoires côte à côte, en taille réelle'; $('t-src').textContent = ''; }
   else { $('t-name').textContent = t.name; $('t-sub').textContent = t.sub; $('t-src').textContent = t.src; }
 }
 
@@ -432,36 +432,7 @@ function unb64(src){
 function tweakMaterial(id, m){
   var n = m.name || '';
   if (m.map) m.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  if (id === 'jwst'){
-    if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
-    else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }
-    else if (/PURPLEY/.test(n)){ m.metalness = 0.75; m.roughness = 0.36; }
-    else if (/silver/.test(n)){ m.metalness = 0.9; m.roughness = 0.34; }
-    else if (/SolarPanel/.test(n)){ m.metalness = 0.4; m.roughness = 0.32; }
-    else if (/black/.test(n)){ m.roughness = 0.7; m.metalness = 0.2; }
-    else if (/bronze|sa_edge/.test(n)){ m.metalness = 0.9; m.roughness = 0.35; }
-  } else if (id === 'hubble'){
-    if (/foil_silver|shiny/.test(n)){ m.metalness = Math.max(m.metalness, 0.85); m.roughness = Math.min(m.roughness, 0.34); }
-  } else if (id === 'gaia'){
-    if (/Gold|Aluminum|Metal/.test(n)){ m.metalness = Math.max(m.metalness, 0.75); m.roughness = Math.min(m.roughness, 0.45); }
-    if (/SolarArray/.test(n)){ m.metalness = 0.35; m.roughness = 0.35; }
-  } else if (id === 'roman'){
-    /* Les couleurs du fichier NASA sont des valeurs sRGB que le chargeur lit comme linéaires :
-       sous la lumière du site, tout virait au blanc. On les reconvertit, puis : cellules solaires
-       sombres et mates, couvertures argentées, structure gris foncé. */
-    if (/solar\d|solartop/.test(n)){
-      m.color.setHex(/top/.test(n) ? 0x1A1E26 : 0x0B1638); m.metalness = 0; m.roughness = /top/.test(n) ? 1 : 0.7; m.userData.envK = 0.25; m.side = THREE.DoubleSide;
-      if (/top/.test(n)){ m.polygonOffset = true; m.polygonOffsetFactor = 2; m.polygonOffsetUnits = 2; }   /* les cellules, coplanaires, passent devant le support */
-    }
-    else if (/lens/.test(n)){ m.color.setHex(0xC9CED4); m.metalness = 0.9; m.roughness = 0.2; }
-    else if (/bronze/.test(n)){ m.color.setHex(0xA8834A); m.metalness = 0.8; m.roughness = 0.4; }
-    else if (/silver1|rear-side-panels|Instrument1/.test(n)){ m.color.setHex(0xB4B8BC); m.metalness = 0.6; m.roughness = 0.45; }
-    else if (/hood/.test(n)){ m.color.setHex(0xC4C8CC); m.metalness = 0.7; m.roughness = 0.35; }   /* pare-soleil : couvertures argentées */
-    else { m.metalness = Math.min(m.metalness, 0.4); m.roughness = Math.max(m.roughness, 0.6); }
-    m.color.convertSRGBToLinear();
-  } else if (id === 'euclid'){
-    m.metalness = Math.min(m.metalness, 0.5); m.roughness = Math.max(0.5, Math.min(m.roughness, 0.75)); m.color.multiplyScalar(0.78);
-  }
+  if (window.LOOKS && LOOKS[id]) LOOKS[id](m, n, THREE);   /* réglages propres à chaque maquette : src/looks.js */
   m.userData.env = 1;
 }
 
@@ -711,7 +682,7 @@ $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribu
 /* déploiement de Webb (F3) : curseur d'étapes, la maquette se replie et se déplie */
 var dep = { on:false, play:null };
 function depShow(v){
-  if (!current || current.t.id !== 'jwst' || !window.DEPLOY) return;
+  if (!current || !current.t.deploy || !window.DEPLOY) return;
   v = Math.max(0, Math.min(DEPLOY.last, v)); DEPLOY.set(current, v); $('dep-range').value = v;
   var i = Math.ceil(v - 0.02), st = DEPLOY.STEPS[i], en = OBS_LANG === 'en';
   $('dep-date').textContent = en ? st[1] : st[0]; $('dep-title').textContent = en ? st[3] : st[2]; $('dep-text').textContent = en ? st[5] : st[4];
@@ -725,7 +696,7 @@ function depToggle(on){
   depStop(); dep.on = on; $('dep').hidden = !on; $('stage').classList.toggle('dep-on', on); $('b-dep').setAttribute('aria-pressed', String(on));
   if (!S.part) C.gtgt.set(0, on && !depMQ.matches ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau (bureau) */
   if (!window.DEPLOY) return;
-  if (on) depShow(0); else if (models.jwst && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models.jwst, DEPLOY.last);
+  if (on) depShow(0); else if (models[DEP_ID] && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models[DEP_ID], DEPLOY.last);
   if (!on){ $('explode').disabled = false; $('explode').parentNode.style.opacity = 1; }
   depPlace();
 }
@@ -764,15 +735,11 @@ scene.add(cmp.group);
 function resetRoot(M){ M.root.position.set(0,0,0); M.root.rotation.set(0,0,0); M.root.updateMatrixWorld(true); setExplode(M, 0); }
 
 function layoutCompare(){
-  var order = ['jwst','hubble','roman','gaia','euclid'].filter(function(id){ return models[id]; }), gap = 3.4, portrait = camera.aspect < 0.95;
+  var order = TELESCOPES.filter(function(t){ return models[t.id]; }).sort(function(a, b){ return a.compare.order - b.compare.order; }).map(function(t){ return t.id; }), gap = 3.4, portrait = camera.aspect < 0.95;
   cmp.items = order.map(function(id){
     var M = models[id]; resetRoot(M);
     M.meshes.forEach(function(o){ var m = o.material; if (m.userData.c0) m.color.copy(m.userData.c0); if (m.userData.em0){ m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; } });
-    if (id === 'hubble') M.root.rotation.set(-Math.PI/2, 0, 0.0);
-    if (id === 'gaia') M.root.rotation.set(0.5, 0, 0);
-    if (id === 'euclid') M.root.rotation.set(0, -1.05, 0);
-    if (id === 'jwst') M.root.rotation.set(0, 0.35, 0);
-    if (id === 'roman') M.root.rotation.set(0, 0.5, -Math.PI/2);   /* ouverture vers le haut, comme Hubble */
+    M.root.rotation.fromArray(M.t.compare.rot);   /* orientation côte à côte : data-tele.js */
     M.root.updateMatrixWorld(true);
     var b = new THREE.Box3().setFromObject(M.root), sz = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
     return { M:M, sz:sz, c:c };
@@ -815,16 +782,16 @@ show3D = function(changed){
   /* comparaison : seuls Recadrer reste ; Éclater, Soleil réel, Coupe et Rotation sont retirés */
   $('explode').parentNode.hidden = cmpMode; document.querySelector('#toolbar .tool-sep').hidden = cmpMode; $('b-sun').hidden = cmpMode; $('b-cut').hidden = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
-  $('b-dep').hidden = cmpMode || S.id !== 'jwst'; if (dep.on && (cmpMode || S.id !== 'jwst')) depToggle(false);
+  var noDep = cmpMode || !tele(S.id).deploy; $('b-dep').hidden = noDep; if (dep.on && noDep) depToggle(false);
   $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
   $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode));
   if (cmpMode){
     var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
     var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
-    if (need.length) loaderUI('load', 'Chargement des cinq maquettes', 0, total);
+    if (need.length) loaderUI('load', 'Chargement des maquettes', 0, total);
     Promise.all(TELESCOPES.map(function(t){
       return loadModel(t, function(a){ got[t.id] = a; }).then(function(M){ got[t.id] = t.bytes; return M; });
-    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; TELESCOPES.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des cinq maquettes', s, total); if (TELESCOPES.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
+    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; TELESCOPES.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des maquettes', s, total); if (TELESCOPES.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
       if (token !== loadToken) return;
       if (current){ scene.remove(current.root); current = null; }
       cmp.group.visible = true; layoutCompare(); loaderUI('off'); $('cmp-labels').hidden = false;
@@ -907,7 +874,7 @@ function tick(now){
 }
 /* clavier dans la vue 3D (H3) : flèches pour passer d'une pièce à l'autre, Échap pour désélectionner */
 canvas.tabIndex = 0;
-function canvasLabel(){ canvas.setAttribute('aria-label', S.mode === 'compare' ? 'Les cinq observatoires à la même échelle' : 'Maquette 3D de ' + tele(S.id).short + ' : flèches pour parcourir les pièces, Échap pour désélectionner'); }
+function canvasLabel(){ canvas.setAttribute('aria-label', S.mode === 'compare' ? 'Les observatoires à la même échelle' : 'Maquette 3D de ' + tele(S.id).short + ' : flèches pour parcourir les pièces, Échap pour désélectionner'); }
 canvasLabel();
 canvas.addEventListener('keydown', function(e){
   if (S.mode !== 'tele' || !/^Arrow(Left|Right|Up|Down)$/.test(e.key)) return;

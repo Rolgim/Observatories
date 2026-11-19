@@ -8,6 +8,8 @@ const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..'), V = process.env.VENDOR, PORT = 8124;
 const TYPES = { '.html':'text/html', '.glb':'model/gltf-binary', '.json':'application/json', '.jpg':'image/jpeg', '.txt':'text/plain' };
 const srv = http.createServer((q, s) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0])); fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'content-length': d.length }); s.end(d); }); }).listen(PORT);
+/* observatoires : registre de src/data-tele.js */
+const TELE_IDS = [...fs.readFileSync(path.join(ROOT, 'src', 'data-tele.js'), 'utf8').matchAll(/^    id:'(\w+)'/gm)].map(m => m[1]);
 const errors = [], notes = [];
 const fail = m => { errors.push(m); console.log('ÉCHEC', m); };
 
@@ -28,10 +30,20 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
 
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
-  const TELES = ['hubble', 'jwst', 'euclid', 'gaia', 'roman'];
+  const TELES = TELE_IDS;
 
   // ---- bureau, thème clair : vue 3D
   let pg = await open(b, { width: 1360, height: 820 }, false);
+  // ---- registre : chaque observatoire a tout ce que le site attend (procédure d'ajout, tools/models/README.md)
+  await go(pg, TELES[0]); await loaded(pg);
+  const miss = await pg.evaluate(() => TELESCOPES.map(t => {
+    const m = ['color', 'highlight', 'footprint', 'optical', 'compare', 'orbit', 'cmp', 'parts', 'sections'].filter(k => !t[k]);
+    if (!INST_DATA[t.id]) m.push('INST_DATA'); if (!MISSION[t.id]) m.push('MISSION');
+    if (!Optics.TEXT[t.id] || !Optics.FP[t.id] || !Optics.LINK3D[t.id]) m.push('Optics'); if (!Orbits.TEXT[t.id]) m.push('Orbits');
+    if (!EN_TELE[t.id]) m.push('EN_TELE'); if (!EN_INST[t.id]) m.push('EN_INST'); if (!EN_OPTICS[t.id]) m.push('EN_OPTICS'); if (!EN_ORBITS[t.id]) m.push('EN_ORBITS');
+    return m.length ? t.id + ' : ' + m.join(', ') : '';
+  }).filter(Boolean));
+  miss.forEach(m => fail('registre, il manque ' + m));
   for (const t of TELES){
     await go(pg, t); await loaded(pg); await pg.waitForTimeout(1200);
     const r = await pg.evaluate(() => { const o = window.__obs, M = o.current, seen = {}; for (let y = 110; y < 770; y += 22) for (let x = 30; x < 950; x += 22){ const h = o.pick(x, y); if (h) seen[h.part] = 1; }
@@ -45,7 +57,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     notes.push(t + ' : ' + r.parts + ' pièces, ' + r.picked + ' atteignables assemblé, ' + picked2 + ' éclaté');
   }
   await go(pg, 'comparer'); await loaded(pg); await pg.waitForTimeout(800);
-  if (await pg.evaluate(() => document.querySelectorAll('.cmp-label').length) !== 5) fail('comparaison : il manque des étiquettes');
+  if (await pg.evaluate(() => document.querySelectorAll('.cmp-label').length) !== TELE_IDS.length) fail('comparaison : il manque des étiquettes');
 
   // ---- pages d'instruments, trajet de la lumière, orbites
   for (const t of TELES){
@@ -75,7 +87,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   await pg.click('[data-part="primary"] [data-open-optique]'); await pg.waitForTimeout(1200);
   if (await pg.evaluate(() => [...document.querySelectorAll('svg.optic g.hl')].map(g => g.getAttribute('data-el')).join()) !== 'primary') fail('lien maquette → schéma : le miroir primaire n\'est pas surligné');
   // onglet Mission : déroulé, chaîne de traitement et sources pour chaque observatoire
-  for (const id of ['hubble', 'jwst', 'euclid', 'gaia', 'roman']) {
+  for (const id of TELE_IDS) {
     await go(pg, id + '-instruments'); await pg.click('#inst-nav [data-inst="mission"]'); await pg.waitForTimeout(300);
     const ms = await pg.evaluate(() => [document.querySelectorAll('.ms-tl li').length, document.querySelectorAll('.ms-chain li').length, document.querySelectorAll('#inst-main ol.refs li').length]);
     if (ms[0] < 4 || ms[1] < 4 || ms[2] < 3) fail('onglet Mission incomplet pour ' + id + ' : ' + ms.join(', '));

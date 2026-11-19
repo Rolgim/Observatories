@@ -295,8 +295,10 @@ var Orbits = (function(){
     requestAnimationFrame(frame);
   }
   /* ---------- comparaison des trois orbites autour de L2 ---------- */
+  /* observatoires autour de L2 : registre de data-tele.js */
+  var L2IDS = TELESCOPES.filter(function(t){ return t.orbit === 'l2'; }).map(function(t){ return t.id; });
   function renderCompare(OBS, NAMES){
-    var key = '<ul class="orb-key">' + ['jwst','euclid','gaia','roman'].map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
+    var key = '<ul class="orb-key">' + L2IDS.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     return '<div class="isec"><h4>Orbites autour de L2, à la même échelle</h4>' + key + '<div class="cmp-figs"><div><h5>Vu depuis la Terre</h5>'+cv('cfront', 560, 430, 'Les trois orbites vues depuis la Terre')+'</div><div><h5>Vu de dessus</h5>'+cv('ctop', 560, 400, 'Les trois orbites vues de dessus')+'</div></div>' +
       '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read>Chargement des trajectoires…</span></div>' +
       '<div class="cap">Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l\'orbite de la Lune. Chaque observatoire apparaît à sa date d\'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n\'y figure pas : à cette échelle, son orbite à 480 km d\'altitude se confond avec le point qui représente la Terre.</div>' +
@@ -309,7 +311,7 @@ var Orbits = (function(){
     load().then(function(j){
       if (my !== run) return;
       if (!j || !j.bodies){ read.textContent = 'Les trajectoires n\'ont pas pu être chargées.'; return; }
-      var ids = ['jwst','euclid','gaia','roman'].filter(function(t){ return j.bodies[t]; }), jd0 = 1e9, jd1 = 0, st = [];
+      var ids = L2IDS.filter(function(t){ return j.bodies[t]; }), jd0 = 1e9, jd1 = 0, st = [];
       ids.forEach(function(t){ var b = j.bodies[t], n = b.x.length, e = b.jd0 + (n-1)*b.step_days, ym = 0, zm = 0; jd0 = Math.min(jd0, b.jd0); jd1 = Math.max(jd1, e); for (var i=0;i<n;i++){ ym = Math.max(ym, Math.abs(b.y[i])); zm = Math.max(zm, Math.abs(b.z[i])); } st.push([NAMES[t], date(b.jd0)+' au '+date(e)+'<br>écart latéral ± '+fr(ym*1000)+' km · hors écliptique ± '+fr(zm*1000)+' km']); });
       root.querySelector('[data-orb-cmpstats]').innerHTML = rows(st.map(function(r){ return [r[0], r[1].split(' · ').join('<br>')]; }));
       jd = j.bodies.jwst ? j.bodies.jwst.jd0 - 300 : jd0;  /* on commence peu avant l'arrivée de Webb, quand Gaia est seul à L2 */

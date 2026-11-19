@@ -193,7 +193,9 @@ var Optics = (function(){
   /* tous les plans focaux à la même échelle, pour la page « Comparer » */
   function compareFocal(OBS, NAMES){
     var W = 1000, k = 0.8, gap = 40, rows = [[], [], []], s = '';
-    ['gaia','euclid','roman','jwst','hubble'].forEach(function(t){ FP[t].groups.forEach(function(g){ rows[t === 'gaia' || t === 'roman' ? 0 : t === 'euclid' ? 1 : 2].push({ t:t, g:g }); }); });
+    /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js */
+    TELESCOPES.filter(function(t){ return FP[t.id]; }).sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
+      .forEach(function(T){ var r = rows[T.compare.fp[0]] || (rows[T.compare.fp[0]] = []); FP[T.id].groups.forEach(function(g){ r.push({ t:T.id, g:g }); }); });
     var y = 10;
     rows.forEach(function(r){
       var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);

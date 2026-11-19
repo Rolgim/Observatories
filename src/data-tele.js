@@ -2,6 +2,14 @@
    OBSERVATOIRES — fiche, pièces cliquables, réglages de la maquette.
    Axes : repère propre à chaque fichier 3D (voir `axis`, `size`).
    explode = [dx,dy,dz, distance en mètres] dans le repère de la maquette.
+   Registre : ajouter un observatoire = une entrée ici (et ses textes dans data-inst, optics, orbits,
+   data-mission, en/*), son rendu de matériaux dans looks.js ; app.js n'a pas à changer.
+     color      couleur de l'observatoire dans les figures de comparaison
+     highlight  [libellé, valeur, unité] : premier chiffre clé de la fiche ; footprint [valeur, unité] : encombrement
+     optical    pièces qui ouvrent la page « Trajet de la lumière »
+     compare    order (rang dans « Comparer »), rot (rotation de la maquette dans la vue côte à côte),
+                fp [rangée, rang] dans la figure des plans focaux
+     ended      mission terminée ; deploy : animation de déploiement (deploy.js)
 ================================================================= */
 var TELESCOPES = [
   {
@@ -13,6 +21,8 @@ var TELESCOPES = [
     view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
     cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, len:13.2 },
+    color:'#3D6BE0', highlight:['Miroir primaire','2,4','m'], footprint:['13,2','m de long'], optical:['ota','aft'],
+    compare:{ order:2, rot:[-Math.PI/2, 0, 0], fp:[2, 1] },
     desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
     sourceNote:"Maquette créée par NASA Visualization Technology Applications and Development (VTAD), distribuée avec Gaia Sky. Le fichier d'origine est découpé par texture ; il a été redécoupé ici en pièces physiques pour que le clic désigne la bonne partie.",
     checked:'2026-11-13',
@@ -83,6 +93,8 @@ var TELESCOPES = [
     view:{ az:0.62, el:0.30, dist:1.35 }, sun:[0.18,-0.97,-0.16], orbit:'l2',
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
+    color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
+    compare:{ order:1, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -157,6 +169,8 @@ var TELESCOPES = [
     view:{ az:0.75, el:0.26, dist:1.6 }, sun:[-0.44,0.12,0.89], orbit:'l2',
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
+    color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
+    compare:{ order:5, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -220,6 +234,8 @@ var TELESCOPES = [
     view:{ az:0.6, el:0.42, dist:1.35 }, sun:[0.5,-0.85,0.17], orbit:'l2',
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
+    color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
+    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -284,6 +300,8 @@ var TELESCOPES = [
     view:{ az:-2.3, el:0.32, dist:1.25 }, sun:[0.15,0.95,0.25], orbit:'l2',
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
+    color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['> 12','m de haut'], optical:['ota','instr'],
+    compare:{ order:3, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
