@@ -209,6 +209,46 @@ var MISSION = {
       ['nov. 2009','Nov 2009',['Spitzer Heritage Archive','Spitzer Heritage Archive'],"L'interface web de l'archive sert aussi les données propriétaires et devient l'archive de Spitzer.","The archive's web interface also serves proprietary data and becomes the Spitzer archive.",'thb',false]
     ]
   },
+  fermi: {
+    checked:'2026-11-19',
+    refs:{
+      doe:{ t:'GLAST Observatory Renamed for Fermi, Reveals Entire Gamma-Ray Sky (26 août 2008)', p:'U.S. Department of Energy, Office of Science', u:'https://science.osti.gov/Science-Features/News-Archive/Science-Headlines/2008/08-26-08' },
+      ligo:{ t:'Gravitational Waves and Gamma-Rays from a Binary Neutron Star Merger: GW170817 and GRB 170817A', p:'LIGO, Virgo, Fermi-GBM et INTEGRAL', u:'https://ligo.org/wp-content/uploads/2024/07/GW170817GRB.pdf' },
+      prep:{ t:'Fermi LAT, Data Preparation', p:'Fermi Science Support Center', u:'https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/data_preparation.html' },
+      dr4:{ t:'Ballet et al. 2023, Fermi Large Area Telescope Fourth Source Catalog Data Release 4 (4FGL-DR4)', p:'arXiv:2307.12546', u:'https://arxiv.org/abs/2307.12546' }
+    },
+    intro:["Fermi est une mission de la NASA menée avec le département de l'Énergie des États-Unis et des partenaires en France, en Allemagne, en Italie, au Japon et en Suède. Le Fermi Science Support Center, à Goddard, distribue les données, toutes publiques, et les logiciels pour les analyser.",
+           "Fermi is a NASA mission run with the U.S. Department of Energy and partners in France, Germany, Italy, Japan and Sweden. The Fermi Science Support Center, at Goddard, distributes the data, all public, and the software to analyse them."],
+    phases:[
+      ['11 juin 2008','11 Jun 2008','Lancement','Launch',"Une Delta II Heavy le lance depuis Cap Canaveral, sous le nom de GLAST, vers une orbite basse à environ 565 km.","A Delta II Heavy launches it from Cape Canaveral, under the name GLAST, into a low orbit at about 565 km.",['fs','cic']],
+      ['26 août 2008','26 Aug 2008','Il devient Fermi','It becomes Fermi',"GLAST prend le nom d'Enrico Fermi. Première carte du ciel gamma, obtenue en 95 heures d'observation ; le GBM a déjà vu 31 sursauts.","GLAST is renamed after Enrico Fermi. First map of the gamma-ray sky, made from 95 hours of observation; the GBM has already seen 31 bursts.",'doe'],
+      ['août 2009','Aug 2009','Données du LAT publiques','LAT data public',"Environ 14 mois après le lancement, les photons du LAT deviennent publics, comme ceux du GBM depuis le début.","About 14 months after launch, the LAT photons become public, like those of the GBM from the start.",'cic'],
+      ['17 août 2017','17 Aug 2017','GW170817','GW170817',"Le GBM détecte un sursaut gamma court 1,7 s après les ondes gravitationnelles de la fusion de deux étoiles à neutrons : première observation commune.","The GBM detects a short gamma-ray burst 1.7 s after the gravitational waves from the merger of two neutron stars: the first joint observation.",'ligo'],
+      ['2018','2018','Panneau bloqué','Array stuck',"Une anomalie du mécanisme d'orientation d'un panneau solaire limite désormais fortement les pivotements rapides vers les sursauts.","An anomaly in a solar array drive now severely limits fast repointing towards bursts.",'cic'],
+      ['2023','2023','Catalogue 4FGL-DR4','4FGL-DR4 catalogue',"14 ans de données du LAT : 7 194 sources gamma, dont 546 nouvelles.","14 years of LAT data: 7,194 gamma-ray sources, 546 of them new.",'dr4']
+    ],
+    ops:[
+      ['Programme','Programme','NASA, avec le département de l\'Énergie','NASA, with the Department of Energy','fs'],
+      ['Données et outils','Data and tools','Fermi Science Support Center (NASA Goddard)','Fermi Science Support Center (NASA Goddard)','cic'],
+      ['Liaison','Downlink','bande Ku, 40 Mbit/s, 10 à 11 contacts par jour','Ku band, 40 Mbit/s, 10 to 11 contacts a day','cic'],
+      ['Accès','Access','toutes les données sont publiques','all data are public','cic'],
+      ['Logiciel','Software','Fermitools (LAT)','Fermitools (LAT)','prep']
+    ],
+    chain:{
+      intro:["Le LAT produit des listes de photons. L'analyse part du fichier de photons et du fichier de pointage, puis applique des sélections standard avant de mesurer flux et spectres.",
+             "The LAT produces photon lists. Analysis starts from the photon file and the pointing file, then applies standard selections before measuring fluxes and spectra."],
+      steps:[
+        { lv:'_PH', n:['Fichier de photons','Photon file'], x:['Les photons d\'une région, d\'une période et d\'un domaine d\'énergie, tirés du LAT Data Server.','The photons of a region, a period and an energy range, from the LAT Data Server.'], r:'prep' },
+        { lv:'_SC', n:['Fichier de pointage','Pointing file'], x:['L\'historique de la direction du satellite et du temps de pose, indispensable pour l\'exposition.','The history of the spacecraft pointing and of the exposure time, needed for the exposure.'], r:'prep' },
+        { lv:'gtselect', n:['Sélection','Selection'], x:['Classe d\'événements, énergie, région ; photons à plus de 90° du zénith écartés (lueur de la Terre).','Event class, energy, region; photons more than 90° from the zenith removed (Earth glow).'], sw:'Fermitools', r:'prep' },
+        { lv:'gtmktime', n:['Bons intervalles','Good time intervals'], x:['Ne garde que les périodes où les données et la configuration du LAT sont bonnes.','Keeps only the periods when the data and the LAT configuration are good.'], sw:'Fermitools', r:'prep' },
+        { lv:'4FGL', n:['Catalogue','Catalogue'], x:['Détection et caractérisation de toutes les sources sur l\'ensemble des données : 4FGL-DR4, 14 ans.','Detection and characterisation of all sources over the whole data set: 4FGL-DR4, 14 years.'], r:'dr4' }
+      ]
+    },
+    rel:[
+      ['2023','2023',['4FGL-DR4','4FGL-DR4'],"7 194 sources gamma, 14 ans de données, de 50 MeV à 1 TeV.","7,194 gamma-ray sources, 14 years of data, from 50 MeV to 1 TeV.",'dr4',false]
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

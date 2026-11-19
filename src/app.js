@@ -31,14 +31,15 @@ if (hasGL){
 function orbitSvg(t){
   var F = 'font-family="Archivo, Arial, sans-serif"';
   if (t.orbit === 'leo'){
+    var kk = 60/6371, ro = ((6371 + t.leo.alt)*kk).toFixed(1);
     return '<svg viewBox="0 0 340 150" role="img" aria-label="Orbite basse terrestre, à l\'échelle">' +
       '<circle cx="92" cy="75" r="60" fill="#2C5E9E"/>' +
-      '<circle cx="92" cy="75" r="65" fill="none" stroke="#14171A" stroke-width="1.5"/>' +
+      '<circle cx="92" cy="75" r="' + ro + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (t.ended ? ' stroke-dasharray="3 3"' : '') + '/>' +
       '<circle cx="138" cy="29" r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"/>' +
       '<path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>' +
-      '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>Hubble</text>' +
-      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ 480 km d\'altitude</text>' +
-      '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les 95 min.</text>' +
+      '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
+      '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ ' + t.leo.alt + ' km d\'altitude</text>' +
+      '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les ' + String(t.leo.per).replace('.', ',') + ' min.</text>' +
       '<text x="190" y="93" fill="#3A4147" font-size="12" ' + F + '>Terre et orbite dessinées</text>' +
       '<text x="190" y="110" fill="#3A4147" font-size="12" ' + F + '>à la même échelle.</text></svg>';
   }
@@ -191,7 +192,7 @@ function renderPanel(){
         '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
         TELESCOPES.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
-            '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m</div></td>' +
+            '<td>' + (x.cmp.mirror == null ? '<span class="na">sans miroir</span>' : '<div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m</div>') + '</td>' +
             '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + (x.cmp.approx ? '≈ ' : '') + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +

@@ -35,7 +35,7 @@ var InstrumentsUI = (function(){
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function num(v, d){ var t = v.toFixed(d); if (t.indexOf('.') >= 0) t = t.replace(/0+$/,'').replace(/\.$/,''); return OBS_LANG === 'en' ? t : t.replace('.', ','); }
-  function wl(um){ return um < 1 ? num(um*1000, um*1000 < 200 ? 1 : 0) + ' nm' : num(um, 2) + ' µm'; }
+  function wl(um){ if (um < 2e-5) return ener(um); return um < 1 ? num(um*1000, um*1000 < 200 ? (um*1000 < 1 ? 3 : 1) : 0) + ' nm' : num(um, 2) + ' µm'; }
   function ang(a){ return a >= 3600 ? num(a/3600, 2) + '°' : a >= 120 ? num(a/60, 1) + '′' : num(a, 1) + '″'; }
   function get(tid, iid){ var a = INST_DATA[tid].instruments; for (var i=0;i<a.length;i++) if (a[i].id===iid) return a[i]; return null; }
 
@@ -52,15 +52,21 @@ var InstrumentsUI = (function(){
     var a = Math.log(min), b = Math.log(max);
     this.x = function(v){ v = Math.max(min, Math.min(max, v)); return x0 + (Math.log(v)-a)/(b-a)*(x1-x0); };
     this.min = min; this.max = max;
-    var cand = [0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30,50,70,100,150,200], out = [], last = -99;
+    /* rayons gamma : graduations par décades d'énergie (100 GeV à 100 keV), converties en longueur d'onde */
+    var gam = [1e8,1e7,1e6,1e5,1e4,1e3,1e2].map(function(k){ return 0.0012398/k; });
+    var cand = gam.concat([0.0001,0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.2,1.5,2,3,4,5,7,10,15,20,25,30,50,70,100,150,200]), out = [], last = -99;
     for (var i=0;i<cand.length;i++){ var v = cand[i]; if (v < min*0.999 || v > max*1.001) continue; var px = this.x(v); if (px - last < 46) continue; out.push(v); last = px; }
     this.ticks = out;
     /* axe qui descend dans les rayons X : graduations avec leur unité (nm ou µm), et énergie en keV sur un axe purement X */
-    this.xray = min < 0.05; this.xonly = max < 0.1;
-    this.lab = function(v){ return this.xray ? wl(v) : num(v, 2); };
+    this.xray = min < 0.05; this.xonly = max < 0.1; this.gamma = min < 1e-5;
+    /* au-delà de ≈ 100 keV, l'énergie parle plus que la longueur d'onde : on l'écrit à sa place */
+    this.lab = function(v){ return v < 2e-5 ? ener(v) : this.xray ? wl(v) : num(v, 2); };
   }
   function keV(um){ var e = 0.0012398/um; return (e >= 10 ? num(e, 0) : e >= 1 ? num(e, 1) : num(e, 2)) + ' keV'; }
-  function unitText(ax){ return ax.xray ? 'longueur d\'onde, échelle logarithmique' + (ax.xonly ? ' · énergie des photons en dessous' : '') : 'longueur d\'onde (µm), échelle logarithmique'; }
+  function ener(um){ var e = 0.0012398/um, u = ' keV'; if (e >= 1e6){ e /= 1e6; u = ' GeV'; } else if (e >= 1e3){ e /= 1e3; u = ' MeV'; } return (e >= 10 ? num(e, 0) : num(e, 1)) + u; }
+  function unitText(ax){
+    if (ax.gamma && ax.max < 2e-4) return 'énergie des photons, échelle logarithmique';
+    return ax.xray ? 'longueur d\'onde, échelle logarithmique' + (ax.gamma ? ' ; énergie des photons pour les rayons gamma' : ax.xonly ? ' · énergie des photons en dessous' : '') : 'longueur d\'onde (µm), échelle logarithmique'; }
   function visibleBand(ax, y, h){
     if (ax.max < 0.4 || ax.min > 0.75) return '';
     var a = ax.x(0.38), b = ax.x(0.75);
@@ -89,7 +95,7 @@ var InstrumentsUI = (function(){
     var H = y + 30 + (ax.xonly ? 13 : 0), s = '<svg class="cov" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale des instruments">' + GRAD;
     s += visibleBand(ax, 22, y-22);
     if (ax.max >= 0.4 && ax.min <= 0.75) s += '<text class="cov-vis" x="'+((ax.x(0.38)+ax.x(0.75))/2)+'" y="14" text-anchor="middle">visible</text>';
-    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="22" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+ax.lab(v)+'</text>' + (ax.xonly ? '<text class="cov-tick" x="'+x+'" y="'+(y+28)+'" text-anchor="middle">'+keV(v)+'</text>' : ''); });
+    ax.ticks.forEach(function(v){ var x = ax.x(v); s += '<line class="cov-grid" x1="'+x+'" y1="22" x2="'+x+'" y2="'+y+'"/><text class="cov-tick" x="'+x+'" y="'+(y+15)+'" text-anchor="middle">'+ax.lab(v)+'</text>' + (ax.xonly && !ax.gamma ? '<text class="cov-tick" x="'+x+'" y="'+(y+28)+'" text-anchor="middle">'+keV(v)+'</text>' : ''); });
     s += '<line class="cov-axis" x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'"/><text class="cov-unit" x="'+(W-R)+'" y="'+(y+(ax.xonly ? 41 : 27))+'" text-anchor="end">'+unitText(ax)+'</text>';
     rows.forEach(function(r){
       s += '<g class="cov-row'+(r.it.id===sel?' sel':'')+'" data-inst="'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
@@ -275,19 +281,20 @@ var InstrumentsUI = (function(){
   /* ---------- comparaison entre observatoires ---------- */
   /* champ le plus grand d'un observatoire au-delà de 1 200″ : la figure montre la pleine Lune (même règle que fovBlock) */
   function bigFovTele(tid){ var e = 0; INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); return e > 1200; }
-  var SAMP = { spitzer:{ irac:'1,2″', irs:'1,8″ à 5,1″', mips:'2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)' }, chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
+  var SAMP = { fermi:{ lat:'sans objet', gbm:'sans objet' }, spitzer:{ irac:'1,2″', irs:'1,8″ à 5,1″', mips:'2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)' }, chandra:{ acis:'0,492″', hrc:'≈ 0,4″ (résolution)', hetg:'lu par ACIS-S', letg:'lu par HRC-S ou ACIS-S' }, hubble:{ wfc3:'0,040″ (UVIS) · 0,13″ (IR)', acs:'0,05″ (WFC)', stis:'0,025″ (MAMA) · 0,05″ (CCD)', cos:'sans objet', fgs:'sans objet' },
                jwst:{ nircam:'0,031″ (SW) · 0,063″ (LW)', nirspec:'0,1″', miri:'0,11″', niriss:'0,066″', fgs:'≈ 0,069″' },
                euclid:{ vis:'0,1″', nisp:'0,3″' }, gaia:{ astro:'0,059″ × 0,177″', bprp:'sans objet', rvs:'sans objet' }, roman:{ wfi:'0,11″', cgi:'sans objet' } };
-  var RES = { spitzer:{ irs:'64 à 128 (SL, LL) · ≈ 600 (SH, LH)', mips:'15 à 25 (mode SED)' }, chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
+  var RES = { fermi:{ lat:'ΔE/E ≈ 4 % à 5 GeV · 2 % à 196 GeV' }, spitzer:{ irs:'64 à 128 (SL, LL) · ≈ 600 (SH, LH)', mips:'15 à 25 (mode SED)' }, chandra:{ hetg:'65 à 1 070 (HEG) · 80 à 970 (MEG)', letg:'≥ 1 000 entre 50 et 160 Å', hrc:'E/ΔE ≈ 1 à 1 keV' }, hubble:{ wfc3:'130–210 (grismes IR)', stis:'500 à 114 000', cos:'1 500 à 24 000' },
               jwst:{ nircam:'≈ 1 600 (grisme LW)', nirspec:'100 à 2 700', miri:'100 à 3 250', niriss:'150 à 700' },
               euclid:{ nisp:'> 480 (grismes rouges)' }, gaia:{ bprp:'prisme, 3–27 nm/px', rvs:'≈ 11 700' }, roman:{ wfi:'80 à 180 (prisme) · ≈ 460 à 890 (grisme)' } };
-  function range(it){ if (!it.bands) return 'guidage'; return wl(Math.min.apply(null, it.bands.map(function(b){return b.lo;}))) + ' – ' + wl(Math.max.apply(null, it.bands.map(function(b){return b.hi;}))); }
+  function range(it){ if (!it.bands) return 'guidage'; var lo = Math.min.apply(null, it.bands.map(function(b){return b.lo;})), hi = Math.max.apply(null, it.bands.map(function(b){return b.hi;}));
+    return hi < 2e-5 ? ener(hi) + ' – ' + ener(lo) : wl(lo) + ' – ' + wl(hi); }   /* rayons gamma : en énergie, de la plus basse à la plus haute */
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 
   function cmpCoverage(){
     /* axe commun : des rayons X (Chandra) à l'infrarouge moyen, si un observatoire du registre descend sous 0,09 µm */
-    var lo = 0.09; ORDER.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); });
-    var W = 1000, L = 172, R = 14, ax = new Axis(lo, 30, L, W-R), y = 40, rows = [], seps = [];
+    var lo = 0.09, hi = 30; ORDER.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); hi = Math.max(hi, INST_DATA[t].axis.max); });
+    var W = 1000, L = 172, R = 14, ax = new Axis(lo, hi, L, W-R), y = 40, rows = [], seps = [];
     ORDER.forEach(function(tid){
       var first = true; seps.push(y);
       INST_DATA[tid].instruments.forEach(function(it){
@@ -302,7 +309,9 @@ var InstrumentsUI = (function(){
       y += 6;
     });
     var H = y + 30, s = '<svg class="cov big" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Couverture spectrale de tous les instruments">' + GRAD + visibleBand(ax, 32, y-32);
-    (lo < 0.05 ? [['rayons X',lo,0.01],['ultraviolet',0.01,0.38]] : [['ultraviolet',0.09,0.38]]).concat([['visible',0.38,0.75],['proche infrarouge',0.75,5],['infrarouge moyen',5,30]]).forEach(function(r){
+    /* régions du spectre ; rayons gamma au-delà de ≈ 100 keV (λ < 1,24·10⁻⁵ µm) */
+    var reg = lo < 1e-5 ? [['rayons gamma',lo,1.24e-5],['rayons X',1.24e-5,0.01],['ultraviolet',0.01,0.38]] : lo < 0.05 ? [['rayons X',lo,0.01],['ultraviolet',0.01,0.38]] : [['ultraviolet',0.09,0.38]];
+    reg.concat([['visible',0.38,0.75],['proche IR',0.75,5],['IR moyen',5,30]], hi > 30 ? [['IR lointain',30,hi]] : []).forEach(function(r){
       s += '<text class="cov-reg" x="'+((ax.x(r[1])+ax.x(r[2]))/2)+'" y="14" text-anchor="middle">'+r[0]+'</text>';
       if (r[1] > lo) s += '<line class="cov-grid" stroke-dasharray="3 3" x1="'+ax.x(r[1])+'" y1="20" x2="'+ax.x(r[1])+'" y2="'+y+'"/>';
     });
@@ -346,7 +355,7 @@ var InstrumentsUI = (function(){
 
   function compare(){
     var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<p class="inst-sum">Chandra observe les rayons X, des photons des dizaines à des milliers de fois plus énergétiques que la lumière visible. Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
+      '<p class="inst-sum">Fermi capte les rayons gamma, des dizaines de millions à des centaines de milliards de fois plus énergétiques que la lumière visible, et Chandra les rayons X. Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen, Spitzer allait jusqu\'à l\'infrarouge lointain. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
     var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
     s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Tous les observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +

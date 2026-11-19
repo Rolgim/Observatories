@@ -18,7 +18,8 @@ var Orbits = (function(){
   /* type d'orbite de chaque observatoire : registre de data-tele.js */
   var T_ORBIT = {}; TELESCOPES.forEach(function(t){ T_ORBIT[t.id] = t.orbit; });
   var TEXT = {
-    hubble:{ sum:'Hubble tourne à environ 480 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
+    hubble:{ leo:{ r:6851, per:95, rows:[['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']] },
+      sum:'Hubble tourne à environ 480 km au-dessus du sol, en 95 minutes. La Terre occupe presque la moitié de son ciel, et lui cache le Soleil à chaque tour.',
       notes:['La Terre masque la plupart des cibles pendant une partie de chaque orbite : une pose longue est découpée en tranches d\'une cinquantaine de minutes.',
              'Seules deux petites régions du ciel, près des pôles de l\'orbite, restent visibles en continu. Les champs profonds de Hubble y ont été choisis.',
              'Le passage jour–nuit toutes les 95 minutes fait travailler la structure : c\'est ce qui faisait vibrer les premiers panneaux solaires.',
@@ -41,6 +42,11 @@ var Orbits = (function(){
              'Loin de la Terre, de longues poses ininterrompues sont possibles, contrairement à Hubble que la Terre masque à chaque tour.',
              'L\'orbite se déforme lentement sous l\'attraction de la Lune et du Soleil : le périgée est descendu à 1 045 km en juillet 2023, puis remonté à environ 6 680 km en 2025.',
              'Pour protéger ses instruments de la chaleur, les longues observations sont découpées en tranches d\'au plus 30 ks environ.'] },
+    fermi:{ leo:{ r:6936, per:96.5, rows:[['Altitude','≈ 565 km au lancement (valeur du jour ci-dessus)'],['Période','96,5 min'],['Inclinaison','25,6°'],['Précession de l\'orbite','53,4 jours'],['Anomalie de l\'Atlantique Sud','≈ 15 % du temps d\'observation perdu']] },
+      sum:'Fermi tourne à environ 565 km d\'altitude, en 96,5 minutes, sur une orbite inclinée de 25,6° sur l\'équateur. Il ne vise pas une cible : il balaie le ciel.',
+      notes:['En mode relevé, l\'axe du LAT est incliné d\'environ 50° vers le nord pendant une orbite, puis vers le sud pendant la suivante : en deux orbites, environ trois heures, tout le ciel est couvert.',
+             'La Terre, très brillante en rayons gamma à cause des rayons cosmiques qui frappent son atmosphère, est évitée : les photons venant de plus de 90° du zénith sont écartés.',
+             'Le satellite traverse régulièrement l\'anomalie de l\'Atlantique Sud, où les particules piégées sont si nombreuses qu\'il faut couper les instruments : environ 15 % du temps est perdu.'] },
     spitzer:{ sum:'Spitzer ne tournait pas autour de la Terre : il tournait autour du Soleil, sur une orbite un peu plus lente que celle de la Terre. Il est donc resté dans son sillage, en s\'en éloignant d\'environ 0,12 UA par an.',
       notes:['Loin de la Terre, qui rayonne beaucoup d\'infrarouge, le télescope se refroidissait mieux et l\'hélium durait plus longtemps.',
              'Le Soleil et la Terre restent à peu près du même côté : le panneau solaire faisait écran pour tout le télescope. Spitzer ne visait qu\'entre 82,5° et 120° du Soleil.',
@@ -58,6 +64,7 @@ var Orbits = (function(){
     euclid:{ lo:87, hi:104, cap:'Euclid vise presque perpendiculairement au Soleil : angle d\'aspect solaire de 87° à 104° dans la pratique du relevé (Euclid I, sect. 4.1.1). D\'où une bande étroite, qui fait le tour du ciel en un an.' },
     chandra:{ lo:46.2, hi:180, cap:'Chandra ne vise jamais à moins de 46,2° du Soleil, contrainte qui ne peut être levée ; environ 15 % du ciel est inaccessible un jour donné, mais aucune région ne l\'est plus de trois mois. La Lune (6°) et le bord éclairé de la Terre (10°) ajoutent de petites exclusions, non représentées (POG, contraintes de visibilité).' },
     roman:{ lo:54, hi:126, cap:'Roman peut viser entre 54° et 126° du Soleil, en tournant librement autour de la direction du Soleil (NASA Goddard, Observatory Technical Overview).' },
+    fermi:{ lo:0, hi:180, cap:'Fermi ne vise pas de cible : en mode relevé, il balaie le ciel entier en deux orbites, environ trois heures. Seule la Terre, sous le satellite, masque une partie du ciel (Fermi Cicerone).' },
     spitzer:{ lo:82.5, hi:120, cap:'Spitzer ne visait qu\'entre 82,5° et 120° du Soleil, pour garder le télescope à l\'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).' },
     gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
   };
@@ -127,10 +134,10 @@ var Orbits = (function(){
   function render(tid, name){
     var t = TEXT[tid], s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Orbite</div><div class="inst-full">'+name+' : où il se trouve et comment il se déplace</div></div><p class="inst-sum">'+t.sum+'</p></div><div class="inst-cols">';
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
-    if (tid === 'hubble'){
-      s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de Hubble autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
-      s += '<div class="isec"><h4>Où est Hubble en ce moment</h4>'+cv('track', 560, 300, 'Position de Hubble au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
-      s += '<div class="isec"><h4>Paramètres</h4>'+rows([['Altitude','≈ 470 km, en baisse (valeur du jour ci-dessus)'],['Période','≈ 95 min'],['Vitesse','≈ 7,6 km/s'],['Inclinaison','28,5°'],['Tours par jour','≈ 15'],['Dans l\'ombre de la Terre','au plus ≈ 36 min par tour (calculé)']])+'</div>';
+    if (T_ORBIT[tid] === 'leo'){
+      s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
+      s += '<div class="isec"><h4>Où est '+name+' en ce moment</h4>'+cv('track', 560, 300, 'Position de '+name+' au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
+      s += '<div class="isec"><h4>Paramètres</h4>'+rows(t.leo.rows)+'</div>';
     } else if (T_ORBIT[tid] === 'heo'){
       s += '<div class="isec"><h4>Une orbite, vue du nord de l\'écliptique</h4>'+cv('heo', 560, 400, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à la même échelle (l\'orbite de la Lune, à 384 400 km, sort du cadre). Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s\'arrêtent.</div></div>';
       s += '<div class="isec"><h4>Mesuré sur la trajectoire</h4><div data-orb-stats><div class="cap">Chargement de la trajectoire…</div></div></div>';
@@ -158,15 +165,15 @@ var Orbits = (function(){
   function prep(c){ var d = Math.min(window.devicePixelRatio || 1, 2), w = +c.getAttribute('width'), h = +c.getAttribute('height'); if (!c._w){ c._w = w; c._h = h; c.width = w*d; c.height = h*d; } var g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); return g; }
   function label(g, s, x, y, bold, align){ g.font = (bold ? '700 ' : '') + '12px Archivo, Arial, sans-serif'; g.textAlign = align || 'left'; g.fillText(OBS_T(s), x, y); }
 
-  function drawLeo(c, tmin){
-    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/6851, re = 6371*k, ro = 6851*k;
+  function drawLeo(c, tmin, L){
+    var g = prep(c), W = c._w, H = c._h, cx = W/2 - 10, cy = H/2, k = 150/L.r, re = 6371*k, ro = L.r*k;
     var ink = css('--ink'), mute = css('--mute');
     g.clearRect(0, 0, W, H);
     g.fillStyle = css('--rule'); g.globalAlpha = 0.55; g.fillRect(cx, cy - re, W - cx, 2*re); g.globalAlpha = 1;
     g.fillStyle = '#2C5E9E'; g.beginPath(); g.arc(cx, cy, re, 0, 6.2832); g.fill();
     g.fillStyle = 'rgba(0,0,0,0.45)'; g.beginPath(); g.arc(cx, cy, re, -Math.PI/2, Math.PI/2); g.fill();
     g.strokeStyle = ink; g.lineWidth = 1.2; g.beginPath(); g.arc(cx, cy, ro, 0, 6.2832); g.stroke();
-    var a = Math.PI + tmin/95*6.2832, x = cx + ro*Math.cos(a), y = cy - ro*Math.sin(a), dark = Math.cos(a) > 0 && Math.abs(ro*Math.sin(a)) < re;
+    var a = Math.PI + tmin/L.per*6.2832, x = cx + ro*Math.cos(a), y = cy - ro*Math.sin(a), dark = Math.cos(a) > 0 && Math.abs(ro*Math.sin(a)) < re;
     g.fillStyle = dark ? mute : '#FFD21F'; g.strokeStyle = ink; g.lineWidth = 1.5; g.beginPath(); g.arc(x, y, 6, 0, 6.2832); g.fill(); g.stroke();
     g.fillStyle = ink; label(g, 'Soleil', 8, cy - 8, true); g.strokeStyle = ink; g.beginPath(); g.moveTo(8, cy); g.lineTo(52, cy); g.stroke(); g.beginPath(); g.moveTo(52, cy); g.lineTo(44, cy-4); g.lineTo(44, cy+4); g.fill();
     g.fillStyle = mute; label(g, 'ombre de la Terre', W - 8, cy - re - 8, false, 'right');
@@ -309,7 +316,7 @@ var Orbits = (function(){
       curve(function(l){ var c = Math.cos(l), s = Math.sin(l); return [R[0][0]*c + R[1][0]*s, R[0][1]*c + R[1][1]*s, R[0][2]*c + R[1][2]*s]; }, [7, 4], 'plan de la Galaxie');
     }
     var track = root.querySelector('[data-orb="track"]');
-    if (track) Promise.all([loadSat(), loadJSON('data/land-110m.json'), loadJSON('data/hubble-tle.json')]).then(function(r){
+    if (track) Promise.all([loadSat(), loadJSON('data/land-110m.json'), loadJSON('data/' + tid + '-tle.json')]).then(function(r){
       var rd = root.querySelector('[data-track-read]'), stats = root.querySelector('[data-track-stats]');
       if (!r[0] || !r[1] || !r[2]){ rd.textContent = OBS_T('Éléments orbitaux indisponibles pour le moment.'); return; }
       var tle = r[2], st = { rec:r[0].twoline2satrec(tle.line1, tle.line2) }, age = (Date.now() - Date.parse(tle.epoch))/86400000, fmt = function(x, d){ return x.toFixed(d).replace('.', OBS_LANG === 'en' ? '.' : ','); };
@@ -358,7 +365,7 @@ var Orbits = (function(){
       if (sky && skyD) skyFrame(Math.min(0.1, (now - last)/1000));
       requestAnimationFrame(frame);
       var dt = Math.min(0.1, (now - last)/1000); last = now; if (playing) sim += dt;
-      if (leo){ var tm = sim*9.5 % 95, dark = drawLeo(leo, tm); if (read) read.textContent = 'minute ' + Math.floor(tm) + ' sur 95, ' + (dark ? 'dans l\'ombre' : 'au soleil'); }
+      if (leo){ var LP = TEXT[tid].leo, tm = sim*9.5 % LP.per, dark = drawLeo(leo, tm, LP); if (read) read.textContent = 'minute ' + Math.floor(tm) + ' sur ' + Math.round(LP.per) + ', ' + (dark ? 'dans l\'ombre' : 'au soleil'); }
       if (body && helio){ var nq = body.x.length, iq = Math.floor(sim*6) % nq; drawHelio(helio, body, iq); if (read) read.textContent = date(body.jd0 + iq*body.step_days) + ' · ' + OBS_NUM(body.d_earth[iq].toFixed(2).replace('.', ',')) + ' ' + OBS_T('UA de la Terre'); }
       else if (body && heo){ var nh = body.x.length, ih = Math.floor(sim*1.2/body.step_days) % nh; drawHeo(heo, body, ih); if (read){ var jdh = body.jd0 + ih*body.step_days, dh = new Date((jdh - 2440587.5)*86400000); read.textContent = date(jdh) + ' ' + ('0'+dh.getUTCHours()).slice(-2) + ':' + ('0'+dh.getUTCMinutes()).slice(-2) + ' UTC · ' + fr(Math.hypot(body.x[ih], body.y[ih], body.z[ih])*1000) + ' km'; } }
       else if (body){ var n = body.x.length, i = Math.floor(sim*36/body.step_days) % n; drawL2(front, body, i, 'front'); drawL2(top, body, i, 'top'); if (read) read.textContent = date(body.jd0 + i*body.step_days); }

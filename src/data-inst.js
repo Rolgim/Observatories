@@ -753,6 +753,82 @@ var INST_DATA = (function(){
         docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] }
     ]
   },
+  fermi: {
+    checked:'2026-11-19',
+    refs:{
+      fs:{ t:"Fermi Gamma-ray Space Telescope, fiche de mission", p:"NASA Goddard", u:"https://imagine.gsfc.nasa.gov/educators/programs/fermi/multimedia/docs/fermi_fact_sheet.pdf" },
+      atw:{ t:"Atwood et al. 2009, The Large Area Telescope on the Fermi Gamma-ray Space Telescope Mission, ApJ 697, 1071", p:"ApJ", u:"https://arxiv.org/abs/0902.1089" },
+      meg:{ t:"Meegan et al. 2009, The Fermi Gamma-ray Burst Monitor, ApJ 702, 791", p:"ApJ", u:"https://arxiv.org/abs/0908.0450" },
+      gbm:{ t:"Fermi GBM, description de l'instrument", p:"NASA Goddard", u:"https://fermi.gsfc.nasa.gov/science/instruments/gbm.html" },
+      prep:{ t:"Fermi LAT, Data Preparation", p:"Fermi Science Support Center", u:"https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/data_preparation.html" },
+      dr4:{ t:"Ballet et al. 2023, Fermi Large Area Telescope Fourth Source Catalog Data Release 4 (4FGL-DR4)", p:"arXiv:2307.12546", u:"https://arxiv.org/abs/2307.12546" }
+    },
+    axis: { min:3e-12, max:2e-4 },
+    summary: "Deux instruments qui se complètent. Le LAT détecte les rayons gamma de haute énergie, de 20 MeV à plus de 300 GeV, sur un cinquième du ciel à la fois. Le GBM couvre les énergies plus basses, de 8 keV à 40 MeV, sur tout le ciel non caché par la Terre, et repère les sursauts gamma. Comme Chandra, Fermi compte les photons un à un : ses données de base sont des listes d'événements.",
+    archives: [
+      { label:"LAT Data Server (FSSC)", url:"https://fermi.gsfc.nasa.gov/cgi-bin/ssc/LAT/LATDataQuery.cgi", desc:"Photons du LAT et historique de pointage, par région du ciel, période et énergie." },
+      { label:"Catalogue 4FGL-DR4", url:"https://fermi.gsfc.nasa.gov/ssc/data/access/lat/14yr_catalog/", desc:"7 194 sources gamma détectées en 14 ans de LAT." },
+      { label:"HEASARC, catalogues de Fermi", url:"https://heasarc.gsfc.nasa.gov/W3Browse/fermi/", desc:"Catalogues des sources et des sursauts, données du GBM." },
+      { label:"Fermitools", url:"https://github.com/fermi-lat/Fermitools-conda", desc:"Logiciels d'analyse des données du LAT." }
+    ],
+    instruments: [
+      { id:"lat", name:"LAT", full:"Large Area Telescope", kind:"Télescope gamma à conversion de paires",
+        bands:[ {l:"LAT",lo:4.133e-12,hi:6.199e-8} ],
+        use:"Cartographier le ciel gamma : pulsars, restes de supernovae, noyaux actifs de galaxies dont le jet pointe vers nous, et la lueur diffuse de la Galaxie.",
+        summary:"Seize tours identiques, chacune faite d'un trajectographe au-dessus d'un calorimètre, entourées d'un bouclier de scintillateurs. Le photon se convertit en paire électron–positon dans le tungstène ; la trace de la paire donne sa direction, le calorimètre son énergie.",
+        specs:[
+          ["Domaine", "20 MeV à plus de 300 GeV", ["fs","atw"]],
+          ["Champ", "2,4 sr à 1 GeV, ≈ 20 % du ciel", ["atw","fs"]],
+          ["Trajectographe", "18 plans x–y de silicium par tour · feuilles de tungstène dans les 16 premiers", "atw"],
+          ["Calorimètre", "96 cristaux de CsI(Tl) par tour en 8 couches · 8,6 longueurs de radiation", "atw"],
+          ["Résolution en énergie", "≈ 4 % à 5 GeV · ≈ 2 % à 196 GeV (faisceaux d'essai)", "atw"],
+          ["Datation", "± 1,5 µs (GPS)", "atw"]
+        ],
+        products:[
+          ["Fichier de photons (_PH)","un événement par photon : énergie, direction, instant, classe"],
+          ["Fichier de pointage (_SC)","historique de la direction et du temps de pose"],
+          ["4FGL-DR4","catalogue de 7 194 sources, 14 ans de données"]
+        ],
+        example:{ real:false, title:"Colonnes d'un fichier de photons du LAT (extrait)", caption:"Structure réelle des fichiers de photons ; valeurs illustratives.", text:
+"ENERGY (MeV)  RA (°)      DEC (°)   L (°)      B (°)     TIME (s)          EVENT_CLASS\n" +
+"  1532.7      193.913     −5.770    305.137    57.046    2.4113051e+08     128\n" +
+"   284.1      194.402     −6.120    306.182    56.712    2.4113104e+08     128\n" +
+"\n" +
+"→ une ligne par photon : cartes, spectres et courbes de lumière se construisent ensuite en regroupant les photons." },
+        code:{ title:"Préparer des données du LAT (Fermitools)", text:
+"# photons et pointage téléchargés depuis le LAT Data Server\n" +
+"gtselect evfile=@events.txt outfile=sel.fits ra=193.98 dec=-5.82 rad=20 \\\n" +
+"         tmin=INDEF tmax=INDEF emin=100 emax=500000 zmax=90 evclass=128 evtype=3\n" +
+"gtmktime scfile=SC00.fits filter=\"(DATA_QUAL>0)&&(LAT_CONFIG==1)\" roicut=no \\\n" +
+"         evfile=sel.fits outfile=gti.fits" },
+        notes:["Le LAT ne vise pas : il balaie le ciel entier en deux orbites, environ trois heures. Chaque région est donc revue plusieurs fois par jour, ce qui permet de suivre les éruptions des noyaux actifs de galaxies."],
+        docs:[ {l:"Atwood et al. 2009",u:"https://arxiv.org/abs/0902.1089"}, {l:"Préparation des données",u:"https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/data_preparation.html"} ] },
+
+      { id:"gbm", name:"GBM", full:"Gamma-ray Burst Monitor", kind:"Moniteur de sursauts gamma",
+        bands:[ {l:"NaI",lo:1.2398e-6,hi:1.5498e-4}, {l:"BGO",lo:3.0995e-8,hi:6.199e-6} ],
+        use:"Guetter les sursauts gamma, ces éclairs de quelques secondes qui viennent de la mort d'étoiles massives ou de la fusion d'étoiles à neutrons, et donner l'alerte aux autres télescopes.",
+        summary:"Quatorze scintillateurs orientés dans toutes les directions : douze cristaux d'iodure de sodium (NaI) pour les basses énergies, deux de germanate de bismuth (BGO) pour les hautes. Le rapport des signaux entre détecteurs donne la direction du sursaut.",
+        specs:[
+          ["Détecteurs", "12 NaI (Ø 12,7 cm, 1,27 cm) · 2 BGO (Ø 12,7 cm, 12,7 cm)", ["meg","gbm"]],
+          ["Domaine", "≈ 8 keV à 40 MeV : NaI jusqu'à ≈ 1 MeV, BGO au-delà", ["meg","gbm"]],
+          ["Champ", "plus de 8 sr, tout le ciel non caché par la Terre", ["gbm","meg"]],
+          ["Datation", "mieux que 10 µs", "gbm"],
+          ["Localisation à bord", "erreur systématique < 15°", "gbm"],
+          ["Sursauts", "≈ 250 déclenchements par an", "meg"]
+        ],
+        products:[
+          ["TTE","événements datés un à un autour d'un déclenchement"],
+          ["CTIME, CSPEC","comptages en continu, à haute résolution temporelle ou spectrale"],
+          ["Catalogue des sursauts","durée, flux et spectre de chaque sursaut détecté"]
+        ],
+        code:{ title:"Catalogue des sursauts du GBM (astroquery, HEASARC)", text:
+"from astroquery.heasarc import Heasarc\n\n" +
+"# un sursaut par ligne : nom, position, durée T90 (s), fluence\n" +
+"t = Heasarc.query_tap(\"SELECT name, ra, dec, t90, fluence FROM fermigbrst\").to_table()" },
+        notes:["Le 17 août 2017, le GBM a détecté un sursaut gamma court 1,7 s après les ondes gravitationnelles de la fusion de deux étoiles à neutrons (GW170817)."],
+        docs:[ {l:"Meegan et al. 2009",u:"https://arxiv.org/abs/0908.0450"}, {l:"Instrument GBM",u:"https://fermi.gsfc.nasa.gov/science/instruments/gbm.html"} ] }
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

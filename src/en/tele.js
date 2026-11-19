@@ -99,6 +99,26 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  fermi:{
+    agency:'NASA and the U.S. Department of Energy, with France, Germany, Italy, Japan and Sweden', launch:'Launched 11 June 2008, Delta II, Cape Canaveral',
+    sub:'Low Earth orbit, gamma rays (since 2008)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'15 m', dim:'2.9 m tall, 15 m span' },
+    desc:"Gamma rays are too energetic to be reflected by a mirror. The LAT, Fermi's main instrument, catches them another way: each photon turns, in a tungsten foil, into an electron–positron pair, whose track is followed by silicon planes and whose energy is measured by a calorimeter. It sees a fifth of the sky at once and sweeps the whole sky every three hours. Its second instrument, the GBM, watches for gamma-ray bursts in every direction.",
+    sourceNote:"NASA model (NASA 3D Resources repository), lightened and re-segmented here into five assemblies from its geometry and materials. It is not in metres: it is scaled to the published 15 m span; its proportions are approximate (the LAT is ≈ 1.6 m across in it, against 1.8 m in reality).",
+    refs:{ fs:'Fermi Gamma-ray Space Telescope, mission fact sheet', gbm:'Fermi GBM, instrument description' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','2.9 m tall · 15 m span, arrays deployed'],['Mass','4,303 kg'],['Power','1,500 W'],['Launch','11 June 2008, Delta II Heavy, Cape Canaveral'],['Planned lifetime','5 to 10 years']] },
+      { title:'Instruments', rows:[['LAT','pair-conversion telescope · 20 MeV to over 300 GeV · 16 towers in 4 × 4'],['LAT field','2.4 sr at 1 GeV, ≈ 20% of the sky'],['GBM','12 NaI and 2 BGO scintillators · ≈ 8 keV to 40 MeV'],['GBM field','more than 8 sr, the whole sky not hidden by the Earth']] },
+      { title:'Orbit and data', rows:[['Orbit','≈ 565 km at launch · 25.6° inclination · 96.5 min'],['Sky survey','axis tilted about 50° north then south, on alternate orbits; sky covered almost uniformly in two orbits, ≈ 3 h'],['Downlink','Ku band, 40 Mbit/s · 10 to 11 contacts a day of 7 to 8 min'],['South Atlantic Anomaly','≈ 15% of observing time lost'],['Public data','GBM from the start; LAT since August 2009, about 14 months after launch']] }
+    ],
+    parts:{
+      lat:{ name:'Large Area Telescope (LAT)', desc:"A particle detector rather than a telescope: 16 towers arranged in a 4 × 4 square. In the tracker, a gamma-ray photon converts in a tungsten foil into an electron and a positron, whose tracks are followed by silicon planes to recover its direction. The calorimeter below measures their energy; a shield of scintillators rejects charged particles.", facts:["20 MeV to over 300 GeV","2.4 sr field at 1 GeV","18 silicon planes per tower, tungsten in the first 16","Calorimeter: 96 CsI crystals per tower, ≈ 1,800 kg","Shield: 89 tiles and 8 ribbons of scintillator"] },
+      gbm:{ name:'Burst detectors (GBM)', desc:"Fourteen detectors spread around the spacecraft, facing different directions: twelve sodium iodide crystals for low energies, two bismuth germanate ones, on opposite sides, for high energies. By comparing what each one receives, the GBM locates a gamma-ray burst and can swing Fermi towards it.", facts:["12 NaI: Ø 12.7 cm, 1.27 cm thick","2 BGO: Ø 12.7 cm, 12.7 cm thick","≈ 8 keV to 40 MeV","≈ 250 triggered bursts a year"] },
+      bus:{ name:'Spacecraft bus', desc:"The module that carries the LAT and the GBM detectors, and provides power, pointing and communications.", facts:["1,500 W","Total observatory mass: 4,303 kg"] },
+      ku:{ name:'Ku-band antenna', desc:"The antenna that sends down the data, mounted on a boom below the spacecraft bus.", facts:["40 Mbit/s","10 to 11 contacts a day, of 7 to 8 min"] },
+      solar:{ name:'Solar arrays', desc:"Two wings deployed after launch. Since an anomaly in one array's drive mechanism in 2018, Fermi can hardly swing towards a burst on its own any more.", facts:["15 m span","Drive mechanism anomaly in 2018"] }
+    }
+  },
   spitzer:{
     agency:'NASA (JPL, Caltech)', launch:'Launched 25 August 2003, Delta II, Cape Canaveral',
     sub:'Orbit around the Sun, trailing the Earth, infrared (2003–2020)', src:'Model: NASA 3D Resources (public domain)',

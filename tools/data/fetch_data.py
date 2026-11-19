@@ -829,6 +829,96 @@ def chandra_hrc(key):
 CAS_A = "Le reste de la supernova Cassiopée A, dont la lumière de l'explosion nous est parvenue il y a environ 340 ans : une coquille de gaz à plusieurs millions de degrés, et au centre le point de l'étoile à neutrons, découverte par Chandra dès ses premières images."
 CAPELLA = "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon."
 
+# ---------- Spitzer : mosaïques des Spitzer Enhanced Imaging Products (IRSA), découpées par le service de l'IRSA ----------
+IRSA_SIA = "https://irsa.ipac.caltech.edu/SIA"
+
+def seip_cutout(ra, dec, band, size_arcmin):
+    """Découpe d'une mosaïque SEIP « science » (fichier .mosaic.fits) d'une bande donnée (IRAC1 à IRAC4, MIPS24)."""
+    import pyvo
+    from astropy.coordinates import SkyCoord
+    from astropy.io import fits
+    import astropy.units as u
+    res = pyvo.dal.SIA2Service(IRSA_SIA).search(pos=(SkyCoord(ra, dec, unit="deg"), 1 * u.arcmin), collection="spitzer_seip").to_table()
+    ok = [r for r in res if str(r["dataproduct_subtype"]) == "science" and str(r["energy_bandpassname"]) == band and str(r["access_url"]).endswith(".mosaic.fits")]
+    if not ok:
+        raise RuntimeError("pas de mosaïque SEIP " + band)
+    url = str(ok[0]["access_url"])
+    r = requests.get(url + f"?center={ra},{dec}&size={size_arcmin}arcmin", timeout=600); r.raise_for_status()
+    hd = fits.open(io.BytesIO(r.content)); h = hd[0].header; d = np.nan_to_num(np.asarray(hd[0].data, dtype=float))
+    return d, h, url.rsplit("/", 1)[1], str(ok[0]["obs_id"])
+
+def asinh_stretch(d, lo_pct=1.0, hi_pct=99.7, soft=0.05):
+    lo, hi = np.percentile(d, lo_pct), np.percentile(d, hi_pct)
+    v = np.clip((d - lo) / max(hi - lo, 1e-12), 0, 1)
+    return np.arcsinh(v / soft) / np.arcsinh(1 / soft)
+
+def seip_meta(h, files, bands, extra=()):
+    pix = abs(float(h.get("CD1_1", h.get("CDELT1", 0)))) * 3600
+    meta = [["Archive", "IRSA (Caltech/IPAC), Spitzer Enhanced Imaging Products"], ["Instrument", h.get("INSTRUME", "")], ["Bandes", bands],
+            ["Échelle", fr(pix, 2) + "″ par pixel"], *[list(x) for x in extra], ["Fichier d'origine", files]]
+    return meta
+
+def spitzer_irac(key):
+    from PIL import Image
+    ra, dec, size = 202.4696, 47.1952, 10
+    chans = []
+    for b in ("IRAC4", "IRAC2", "IRAC1"):   # rouge 8,0 µm, vert 4,5 µm, bleu 3,6 µm
+        d, h, f, obs = seip_cutout(ra, dec, b, size); chans.append((d, h, f))
+    shp = min(c[0].shape[0] for c in chans), min(c[0].shape[1] for c in chans)
+    rgb = np.stack([np.asarray(Image.fromarray(asinh_stretch(c[0]).astype(np.float32)).resize((shp[1], shp[0]))) for c in chans], -1)
+    im = Image.fromarray((np.flipud(np.clip(rgb, 0, 1)) * 255).astype(np.uint8), "RGB")
+    if max(im.size) > 1100: im.thumbnail((1100, 1100))
+    fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+    meta = seip_meta(chans[0][1], ", ".join(c[2] for c in chans), "8,0 µm en rouge, 4,5 µm en vert, 3,6 µm en bleu",
+                     extra=[["Cible", "M51, galaxie du Tourbillon"], ["Champ", fr(size) + "′ de côté"], ["Traitement", "découpes des mosaïques SEIP, étirement asinh par bande, superposées pour le site"]])
+    return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title="La galaxie du Tourbillon (M51), IRAC", meta=meta,
+                url="https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html",
+                caption="En rouge, la lueur à 8 µm de la poussière et des grosses molécules (hydrocarbures aromatiques) chauffées par les étoiles jeunes : elle dessine les bras spiraux. En bleu et vert, à 3,6 et 4,5 µm, la lumière des étoiles anciennes.",
+                credit="NASA, JPL-Caltech, IRSA", fetched=TODAY)
+
+def spitzer_mips(key):
+    from PIL import Image
+    ra, dec, size = 202.4696, 47.1952, 10
+    d, h, f, obs = seip_cutout(ra, dec, "MIPS24", size)
+    im = Image.fromarray((np.flipud(asinh_stretch(d, 2, 99.8, 0.03)) * 255).astype(np.uint8), "L")
+    if max(im.size) > 1100: im.thumbnail((1100, 1100))
+    fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+    meta = seip_meta(h, f, "24 µm", extra=[["Cible", "M51, galaxie du Tourbillon"], ["Champ", fr(size) + "′ de côté"], ["Traitement", "découpe de la mosaïque SEIP, étirement asinh pour le site"]])
+    return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title="La galaxie du Tourbillon (M51), MIPS 24 µm", meta=meta,
+                url="https://irsa.ipac.caltech.edu/data/SPITZER/Enhanced/SEIP/overview.html",
+                caption="À 24 µm, MIPS voit la poussière tiède des régions où naissent les étoiles, en grumeaux le long des bras, et le noyau de la galaxie. Les images sont moins nettes qu'à 8 µm : la tache de diffraction grandit avec la longueur d'onde.",
+                credit="NASA, JPL-Caltech, IRSA", fetched=TODAY)
+
+# ---------- Fermi : catalogues du HEASARC (4FGL-DR4, sursauts du GBM) ----------
+def heasarc_tap(adql):
+    import pyvo
+    return pyvo.dal.TAPService(CDA_TAP).search(adql, maxrec=20000).to_table()
+
+def fermi_lat(key):
+    t = heasarc_tap("SELECT lii, bii FROM fermilpsc")
+    l = np.array(t["lii"], float); b = np.array(t["bii"], float); l = np.where(l > 180, l - 360, l)
+    fname = key.replace("/", "-") + ".json"
+    save_json(fname, dict(type="scatter", x=[round(float(v), 2) for v in l], y=[round(float(v), 2) for v in b], ymin=-90, ymax=90,
+                          xlabel="longitude galactique (°), centre de la Galaxie au milieu", ylabel="latitude galactique (°)"))
+    meta = [["Archive", "HEASARC (NASA), table fermilpsc"], ["Catalogue", "4FGL-DR4, 14 ans de données du LAT"], ["Sources", fr(len(t))], ["Points", fr(len(t)) + " tracés"]]
+    return dict(type="plot", file=fname, title="Les sources gamma du catalogue 4FGL-DR4", meta=meta, url="https://heasarc.gsfc.nasa.gov/W3Browse/fermi/fermilpsc.html",
+                caption="Chaque point est une source détectée par le LAT en 14 ans, sur une carte du ciel en coordonnées galactiques. La bande horizontale est le plan de notre Galaxie : pulsars et restes de supernovae. Ailleurs, la plupart des sources sont des noyaux actifs de galaxies lointaines, dont le jet pointe vers nous.",
+                credit="NASA, DOE, collaboration Fermi-LAT", fetched=TODAY)
+
+def fermi_gbm(key):
+    t = heasarc_tap("SELECT t90 FROM fermigbrst")
+    v = np.array(t["t90"], float); v = v[np.isfinite(v) & (v > 0)]
+    lg = np.log10(v); edges = np.arange(-2.0, 3.01, 0.1); n, _ = np.histogram(lg, edges)
+    fname = key.replace("/", "-") + ".json"
+    save_json(fname, dict(type="hist", x=[round(float(c), 2) for c in (edges[:-1] + 0.05)], y=[int(c) for c in n], binw=0.1,
+                          xlabel="durée T90, en puissance de dix de secondes (0 = 1 s, 1 = 10 s, 2 = 100 s)", ylabel="nombre de sursauts"))
+    short = int((v < 2).sum())
+    meta = [["Archive", "HEASARC (NASA), table fermigbrst"], ["Catalogue", "sursauts gamma du GBM"], ["Sursauts", fr(len(v)) + " dont " + fr(short) + " de moins de 2 s"],
+            ["Données", "T90 : durée pendant laquelle arrivent 90 % des photons du sursaut"], ["Points", fr(len(n)) + " intervalles de 0,1 en puissance de dix"]]
+    return dict(type="plot", file=fname, title="Durée des sursauts gamma vus par le GBM", meta=meta, url="https://heasarc.gsfc.nasa.gov/W3Browse/fermi/fermigbrst.html",
+                caption="Deux familles se dessinent. Les sursauts longs, de plus de 2 s environ, accompagnent l'effondrement d'étoiles massives. Les courts viennent de la fusion d'étoiles à neutrons, comme celui détecté avec les ondes gravitationnelles de GW170817.",
+                credit="NASA, collaboration Fermi-GBM", fetched=TODAY)
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -848,6 +938,7 @@ RECIPES = {
     # produits supplémentaires d'un même instrument : clé « observatoire/instrument:nom »
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
+    "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,
     "chandra/hetg:spectre": lambda k: chandra_grating(k, 1318, 2, 2, 25, 4, "Spectre HETG de l'étoile Capella",

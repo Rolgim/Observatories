@@ -10,6 +10,17 @@ var LOOKS = {
     else if (/foil_gold/.test(n)){ m.metalness = 0.6; m.roughness = 0.45; }
     else if (/foil_silver/.test(n)){ m.color.setHex(0xC8CCD0); m.metalness = 0.3; m.roughness = 0.55; }
   },
+  /* Fermi (maquette NASA) : cellules solaires sombres, capot du LAT blanc mat, couvertures moins réfléchissantes */
+  fermi: function(m, n, THREE){
+    /* cellules et fond des panneaux : mats et peu réfléchissants, sinon ils renvoient la Terre, très claire, en incidence rasante */
+    if (/SolarFaces/.test(n)){ m.color.setHex(0x060A1E); m.metalness = 0; m.roughness = 1; m.userData.envK = 0.1; m.side = THREE.DoubleSide; }
+    else if (/SolarPanelBack/.test(n)){ m.color.setHex(0x0A0F24); m.metalness = 0; m.roughness = 1; m.userData.envK = 0.1; m.side = THREE.DoubleSide; }
+    else if (/top-LAT-cover/.test(n)){ m.color.setHex(0xE9EAEA); m.metalness = 0; m.roughness = 0.85; }
+    else if (/silverfoil|silver/.test(n)){ m.metalness = Math.min(m.metalness, 0.6); m.roughness = Math.max(m.roughness, 0.4); }
+    else if (/bronze|gold/.test(n)){ m.metalness = 0.7; m.roughness = 0.45; }
+    if (!/SolarFaces|SolarPanelBack|top-LAT-cover/.test(n)) m.color.convertSRGBToLinear();   /* couleurs sRGB lues comme linéaires, comme pour Roman */
+    if (m.userData.envK == null) m.userData.envK = 0.5;
+  },
   jwst: function(m, n){
     if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
     else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }

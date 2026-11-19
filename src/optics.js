@@ -126,6 +126,26 @@ var Optics = (function(){
           return s;
         } });
     },
+    /* Fermi, LAT : pas de miroir. Coupe schématique d'une tour (Atwood et al. 2009) : 18 plans de silicium, tungstène dans les 16 premiers
+       (12 fins, 4 épais), calorimètre de 8 couches de cristaux de CsI. Nombres exacts, épaisseurs et espacements non à l'échelle. */
+    fermi: function(){
+      var W = 560, H = 380, x0 = 170, x1 = 390, yt = 54, s = '';
+      s += G('lat', '<rect x="'+(x0-12)+'" y="'+(yt-14)+'" width="'+(x1-x0+24)+'" height="'+(H-yt-26)+'" fill="none" stroke="'+SOFT+'" stroke-width="5"/>');
+      var py = [];
+      for (var i=0;i<18;i++){ var y = yt + 8 + i*9.5; py.push(y); s += L(x0, y, x1, y, DET, 1.6); if (i < 16) s += L(x0, y - 2.5, x1, y - 2.5, INK, i < 12 ? 1 : 2.6); }
+      var yc = yt + 8 + 18*9.5 + 10;
+      for (var j=0;j<8;j++) for (var k=0;k<12;k++){ var cw = (x1-x0)/12; s += '<rect x="'+f(x0 + k*cw + 0.6)+'" y="'+f(yc + j*11)+'" width="'+f(cw - 1.2)+'" height="9.5" fill="#C9A100" fill-opacity="'+(j%2 ? 0.55 : 0.8)+'"/>'; }
+      var xg = 262, yconv = py[3] - 2.5;
+      s += P([[xg - 40, 6], [xg, yconv]], RAY, 1.6) + '<path d="M'+(xg - 40)+' 6 l2 9 l6 -6 z" fill="'+RAY+'"/>';
+      s += P([[xg, yconv], [xg - 36, yc + 30]], '#2F6FDB', 1.3) + P([[xg, yconv], [xg + 46, yc + 30]], '#D6457A', 1.3);
+      for (var m=0;m<6;m++){ var a = -0.9 + m*0.36; s += L(xg + (m - 2.5)*10, yc + 34, xg + (m - 2.5)*10 + Math.sin(a)*22, yc + 70, '#C9A100', 1); }
+      s += '<circle cx="'+xg+'" cy="'+f(yconv)+'" r="3" fill="'+INK+'"/>';
+      s += T(xg - 36, 14, 'photon gamma', 'end', true) + T(x1 + 18, py[0] + 4, 'bouclier de scintillateurs', null) + T(x1 + 18, py[6] + 4, 'trajectographe : 18 plans de silicium', null, true) + T(x1 + 18, py[6] + 18, 'tungstène dans les 16 premiers', null);
+      s += T(x1 + 18, yc + 34, 'calorimètre : 8 couches', null, true) + T(x1 + 18, yc + 48, 'de 12 cristaux de CsI', null);
+      s += T(xg + 8, yconv - 6, 'conversion en paire', null) + T(xg - 40, yc + 24, 'e⁻', 'end', true) + T(xg + 50, yc + 24, 'e⁺', null, true);
+      s += T(x0 - 20, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
+      return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
+    },
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
@@ -185,7 +205,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -211,6 +231,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    fermi:{ title:'Pas de miroir : un télescope à conversion de paires', scale:'Schéma de principe d\'une tour du LAT : le nombre de plans de silicium, de feuilles de tungstène et de couches du calorimètre est exact (Atwood et al. 2009) ; épaisseurs, espacements et trajectoires ne sont pas à l\'échelle.',
+      steps:['Un photon gamma traverse sans réagir le bouclier de scintillateurs, qui, lui, s\'allume au passage des particules chargées du rayonnement cosmique : ces événements sont rejetés.',
+             'Dans le trajectographe, le photon finit par se convertir dans une feuille de tungstène en un électron et un positon : c\'est la création de paires, possible au-delà de quelques MeV.',
+             'Les plans de silicium enregistrent le passage de la paire, plan après plan. En remontant les deux traces, on retrouve la direction d\'arrivée du photon.',
+             'La paire s\'arrête dans le calorimètre, des cristaux d\'iodure de césium, en une gerbe de particules dont la lumière donne l\'énergie du photon.'],
+      specs:[['Principe','conversion de paires, sans optique'],['Tours','16, en carré de 4 × 4'],['Trajectographe','18 plans x–y de silicium par tour'],['Convertisseur','tungstène, dans les 16 premiers plans'],['Calorimètre','96 cristaux de CsI(Tl) par tour, 8,6 longueurs de radiation'],['Domaine','20 MeV à plus de 300 GeV'],['Champ','2,4 sr à 1 GeV']] },
     spitzer:{ title:'Un Ritchey-Chrétien en béryllium, refroidi à l\'hélium', scale:'Figure à l\'échelle, d\'après la prescription du Spitzer Telescope Handbook (tableau 3.3) : courbure et diamètre du primaire, trou central, diamètre et position du secondaire, position du foyer. La chambre des instruments, en pointillé, est indicative.',
       steps:['La lumière infrarouge descend dans le tube jusqu\'au miroir primaire, concave, de 85 cm, très ouvert (f/1,2).',
              'Le primaire la renvoie vers le secondaire, convexe, de 12 cm, placé 89 cm plus haut ; un mécanisme peut le déplacer pour la mise au point.',
@@ -250,6 +276,9 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* Fermi : le LAT vu de dessus, 16 tours de 4 × 4 détecteurs au silicium de 8,95 cm (Atwood et al. 2009) ; un détecteur NaI du GBM (Ø 12,7 cm) */
+    fermi:{ groups:[ grid(4,4,358,358,16,16,'#4C3A99',['LAT, vu de dessus','16 tours, chacune de 4 × 4 détecteurs au silicium de 8,95 cm']), grid(1,1,127,127,0,0,'#C9A100',['GBM, un détecteur NaI','Ø 12,7 cm (dessiné carré)']) ],
+             note:'Le LAT n\'a pas de plan focal : chaque tour suit la trace des particules. Taille des plans de silicium à l\'échelle (4 × 8,95 cm de côté) ; espaces entre tours indicatifs. Le GBM compte douze détecteurs NaI et deux BGO répartis autour du satellite.' },
     /* Spitzer : champs des instruments projetés sur le foyer du télescope (focale 10,2 m : 1′ ≈ 2,967 mm), Spitzer Telescope Handbook */
     spitzer:{ groups:[ grid(2,1,15.46,15.46,1.5,0,'#2F6FDB',['IRAC','deux champs de 5,2′, quatre matrices de 256 × 256 px']), grid(1,1,16.0,16.0,0,0,'#9A52D6',['MIPS 24 µm','5,4′, 128 × 128 px']),
                        grid(1,1,15.4,7.7,0,0,'#C77DDB',['MIPS 70 µm','5,2′ × 2,6′, 32 × 32 px']), grid(1,1,1.57,15.8,0,0,'#6B3FA0',['MIPS 160 µm','0,53′ × 5,33′']), grid(1,1,0.52,8.3,0,0,'#0F987A',['IRS, fente LL','10,6″ × 168″']) ],
@@ -284,7 +313,7 @@ var Optics = (function(){
   function compareFocal(OBS, NAMES){
     var W = 1000, k = 0.8, gap = 40, rows = [[], [], []], s = '';
     /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js */
-    TELESCOPES.filter(function(t){ return FP[t.id]; }).sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
+    TELESCOPES.filter(function(t){ return FP[t.id] && t.compare.fp; }).sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
       .forEach(function(T){ var r = rows[T.compare.fp[0]] || (rows[T.compare.fp[0]] = []); FP[T.id].groups.forEach(function(g){ r.push({ t:T.id, g:g }); }); });
     var y = 10;
     rows.forEach(function(r){

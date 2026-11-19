@@ -44,4 +44,10 @@ $GT copy $DL/spitzer/spitzer.glb $W/tmp/spitzer_dec.glb >/dev/null
 $GT weld $W/tmp/spitzer_dec.glb $W/tmp/spitzer_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/spitzer_w.glb','$W/tmp/spitzer_seg.glb',require('$W/spitzer_cls.js')).then(s=>console.log('spitzer',JSON.stringify(s)))"
 $GT quantize $W/tmp/spitzer_seg.glb $OUT/spitzer.glb --quantize-position 14 --quantize-normal 10 >/dev/null 2>&1
+# ---------- Fermi : maquette NASA (Draco), unités de la maquette (mise à l'échelle par le site), redécoupée et allégée
+# attendu dans $DL : fermi/fermi.glb (« Fermi Gamma-ray Large Area Space Telescope.glb » du dépôt nasa/NASA-3D-Resources)
+$GT copy $DL/fermi/fermi.glb $W/tmp/fermi_dec.glb >/dev/null
+$GT weld $W/tmp/fermi_dec.glb $W/tmp/fermi_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/fermi_w.glb','$W/tmp/fermi_seg.glb',require('$W/fermi_cls.js')).then(s=>console.log('fermi',JSON.stringify(s)))"
+(cd $W && node slim.mjs $W/tmp/fermi_seg.glb $OUT/fermi.glb 0.15 0.002)
 ls -la $OUT

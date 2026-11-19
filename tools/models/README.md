@@ -11,6 +11,7 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (GLB Draco, conception AFTA 2015) | décodage Draco, soudure, simplification (`--ratio 0.08 --error 0.004`), redécoupage (`roman_cls.js`), puis `slim.mjs` : simplification sur les seules positions, normales recalculées par face, quantification (≈ 3 Mo au lieu de 7,8) |
 | Chandra | NASA 3D Resources, « Chandra X-ray Observatory » (GLB Draco, textures WebP, en mètres) | décodage Draco, soudure, redécoupage en six ensembles (`chandra_cls.js`), quantification (≈ 0,8 Mo) |
 | Spitzer | NASA 3D Resources, « Spitzer Space Telescope » (GLB Draco, en mètres) | décodage Draco, soudure, redécoupage en cinq ensembles (`spitzer_cls.js`), quantification (≈ 1,1 Mo) |
+| Fermi | NASA 3D Resources, « Fermi Gamma-ray Large Area Space Telescope » (GLB Draco, unités arbitraires) | décodage Draco, soudure, redécoupage en cinq ensembles (`fermi_cls.js`), puis `slim.mjs` à 0,15 (≈ 2,0 Mo au lieu de 7,3) ; mise à l'échelle par l'envergure de 15 m (`axis:'z'`) |
 
 ## Redécoupage en pièces
 
@@ -40,5 +41,5 @@ Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (ren
 4. `src/interior.js` : éléments internes pour la vue en coupe et, si besoin, plans de coupe propres (`CUT`) (facultatif).
 5. Textes et données : `INST_DATA` (`src/data-inst.js`), `MISSION` (`src/data-mission.js`), `TEXT`, `FP` et `LINK3D` (`src/optics.js`), `TEXT` (`src/orbits.js`) ; pages d'instruments propres à l'observatoire dans `src/inst-render.js` si un instrument a besoin d'une figure particulière.
 6. Anglais : `EN_TELE`, `EN_INST`, `EN_OPTICS`, `EN_ORBITS`, et les chaînes d'interface nouvelles dans `src/en/ui.js`.
-7. Données réelles : identifiant JPL Horizons dans `tools/data/fetch_orbits.py` pour un observatoire à L2, sur orbite très elliptique (`inertial`) ou autour du Soleil (`helio`), recettes d'exemples dans `tools/data/fetch_data.py`.
+7. Données réelles : numéro NORAD dans `tools/data/fetch_tle.py` pour un observatoire en orbite basse (suivi en direct), identifiant JPL Horizons dans `tools/data/fetch_orbits.py` pour un observatoire à L2, sur orbite très elliptique (`inertial`) ou autour du Soleil (`helio`), recettes d'exemples dans `tools/data/fetch_data.py`.
 8. `node build.js`, puis `tools/smoke.js` : le test vérifie que chaque observatoire du registre a ses champs et ses textes, et en donne la liste manquante.

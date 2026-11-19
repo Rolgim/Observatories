@@ -9,7 +9,7 @@
      optical    pièces qui ouvrent la page « Trajet de la lumière »
      compare    order (rang dans « Comparer », chronologique), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
-     orbit      leo (orbite basse), heo (orbite terrestre très elliptique) ou l2
+     orbit      leo (orbite basse, avec leo:{ alt km, per min }), heo (orbite terrestre très elliptique), l2, ou helio (autour du Soleil, dans le sillage de la Terre, avec helio.drift)
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
      domain     groupe de l'en-tête, parmi DOMAINS (en fin de fichier) : domaine spectral principal
 ================================================================= */
@@ -20,7 +20,7 @@ var TELESCOPES = [
     sub:'Orbite basse terrestre, ultraviolet, visible, proche infrarouge',
     src:'Maquette : NASA VTAD, via Gaia Sky',
     file:'models/hubble.txt', bytes:4466940, axis:'z', size:13.2,
-    view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
+    view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo', leo:{ alt:480, per:95 },
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
     cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, approx:true, len:13.2 },
     color:'#3D6BE0', highlight:['Miroir primaire','2,4','m'], footprint:['13,2','m de long'], optical:['ota','aft'],
@@ -215,6 +215,59 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'fermi', domain:'gamma', name:'Fermi Gamma-ray Space Telescope', short:'Fermi', year:'2008',
+    agency:'NASA et département de l\'Énergie des États-Unis, avec la France, l\'Allemagne, l\'Italie, le Japon et la Suède', launch:'Lancé le 11 juin 2008, Delta II, Cap Canaveral',
+    sub:'Orbite basse, rayons gamma (depuis 2008)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/fermi.glb', bytes:2017012, axis:'z', size:15,
+    view:{ az:-2.5, el:0.16, dist:1.35 }, sun:[0.3,0.9,0.3], orbit:'leo', leo:{ alt:565, per:96.5 },
+    hero:{ num:'20', unit:'%', label:'du ciel vu à chaque instant par le LAT' },
+    cmp:{ tag:'15 m', dim:'2,9 m de haut, 15 m d\'envergure', mirror:null, mass:4303, len:15 },
+    color:'#4C3A99', highlight:['Domaine','20 MeV – 300','GeV'], footprint:['15','m d\'envergure'], optical:['lat'],
+    compare:{ order:4, rot:[0, 0, 0], fp:null },
+    desc:"Les rayons gamma sont trop énergétiques pour être réfléchis par un miroir. Le LAT, l'instrument principal de Fermi, les attrape autrement : chaque photon se transforme dans une feuille de tungstène en une paire électron–positon, dont des plans de silicium suivent la trace et dont un calorimètre mesure l'énergie. Il voit un cinquième du ciel à la fois et le balaie en entier toutes les trois heures. Son second instrument, le GBM, guette les sursauts gamma dans toutes les directions.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), allégée et redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux. Elle n'est pas en mètres : elle est mise à l'échelle sur l'envergure publiée de 15 m ; ses proportions sont approximatives (le LAT y mesure ≈ 1,6 m de côté, contre 1,8 m en réalité).",
+    checked:'2026-11-19',
+    refs:{
+      fs:{ t:'Fermi Gamma-ray Space Telescope, fiche de mission', p:'NASA Goddard', u:'https://imagine.gsfc.nasa.gov/educators/programs/fermi/multimedia/docs/fermi_fact_sheet.pdf' },
+      cic:{ t:'Fermi Cicerone, Mission Overview', p:'Fermi Science Support Center (NASA)', u:'https://fermi.gsfc.nasa.gov/ssc/data/analysis/documentation/Cicerone/Cicerone_Introduction/mission_overview.html' },
+      atw:{ t:'Atwood et al. 2009, The Large Area Telescope on the Fermi Gamma-ray Space Telescope Mission, ApJ 697, 1071', p:'ApJ', u:'https://arxiv.org/abs/0902.1089' },
+      meg:{ t:'Meegan et al. 2009, The Fermi Gamma-ray Burst Monitor, ApJ 702, 791', p:'ApJ', u:'https://arxiv.org/abs/0908.0450' },
+      gbm:{ t:'Fermi GBM, description de l\'instrument', p:'NASA Goddard', u:'https://fermi.gsfc.nasa.gov/science/instruments/gbm.html' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','2,9 m de haut · 15 m d\'envergure, panneaux déployés','fs'], ['Masse','4 303 kg','fs'], ['Puissance','1 500 W','fs'],
+        ['Lancement','11 juin 2008, Delta II Heavy, Cap Canaveral',['fs','cic']], ['Durée prévue','5 à 10 ans','fs'] ]},
+      { title:'Instruments', rows:[
+        ['LAT','télescope à conversion de paires · 20 MeV à plus de 300 GeV · 16 tours de 4 × 4',['fs','atw']], ['Champ du LAT','2,4 sr à 1 GeV, ≈ 20 % du ciel',['atw','fs']],
+        ['GBM','12 scintillateurs NaI et 2 BGO · ≈ 8 keV à 40 MeV','meg'], ['Champ du GBM','plus de 8 sr, tout le ciel non caché par la Terre',['gbm','meg']] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite','≈ 565 km au lancement · inclinaison 25,6° · 96,5 min','cic'],
+        ['Relevé du ciel','axe incliné d\'environ 50° vers le nord puis vers le sud, une orbite sur deux ; ciel couvert presque uniformément en deux orbites, ≈ 3 h',['cic','atw']],
+        ['Liaison','bande Ku, 40 Mbit/s · 10 à 11 contacts par jour de 7 à 8 min','cic'],
+        ['Anomalie de l\'Atlantique Sud','≈ 15 % du temps d\'observation perdu','cic'],
+        ['Données publiques','GBM dès le début ; LAT depuis août 2009, environ 14 mois après le lancement','cic'] ]}
+    ],
+    parts:[
+      { key:'lat', name:'Télescope de grande surface (LAT)', explode:[0,1,0,1.2],
+        desc:"Un détecteur de particules plutôt qu'un télescope : 16 tours rangées en carré de 4 × 4. Dans le trajectographe, un photon gamma se convertit dans une feuille de tungstène en un électron et un positon, dont des plans de silicium suivent la trace pour retrouver sa direction. Le calorimètre, en dessous, mesure leur énergie ; un bouclier de scintillateurs rejette les particules chargées.",
+        facts:[["20 MeV à plus de 300 GeV", "fs"], ["Champ de 2,4 sr à 1 GeV", "atw"], ["18 plans de silicium par tour, tungstène dans les 16 premiers", "atw"], ["Calorimètre : 96 cristaux de CsI par tour, ≈ 1 800 kg", "atw"], ["Bouclier : 89 tuiles et 8 rubans de scintillateur", "atw"]] },
+      { key:'gbm', name:'Détecteurs de sursauts (GBM)', explode:[1,0,0,0.6],
+        desc:"Quatorze détecteurs répartis autour du satellite, orientés dans des directions différentes : douze cristaux d'iodure de sodium pour les basses énergies, deux de germanate de bismuth, sur deux côtés opposés, pour les hautes. En comparant ce que reçoit chacun, le GBM localise un sursaut gamma et peut faire pivoter Fermi vers lui.",
+        facts:[["12 NaI : Ø 12,7 cm, 1,27 cm d'épaisseur", "gbm"], ["2 BGO : Ø 12,7 cm, 12,7 cm d'épaisseur", "gbm"], ["≈ 8 keV à 40 MeV", "meg"], ["≈ 250 sursauts déclenchés par an", "meg"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"Le module qui porte le LAT et les détecteurs du GBM, et fournit énergie, pointage et communications.",
+        facts:[["1 500 W", "fs"], ["Masse totale de l'observatoire : 4 303 kg", "fs"]] },
+      { key:'ku', name:'Antenne en bande Ku', explode:[0,-1,0,1.0],
+        desc:"L'antenne qui transmet les données, montée sur un mât sous le module de service.",
+        facts:[["40 Mbit/s", "cic"], ["10 à 11 contacts par jour, de 7 à 8 min", "cic"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[0,0,1,0.4],
+        desc:"Deux ailes déployées après le lancement. Depuis une anomalie du mécanisme d'orientation d'un panneau en 2018, Fermi ne peut presque plus pivoter de lui-même vers un sursaut.",
+        facts:[["15 m d'envergure", "fs"], ["Anomalie du mécanisme d'orientation en 2018", "cic"]] }
+    ]
+  },
+  {
     id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -224,7 +277,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:5, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -290,7 +343,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:5, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:6, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -366,7 +419,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:6, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:7, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -431,7 +484,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:7, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:8, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
@@ -494,6 +547,7 @@ var TELESCOPES = [
 
 /* groupes de l'en-tête, par domaine spectral principal, des courtes aux grandes longueurs d'onde ; l'astrométrie à part */
 var DOMAINS = [
+  { id:'gamma', label:'Rayons gamma', short:'Gamma' },
   { id:'x', label:'Rayons X', short:'Rayons X' },
   { id:'uv', label:'UV et visible', short:'UV, visible' },
   { id:'ir', label:'Infrarouge', short:'Infrarouge' },

@@ -165,6 +165,30 @@ EN_INST.roman = {
       docs:["Coronagraph (IPAC)"] }
   }
 };
+EN_INST.fermi = {
+  summary:"Two complementary instruments. The LAT detects high-energy gamma rays, from 20 MeV to over 300 GeV, over a fifth of the sky at once. The GBM covers lower energies, from 8 keV to 40 MeV, over the whole sky not hidden by the Earth, and spots gamma-ray bursts. Like Chandra, Fermi counts photons one by one: its basic data are event lists.",
+  archives:[["LAT Data Server (FSSC)","LAT photons and pointing history, by sky region, period and energy."],["4FGL-DR4 catalogue","7,194 gamma-ray sources detected in 14 years of LAT data."],["HEASARC, Fermi catalogues","Source and burst catalogues, GBM data."],["Fermitools","Analysis software for LAT data."]],
+  instruments:{
+    lat:{ kind:"Pair-conversion gamma-ray telescope",
+      use:"Mapping the gamma-ray sky: pulsars, supernova remnants, active galactic nuclei whose jet points at us, and the diffuse glow of the Galaxy.",
+      summary:"Sixteen identical towers, each a tracker above a calorimeter, surrounded by a shield of scintillators. The photon converts into an electron–positron pair in the tungsten; the pair's track gives its direction, the calorimeter its energy.",
+      specs:[["Range","20 MeV to over 300 GeV"],["Field","2.4 sr at 1 GeV, ≈ 20% of the sky"],["Tracker","18 x–y silicon planes per tower · tungsten foils in the first 16"],["Calorimeter","96 CsI(Tl) crystals per tower in 8 layers · 8.6 radiation lengths"],["Energy resolution","≈ 4% at 5 GeV · ≈ 2% at 196 GeV (beam tests)"],["Timing","± 1.5 µs (GPS)"]],
+      products:[["Photon file (_PH)","one event per photon: energy, direction, time, class"],["Pointing file (_SC)","history of the pointing and of the exposure time"],["4FGL-DR4","catalogue of 7,194 sources, 14 years of data"]],
+      example:{ title:"Columns of a LAT photon file (excerpt)", caption:"Real structure of the photon files; illustrative values.", text:
+"ENERGY (MeV)  RA (°)      DEC (°)   L (°)      B (°)     TIME (s)          EVENT_CLASS\n  1532.7      193.913     −5.770    305.137    57.046    2.4113051e+08     128\n   284.1      194.402     −6.120    306.182    56.712    2.4113104e+08     128\n\n→ one row per photon: maps, spectra and light curves are then built by grouping the photons." },
+      code:{ title:"Preparing LAT data (Fermitools)" },
+      notes:["The LAT does not point: it sweeps the whole sky in two orbits, about three hours. Each region is therefore revisited several times a day, which makes it possible to follow flares of active galactic nuclei."],
+      docs:["Atwood et al. 2009","Data preparation"] },
+    gbm:{ kind:"Gamma-ray burst monitor",
+      use:"Watching for gamma-ray bursts, those flashes of a few seconds that come from the death of massive stars or the merger of neutron stars, and alerting other telescopes.",
+      summary:"Fourteen scintillators facing every direction: twelve sodium iodide (NaI) crystals for low energies, two bismuth germanate (BGO) ones for high energies. The ratio of the signals between detectors gives the direction of the burst.",
+      specs:[["Detectors","12 NaI (Ø 12.7 cm, 1.27 cm) · 2 BGO (Ø 12.7 cm, 12.7 cm)"],["Range","≈ 8 keV to 40 MeV: NaI up to ≈ 1 MeV, BGO above"],["Field","more than 8 sr, the whole sky not hidden by the Earth"],["Timing","better than 10 µs"],["On-board location","systematic error < 15°"],["Bursts","≈ 250 triggers a year"]],
+      products:[["TTE","events timed one by one around a trigger"],["CTIME, CSPEC","continuous counts, at high time or spectral resolution"],["Burst catalogue","duration, flux and spectrum of each detected burst"]],
+      code:{ title:"GBM burst catalogue (astroquery, HEASARC)" },
+      notes:["On 17 August 2017, the GBM detected a short gamma-ray burst 1.7 s after the gravitational waves from the merger of two neutron stars (GW170817)."],
+      docs:["Meegan et al. 2009","GBM instrument"] }
+  }
+};
 EN_INST.spitzer = {
   summary:"Three instruments shared the focal plane, in a helium-cooled chamber behind the primary mirror: IRAC, a four-channel camera in the near and mid infrared, IRS, a spectrograph from 5 to 38 µm, and MIPS, a far-infrared photometer reaching 160 µm. After the helium ran out in 2009, only IRAC's two shortest channels kept working.",
   archives:[["Spitzer Heritage Archive (IRSA)","Every observation of the mission, raw and processed data, at IRSA (Caltech/IPAC)."],["Spitzer Enhanced Imaging Products","Uniform IRAC and MIPS 24 µm mosaics over the whole mission, and the source catalogue drawn from them."],["Spitzer documentation","Instrument and telescope handbooks, at IRSA."]],
@@ -279,8 +303,8 @@ var EN_WORDS = {
   "imagerie":"imaging", "bande PAH 7,7 µm":"7.7 µm PAH band", "bande PAH 11,3 µm":"11.3 µm PAH band", "coronographe":"coronagraph", "bande large unique":"single broad band", "photométrie":"photometry",
   "grisme bleu":"blue grism", "grismes rouges":"red grisms", "lumière blanche (SM + AF)":"white light (SM + AF)",
   "bande bleue":"blue band", "bande rouge":"red band", "triplet du Ca II":"Ca II triplet",
-  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "3,6 µm":"3.6 µm", "4,5 µm":"4.5 µm", "5,8 µm":"5.8 µm", "8,0 µm":"8.0 µm", "3,6 et 5,8 µm":"3.6 and 5.8 µm", "4,5 et 8,0 µm":"4.5 and 8.0 µm", "24 µm":"24 µm", "Ge:Ga contraint":"stressed Ge:Ga", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
+  "ouverture PSA (Ø 2,5″)":"PSA aperture (Ø 2.5″)", "3,6 µm":"3.6 µm", "4,5 µm":"4.5 µm", "5,8 µm":"5.8 µm", "8,0 µm":"8.0 µm", "3,6 et 5,8 µm":"3.6 and 5.8 µm", "4,5 et 8,0 µm":"4.5 and 8.0 µm", "24 µm":"24 µm", "Ge:Ga contraint":"stressed Ge:Ga", "GBM, un détecteur NaI":"GBM, one NaI detector", "0,6–5,3 µm":"0.6–5.3 µm", "0,6–5,0 µm":"0.6–5.0 µm", "Imageur":"Imager", "bande G":"G band", "Champ d'un télescope":"Field of one telescope"
 };
-var EN_CODE = [["# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)","# images from the Spitzer Enhanced Imaging Products (IRAC and MIPS 24 µm)"],["# catalogue de sources tiré des mêmes mosaïques","# source catalogue drawn from the same mosaics"],["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
+var EN_CODE = [["# photons et pointage téléchargés depuis le LAT Data Server","# photons and pointing downloaded from the LAT Data Server"],["# un sursaut par ligne : nom, position, durée T90 (s), fluence","# one burst per row: name, position, T90 duration (s), fluence"],["# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)","# images from the Spitzer Enhanced Imaging Products (IRAC and MIPS 24 µm)"],["# catalogue de sources tiré des mêmes mosaïques","# source catalogue drawn from the same mosaics"],["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
