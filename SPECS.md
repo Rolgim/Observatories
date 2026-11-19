@@ -34,7 +34,7 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
 Classé par priorité. Entre crochets : le lot concerné (section 5).
 
-### Priorité 1 : intérieurs, seulement ce qui est documenté [D4]
+### Priorité 1 : intérieurs, seulement ce qui est documenté [D4] — fait le 19 novembre
 
 Constat (19 novembre) : les intérieurs reconstruits mêlent des éléments cotés (miroirs, coques de Chandra) et des blocs posés à des emplacements indicatifs (réservoirs, batteries, roues de réaction, boîtiers électroniques). Rendu peu crédible (empilements de boîtes et de sphères sur Euclid ; anneaux de Hubble qui sortent du tube) ; sur Webb, la coupe ne montre presque rien.
 
@@ -47,6 +47,8 @@ Règle : la coupe ne montre que des éléments dont la forme, la taille **et** l
 5. Corriger les défauts relevés : éléments qui débordent de la coque (Hubble), coupe qui ne s'enclenche pas ou ne montre rien (Webb, à vérifier pour chaque observatoire).
 
 **Acceptation.** Aucun élément intérieur sans source pour sa taille et sa position ; `tools/smoke.js` le vérifie à partir du champ source de chaque élément.
+
+**Livré le 19 novembre.** Tous les blocs à emplacement indicatif sont retirés ; chaque élément restant porte sa source (`cite`) et, s'il y a lieu, le calcul qui le place (`calc`), affichés au survol ; la coupe tranche aussi l'intérieur (demi-section). Coupe gardée pour Hubble, Euclid et Chandra ; retirée pour Gaia, Webb et Roman (aucun élément documenté à montrer). Les équipements retirés sont décrits sans position dans « Mission et traitements » (« Équipements du véhicule », champ `arch` de `data-mission.js`), chaque ligne sourcée ; pour Webb, seules les informations confirmées par JDox et la NASA sont gardées (masses d'ergols, nombre de roues et capacité de l'enregistreur retirés faute de source vérifiée). Inventaire en annexe.
 
 ### Priorité 2 : refaire « Comparer » : comparer ce qui est comparable [K]
 
@@ -360,3 +362,14 @@ Légende des maquettes : **sur le site** ; NASA = dépôt NASA 3D Resources ; SC
 | Contributions à sourcer | ISO, XMM-Newton, INTEGRAL (SPI), FUSE, HETE-2, Herschel, Planck (HFI), Fermi, Gaia (centre de traitement), JWST (MIRI), Euclid, CHEOPS ; futures : PLATO, Ariel, LISA, NewAthena (X-IFU) | | | |
 
 Sources : [ESA, navigateur des missions](https://www.esa.int/Science_Exploration/Space_Science/Mission_navigator) ; [NASA, Senior Review 2025](https://science.nasa.gov/astrophysics/resources/documents/2025-senior-review-of-operating-missions) ; [HEASARC, missions actives](https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/active.html) ; [CNES, projets](https://cnes.fr/projets-liste-alphabetique) ; [CNES, rapport COSPAR 2026](https://cnes.fr/sites/default/files/2026-05/rapport-cospar-2026.pdf). Dates de fin et partenaires non tirés de ces pages : à vérifier mission par mission lors de l'ajout.
+
+## Annexe : inventaire des intérieurs (19 novembre)
+
+| Observatoire | Gardé (taille et position publiées ou calculées) | Retiré (place non publiée) → « Équipements du véhicule » |
+|---|---|---|
+| Hubble | miroirs primaire (2,4 m) et secondaire (0,3 m) à 4,9 m (Lallo 2012), anneau principal, déflecteur central, treillis de 4,8 m (SM3B), quatre instruments axiaux par quadrant (HST Primer) | dix baies d'équipements, roues de réaction, viseurs et gyroscopes, instruments radiaux (FGS, WFC3), structure du plan focal |
+| Euclid | M1 (1,2 m) et M2 (0,35 m) à 1,756 m (Racca et al. 2016) | M3, lame dichroïque, VIS, NISP, cône central, réservoirs, roues, électronique |
+| Chandra | quatre paires de miroirs Wolter I, réseau HETG à 8,6 m du foyer, ACIS-I au foyer (POG, Weisskopf et al. 2005, Canizares et al. 2005) | table de translation, boîtiers ACIS et HRC, roues, centrales inertielles, batteries, enregistreur |
+| Gaia | rien (coupe retirée) | miroirs primaires et secondaires (position sur le banc non publiée), tube central, panneaux, réservoirs, électronique |
+| Webb | rien (coupe retirée ; les miroirs sont visibles sur la maquette) | réservoirs, roues, compresseur de MIRI, électronique |
+| Roman | rien (coupe retirée) | module de propulsion, réservoirs, roues, panneaux d'avionique, centrale inertielle |

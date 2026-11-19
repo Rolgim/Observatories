@@ -48,6 +48,11 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     return m.length ? t.id + ' : ' + m.join(', ') : '';
   }).filter(Boolean));
   miss.forEach(m => fail('registre, il manque ' + m));
+  // ---- intérieurs (priorité 1) : chaque élément cite sa source ; pas de bouton Coupe sans intérieur documenté
+  for (const e of await pg.evaluate(() => { const out = []; Object.keys(INTERIOR.DATA).forEach(id => INTERIOR.DATA[id].forEach((x, i) => { if (!x.cite) out.push(id + ' n° ' + i + ' (' + (x.l || '').slice(0, 40) + ')'); })); return out; })) fail('intérieur sans source : ' + e);
+  for (const id of ['gaia', 'jwst', 'chandra']){ await go(pg, id); await loaded(pg);
+    const shown = await pg.evaluate(() => !document.getElementById('b-cut').hidden), has = await pg.evaluate(i => INTERIOR.has(i), id);
+    if (shown !== has) fail('bouton Coupe ' + (shown ? 'affiché sans intérieur documenté' : 'absent') + ' pour ' + id); }
   // ---- déploiements : chaque observatoire marqué deploy:true se replie puis se redéploie sans erreur
   for (const id of await pg.evaluate(() => TELESCOPES.filter(t => t.deploy).map(t => t.id))){
     await go(pg, id); await loaded(pg);

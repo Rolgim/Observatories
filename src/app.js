@@ -138,6 +138,8 @@ function missionHtml(t){
     m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
     m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
+  if (m.arch) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Spacecraft equipment' : 'Équipements du véhicule') + '</div><p class="ms-intro">' + (en ? 'Equipment whose exact place inside the spacecraft is not published: it is listed here, not drawn in the 3D model.' : 'Équipements dont la place exacte dans le véhicule n\'est pas publiée : ils sont décrits ici, pas dessinés dans la maquette.') + '</p>' +
+    m.arch.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Processing pipeline' : 'Chaîne de traitement') + '</div><p class="ms-intro">' + esc(L(m.chain.intro)) + '</p><ol class="ms-chain">' +
     m.chain.steps.map(function(s){ return '<li><div class="ms-lv">' + esc(s.lv) + '</div><div class="ms-st"><strong>' + esc(L(s.n)) + '</strong>' + mark(s.r) + '<p>' + esc(L(s.x)) + '</p>' + (s.sw ? '<code>' + esc(L(s.sw)) + '</code>' : '') + '</div></li>'; }).join('') + '</ol>' +
     (m.chain.note ? '<p class="ms-intro">' + esc(L(m.chain.note)) + mark(m.chain.noteR) + '</p>' : '') + '</div>';
@@ -699,7 +701,7 @@ $('b-spin').addEventListener('click', function(){ S.spin = !S.spin; this.setAttr
 var cutRoot = null, cutGroups = [];   /* un plan par groupe de pièces : { plane, c: centre, parts: clés ou null pour toute la maquette } */
 function updateCut(){ cutGroups.forEach(function(g){ var cn = g.c.clone().sub(camera.position).normalize(); g.plane.set(cn, -cn.dot(g.c)); }); }
 function applyCut(){
-  var on = !!(S.cut && S.mode === 'tele');
+  var on = !!(S.cut && S.mode === 'tele' && window.INTERIOR && INTERIOR.has(S.id));
   renderer.localClippingEnabled = on;
   function each(root, fn){ root.traverse(function(o){ if (o.material) [].concat(o.material).forEach(function(m){ fn(m, o); }); }); }
   if (cutRoot && cutRoot !== (current && current.root)) each(cutRoot, function(m){ if (m.userData.side0 !== undefined){ m.clippingPlanes = null; m.side = m.userData.side0; m.needsUpdate = true; } });
@@ -845,7 +847,7 @@ show3D = function(changed){
   S.explodeGoal = S.explode = 0; $('explode').value = 0;
   var cmpMode = S.mode === 'compare';
   /* comparaison : seuls Recadrer reste ; Éclater, Soleil réel, Coupe et Rotation sont retirés */
-  $('explode').parentNode.hidden = cmpMode; document.querySelector('#toolbar .tool-sep').hidden = cmpMode; $('b-sun').hidden = cmpMode; $('b-cut').hidden = cmpMode;
+  $('explode').parentNode.hidden = cmpMode; document.querySelector('#toolbar .tool-sep').hidden = cmpMode; $('b-sun').hidden = cmpMode; $('b-cut').hidden = cmpMode || !(window.INTERIOR && INTERIOR.has(S.id));
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
   var noDep = cmpMode || !tele(S.id).deploy; $('b-dep').hidden = noDep; if (dep.on && (noDep || dep.id !== S.id)) depToggle(false);
   if (!noDep && window.DEPLOY && DEPLOY[S.id]){ var dt = DEPLOY[S.id].title[OBS_LANG === 'en' ? 1 : 0]; $('b-dep').title = dt; }

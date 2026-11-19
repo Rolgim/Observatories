@@ -9,6 +9,11 @@
 ================================================================= */
 var MISSION = {
   hubble: {
+    arch:[
+      ['Section d\'équipements','Equipment section',"Dix baies autour du miroir primaire : ordinateur de bord et gestion des données (1), batteries et horloge (2, 3), énergie (4), communications et enregistreurs (5, 8), commande des mécanismes (7), commande des instruments (10).","Ten bays around the primary mirror: flight computer and data management (1), batteries and clock (2, 3), power (4), communications and recorders (5, 8), mechanism control (7), instrument control (10).",'mg3b'],
+      ['Pointage','Pointing',"Quatre roues de réaction de 59 cm (baies 6 et 9), gyroscopes, viseurs d\'étoiles et trois capteurs de guidage fin.","Four 59 cm reaction wheels (bays 6 and 9), gyroscopes, star trackers and three fine guidance sensors.",'mg3b'],
+      ['Instruments radiaux','Radial instruments',"WFC3 et les trois capteurs de guidage fin, montés perpendiculairement au tube, derrière le primaire.","WFC3 and the three fine guidance sensors, mounted at right angles to the tube, behind the primary.",'primer']
+    ],
     checked:'2026-11-16',
     refs:{
       sm:{ t:'Hubble Space Telescope Servicing Missions, fact sheet', p:'NASA', u:'https://smd-cms.nasa.gov/wp-content/uploads/2023/04/hst-servicing-missions-fact-sheet.pdf' },
@@ -49,8 +54,14 @@ var MISSION = {
   },
 
   jwst: {
+    arch:[
+      ['Propulsion','Propulsion',"Propulseurs de correction d\'orbite (SCAT) à deux ergols, hydrazine et peroxyde d\'azote, un réservoir pour chacun, mis sous pression par de l\'hélium ; huit petits propulseurs à hydrazine (MRE-1) pour l\'orientation et la décharge des roues de réaction. Après quatre ans, il reste des ergols pour plus de vingt ans.","Orbit-correction thrusters (SCAT) using two propellants, hydrazine and dinitrogen tetroxide, one tank for each, pressurised by helium; eight small hydrazine thrusters (MRE-1) for attitude control and unloading the reaction wheels. After four years, enough propellant remains for more than twenty more years.",'jdprop'],
+      ['Données','Data',"Un enregistreur à mémoire statique (SSR) stocke les données de l\'observatoire entre deux contacts avec le sol.","A solid-state recorder (SSR) stores the observatory's data between ground contacts.",'nasabus']
+    ],
     checked:'2026-11-16',
     refs:{
+      jdprop:{ t:'JWST Propulsion', p:'STScI, JWST User Documentation (JDox)', u:'https://jwst-docs.stsci.edu/jwst-observatory-hardware/jwst-spacecraft-bus/jwst-propulsion' },
+      nasabus:{ t:'Webb : Spacecraft Bus', p:'NASA Science', u:'https://science.nasa.gov/mission/webb/spacecraft-bus' },
       dec:{ t:'Webb Blog, December 2021 (déploiements)', p:'NASA', u:'https://science.nasa.gov/blogs/webb/2021/12/' },
       sfn:{ t:'Astronomers breathe sigh of relief with final Webb telescope deployment milestone (10 janvier 2022)', p:'Spaceflight Now', u:'https://spaceflightnow.com/2022/01/10/astronomers-breathe-sigh-of-relief-with-final-webb-telescope-deployment-milestone/' },
       l2:{ t:'Webb has arrived at L2 (24 janvier 2022)', p:'ESA', u:'https://esa.int/Science_Exploration/Space_Science/Webb/Webb_has_arrived_at_L2' },
@@ -89,6 +100,12 @@ var MISSION = {
   },
 
   euclid: {
+    arch:[
+      ['Propulsion','Propulsion',"Réservoir d\'hydrazine de 137,5 kg au centre du module de service ; quatre réservoirs d\'azote, 70 kg en tout, pour le pointage fin.","137.5 kg hydrazine tank at the centre of the service module; four nitrogen tanks, 70 kg in all, for fine pointing.",'racca'],
+      ['Pointage','Pointing',"Quatre roues de réaction, qui font pivoter le satellite d\'un champ à l\'autre.","Four reaction wheels, which slew the satellite from one field to the next.",'racca'],
+      ['Électronique','Electronics',"Électroniques chaudes de VIS et de NISP, ordinateur de bord et mémoire de masse, distribution de l\'énergie et batterie, émetteurs en bandes K et X, électronique du contrôle d\'attitude, sur les panneaux du module de service.","Warm electronics of VIS and NISP, on-board computer and mass memory, power distribution and battery, K- and X-band transmitters, attitude control electronics, on the service module panels.",'racca'],
+      ['Optique arrière','Rear optics',"Sous la plaque de base : miroir tertiaire et lame dichroïque, qui envoie le visible vers VIS et l\'infrarouge vers NISP (voir « Trajet de la lumière »).","Below the baseplate: tertiary mirror and dichroic plate, which sends visible light to VIS and infrared to NISP (see “Light path”).",'racca']
+    ],
     checked:'2026-11-16',
     refs:{
       tl:{ t:'Euclid, Timeline', p:'ESA', u:'https://www.cosmos.esa.int/web/euclid/timeline' },
@@ -137,6 +154,11 @@ var MISSION = {
   },
 
   roman: {
+    arch:[
+      ['Propulsion','Propulsion',"Module de propulsion : quatre réservoirs d\'hydrazine, vannes et conduites vers les 24 propulseurs.","Propulsion module: four hydrazine tanks, valves and lines to the 24 thrusters.",'ntrs'],
+      ['Pointage','Pointing',"Six roues de réaction de 20 kg, à fort couple pour passer vite d\'un champ à l\'autre ; centrale inertielle de quatre gyroscopes en pyramide.","Six 20 kg reaction wheels, with high torque to slew quickly between fields; inertial reference unit of four gyroscopes in a pyramid.",'ntrs'],
+      ['Avionique','Avionics',"Six panneaux qui portent ordinateurs, mémoire de 9 To, énergie, communications et pointage, et rayonnent leur chaleur vers l\'espace.","Six panels carrying computers, the 9 TB recorder, power, communications and pointing, and radiating their heat to space.",'ntrs']
+    ],
     checked:'2026-11-16',
     refs:{
       tl:{ t:'History of the Roman Mission', p:'NASA', u:'https://science.nasa.gov/mission/roman-space-telescope/timeline' }
@@ -353,7 +375,13 @@ var MISSION = {
   },
   chandra: {
     checked:'2026-11-19',
+    arch:[
+      ['Pointage','Pointing',"Six roues de réaction ; deux centrales inertielles.","Six reaction wheels; two inertial reference units.",'specs'],
+      ['Énergie et données','Power and data',"Trois batteries nickel-hydrogène de 40 Ah ; enregistreur à mémoire statique de 1,8 Gbit, soit 16,8 h d\'observation entre deux contacts avec le sol.","Three 40 Ah nickel-hydrogen batteries; 1.8 Gbit solid-state recorder, i.e. 16.8 h of observing between two ground contacts.",['specs','w00']],
+      ['Module d\'instruments','Instrument module',"Table de translation qui amène ACIS ou HRC au foyer et règle la mise au point ; HRC-I (10 × 10 cm) et HRC-S (trois segments de 3 × 10 cm).","Translation table that brings ACIS or HRC to the focus and adjusts the focus; HRC-I (10 × 10 cm) and HRC-S (three 3 × 10 cm segments).",'pog']
+    ],
     refs:{
+      w00:{ t:'Weisskopf et al. 2000, Chandra X-ray Observatory (CXO): overview (Proc. SPIE 4012)', p:'arXiv:astro-ph/0004127', u:'https://arxiv.org/abs/astro-ph/0004127' },
       sdp:{ t:'Standard Data Processing (niveaux de traitement)', p:'Chandra X-ray Center, CIAO', u:'https://cxc.cfa.harvard.edu/ciao3.4/data/sdp.html' },
       csc:{ t:'Chandra Source Catalog, Release 2.1', p:'Chandra X-ray Center (newsletter 35)', u:'https://cxc.harvard.edu/newsletters/news_35/article14.html' }
     },
@@ -391,8 +419,15 @@ var MISSION = {
     ]
   },
   gaia: {
+    arch:[
+      ['Structure','Structure',"Tube central de 1,17 m qui porte la charge utile ; six panneaux radiaux le relient aux côtés du module de service.","1.17 m central tube carrying the payload; six radial panels link it to the sides of the service module.",'sf101'],
+      ['Propulsion','Propulsion',"Deux réservoirs d\'ergols, environ 400 kg, pour rejoindre L2 et s\'y maintenir ; deux réservoirs d\'azote de 28,5 kg à 310 bar pour la micro-propulsion.","Two propellant tanks, about 400 kg, to reach L2 and stay there; two 28.5 kg nitrogen tanks at 310 bar for micro-propulsion.",['sf101','sm']],
+      ['Électronique','Electronics',"Unités de traitement vidéo, qui repèrent les étoiles dans le flux des CCD ; mémoire de la charge utile et ordinateur central ; batterie lithium-ion de 72 Ah pour le lancement ; régulation de l\'énergie.","Video processing units, which pick out the stars in the CCD stream; payload data storage and central computer; 72 Ah lithium-ion battery for launch; power regulation.",['sm','sf101']]
+    ],
     checked:'2026-11-16',
     refs:{
+      sm:{ t:'Gaia : Service module', p:'ESA', u:'https://www.esa.int/Science_Exploration/Space_Science/Gaia/Service_module' },
+      sf101:{ t:'Gaia Spacecraft Overview', p:'Spaceflight101', u:'https://spaceflight101.com/gaia/?p=123' },
       cal:{ t:'Gaia Mission Calendar', p:'ESA', u:'https://www.cosmos.esa.int/web/gaia/calendars' },
       dpac:{ t:'Gaia DR3 documentation, 1.2.2 Organigramme and funding (DPAC)', p:'ESA, DPAC', u:'https://gea.esac.esa.int/archive/documentation/GDR3/Introduction/chap_cu0int/cu0int_sec_dpac/cu0int_ssec_dpac_structure.html' },
       proc:{ t:'Gaia, Data Processing', p:'ESA', u:'https://www.cosmos.esa.int/web/gaia/data-processing' },
