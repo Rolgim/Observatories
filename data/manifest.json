@@ -918,5 +918,180 @@
   "caption": "Le champ d'étoiles du Grand Nuage de Magellan qui sert à étalonner la géométrie des instruments de JWST. Aperçu en niveaux de gris d'un produit calibré par la chaîne de traitement de l'archive, réduit pour le site.",
   "credit": "NASA, ESA, ASC, STScI",
   "fetched": "2026-11-16"
+ },
+ "chandra/acis": {
+  "type": "image",
+  "file": "chandra-acis.jpg",
+  "width": 1024,
+  "height": 1024,
+  "title": "Cassiopée A, ACIS",
+  "meta": [
+   [
+    "Archive",
+    "Chandra Data Archive (CXC)"
+   ],
+   [
+    "Instrument",
+    "ACIS-S, puce S3"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 114"
+   ],
+   [
+    "Cible",
+    "CAS A"
+   ],
+   [
+    "Programme",
+    "ACIS OBSERVATION OF CAS A"
+   ],
+   [
+    "Responsable du programme",
+    "DR STEPHEN HOLT"
+   ],
+   [
+    "Début d'observation",
+    "2000-01-30"
+   ],
+   [
+    "Temps de pose",
+    "49 925 s"
+   ],
+   [
+    "Échelle",
+    "0,492″ par pixel, 8,4′ de côté"
+   ],
+   [
+    "Coups dans l'image",
+    "15 775 287"
+   ],
+   [
+    "Traitement",
+    "image binnée par le pipeline standard (toutes énergies), étirement logarithmique pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "acisf00114N006_cntr_img2.fits"
+   ]
+  ],
+  "url": "https://cda.harvard.edu/chaser/startViewer.do?menuItem=details&obsid=114",
+  "caption": "Le reste de la supernova Cassiopée A, dont la lumière de l'explosion nous est parvenue il y a environ 340 ans : une coquille de gaz à plusieurs millions de degrés, et au centre le point de l'étoile à neutrons, découverte par Chandra dès ses premières images. Chaque pixel compte les photons X reçus : noir là où il n'en arrive presque aucun.",
+  "credit": "NASA, CXC, SAO",
+  "fetched": "2026-11-19"
+ },
+ "chandra/hetg:spectre": {
+  "type": "plot",
+  "file": "chandra-hetg-spectre.json",
+  "title": "Spectre HETG de l'étoile Capella",
+  "meta": [
+   [
+    "Archive",
+    "Chandra Data Archive (CXC)"
+   ],
+   [
+    "Instrument",
+    "ACIS-S, puces S0 à S5 + HETG"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 1318"
+   ],
+   [
+    "Cible",
+    "CAPELLA"
+   ],
+   [
+    "Responsable du programme",
+    "CXC Calibration"
+   ],
+   [
+    "Début d'observation",
+    "1999-09-25"
+   ],
+   [
+    "Temps de pose",
+    "26 697 s"
+   ],
+   [
+    "Données",
+    "ordres +1 et −1 du bras MEG additionnés, 2 à 25 Å"
+   ],
+   [
+    "Coups",
+    "47 320"
+   ],
+   [
+    "Points",
+    "4 600 dans l'intervalle, 1 150 tracés (somme par paquets de 4)"
+   ],
+   [
+    "Fichier d'origine",
+    "acisf01318N005_pha2.fits"
+   ]
+  ],
+  "url": "https://cda.harvard.edu/chaser/startViewer.do?menuItem=details&obsid=1318",
+  "caption": "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon. Chaque pic est une raie d'émission ; leur finesse permet de mesurer température et densité du gaz.",
+  "credit": "NASA, CXC, SAO",
+  "fetched": "2026-11-19"
+ },
+ "chandra/letg:spectre": {
+  "type": "plot",
+  "file": "chandra-letg-spectre.json",
+  "title": "Spectre LETG de l'étoile Capella",
+  "meta": [
+   [
+    "Archive",
+    "Chandra Data Archive (CXC)"
+   ],
+   [
+    "Instrument",
+    "HRC (HRC-S) + LETG"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 1248"
+   ],
+   [
+    "Cible",
+    "CAPELLA"
+   ],
+   [
+    "Programme",
+    "GRATINGS CALIBRATION OBSERVATION OF AN EMISSION LINE SOURCE: CAPELLA"
+   ],
+   [
+    "Responsable du programme",
+    "CXC Calibration"
+   ],
+   [
+    "Début d'observation",
+    "1999-11-09"
+   ],
+   [
+    "Temps de pose",
+    "84 597 s"
+   ],
+   [
+    "Données",
+    "ordres +1 et −1 du bras LEG additionnés, 5 à 175 Å"
+   ],
+   [
+    "Coups",
+    "380 255"
+   ],
+   [
+    "Points",
+    "13 600 dans l'intervalle, 1 700 tracés (somme par paquets de 8)"
+   ],
+   [
+    "Fichier d'origine",
+    "hrcf01248N005_pha2.fits"
+   ]
+  ],
+  "url": "https://cda.harvard.edu/chaser/startViewer.do?menuItem=details&obsid=1248",
+  "caption": "Capella, une étoile proche dont la couronne, à plusieurs millions de degrés, émet des raies X du fer, de l'oxygène et du néon. Le réseau LETG, lu par la caméra HRC-S, couvre les grandes longueurs d'onde, jusqu'aux rayons X les moins énergétiques.",
+  "credit": "NASA, CXC, SAO",
+  "fetched": "2026-11-19"
  }
 }
