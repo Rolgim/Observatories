@@ -91,7 +91,7 @@ var EN_UI = {
   "Terre, orbite et Lune à l'échelle (orbite de 2025).":"Earth, orbit and Moon to scale (2025 orbit).",
   "Une orbite, vue du nord de l'écliptique":"One orbit, seen from north of the ecliptic",
   "Orbite de Chandra autour de la Terre, à l'échelle":"Chandra's orbit around the Earth, to scale",
-  "Terre, orbite et orbite de la Lune à la même échelle. Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s'arrêtent.":"Earth, orbit and the Moon's orbit at the same scale. Last complete orbit, real positions (JPL Horizons ephemerides) in a fixed geocentric frame. The grey disc around the Earth roughly marks the radiation-belt region where observations stop.",
+  "Terre et orbite à la même échelle (l'orbite de la Lune, à 384 400 km, sort du cadre). Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s'arrêtent.":"Earth and orbit at the same scale (the Moon's orbit, at 384,400 km, lies outside the frame). Last complete orbit, real positions (JPL Horizons ephemerides) in a fixed geocentric frame. The grey disc around the Earth roughly marks the radiation-belt region where observations stop.",
   "Distance au centre de la Terre":"Distance from the Earth's centre",
   "Altitude au plus près":"Altitude at closest approach",
   "50 000 km":"50,000 km",
