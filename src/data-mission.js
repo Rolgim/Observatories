@@ -249,6 +249,42 @@ var MISSION = {
       ['2023','2023',['4FGL-DR4','4FGL-DR4'],"7 194 sources gamma, 14 ans de données, de 50 MeV à 1 TeV.","7,194 gamma-ray sources, 14 years of data, from 50 MeV to 1 TeV.",'dr4',false]
     ]
   },
+  tess: {
+    checked:'2026-11-19',
+    refs:{
+      start:{ t:'TESS Spacecraft Starts Science Operations', p:'TESS Science Support Center (HEASARC)', u:'https://heasarc.gsfc.nasa.gov/docs/tess/tess-spacecraft-starts-science-operations.html' },
+      two:{ t:'April 18th marks the two-year anniversary of TESS in space', p:'TESS Science Support Center (HEASARC)', u:'https://heasarc.gsfc.nasa.gov/docs/tess/april-18th-marks-the-two-year-anniversary-of-tess-in-space.html' }
+    },
+    intro:["TESS est une mission de la NASA dirigée par le MIT. Les données sont traitées par le Science Processing Operations Center (SPOC), à l'Ames Research Center de la NASA, et par le Quick Look Pipeline du MIT ; elles sont publiques sans délai, à l'archive MAST.",
+           "TESS is a NASA mission led by MIT. The data are processed by the Science Processing Operations Center (SPOC), at NASA's Ames Research Center, and by MIT's Quick Look Pipeline; they are public without delay, at the MAST archive."],
+    phases:[
+      ['18 avril 2018','18 Apr 2018','Lancement','Launch',"Une Falcon 9 le lance depuis Cap Canaveral ; un survol de la Lune l'aide ensuite à rejoindre son orbite de 13,7 jours.","A Falcon 9 launches it from Cape Canaveral; a lunar flyby then helps it reach its 13.7-day orbit.",['winn','eo']],
+      ['25 juil. 2018','25 Jul 2018','Début des observations','Science begins',"Premier secteur observé ; ensuite, une moitié du ciel par an, découpée en 13 secteurs.","First sector observed; then one hemisphere a year, cut into 13 sectors.",['start','winn']],
+      ['juil. 2020','Jul 2020','Fin de la mission principale','End of prime mission',"Deux ans, les deux hémisphères : 45 planètes confirmées et plus de 1 700 candidats en avril 2020. Prolongation jusqu'en octobre 2022.","Two years, both hemispheres: 45 confirmed planets and more than 1,700 candidates in April 2020. Extended to October 2022.",'two'],
+      ['missions étendues','extended missions',"Le ciel presque entier","Almost the whole sky","Les missions suivantes portent la couverture à près de 100 % du ciel et raccourcissent la cadence des images complètes, à 10 min puis 200 s.","The following missions bring coverage to nearly 100% of the sky and shorten the full-frame cadence, to 10 min then 200 s.",'winn'],
+      ['2024','2024','≈ 7 000 candidats','≈ 7,000 candidates',"Environ 7 000 candidats planètes, dont plusieurs centaines confirmés par la mesure de leur masse.","About 7,000 planet candidates, several hundred of them confirmed by measuring their mass.",'winn']
+    ],
+    ops:[
+      ['Programme','Programme','NASA ; mission dirigée par le MIT','NASA; mission led by MIT','fs'],
+      ['Traitement','Processing','SPOC (NASA Ames) · Quick Look Pipeline (MIT)','SPOC (NASA Ames) · Quick Look Pipeline (MIT)','winn'],
+      ['Liaison','Downlink','bande Ka, 100 Mbit/s, au périgée','Ka band, 100 Mbit/s, at perigee','hto'],
+      ['Accès','Access','public sans délai, à l\'archive MAST','public without delay, at the MAST archive','winn'],
+      ['Suivi au sol','Ground follow-up','ExoFOP-TESS','ExoFOP-TESS','winn']
+    ],
+    chain:{
+      intro:["Le SPOC transforme les poses en images calibrées, puis en courbes de lumière, et cherche les transits ; les candidats deviennent des « TESS Objects of Interest » (TOI).",
+             "SPOC turns the exposures into calibrated images, then into light curves, and searches them for transits; the candidates become TESS Objects of Interest (TOI)."],
+      steps:[
+        { lv:'_ffic', n:['Images complètes','Full-frame images'], x:['Chaque caméra et chaque CCD, calibrés, à la cadence de la mission.','Every camera and CCD, calibrated, at the mission cadence.'], sw:'SPOC', r:'winn' },
+        { lv:'_tp', n:['Images de cibles','Target pixel files'], x:['Petites images, typiquement de 11 × 11 pixels, autour des étoiles choisies, toutes les 120 s ou 20 s.','Small images, typically 11 × 11 pixels, around selected stars, every 120 s or 20 s.'], sw:'SPOC', r:'winn' },
+        { lv:'_lc', n:['Courbes de lumière','Light curves'], x:['Éclat de chaque cible au cours du temps, corrigé des effets de l\'instrument (PDCSAP).','Brightness of each target over time, corrected for instrumental effects (PDCSAP).'], sw:'SPOC', r:'winn' },
+        { lv:'TOI', n:['Candidats','Candidates'], x:['Transits repérés et vérifiés : candidats planètes, à confirmer depuis le sol.','Transits found and vetted: planet candidates, to be confirmed from the ground.'], r:'winn' }
+      ]
+    },
+    rel:[
+      ['depuis 2018','since 2018',['Un secteur par mois','One sector a month'],"Les données de chaque secteur sont publiées à l'archive MAST, sans période réservée.","The data of each sector are released at the MAST archive, with no proprietary period.",'winn',false]
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

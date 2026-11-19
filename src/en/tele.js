@@ -99,6 +99,26 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  tess:{
+    agency:'NASA, mission led by MIT', launch:'Launched 18 April 2018, Falcon 9, Cape Canaveral',
+    sub:'Highly elliptical orbit in resonance with the Moon, exoplanet search (since 2018)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'3.9 m', dim:'3.9 × 1.2 × 1.5 m, deployed' },
+    desc:"TESS looks for planets around nearby, bright stars, watching for the small dip in brightness that happens when a planet passes in front of its star. Its four cameras, small 10.5 cm lenses, together cover a 24° by 96° strip of sky, which they stare at for 27 days before moving to the next. Its very elongated orbit, tuned to the Moon's, takes it almost as far as the Moon.",
+    sourceNote:"NASA model (NASA 3D Resources repository, version B), re-segmented here into five assemblies from its geometry and materials. It is not in metres: it is scaled to the published deployed length of 3.9 m. The large conical screen around the cameras comes from the model; the mission documents mainly describe a hood on each lens.",
+    refs:{ fs:'TESS, mission fact sheet (2015)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions, deployed','3.9 × 1.2 × 1.5 m'],['Launch mass','325 kg'],['Power','two wings, 415 W available for a need of ≈ 290 W'],['Bus','Orbital ATK LEOStar-2 · four reaction wheels · pointing to within 3″'],['Launch','18 April 2018, Falcon 9, Cape Canaveral']] },
+      { title:'Cameras', rows:[['Optics','4 identical cameras · 7 lenses · 10.5 cm entrance pupil · f/1.4'],['Field','24° × 24° each · 24° × 96° together'],['Detectors','16 CCID-80 CCDs of 2048 × 2048 px · 15 µm pixels, i.e. 21″'],['Range','600 to 1,000 nm'],['Full-frame images','every 30 min at first, then 10 min, then 200 s']] },
+      { title:'Orbit and data', rows:[['Orbit','≈ 17 × 59 Earth radii (≈ 108,000 × 373,000 km) · 13.7 days · 2:1 resonance with the Moon'],['Sectors','24° × 96°, observed for 27.4 days, two orbits'],['Downlink','Ka band, 100 Mbit/s · 0.7 m antenna · at perigee, ≈ 4 h per orbit'],['Data','public without delay, at the MAST archive']] }
+    ],
+    parts:{
+      cams:{ name:'Cameras', desc:"Four identical cameras, lined up to cover together a 24° by 96° strip. Each is a seven-lens f/1.4 objective in front of four CCDs: enough to photograph a 24° square of sky every two seconds.", facts:["10.5 cm entrance pupil, f/1.4","24° × 24° field each","4 CCDs of 2048 × 2048 px per camera","2 s exposures, summed on board"] },
+      shade:{ name:'Conical screen', desc:"In the model, a large conical screen surrounds the cameras. The mission documents describe a hood on each lens, which reduces the light from the Earth and the Moon scattered into the cameras.", facts:["Hoods against scattered light from the Earth and the Moon"] },
+      bus:{ name:'Spacecraft bus', desc:"A LEOStar-2 bus built by Orbital ATK. Four reaction wheels hold the pointing to within a few arcseconds; hydrazine thrusters now and then dump the momentum built up by the pressure of sunlight.", facts:["LEOStar-2, Orbital ATK","Pointing to within 3″","Four reaction wheels, hydrazine thrusters"] },
+      hga:{ name:'High-gain antenna', desc:"A 0.7 m Ka-band antenna. Data only come down at perigee, once per orbit: for a few hours, TESS pauses its observations and turns towards the Earth.", facts:["0.7 m, Ka band, 100 Mbit/s","≈ 4 h of downlink at each perigee"] },
+      solar:{ name:'Solar arrays', desc:"Two wings that follow the Sun by turning about one axis.", facts:["415 W available","Steerable about one axis"] }
+    }
+  },
   fermi:{
     agency:'NASA and the U.S. Department of Energy, with France, Germany, Italy, Japan and Sweden', launch:'Launched 11 June 2008, Delta II, Cape Canaveral',
     sub:'Low Earth orbit, gamma rays (since 2008)', src:'Model: NASA 3D Resources (public domain)',

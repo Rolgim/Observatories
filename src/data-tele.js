@@ -9,7 +9,7 @@
      optical    pièces qui ouvrent la page « Trajet de la lumière »
      compare    order (rang dans « Comparer », chronologique), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
-     orbit      leo (orbite basse, avec leo:{ alt km, per min }), heo (orbite terrestre très elliptique), l2, ou helio (autour du Soleil, dans le sillage de la Terre, avec helio.drift)
+     orbit      leo (orbite basse, avec leo:{ alt km, per min }), heo (orbite terrestre très elliptique, avec heo:{ rp, ra en km depuis le centre de la Terre, apo, per, note }), l2, ou helio (autour du Soleil, dans le sillage de la Terre, avec helio.drift)
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
      domain     groupe de l'en-tête, parmi DOMAINS (en fin de fichier) : domaine spectral principal
 ================================================================= */
@@ -92,7 +92,7 @@ var TELESCOPES = [
     sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
     src:'Maquette : NASA 3D Resources (domaine public)',
     file:'models/chandra.glb', bytes:802076, axis:'x', size:13.8,
-    view:{ az:-2.5, el:0.35, dist:1.3 }, sun:[0.2,0.9,0.3], orbit:'heo',
+    view:{ az:-2.5, el:0.35, dist:1.3 }, sun:[0.2,0.9,0.3], orbit:'heo', heo:{ rp:13051, ra:148371, apo:'≈ 142 000 km', per:'63,5 h', note:'Terre, orbite et Lune à l\'échelle (orbite de 2025).' },
     hero:{ num:'0,5', unit:'″', label:'la netteté de ses images X (largeur à mi-hauteur)' },
     cmp:{ tag:'13,8 m', dim:'13,8 m de long, 19,5 m d\'envergure', mirror:1.2, mass:4800, len:13.8 },
     color:'#C2367A', highlight:['Focale','10','m'], footprint:['13,8','m de long'], optical:['hrma','oba','isim'],
@@ -334,6 +334,63 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'tess', domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
+    agency:'NASA, mission dirigée par le MIT', launch:'Lancé le 18 avril 2018, Falcon 9, Cap Canaveral',
+    sub:'Orbite très elliptique en résonance avec la Lune, recherche d\'exoplanètes (depuis 2018)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/tess.glb', bytes:657160, axis:'x', size:3.9,
+    view:{ az:-2.4, el:0.38, dist:1.5 }, sun:[0.3,0.9,0.3], orbit:'heo', heo:{ rp:108000, ra:373000, apo:'≈ 373 000 km', per:'13,7 jours', note:'Terre, orbite nominale et Lune à l\'échelle.' },
+    hero:{ num:'24° × 96°', unit:'', label:'la bande de ciel vue d\'un coup par ses quatre caméras' },
+    cmp:{ tag:'3,9 m', dim:'3,9 × 1,2 × 1,5 m, déployé', mirror:0.105, lens:true, mass:325, len:3.9 },
+    color:'#1F7A8C', highlight:['Champ','24° × 96°',''], footprint:['3,9','m, déployé'], optical:['cams'],
+    compare:{ order:6, rot:[0, 0.4, 0], fp:[0, 2] },
+    desc:"TESS cherche des planètes autour des étoiles proches et brillantes, en guettant la petite baisse d'éclat qui se produit quand une planète passe devant son étoile. Ses quatre caméras, de petits objectifs de 10,5 cm, couvrent ensemble une bande de 24° sur 96° du ciel, qu'elles fixent pendant 27 jours avant de passer à la suivante. Son orbite très allongée, réglée sur celle de la Lune, l'emmène presque jusqu'à elle.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources, version B), redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux. Elle n'est pas en mètres : elle est mise à l'échelle sur la longueur déployée publiée de 3,9 m. Le grand écran conique autour des caméras vient de la maquette ; les documents de la mission décrivent surtout un capot sur chaque objectif.",
+    checked:'2026-11-19',
+    refs:{
+      fs:{ t:'TESS, fiche de mission (2015)', p:'NASA Goddard', u:'https://lhea.gsfc.nasa.gov/archive/tess/documents/tess_factsheet_06-05-15.pdf' },
+      eo:{ t:'TESS (Transiting Exoplanet Survey Satellite)', p:'eoPortal (ESA)', u:'https://eoportal.org/satellite-missions/tess' },
+      hto:{ t:'TESS, Telescope Information', p:'TESS Science Support Center (HEASARC)', u:'https://heasarc.gsfc.nasa.gov/docs/tess/telescope_information.html' },
+      og:{ t:'TESS Observatory Guide, v1.1', p:'TESS Science Support Center', u:'https://heasarc.gsfc.nasa.gov/docs/tess/docs/TESS_observatory_guide_v1.1.pdf' },
+      winn:{ t:'Winn 2024, The Transiting Exoplanet Survey Satellite', p:'arXiv:2410.12905', u:'https://arxiv.org/abs/2410.12905' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions, déployé','3,9 × 1,2 × 1,5 m','eo'], ['Masse au lancement','325 kg','eo'],
+        ['Énergie','deux ailes, 415 W disponibles pour un besoin de ≈ 290 W','hto'],
+        ['Module','LEOStar-2 d\'Orbital ATK · quatre roues de réaction · pointage à 3″ près',['fs','eo']],
+        ['Lancement','18 avril 2018, Falcon 9, Cap Canaveral',['winn','eo']] ]},
+      { title:'Caméras', rows:[
+        ['Optique','4 caméras identiques · 7 lentilles · pupille de 10,5 cm · f/1,4','hto'],
+        ['Champ','24° × 24° chacune · 24° × 96° ensemble','hto'],
+        ['Détecteurs','16 CCD CCID-80 de 2048 × 2048 px · pixels de 15 µm, soit 21″','hto'],
+        ['Domaine','600 à 1 000 nm','hto'],
+        ['Images complètes','toutes les 30 min au début, puis 10 min, puis 200 s','winn'] ]},
+      { title:'Orbite et données', rows:[
+        ['Orbite','≈ 17 × 59 rayons terrestres (≈ 108 000 × 373 000 km) · 13,7 jours · résonance 2:1 avec la Lune',['og','eo']],
+        ['Secteurs','24° × 96°, observés 27,4 jours, deux orbites','og'],
+        ['Liaison','bande Ka, 100 Mbit/s · antenne de 0,7 m · au périgée, ≈ 4 h par orbite',['hto','og']],
+        ['Données','publiques sans délai, à l\'archive MAST','winn'] ]}
+    ],
+    parts:[
+      { key:'cams', name:'Caméras', explode:[0,1,0,0.8],
+        desc:"Quatre caméras identiques, alignées pour couvrir ensemble une bande de 24° sur 96°. Chacune est un objectif de sept lentilles ouvert à f/1,4 devant quatre CCD : de quoi photographier toutes les deux secondes un carré de ciel de 24° de côté.",
+        facts:[["Pupille de 10,5 cm, f/1,4", "hto"], ["Champ de 24° × 24° chacune", "hto"], ["4 CCD de 2048 × 2048 px par caméra", "hto"], ["Poses de 2 s, additionnées à bord", "og"]] },
+      { key:'shade', name:'Écran conique', explode:[0,1,0,1.4],
+        desc:"Dans la maquette, un grand écran conique entoure les caméras. Les documents de la mission décrivent un capot sur chaque objectif, qui réduit la lumière de la Terre et de la Lune diffusée dans les caméras.",
+        facts:[["Capots contre la lumière diffusée de la Terre et de la Lune", "og"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"Un module LEOStar-2 construit par Orbital ATK. Quatre roues de réaction tiennent le pointage à quelques secondes d'arc près ; des propulseurs à hydrazine évacuent de temps en temps l'élan accumulé sous la pression de la lumière du Soleil.",
+        facts:[["LEOStar-2, Orbital ATK", ["fs","eo"]], ["Pointage à 3″ près", "fs"], ["Quatre roues de réaction, propulseurs à hydrazine", "eo"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,0,1,0.6],
+        desc:"Une antenne de 0,7 m en bande Ka. Les données ne descendent qu'au périgée, une fois par orbite : pendant quelques heures, TESS interrompt ses observations et se tourne vers la Terre.",
+        facts:[["0,7 m, bande Ka, 100 Mbit/s", "hto"], ["≈ 4 h de transmission à chaque périgée", "og"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[1,0,0,0.5],
+        desc:"Deux ailes qui suivent le Soleil en tournant sur un axe.",
+        facts:[["415 W disponibles", "hto"], ["Orientables sur un axe", "fs"]] }
+    ]
+  },
+  {
     id:'jwst', domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
@@ -343,7 +400,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:6, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:7, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -419,7 +476,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:7, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:8, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -484,7 +541,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:8, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:9, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',

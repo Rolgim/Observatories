@@ -829,6 +829,60 @@ var INST_DATA = (function(){
         docs:[ {l:"Meegan et al. 2009",u:"https://arxiv.org/abs/0908.0450"}, {l:"Instrument GBM",u:"https://fermi.gsfc.nasa.gov/science/instruments/gbm.html"} ] }
     ]
   },
+  tess: {
+    checked:'2026-11-19',
+    refs:{
+      hto:{ t:"TESS, Telescope Information", p:"TESS Science Support Center (HEASARC)", u:"https://heasarc.gsfc.nasa.gov/docs/tess/telescope_information.html" },
+      og:{ t:"TESS Observatory Guide, v1.1", p:"TESS Science Support Center", u:"https://heasarc.gsfc.nasa.gov/docs/tess/docs/TESS_observatory_guide_v1.1.pdf" },
+      winn:{ t:"Winn 2024, The Transiting Exoplanet Survey Satellite", p:"arXiv:2410.12905", u:"https://arxiv.org/abs/2410.12905" }
+    },
+    axis: { min:0.5, max:1.1 },
+    summary: "Un seul instrument, en quatre exemplaires : quatre caméras grand champ identiques, montées côte à côte pour couvrir une bande de 24° sur 96°. Elles ne font pas d'images au sens habituel mais mesurent, pendant des semaines, l'éclat de centaines de milliers d'étoiles, à la recherche des transits de planètes.",
+    archives: [
+      { label:"MAST, archive de TESS", url:"https://archive.stsci.edu/missions-and-data/tess", desc:"Images complètes, images de cibles et courbes de lumière, publiques sans délai." },
+      { label:"ExoFOP-TESS", url:"https://exofop.ipac.caltech.edu/tess/", desc:"Candidats planètes (TOI) et observations de suivi depuis le sol." },
+      { label:"TESS Science Support Center", url:"https://heasarc.gsfc.nasa.gov/docs/tess/", desc:"Documentation, outils et calendrier des secteurs." }
+    ],
+    instruments: [
+      { id:"cams", name:"Caméras", full:"Quatre caméras grand champ", kind:"Photométrie grand champ", color:"#1F7A8C",
+        bands:[ {l:"TESS",lo:0.6,hi:1.0} ],
+        use:"Repérer les planètes qui passent devant leur étoile, en mesurant son éclat toutes les quelques minutes pendant des semaines, pour des centaines de milliers d'étoiles proches à la fois.",
+        summary:"Chaque caméra est un objectif de sept lentilles, ouvert à f/1,4, devant une mosaïque de quatre CCD. Les poses de 2 s sont additionnées à bord : images complètes du champ toutes les 30, 10 puis 3 min 20 s selon les années, et petites images de cibles choisies toutes les 2 min ou 20 s.",
+        specs:[
+          ["Optique", "7 lentilles · pupille de 10,5 cm · f/1,4", "hto"],
+          ["Champ", "24° × 24° par caméra · 24° × 96° pour les quatre", "hto"],
+          ["Détecteurs", "4 CCD CCID-80 par caméra, 2048 × 2048 px de 15 µm, écartés d'≈ 2 mm", ["hto","og"]],
+          ["Pixels", "≈ 21″", "hto"],
+          ["Domaine", "600 à 1 000 nm, centré sur la bande I_C", "hto"],
+          ["Saturation", "étoiles plus brillantes que I_C ≈ 7,5", "hto"],
+          ["Cadences", "images complètes : 1 800 s, puis 600 s, puis 200 s · cibles : 120 s ou 20 s", ["winn","hto"]]
+        ],
+        fov:[ {l:'caméra 1', w:86400, h:86400, dx:-129600}, {l:'caméra 2', w:86400, h:86400, dx:-43200}, {l:'caméra 3', w:86400, h:86400, dx:43200}, {l:'caméra 4', w:86400, h:86400, dx:129600} ],
+        filtersTitle:"Bande",
+        filters:[ R("TESS",0.6,1.0,"B","bande large, centrée sur I_C") ],
+        products:[
+          ["FFI (_ffic.fits)","image complète calibrée d'une caméra et d'un CCD"],
+          ["TPF (_tp.fits)","petite image d'une cible à chaque instant"],
+          ["Courbe de lumière (_lc.fits)","éclat d'une étoile au cours du temps (pipeline SPOC)"],
+          ["TOI","candidats planètes, suivis sur ExoFOP-TESS"]
+        ],
+        example:{ real:false, title:"Colonnes d'une courbe de lumière SPOC (_lc.fits)", caption:"Colonnes réelles du produit ; valeurs illustratives.", text:
+"TIME (BTJD)      SAP_FLUX (e⁻/s)   PDCSAP_FLUX (e⁻/s)   PDCSAP_FLUX_ERR   QUALITY\n" +
+"1325.29723        24311.4           24402.9               5.1               0\n" +
+"1325.29862        24305.8           24398.6               5.1               0\n" +
+"\n" +
+"→ PDCSAP_FLUX est corrigé des effets de l'instrument ; un transit y creuse quelques millièmes de l'éclat." },
+        code:{ title:"Courbe de lumière avec lightkurve", text:
+"import lightkurve as lk\n\n" +
+"# courbes de lumière à 2 min du pipeline SPOC, téléchargées depuis MAST\n" +
+"lc = lk.search_lightcurve(\"WASP-18\", mission=\"TESS\", author=\"SPOC\", exptime=120)[0].download()\n" +
+"lc = lc.remove_nans().normalize()\n" +
+"lc.plot()" },
+        notes:["À chaque périgée, l'observation s'interrompt quelques heures pour transmettre les données : les courbes de lumière ont un trou tous les 13,7 jours.",
+               "Les poussées qui vident les roues de réaction de leur élan laissent de petits sauts dans les courbes de lumière."],
+        docs:[ {l:"TESS Telescope Information",u:"https://heasarc.gsfc.nasa.gov/docs/tess/telescope_information.html"}, {l:"Observatory Guide",u:"https://heasarc.gsfc.nasa.gov/docs/tess/docs/TESS_observatory_guide_v1.1.pdf"} ] }
+    ]
+  },
   chandra: {
     checked:'2026-11-19',
     refs:{

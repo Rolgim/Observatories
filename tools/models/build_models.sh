@@ -50,4 +50,11 @@ $GT copy $DL/fermi/fermi.glb $W/tmp/fermi_dec.glb >/dev/null
 $GT weld $W/tmp/fermi_dec.glb $W/tmp/fermi_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/fermi_w.glb','$W/tmp/fermi_seg.glb',require('$W/fermi_cls.js')).then(s=>console.log('fermi',JSON.stringify(s)))"
 (cd $W && node slim.mjs $W/tmp/fermi_seg.glb $OUT/fermi.glb 0.15 0.002)
+# ---------- TESS : maquette NASA (Draco, version B), unités de la maquette (mise à l'échelle par le site), redécoupée
+# attendu dans $DL : tess/tess.glb (« Transiting Exoplanet Survey Satellite (TESS) (B).glb » du dépôt nasa/NASA-3D-Resources)
+# le redécoupage garde les textures WebP et laisse tomber les doublons PNG (repli EXT_texture_webp)
+$GT copy $DL/tess/tess.glb $W/tmp/tess_dec.glb >/dev/null
+$GT weld $W/tmp/tess_dec.glb $W/tmp/tess_w.glb >/dev/null
+node -e "require('$W/seg_lib.js').segment('$W/tmp/tess_w.glb','$W/tmp/tess_seg.glb',require('$W/tess_cls.js')).then(s=>console.log('tess',JSON.stringify(s)))"
+$GT quantize $W/tmp/tess_seg.glb $OUT/tess.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 ls -la $OUT

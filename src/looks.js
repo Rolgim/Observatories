@@ -21,6 +21,14 @@ var LOOKS = {
     if (!/SolarFaces|SolarPanelBack|top-LAT-cover/.test(n)) m.color.convertSRGBToLinear();   /* couleurs sRGB lues comme linéaires, comme pour Roman */
     if (m.userData.envK == null) m.userData.envK = 0.5;
   },
+  /* TESS (maquette NASA) : les matériaux « reflector » et « foil_silver » portent une carte de normales à la place de leur couleur
+     (d'où un violet irisé) : couleur retirée, carte gardée comme relief ; couvertures argentées et antenne gris clair mats */
+  tess: function(m, n, THREE){
+    if (/reflector|foil_silver/.test(n) && m.map){ m.normalMap = m.map; m.map = null; if (THREE.LinearEncoding != null) m.normalMap.encoding = THREE.LinearEncoding; m.normalScale.set(0.4, 0.4); m.needsUpdate = true; }
+    if (/foil_silver/.test(n)){ m.color.setHex(0xB9BDC2); m.metalness = 0.55; m.roughness = 0.5; }
+    else if (/reflector/.test(n)){ m.color.setHex(0xD8D9DA); m.metalness = 0.1; m.roughness = 0.6; }
+    if (m.userData.envK == null) m.userData.envK = 0.5;
+  },
   jwst: function(m, n){
     if (/TopReflector|mirror|gold-nofoil|JWST-gold/.test(n)){ m.color.setRGB(1.0, 0.74, 0.32); m.metalness = 0.88; m.roughness = 0.3; }
     else if (/FoilLayer[1-4]/.test(n)){ m.color.setRGB(0.42, 0.44, 0.50); m.metalness = 0.9; m.roughness = 0.45; }

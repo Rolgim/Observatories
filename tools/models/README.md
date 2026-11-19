@@ -12,6 +12,7 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | Chandra | NASA 3D Resources, « Chandra X-ray Observatory » (GLB Draco, textures WebP, en mètres) | décodage Draco, soudure, redécoupage en six ensembles (`chandra_cls.js`), quantification (≈ 0,8 Mo) |
 | Spitzer | NASA 3D Resources, « Spitzer Space Telescope » (GLB Draco, en mètres) | décodage Draco, soudure, redécoupage en cinq ensembles (`spitzer_cls.js`), quantification (≈ 1,1 Mo) |
 | Fermi | NASA 3D Resources, « Fermi Gamma-ray Large Area Space Telescope » (GLB Draco, unités arbitraires) | décodage Draco, soudure, redécoupage en cinq ensembles (`fermi_cls.js`), puis `slim.mjs` à 0,15 (≈ 2,0 Mo au lieu de 7,3) ; mise à l'échelle par l'envergure de 15 m (`axis:'z'`) |
+| TESS | NASA 3D Resources, « Transiting Exoplanet Survey Satellite (TESS) (B) » (GLB Draco, unités arbitraires) | décodage Draco, soudure, redécoupage en cinq ensembles (`tess_cls.js` : caméras, écran conique, module, antenne, panneaux), quantification ; mise à l'échelle par le site sur la longueur déployée publiée (3,9 m). Deux matériaux portent une carte de normales comme couleur : corrigé au chargement (`looks.js`). |
 
 ## Redécoupage en pièces
 

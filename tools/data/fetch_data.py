@@ -936,6 +936,42 @@ def fermi_gbm(key):
                 caption="Deux familles se dessinent. Les sursauts longs, de plus de 2 s environ, accompagnent l'effondrement d'étoiles massives. Les courts viennent de la fusion d'étoiles à neutrons, comme celui détecté avec les ondes gravitationnelles de GW170817.",
                 credit="NASA, collaboration Fermi-GBM", fetched=TODAY)
 
+# ---------- TESS : courbe de lumière SPOC à 2 min (MAST) ----------
+def tess_lc(key, tic="100100827", name="WASP-18"):
+    from astroquery.mast import Observations
+    from astropy.io import fits
+    obs = Observations.query_criteria(obs_collection="TESS", target_name=tic, dataproduct_type="timeseries")
+    if len(obs) == 0:
+        raise RuntimeError("aucune série temporelle TESS pour TIC " + tic)
+    obs.sort("t_min")
+    for row in obs[:6]:
+        prods = Observations.get_product_list(row)
+        lc = prods[[str(x).endswith("_lc.fits") for x in prods["productFilename"]]]
+        if len(lc) == 0:
+            continue
+        p = lc[0]; local = os.path.join(TMP, str(p["productFilename"]))
+        if Observations.download_file(p["dataURI"], local_path=local)[0] != "COMPLETE":
+            continue
+        with fits.open(local) as hd:
+            d = hd[1].data; h0 = hd[0].header
+            t = np.array(d["TIME"], float); f = np.array(d["PDCSAP_FLUX"], float); q = np.array(d["QUALITY"])
+        ok = np.isfinite(t) & np.isfinite(f) & (q == 0)
+        t, f = t[ok], f[ok] / np.nanmedian(f[ok])
+        n = len(t) // 5 * 5                                   # moyenne par paquets de 5 points de 2 min (10 min)
+        tb = t[:n].reshape(-1, 5).mean(1); fb = f[:n].reshape(-1, 5).mean(1)
+        fname = key.replace("/", "-").replace(":", "-") + ".json"
+        save_json(fname, dict(type="line", x=rnd(tb - tb[0], 5), y=rnd(fb, 6), xlabel="temps depuis le début du secteur (jours)", ylabel="flux relatif"))
+        sector = h0.get("SECTOR"); cam = h0.get("CAMERA"); ccd = h0.get("CCD")
+        meta = [["Archive", "MAST (STScI)"], ["Instrument", "caméra " + str(cam) + ", CCD " + str(ccd)], ["Cible", name + " (TIC " + tic + ")"],
+                ["Secteur", str(sector)], ["Début d'observation", mjd_to_date(row["t_min"]) or ""], ["Données", "PDCSAP_FLUX du pipeline SPOC, cadence de 2 min, points de qualité 0"],
+                ["Traitement", "division par la médiane, moyenne par paquets de 5 points (10 min)"], ["Points", fr(len(t)) + " dans le fichier, " + fr(len(tb)) + " tracés (moyenne par paquets)"],
+                ["Fichier d'origine", str(p["productFilename"])]]
+        return dict(type="plot", file=fname, title="Les transits de la planète WASP-18 b, vus par TESS", meta=meta,
+                    url="https://archive.stsci.edu/missions-and-data/tess",
+                    caption="Chaque creux est le passage de la planète géante WASP-18 b devant son étoile, qui perd alors environ 1 % de son éclat. Le trou au milieu correspond au passage au périgée, quand TESS transmet ses données.",
+                    credit="NASA, MIT, STScI", fetched=TODAY)
+    raise RuntimeError("aucune courbe de lumière téléchargée")
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -955,6 +991,7 @@ RECIPES = {
     # produits supplémentaires d'un même instrument : clé « observatoire/instrument:nom »
     "euclid/vis:image": euclid_vis_image, "euclid/nisp:image": euclid_nisp_image, "euclid/nisp:spectre": euclid_spectrum,
     "gaia/bprp:spectre": gaia_xp_spectrum, "gaia/rvs:spectre": gaia_rvs_spectrum,
+    "tess/cams": tess_lc,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,

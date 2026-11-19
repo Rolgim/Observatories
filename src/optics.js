@@ -146,6 +146,23 @@ var Optics = (function(){
       s += T(x0 - 12, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
       return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
     },
+    /* TESS : une caméra, de profil. Pupille de 10,5 cm et f/1,4 (TESS Science Support Center) : focale de ≈ 14,7 cm, déduite ;
+       plan focal de 4 CCD de 30,7 mm écartés de ≈ 2 mm, soit ≈ 63 mm (24° de champ). Lentilles et capot : schéma de principe. */
+    tess: function(){
+      var W = 610, H = 300, k = 1.9, x0 = 70, xp = 230, xf = xp + 147*k, cy = 150, s = '';
+      function X(mm){ return xp + mm*k; } function Y(mm){ return cy - mm*k; }
+      s += G('cams', P([[x0, Y(60)], [X(-20), Y(60)], [X(-20), Y(40)]], SOFT, 1.5) + P([[x0, Y(-60)], [X(-20), Y(-60)], [X(-20), Y(-40)]], SOFT, 1.5));
+      [[-8, 52.5], [8, 50], [40, 44], [62, 40], [95, 38], [118, 37], [134, 36]].forEach(function(l){ s += '<ellipse cx="'+f(X(l[0]))+'" cy="'+cy+'" rx="'+f(4.2*k)+'" ry="'+f(l[1]*k)+'" fill="#CFE3F0" fill-opacity="0.55" stroke="'+INK+'" stroke-width="1.2"/>'; });
+      s += P([[X(-14), Y(54)], [X(14), Y(54)], [X(14), Y(-54)], [X(-14), Y(-54)], [X(-14), Y(54)]], SOFT, 1, '4 3') + P([[X(30), Y(47)], [X(142), Y(47)], [X(142), Y(-47)], [X(30), Y(-47)], [X(30), Y(47)]], SOFT, 1, '4 3');
+      [[52.5, 0], [-52.5, 0], [52.5, 31.7], [20, 31.7]].forEach(function(r, i){
+        var yt = r[1], y0 = r[0] - yt*0.2; s += P([[x0, Y(y0 + (yt ? 20 : 0))], [X(-8), Y(y0)], [xf, Y(yt)]], RAY, 1.1);
+      });
+      s += L(xf, Y(31.7), xf, Y(-31.7), DET, 5) + L(X(0), Y(70), X(0), Y(56), MID, 1);
+      s += T(X(0) + 8, Y(66) + 4, 'pupille de 10,5 cm', null, true) + T(X(-14), Y(-54) + 16, 'premier groupe', 'middle') + T(X(86), Y(-47) + 16, 'second groupe', 'middle') + T(xf + 8, cy + 4, 'CCD, 63 mm', null, true);
+      s += T(x0, Y(60) - 8, 'capot', null) + T(x0, 16, 'lumière du ciel, jusqu\'à 12° de l\'axe', null);
+      s += dim(X(0), xf, H - 14, 'focale ≈ 147 mm (f/1,4)');
+      return svg(W, H, s, 'Schéma optique d\'une caméra de TESS');
+    },
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
        (≈ 2,4 m), trou du primaire et secondaire (≈ 0,42 m) mesurés sur la maquette NASA ; ils impliquent un primaire ouvert vers f/1,2.
        Foyer et optique arrière : trajet de principe. */
@@ -205,7 +222,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -231,6 +248,12 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
+    tess:{ title:'Quatre objectifs photographiques', legend:'Les rayons sont tracés en orange, les lentilles en bleu clair, les détecteurs en bleu.', scale:'Une caméra, de profil. Pupille (10,5 cm) et ouverture (f/1,4) publiées ; focale déduite (≈ 147 mm) ; largeur du plan focal tirée des quatre CCD de 30,7 mm et de leurs espaces de 2 mm. Le nombre de lentilles (7) et de groupes (2) est exact ; leurs formes et positions sont un schéma de principe.',
+      steps:['Chaque caméra est un objectif photographique très ouvert, à f/1,4, plutôt qu\'un télescope à miroirs : TESS veut un champ immense, pas un grand pouvoir de résolution.',
+             'Un capot arrête la lumière de la Terre et de la Lune qui viendrait de côté ; sept lentilles, en deux groupes, forment une image nette sur un champ de 24°.',
+             'Au foyer, quatre CCD de 2048 × 2048 pixels de 15 µm : chaque pixel voit 21″ du ciel. Toutes les 2 s, une pose est lue puis additionnée aux précédentes.',
+             'Les quatre caméras sont alignées côte à côte : ensemble, elles couvrent une bande de 24° sur 96° du ciel, de l\'écliptique jusqu\'à son pôle.'],
+      specs:[['Combinaison','objectif réfractif, 7 lentilles'],['Pupille','10,5 cm'],['Ouverture','f/1,4'],['Focale','≈ 147 mm (déduite)'],['Champ','24° × 24° par caméra'],['Domaine','600 à 1 000 nm']] },
     fermi:{ legend:' Le photon gamma est tracé en orange, l\'électron en bleu, le positon en rose, les plans de silicium en bleu et les feuilles de tungstène en noir.', title:'Pas de miroir : un télescope à conversion de paires', scale:'Schéma de principe d\'une tour du LAT : le nombre de plans de silicium, de feuilles de tungstène et de couches du calorimètre est exact (Atwood et al. 2009) ; épaisseurs, espacements et trajectoires ne sont pas à l\'échelle.',
       steps:['Un photon gamma traverse sans réagir le bouclier de scintillateurs, qui, lui, s\'allume au passage des particules chargées du rayonnement cosmique : ces événements sont rejetés.',
              'Dans le trajectographe, le photon finit par se convertir dans une feuille de tungstène en un électron et un positon : c\'est la création de paires, possible au-delà de quelques MeV.',
@@ -276,6 +299,9 @@ var Optics = (function(){
            note:'Détecteurs proche infrarouge : HgCdTe de 2040 × 2040 px utiles, pixels de 18 µm. Un seul module de NIRCam est dessiné.' },
     euclid:{ groups:[ grid(6,6,49.6,49.2,7.7,1.5,DET,['VIS','36 CCD de 4096 × 4132 px, 12 µm']), grid(4,4,36.7,36.7,6,3,'#DB5A14',['NISP','16 détecteurs de 2040 × 2040 px, 18 µm']) ],
              note:'La surface sensible de VIS mesure environ 34 × 30 cm : c\'est l\'une des plus grandes caméras visibles envoyées dans l\'espace. Ses CCD sont montés en six rangées, avec des espaces plus larges entre rangées (Euclid II, tableau 2). Pour NISP, espaces déduits du champ de 0,763 × 0,722° (Euclid I).', gaps:true },
+    /* TESS : quatre caméras, chacune 2 × 2 CCD CCID-80 de 2048 × 2048 px de 15 µm (30,72 mm), écartés d'≈ 2 mm (Observatory Guide) */
+    tess:{ groups:[ grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 1','4 CCD de 2048 × 2048 px, 15 µm']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 2','4 CCD']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 3','4 CCD']), grid(2,2,30.72,30.72,2,2,'#1F7A8C',['Caméra 4','4 CCD']) ],
+             note:'Les quatre caméras sont séparées dans le satellite ; elles sont rapprochées ici, dans l\'ordre de leur champ sur le ciel. Chaque plan focal mesure ≈ 63 mm de côté et voit 24° du ciel.', gaps:true },
     /* Fermi : le LAT vu de dessus, 16 tours de 4 × 4 détecteurs au silicium de 8,95 cm (Atwood et al. 2009) ; un détecteur NaI du GBM (Ø 12,7 cm) */
     fermi:{ groups:[ grid(4,4,358,358,16,16,'#4C3A99',['LAT, vu de dessus','16 tours, chacune de 4 × 4 détecteurs au silicium de 8,95 cm']), grid(1,1,127,127,0,0,'#C9A100',['GBM, un détecteur NaI','Ø 12,7 cm (dessiné carré)']) ],
              note:'Le LAT n\'a pas de plan focal : chaque tour suit la trace des particules. Taille des plans de silicium à l\'échelle (4 × 8,95 cm de côté) ; espaces entre tours indicatifs. Le GBM compte douze détecteurs NaI et deux BGO répartis autour du satellite.' },

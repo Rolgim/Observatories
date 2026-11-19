@@ -22,6 +22,8 @@ BODIES = {  # identifiants Horizons, période, pas
     # Chandra : orbite terrestre très elliptique ; on garde la dernière orbite (≈ 63,5 h) dans un repère géocentrique fixe (écliptique)
     "chandra": dict(id="-151", start=(TODAY - datetime.timedelta(days=3)).isoformat(), stop=TODAY.isoformat(), step="20m", name="Chandra X-ray Observatory", inertial=True),
     "roman":  dict(id="?Roman",   start="2026-09-05", stop=TODAY.isoformat(), step="2d", name="Nancy Grace Roman Space Telescope"),
+    # TESS : orbite très elliptique de 13,7 jours en résonance 2:1 avec la Lune ; la dernière orbite, repère géocentrique fixe
+    "tess": dict(id="-95", start=(TODAY - datetime.timedelta(days=14)).isoformat(), stop=TODAY.isoformat(), step="2h", name="TESS", inertial=True),
     # orbites héliocentriques qui suivent la Terre (Spitzer, Kepler) : toute la mission, Soleil au centre, repère qui tourne avec la Terre
     "spitzer": dict(id="-79",  start="2003-08-26", stop="2020-01-30", step="10d", name="Spitzer Space Telescope", helio=True),
     "kepler":  dict(id="-227", start="2009-03-08", stop="2018-11-15", step="10d", name="Kepler", helio=True),
