@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-"""Sonde SCIFLEET (ESA) : page d'accueil, liens vers XMM-Newton et ses fichiers 3D. N'écrit rien dans le dépôt."""
+"""Sonde SCIFLEET (ESA) : cherche dans l'application les chemins de la maquette XMM-Newton (vue Marmoset, téléchargements). N'écrit rien dans le dépôt."""
 import re, requests
 B = "https://scifleet.esa.int/"
-def get(u):
-    try:
-        r = requests.get(u, timeout=60); print("GET", u, r.status_code, r.headers.get("Content-Type"), len(r.content)); return r
-    except Exception as e:
-        print("ÉCHEC", u, repr(e)[:200])
-r = get(B)
-if r is not None:
-    t = r.text; print(t[:3000])
-    for m in sorted(set(re.findall(r'(?:href|src)="([^"]+)"', t)))[:200]: print("  lien", m)
-    for m in sorted(set(re.findall(r'["\']([^"\']*(?:xmm|XMM)[^"\']*)["\']', t)))[:100]: print("  xmm", m)
-for p in ("xmm", "XMM", "xmm-newton", "spacecraft/xmm", "api/spacecraft", "data/spacecraft.json", "assets/models/xmm/", "models/xmm/"):
-    r = get(B + p)
-    if r is not None and r.ok: print(r.text[:1500])
+js = requests.get(B + "assets/index.313b998d.js", timeout=120).text
+print("taille du code", len(js))
+for m in re.finditer(r'xmm|XMM', js):
+    print("…", js[max(0, m.start() - 160):m.end() + 160].replace("\n", " "))
+paths = sorted(set(re.findall(r'["\'`]([^"\'`\s]{3,200}\.(?:mview|fbx|obj|blend|zip|glb|gltf|3ds|stl|png|jpg|json))["\'`]', js)))
+print("\n== chemins de fichiers", len(paths))
+for p in paths[:150]: print("  ", p)
+for p in sorted(set(re.findall(r'["\'`](https?://[^"\'`\s]+)["\'`]', js)))[:80]: print("  url", p)
