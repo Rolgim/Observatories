@@ -1349,5 +1349,48 @@
   "caption": "Chaque creux est le passage de la planète géante WASP-18 b devant son étoile, qui perd alors environ 1 % de son éclat. Le trou au milieu correspond au passage au périgée, quand TESS transmet ses données.",
   "credit": "NASA, MIT, STScI",
   "fetched": "2026-11-19"
+ },
+ "kepler/phot": {
+  "type": "plot",
+  "file": "kepler-phot.json",
+  "title": "Les transits de la planète HAT-P-7 b, vus par Kepler",
+  "meta": [
+   [
+    "Archive",
+    "MAST (STScI)"
+   ],
+   [
+    "Instrument",
+    "photomètre, module 7, sortie 2"
+   ],
+   [
+    "Cible",
+    "HAT-P-7 (KIC 10666592)"
+   ],
+   [
+    "Trimestre",
+    "Q4"
+   ],
+   [
+    "Données",
+    "PDCSAP_FLUX du pipeline SOC, longue cadence (29,4 min), points de qualité 0"
+   ],
+   [
+    "Traitement",
+    "division par la médiane, aucun lissage"
+   ],
+   [
+    "Points",
+    "3 540 tracés"
+   ],
+   [
+    "Fichier d'origine",
+    "kplr010666592-2010078095331_llc.fits"
+   ]
+  ],
+  "url": "https://archive.stsci.edu/missions-and-data/kepler",
+  "caption": "Chaque creux est le passage de la planète géante HAT-P-7 b devant son étoile, tous les 2,2 jours ; l'étoile perd alors environ 0,7 % de son éclat. Les trous correspondent aux arrêts mensuels pour transmettre les données.",
+  "credit": "NASA, Ames, STScI",
+  "fetched": "2026-11-19"
  }
 }
