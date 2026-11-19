@@ -1,10 +1,20 @@
 # Observatoires en orbite
 
-*Observatories in orbit: an interactive 3D guide to Hubble, JWST, Euclid and Gaia, in French and English.*
+*Observatories in orbit: an interactive 3D guide to Hubble, JWST, Euclid, Gaia and Roman, in French and English.*
 
-Visualisation 3D de quatre télescopes spatiaux (Hubble, JWST, Euclid, Gaia) : pièces cliquables, vue éclatée, éclairage solaire réel, comparaison à l'échelle, et une page « Instruments et données » par observatoire (couverture spectrale, champs de vue, filtres, produits de données, accès aux archives).
+Visualisation 3D de cinq télescopes spatiaux (Hubble, JWST, Euclid, Gaia, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
-Site statique, sans serveur. Dépendance à l'exécution : three.js r128 (CDN).
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb pas à pas, comparaison des tailles à l'échelle.
+- **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
+- **Mission et données**, une page par observatoire :
+  - déroulé de la mission et chaîne de traitement des données ;
+  - trajet de la lumière (schéma optique, plan focal à l'échelle) ;
+  - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, carte des pointés réels) ;
+  - une fiche par instrument (17 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
+  - une page de comparaison de tous les instruments.
+- Français et anglais, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…).
+
+Site statique, sans serveur. Dépendances à l'exécution : three.js r128 et son chargeur glTF (CDN) ; satellite.js 5.0.0, chargé seulement sur la page d'orbite de Hubble.
 
 Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:8000.
 
@@ -13,18 +23,39 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | Chemin | Rôle |
 |---|---|
 | `index.html`, `models/*.glb` | le site tel qu'il est servi par GitHub Pages |
-| `src/` | sources : styles, structure de la page, données (`data-tele.js`, `data-inst.js`), rendu des pages d'instruments, application 3D |
-| `src/en/`, `src/i18n.js`, `src/lang.js` | version anglaise : textes anglais et leur application ; `node tools/i18n-scan.js` liste ce qui n'est pas traduit |
-| `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) |
-| `data/` | observations réelles affichées dans les fiches d'instrument ; produit par `tools/data/fetch_data.py` (workflow « Données réelles »), ne pas modifier à la main |
-| `tools/data/fetch_data.py` | télécharge les observations dans les archives (MAST, ESA) et en tire des aperçus légers |
-| `tools/data/fetch_sky.py` | pointés réels de Hubble et JWST (MAST) et avancée du relevé Euclid (DR1) → `data/sky.json` |
-| `tools/data/fetch_orbits.py` | trajectoires réelles des observatoires de L2 (JPL Horizons) → `data/orbits.json` |
-| `tools/shot.js` | captures d'écran et tests dans un vrai navigateur (Playwright) |
-| `tools/models/` | conversion et redécoupage des maquettes 3D en pièces |
-| `SPECS.md` | spécifications des évolutions prévues |
+| `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) ; `node build.js artifact` produit une variante dans `dist/` (maquettes encodées en base64) |
+| `src/data-tele.js` | **registre des observatoires** (`TELESCOPES`) : fiche, pièces, réglages de la maquette, place dans les comparaisons |
+| `src/data-inst.js`, `src/data-mission.js` | instruments ; déroulé des missions et chaînes de traitement |
+| `src/optics.js`, `src/orbits.js` | trajet de la lumière et plans focaux ; orbites, ciel observable, pointés |
+| `src/inst-render.js` | rendu des pages « Mission et données » et de la comparaison des instruments |
+| `src/app.js` | application 3D et panneau latéral ; ne contient rien de propre à un observatoire |
+| `src/looks.js`, `src/interior.js`, `src/deploy.js` | rendu des matériaux par maquette ; intérieurs de la vue en coupe ; déploiement de Webb |
+| `src/en/`, `src/i18n.js`, `src/lang.js` | version anglaise : textes anglais et leur application |
+| `src/glossary.js` | définitions affichées au survol des termes techniques |
+| `data/` | données réelles (observations, trajectoires, pointés, TLE de Hubble) ; produites par les scripts de `tools/data/`, ne pas modifier à la main |
+| `tools/data/` | `fetch_data.py` (observations, aperçus légers), `fetch_orbits.py` (JPL Horizons), `fetch_sky.py` (pointés MAST, relevé Euclid), `fetch_tle.py` (CelesTrak) |
+| `tools/probe/` | sondes qui montrent ce qu'expose une archive, sans rien écrire dans le dépôt |
+| `tools/models/` | conversion, allègement et redécoupage des maquettes ; **procédure d'ajout d'un observatoire** dans son `README.md` |
+| `tools/smoke.js`, `tools/a11y.js` | tests dans un vrai navigateur (Playwright) : parcours du site, registre complet, traduction ; accessibilité WCAG 2.1 A et AA (axe-core) |
+| `tools/shot.js`, `tools/i18n-scan.js`, `tools/deploy-check.js` | captures d'écran ; textes non traduits ; collisions pendant le déploiement de Webb |
+| `SPECS.md` | spécifications : état, évolutions livrées et à venir |
 
-Après une modification dans `src/`, relancer `node build.js` et commiter `index.html` avec les sources.
+Après une modification dans `src/`, relancer `node build.js` et commiter `index.html` avec les sources : le workflow « Tests » vérifie que les deux correspondent.
+
+## Intégration continue
+
+| Workflow | Quand | Rôle |
+|---|---|---|
+| Tests | à chaque push touchant le site | `index.html` à jour, `tools/smoke.js`, `tools/a11y.js` |
+| Données réelles | chaque jour, et à chaque push des scripts | TLE de Hubble, trajectoires JPL Horizons, observations manquantes ou périmées |
+| Pointés réels | à la demande, et à chaque push de `fetch_sky.py` | pointés de Hubble et de JWST (MAST), avancée du relevé Euclid |
+| Sonde | à la demande | lance un script de `tools/probe/` |
+
+Pour lancer les tests en local : `npm install --no-save playwright@1.56.0 axe-core@4.10.2`, `npx playwright install chromium`, puis `node tools/smoke.js` et `node tools/a11y.js`.
+
+## Ajouter un observatoire
+
+Une entrée dans le registre `TELESCOPES` (`src/data-tele.js`), une maquette dans `models/`, puis ses textes et leur traduction ; `src/app.js` n'a pas à changer. La procédure complète est dans [`tools/models/README.md`](tools/models/README.md). Le test `tools/smoke.js` liste ce qui manque à une entrée.
 
 ## Crédits des maquettes 3D
 
@@ -34,9 +65,12 @@ Après une modification dans `src/`, relancer `node build.js` et commiter `index
 | JWST | NASA 3D Resources |
 | Euclid | ESA SciFleet (https://scifleet.esa.int/model/euclid), jeu de données Gaia Sky |
 | Gaia | Toni Sagristà, Gaia Sky |
+| Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (conception de 2015) |
 
 Les maquettes ont été converties en glTF binaire, allégées et redécoupées en pièces physiques. Leurs droits restent ceux de leurs auteurs :
 
 - Gaia : jeu de données créé par le projet Gaia Sky, sous licence CC BY 4.0 (https://gaiasky.space/licenses/).
-- Hubble et JWST : contenus NASA, non soumis au droit d'auteur aux États-Unis ; voir les consignes d'utilisation des médias de la NASA.
+- Hubble, JWST et Roman : contenus NASA, non soumis au droit d'auteur aux États-Unis ; voir les consignes d'utilisation des médias de la NASA.
 - Euclid : © ESA. Aucune licence explicite n'est affichée par SciFleet pour ce modèle ; il est repris ici à des fins éducatives et non commerciales, avec crédit.
+
+Les intérieurs de la vue en coupe sont reconstruits à partir de sources publiées (citées dans le site) ; leurs emplacements sont indicatifs.

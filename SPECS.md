@@ -12,21 +12,23 @@ Public visé : **de l'étudiant à l'expert**. Conséquences sur tout le contenu
 - **Rien d'approximatif sans le dire.** Une valeur arrondie, estimée ou schématique est signalée comme telle. C'est déjà le cas pour les exemples de données (« données réelles » ou « structure réelle, valeurs illustratives ») et pour la largeur des filtres.
 - **Toute valeur a une source.** Un expert doit pouvoir vérifier ; un étudiant doit pouvoir aller plus loin.
 
-## 2. État actuel (novembre 2026)
+## 2. État actuel (19 novembre 2026)
 
-- Cinq observatoires : Hubble, JWST, Euclid, Gaia et, depuis le 16 novembre, Roman.
-- Vue 3D : maquettes réelles redécoupées en pièces cliquables (8, 10, 6 et 7 pièces), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, comparaison des tailles à l'échelle.
-- Fiche par observatoire : chiffres clés, description, schéma d'orbite, cinq tableaux de caractéristiques.
-- Instruments et données : 15 instruments ; couverture spectrale, champs de vue à l'échelle, filtres, produits de données, exemple, code d'accès (astroquery, ADQL), liens vers les archives ; comparaison des instruments entre observatoires.
-- Thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#jwst-instruments`, `#comparer`, `#comparer-instruments`).
-- Site statique sans serveur : `node build.js` assemble `src/` en `index.html`. Chaîne de préparation des maquettes dans `tools/models/`.
+- Cinq observatoires : Hubble, JWST, Euclid, Gaia et, depuis le 16 novembre, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) : en ajouter un ne demande aucune modification de `app.js` (procédure dans `tools/models/README.md`).
+- Vue 3D : maquettes réelles redécoupées en pièces cliquables (8, 10, 6, 7 et 7 pièces), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes, comparaison des tailles à l'échelle.
+- Fiche par observatoire : chiffres clés, description, schéma d'orbite, cinq tableaux de caractéristiques sourcés.
+- Mission et données : déroulé de la mission et chaîne de traitement ; trajet de la lumière et plans focaux à l'échelle ; orbite réelle, ciel observable et pointés réels ; 17 instruments avec couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL) et liens vers les archives ; comparaison des instruments entre observatoires.
+- Français et anglais, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#jwst-instruments`, `#comparer`, `#comparer-instruments`, `#en-…`).
+- Site statique sans serveur : `node build.js` assemble `src/` en `index.html`. Données réelles mises à jour par les workflows « Données réelles » (chaque jour) et « Pointés réels ».
+- Tests à chaque push : `tools/smoke.js` (parcours du site au bureau et au téléphone, registre complet, traduction) et `tools/a11y.js` (axe-core, WCAG 2.1 A et AA).
 
 Limites connues :
 
-- Les fiches des observatoires sont sourcées depuis le 13 novembre 2026. Les pages d'instruments, les descriptions des pièces et les textes d'optique et d'orbite ne le sont pas encore (seules les valeurs d'Euclid contredites par l'article de référence y ont été corrigées).
 - Licence de la maquette Euclid (ESA SciFleet) non établie.
-- Vérifications faites en local uniquement (Chromium, bureau et téléphone émulé) ; aucun test automatique dans le dépôt en dehors de `tools/shot.js`.
-- Pas d'accès clavier aux pièces dans la vue 3D (la liste « Pièces » sert d'équivalent).
+- Maquette de Roman : conception de 2015 ; masse au lancement encore issue de la prévision de 2021.
+- Schémas optiques à l'échelle pour Hubble seulement ; espaces entre détecteurs indicatifs pour Webb et Gaia.
+- Intérieurs de la vue en coupe : nature et nombre des équipements sourcés, emplacements indicatifs.
+- Tests limités à Chromium (bureau et téléphone émulé) ; parcours au clavier vérifié à la main, pas par un test.
 
 ## 3. Évolutions
 
@@ -35,13 +37,15 @@ Limites connues :
 | Lot | État |
 |---|---|
 | D. Trajet de la lumière | D1 à D4 livrés (D3 avec surlignage dans le schéma ; D4 avec intérieurs reconstruits) |
-| E. Vraies données | E1 et E2 livrés : exemple réel pour les 15 instruments (FGS de Hubble et de JWST ajoutés le 16 novembre) ; E3 non commencé |
+| E. Vraies données | E1 et E2 livrés : exemple réel pour les 15 instruments de Hubble, JWST, Euclid et Gaia (FGS ajoutés le 16 novembre) ; Roman n'aura de données publiques qu'en 2027 (structure réelle, valeurs illustratives d'ici là) ; E3 non commencé |
 | F. Orbites et temps | F1 à F4 livrés (orbites réelles, Hubble en direct, pointés réels, déploiement de Webb, ciel observable) |
 | H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
 | A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
 | M. Mission et traitements | livré le 16 novembre : rubrique « Mission et traitements » de la page « Mission et données » |
-| G. Autres observatoires | Roman ajouté le 16 novembre ; suite à décider (Chandra, puis XMM-Newton, Planck, Herschel si la licence ESA le permet) |
-| C, autres H | plus tard |
+| G. Autres observatoires | Roman ajouté le 16 novembre ; registre des observatoires livré le 19 novembre (G2 et acceptation) ; suite : Chandra, puis XMM-Newton, Planck, Herschel si la licence ESA le permet ; G3 (navigation au-delà de six ou sept) à faire |
+| C. Deux niveaux de lecture | C1 (glossaire) et C2 (« À quoi ça sert ») livrés ; C3 est une règle de rédaction |
+| H1, H3, H4 | livrés (H3 en partie : pas de test automatique du parcours au clavier) |
+| H2, H5 | plus tard |
 
 ### A. Fiabiliser le contenu
 
@@ -124,7 +128,7 @@ Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). 
 **Exigences**
 
 - C1. Glossaire : les termes techniques (TDI, grisme, point de Lagrange, R = λ/Δλ, magnitude AB, CTE, IFU…) sont définis une fois, et consultables au survol ou au toucher partout où ils apparaissent. **Livré** : `src/glossary.js`, 22 termes en français et en anglais. La première apparition d'un terme dans chaque bloc (fiche, section d'instrument) est soulignée en pointillé ; survol, focus clavier ou toucher affichent la définition, Échap la ferme. Ajouter un terme : une ligne dans `Glossary`, motif et définition dans les deux langues.
-- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux. **Livré** : champ `use` des 15 instruments (`src/data-inst.js`, traduit dans `src/en/inst.js`), affiché en tête, avant le résumé technique.
+- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux. **Livré** : champ `use` des 17 instruments (`src/data-inst.js`, traduit dans `src/en/inst.js`), affiché en tête, avant le résumé technique.
 - C3. Pas de bascule « mode débutant / mode expert » : un seul contenu, ordonné du plus accessible au plus pointu.
 
 **Acceptation.** Un lecteur de licence scientifique comprend le premier écran de chaque fiche sans recherche extérieure ; aucune valeur experte n'a été retirée pour y parvenir.
@@ -256,7 +260,7 @@ Reste : les suffixes de fichiers de Webb et de Hubble sont donnés d'après les 
 
 ### H. Socle technique
 
-- H1. Tests automatiques dans le dépôt : chargement des quatre maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push. **Livré** : `tools/smoke.js` (bureau en thème clair, téléphone en thème sombre, absence de défilement horizontal) et workflow « Tests », qui vérifie aussi que `index.html` correspond bien aux sources.
+- H1. Tests automatiques dans le dépôt : chargement de toutes les maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push. **Livré** : `tools/smoke.js` (bureau en thème clair, téléphone en thème sombre, absence de défilement horizontal) et workflow « Tests », qui vérifie aussi que `index.html` correspond bien aux sources.
 - H2. Publication GitHub Pages automatique depuis `main`, avec `index.html` construit par l'intégration continue plutôt que commité.
 - H3. Accessibilité : parcours complet au clavier, y compris la sélection des pièces ; contrastes vérifiés dans les deux thèmes. **Livré en partie le 15 novembre** : `tools/a11y.js` passe axe-core (WCAG 2.1 A et AA) sur huit vues, en clair et en sombre, en français et en anglais, et tourne dans le workflow « Tests ». Corrigé : gris secondaire trop clair en thème clair (#667077 → #5A6369), texte blanc sur vert en thème sombre (jeton `--on-ok`), onglets du panneau (le lien vers les instruments sortait du `tablist`), blocs de code défilants atteignables au clavier. Les onglets se parcourent aux flèches gauche et droite (Début, Fin), selon le motif ARIA. La vue 3D prend le focus : les flèches passent d'une pièce à l'autre (annoncée aux lecteurs d'écran), Échap désélectionne.
 - H4. Version anglaise. **Livré.** Le français reste la langue des sources ; l'anglais est dans `src/en/` et appliqué par `src/i18n.js`.
