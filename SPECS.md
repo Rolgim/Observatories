@@ -25,7 +25,7 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », Terre sous les observatoires en orbite basse, vue en coupe (à refaire, voir 3), déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
 - **Mission et données**, une page par observatoire : mission et traitements ; trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ; orbite (trajectoire réelle, position en direct pour l'orbite basse, ciel observable) ; une page par instrument (à quoi ça sert, couverture spectrale, champ de vue, filtres, produits, observation réelle, code d'accès, archives).
-- **Comparer** : tailles, orbites, couvertures spectrales, champs de vue, plans focaux, tableau des instruments.
+- **Comparer** : tailles, orbites autour de L2, couvertures spectrales, champs de vue, plans focaux, tableau des instruments ; tout sur les mêmes figures, sans regroupement (à refaire, voir 3).
 - **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre ; téléphone ; liens par ancre.
 - Site statique sans serveur. Données réelles mises à jour par l'intégration continue (orbites et TLE chaque jour, observations quand une recette manque). Les archives et sites que le bac à sable n'atteint pas sont sondés depuis l'intégration continue (`tools/probe/`), qui peut déposer des fichiers sur la branche `probe-out`.
 - Tests à chaque push : parcours complet au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
@@ -48,14 +48,32 @@ Règle : la coupe ne montre que des éléments dont la forme, la taille **et** l
 
 **Acceptation.** Aucun élément intérieur sans source pour sa taille et sa position ; `tools/smoke.js` le vérifie à partir du champ source de chaque élément.
 
-### Priorité 2 : flottes de la NASA, de l'ESA et du CNES [G5]
+### Priorité 2 : refaire « Comparer » : comparer ce qui est comparable [K]
+
+Constat (19 novembre) : « Comparer » met tous les observatoires sur les mêmes figures. Les orbites ne sont comparées qu'autour de L2. Les instruments n'ont pas de type commun : le champ `kind` est un texte libre, différent pour chacun des 31 instruments, et le type n'apparaît pas dans les figures. Avec la flotte complète (une soixantaine de missions), ces figures deviendraient illisibles.
+
+Principe : on compare **à l'intérieur d'une famille**, et le **type d'instrument se voit directement** (couleur ou pictogramme, avec une légende).
+
+1. **Trois classifications contrôlées dans le registre**, chacune avec sa définition et sa source :
+   - `orbitFamily` : orbite basse terrestre (Hubble, Fermi, Swift…), orbite terrestre très elliptique (Chandra, XMM-Newton, TESS, INTEGRAL…), autour de L2 (Webb, Euclid, Gaia, Roman, Herschel, Planck…), héliocentrique dans le sillage de la Terre (Spitzer, Kepler).
+   - `missionType` : observatoire généraliste (propositions d'observation ouvertes : Hubble, Chandra, XMM-Newton, Webb…), relevé du ciel (Gaia, Euclid, Roman, WMAP, Planck, WISE, SPHEREx…), exoplanètes par transits (Kepler, TESS, CHEOPS, CoRoT), sursauts et ciel variable (Swift, Fermi GBM, SVOM…), physique fondamentale (LISA Pathfinder, MICROSCOPE). Une mission peut en avoir deux.
+   - `instType` (par instrument, liste fermée) : imageur, spectrographe, spectro-imageur, photomètre, polarimètre, astrométrie, coronographe, guidage, détecteur de sursauts. Le texte libre `kind` reste comme précision.
+2. **Choix de la comparaison** en tête de page : par famille d'orbite, par type de mission ou par domaine spectral. Seuls les observatoires de la famille choisie apparaissent ; un observatoire peut être ajouté à la main, et une comparaison qui mélange des familles est signalée comme telle.
+3. **Orbites comparables à l'échelle**, une figure par famille : orbites terrestres basses et très elliptiques avec la Terre et la Lune ; L2 (figure actuelle) ; héliocentriques dans le sillage de la Terre (dérive en UA par an).
+4. **Instruments** : sur la couverture spectrale, les champs de vue, les plans focaux et le tableau, chaque instrument porte son type, codé par une couleur et un pictogramme, avec une légende. Un filtre par type (par exemple « tous les spectrographes »). Le tableau se trie par type, domaine, champ et résolution.
+5. **Tailles en 3D** : comparer à l'échelle à l'intérieur de la famille choisie (sinon Webb écrase CHEOPS) ; garder la silhouette humaine de référence.
+6. Les mêmes classifications servent aux filtres de la page « Flotte » (priorité 3).
+
+**Acceptation.** Chaque observatoire et chaque instrument a une valeur dans chaque classification, vérifiée par `tools/smoke.js` ; aucune figure ne mélange des familles sans le dire ; le type de chaque instrument se lit sans ouvrir sa fiche.
+
+### Priorité 3 : flottes de la NASA, de l'ESA et du CNES [G5]
 
 **Inventaire** (annexe « Flottes ») : toutes les missions d'astrophysique en orbite, en service ou terminées, avec agence maître d'œuvre, partenaires, dates, domaine, et disponibilité d'une maquette 3D de licence connue. Sources de l'inventaire : navigateur des missions de l'ESA, revue des missions en service de la NASA (Senior Review 2025), liste des missions actives du HEASARC, pages projets du CNES. Chaque statut est revérifié au moment de l'ajout.
 
 **Ce qu'il faut ajouter au site.**
 
 1. **Registre** : champs `agencies` (agence, rôle : maître d'œuvre, partenaire, instrument, centre de données ; source) et `status` (en service, terminé, avec dates). Le champ `domain` reste ; un observatoire peut couvrir deux domaines (INTEGRAL : gamma et X).
-2. **Page « Flotte »** (catalogue) : tous les observatoires sur une frise chronologique, une barre de la date de lancement à la fin de mission, filtrables par agence (NASA, ESA, CNES), domaine et statut ; ceux qui ont une maquette s'ouvrent en 3D, les autres sur leur fiche. La navigation en deux rangées de l'en-tête reste, avec défilement, et renvoie à cette page.
+2. **Page « Flotte »** (catalogue) : tous les observatoires sur une frise chronologique, une barre de la date de lancement à la fin de mission, filtrables par agence (NASA, ESA, CNES), domaine, statut, famille d'orbite et type de mission (priorité 2) ; ceux qui ont une maquette s'ouvrent en 3D, les autres sur leur fiche. La navigation en deux rangées de l'en-tête reste, avec défilement, et renvoie à cette page.
 3. **Fiche sans maquette** : un observatoire sans maquette 3D de licence connue a quand même sa fiche, ses instruments, son orbite et ses données ; la vue 3D affiche alors une vue de l'ESA ou de la NASA créditée, ou rien (voir question 3).
 4. **Contributions** : sur chaque fiche, « Qui a fait quoi », avec un filtre par agence dans la page Flotte ; contributions du CNES sourcées une par une.
 
@@ -67,7 +85,7 @@ Règle : la coupe ne montre que des éléments dont la forme, la taille **et** l
 
 **Acceptation.** Chaque mission de l'inventaire a au moins une fiche sourcée ; la page Flotte les montre toutes ; chaque contribution du CNES affichée a une source.
 
-### Priorité 3 : contenu encore approximatif
+### Priorité 4 : contenu encore approximatif
 
 1. **Prescriptions optiques** [D1] : schémas d'Euclid, de Gaia et de Roman à l'échelle seulement pour les éléments publiés ; courbures et positions des miroirs arrière manquent. Schéma de Gaia chargé.
 2. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb, Gaia, Kepler et XMM-Newton ; trois CCD de contrôle de Gaia non confirmés.
@@ -76,35 +94,35 @@ Règle : la coupe ne montre que des éléments dont la forme, la taille **et** l
 5. Relecture de la version anglaise par un anglophone du domaine [H4].
 6. Orbite de XMM-Newton : la fiche donne l'orbite du lancement (7 000 × 114 000 km), signalée comme telle ; trouver une source pour l'orbite actuelle.
 
-### Priorité 4 : vraies données [E]
+### Priorité 5 : vraies données [E]
 
 1. **Images en couleurs** : refaire les aperçus en niveaux de gris de Hubble et de Webb à partir des FITS (composition à plusieurs filtres).
 2. **Figer les observations** : fixer les identifiants une fois validés, pour que le site ne change pas tout seul.
 3. Spitzer : spectre IRS réel. XMM-Newton OM : une image qui couvre toute la galaxie (mosaïque de poses). Roman : premier exemple réel dès les données publiques (début 2027).
 4. **Requêtes en direct depuis le navigateur** [E3] : non commencé ; dépend des règles CORS de chaque archive.
 
-### Priorité 5 : orbites et animations [F]
+### Priorité 6 : orbites et animations [F]
 
 1. Gaia : comparer la carte de balayage simulée à la vraie couverture de Gaia DR3.
 2. Euclid : ordre des observations à l'intérieur d'un mois, via les fichiers S3 d'IRSA.
 3. Afficher le facteur d'accélération des animations et permettre de choisir une date.
 4. Déploiements : Roman (étapes datées connues, repliement non documenté) et Chandra (panneaux et porte) à décider.
 
-### Priorité 6 : socle technique [H]
+### Priorité 7 : socle technique [H]
 
 1. **Publication par l'intégration continue** : construire `index.html` dans GitHub Actions plutôt que le commiter.
 2. **Poids des maquettes** : Euclid 6,0 Mo, Hubble 3,4 Mo, JWST 4,0 Mo ; viser moins de 3 Mo. Avec la flotte complète, budget par maquette et chargement à la demande obligatoires (déjà à la demande dans la vue 3D ; à vérifier pour « Comparer »).
-3. **Tests** : parcours au clavier, un autre navigateur que Chromium, et test des éléments intérieurs sourcés (priorité 1).
+3. **Tests** : parcours au clavier, un autre navigateur que Chromium, test des éléments intérieurs sourcés (priorité 1) et des classifications (priorité 2).
 
 ## 4. Questions à trancher
 
 1. **Licence du dépôt** (code et textes) : par exemple MIT pour le code, CC BY 4.0 pour les textes.
 2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
 3. **Observatoires sans maquette 3D** (vague 3) : fiche sans vue 3D, vue officielle (image) de l'agence créditée, ou maquette schématique construite d'après les dimensions publiées et signalée comme telle ?
-4. **Ordre des vagues** : celui proposé en 3 (priorité 2) convient-il ?
+4. **Ordre des vagues** : celui proposé en 3 (priorité 3) convient-il ?
 5. **Instruments de la Station spatiale** (NICER, AMS-02, ACES/PHARAO, CALET) : dans le périmètre ou non ?
 
-Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; Spitzer, Fermi, TESS, Kepler, XMM-Newton (19 novembre) ; navigation par domaine spectral (19 novembre) ; maquette de l'ESA pour XMM-Newton, créditée faute de licence explicite (19 novembre) ; périmètre : flottes d'astrophysique NASA, ESA et CNES, missions en service et terminées, agences et contributions (19 novembre) ; intérieurs limités à ce qui est documenté (19 novembre).
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; Spitzer, Fermi, TESS, Kepler, XMM-Newton (19 novembre) ; navigation par domaine spectral (19 novembre) ; maquette de l'ESA pour XMM-Newton, créditée faute de licence explicite (19 novembre) ; périmètre : flottes d'astrophysique NASA, ESA et CNES, missions en service et terminées, agences et contributions (19 novembre) ; intérieurs limités à ce qui est documenté (19 novembre) ; « Comparer » par familles comparables, type d'instrument visible (19 novembre).
 
 ## 5. Lots : exigences et état
 
@@ -200,6 +218,10 @@ Roman (16 au 18 novembre) : maquette NASA de 2015 allégée à 3,1 Mo et redéco
 - H3. Accessibilité. **Livré en partie** : axe-core sur huit vues, deux thèmes, deux langues ; onglets aux flèches selon le motif ARIA ; vue 3D au clavier (flèches entre les pièces, Échap). Reste : point 20.
 - H4. Version anglaise. **Livré**, langue par défaut depuis le 19 novembre (le français se choisit par le bouton FR, mémorisé, ou un lien `#fr-…` ; les tests imposent leur langue par le stockage local) (`src/en/`, `src/i18n.js` ; `tools/i18n-scan.js` liste ce qui n'est pas traduit). À chaque ajout de texte, compléter `src/en/`. Non traduits : `README.md`, `SPECS.md`, les commentaires du code.
 - H5. Poids des maquettes. **À faire** (point 19).
+
+### K. Comparer — à refaire
+
+Exigences et acceptation : priorité 2, section 3. Livré jusqu'ici : tailles à l'échelle en 3D, orbites autour de L2, couverture spectrale, champs de vue, plans focaux, tableau des instruments, pour tous les observatoires à la fois.
 
 ### M. Mission et traitements — livré
 
