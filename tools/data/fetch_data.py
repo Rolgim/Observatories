@@ -764,8 +764,11 @@ def chandra_image(key, obsids, name, about, cutoff=99.9):
 def chandra_hrc_obsids(target, n=6):
     """ObsID publics HRC-I sans réseau sur une cible, les plus longues poses d'abord (catalogue chanmaster du HEASARC)."""
     import pyvo
+    names = " OR ".join("name LIKE '%" + v + "%'" for v in (target.upper(), target.capitalize(), target.lower()))
     t = pyvo.dal.TAPService(CDA_TAP).search(
-        "SELECT TOP 20 obsid, exposure FROM chanmaster WHERE detector = 'HRC-I' AND grating = 'NONE' AND name LIKE '%" + target + "%' ORDER BY exposure DESC").to_table()
+        "SELECT TOP 20 obsid, name, detector, grating, exposure FROM chanmaster WHERE detector LIKE 'HRC-I%' AND (" + names + ") ORDER BY exposure DESC").to_table()
+    print("   catalogue :", ", ".join(f"{r['obsid']} {r['name']} {r['detector']} {r['grating']} {r['exposure']:.0f} s" for r in t[:10]) or "rien")
+    t = t[[str(g).strip().upper() in ("NONE", "") for g in t["grating"]]]
     return [int(x) for x in t["obsid"][:n]]
 
 def chandra_grating(key, obsid, part, lo, hi, rebin, title, caption):
