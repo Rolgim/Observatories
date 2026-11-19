@@ -1,68 +1,174 @@
-# Observatoires en orbite : spécifications pour la suite
+# Observatoires en orbite : spécifications
 
-Document de travail. Il décrit l'état actuel, le public visé, puis les évolutions envisagées, chacune avec son besoin, ses exigences et ses critères d'acceptation. Les priorités et les questions ouvertes sont à trancher avant de commencer un lot.
+Document de travail, à jour au 19 novembre 2026. Ordre de lecture : objet et public (1), ce que fait le site (2), **ce qui reste à faire (3)**, questions à trancher (4), puis le détail de chaque lot, ses exigences et ce qui a été livré (5). Les tableaux de vérification des valeurs sont en annexe.
 
 ## 1. Objet et public
 
 Le site présente des télescopes spatiaux en 3D et explique comment ils sont construits, ce qu'ils mesurent et comment accéder à leurs données.
 
-Public visé : **de l'étudiant à l'expert**. Conséquences sur tout le contenu :
+Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
-- **Deux niveaux de lecture.** Chaque fiche se comprend sans prérequis (phrases complètes, termes définis à leur première apparition) et donne en dessous les valeurs exactes qu'un expert vient chercher (unités, tolérances, références).
-- **Rien d'approximatif sans le dire.** Une valeur arrondie, estimée ou schématique est signalée comme telle. C'est déjà le cas pour les exemples de données (« données réelles » ou « structure réelle, valeurs illustratives ») et pour la largeur des filtres.
+- **Deux niveaux de lecture.** Chaque fiche se comprend sans prérequis (phrases complètes, termes définis) et donne en dessous les valeurs exactes qu'un expert vient chercher (unités, références).
+- **Rien d'approximatif sans le dire.** Une valeur arrondie, estimée, mesurée sur une maquette ou schématique est signalée comme telle.
 - **Toute valeur a une source.** Un expert doit pouvoir vérifier ; un étudiant doit pouvoir aller plus loin.
 
-## 2. État actuel (19 novembre 2026)
+## 2. Ce que fait le site
 
-- Cinq observatoires : Hubble, JWST, Euclid, Gaia et, depuis le 16 novembre, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) : en ajouter un ne demande aucune modification de `app.js` (procédure dans `tools/models/README.md`).
-- Vue 3D : maquettes réelles redécoupées en pièces cliquables (8, 10, 6, 7 et 7 pièces), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes, comparaison des tailles à l'échelle.
-- Fiche par observatoire : chiffres clés, description, schéma d'orbite, cinq tableaux de caractéristiques sourcés.
-- Mission et données : déroulé de la mission et chaîne de traitement ; trajet de la lumière et plans focaux à l'échelle ; orbite réelle, ciel observable et pointés réels ; 17 instruments avec couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL) et liens vers les archives ; comparaison des instruments entre observatoires.
-- Français et anglais, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#jwst-instruments`, `#comparer`, `#comparer-instruments`, `#en-…`).
-- Site statique sans serveur : `node build.js` assemble `src/` en `index.html`. Données réelles mises à jour par les workflows « Données réelles » (chaque jour) et « Pointés réels ».
-- Tests à chaque push : `tools/smoke.js` (parcours du site au bureau et au téléphone, registre complet, traduction) et `tools/a11y.js` (axe-core, WCAG 2.1 A et AA).
+- **Cinq observatoires** : Hubble, JWST, Euclid, Gaia, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (38 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes, comparaison des tailles à l'échelle.
+- **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
+- **Mission et données**, une page par observatoire :
+  - mission et traitements (déroulé daté, exploitation, chaîne de traitement, publications des données) ;
+  - trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ;
+  - orbite (trajectoire réelle, position de Hubble en direct, ciel observable, pointés réels) ;
+  - 17 instruments : à quoi ça sert, couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès, liens d'archives.
+- **Comparer** : tailles, orbites autour de L2, couvertures spectrales, champs de vue, plans focaux et tableau des instruments.
+- Français et anglais, thèmes clair et sombre, téléphone, liens par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…), favicon.
+- Site statique sans serveur. Données réelles mises à jour par l'intégration continue (chaque jour pour les orbites, le TLE de Hubble et les observations).
+- Tests à chaque push : parcours complet du site au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
 
-Limites connues :
+## 3. Ce qui reste à faire
 
-- Licence de la maquette Euclid (ESA SciFleet) non établie.
-- Maquette de Roman : conception de 2015 ; masse au lancement encore issue de la prévision de 2021.
-- Schémas optiques entièrement à l'échelle pour Hubble et JWST seulement (pas de prescription publiée pour les autres) ; espaces entre détecteurs indicatifs pour Webb et Gaia.
-- Intérieurs de la vue en coupe : nature et nombre des équipements sourcés, emplacements indicatifs.
-- Tests limités à Chromium (bureau et téléphone émulé) ; parcours au clavier vérifié à la main, pas par un test.
+Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
-## 3. Évolutions
+### Priorité 1 : nouveaux observatoires
 
-**Décisions (12 novembre 2026).** On commence par le visible : lots **D, puis E, puis F**. Le site sera en **français et en anglais** (H4). Les lots A et B (fiabilisation et sources) viennent ensuite ; d'ici là, tout nouveau contenu dit explicitement ce qui est exact et ce qui est schématique.
+1. **Chandra** [G] : premier observatoire en rayons X, premier test du registre. Prérequis : une maquette 3D de licence claire (NASA 3D Resources à vérifier), un redécoupage en pièces, une fiche et des instruments sourcés (ACIS, HRC, réseaux HETG et LETG), une orbite (très elliptique, éphémérides Horizons ou TLE).
+2. **Navigation au-delà de six observatoires** [G3] : les onglets d'en-tête ne suffiront plus. Proposition : regroupement par domaine spectral (rayons X, visible et ultraviolet, infrarouge, astrométrie), avec un menu sur téléphone. À faire au plus tard avec le septième observatoire.
+3. Suite possible : XMM-Newton, Planck, Herschel (si la licence des maquettes ESA le permet), Spitzer, TESS, PLATO.
 
-| Lot | État |
-|---|---|
-| D. Trajet de la lumière | D1 à D4 livrés (D3 avec surlignage dans le schéma ; D4 avec intérieurs reconstruits) |
-| E. Vraies données | E1 et E2 livrés : exemple réel pour les 15 instruments de Hubble, JWST, Euclid et Gaia (FGS ajoutés le 16 novembre) ; Roman n'aura de données publiques qu'en 2027 (structure réelle, valeurs illustratives d'ici là) ; E3 non commencé |
-| F. Orbites et temps | F1 à F4 livrés (orbites réelles, Hubble en direct, pointés réels, déploiement de Webb, ciel observable) |
-| H4. Anglais | livré : tout le site est disponible en anglais ; relecture par un anglophone du domaine souhaitable |
-| A et B (sources) | fiches (13 novembre), pages d'instruments (14 novembre) et faits des 31 pièces (15 novembre) vérifiés et sourcés |
-| M. Mission et traitements | livré le 16 novembre : rubrique « Mission et traitements » de la page « Mission et données » |
-| G. Autres observatoires | Roman ajouté le 16 novembre ; registre des observatoires livré le 19 novembre (G2 et acceptation) ; suite : Chandra, puis XMM-Newton, Planck, Herschel si la licence ESA le permet ; G3 (navigation au-delà de six ou sept) à faire |
-| C. Deux niveaux de lecture | C1 (glossaire) et C2 (« À quoi ça sert ») livrés ; C3 est une règle de rédaction |
-| H1, H3, H4 | livrés (H3 en partie : pas de test automatique du parcours au clavier) |
-| H2, H5 | plus tard |
+### Priorité 2 : contenu encore approximatif
 
-### A. Fiabiliser le contenu
+4. **Prescriptions optiques** [D1] : les schémas d'Euclid, de Gaia et de Roman ne sont à l'échelle que pour les éléments publiés ; courbures et positions des miroirs arrière manquent. À demander aux équipes (consortium Euclid, DPAC, projet Roman) ou à chercher dans des documents de conception. Le schéma de Gaia reste chargé.
+5. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb et Gaia ; rangée des trois CCD de contrôle de Gaia dans la première colonne non confirmée.
+6. **Masse au lancement de Roman** [G] : la fiche donne la prévision de 2021 (≈ 10 500 kg) ; les chiffres publiés au lancement divergent. À remplacer par une valeur de la NASA.
+7. **Bande G de Gaia** (≈ 330–1050 nm) [A] : seule valeur sans source sur les pages d'instruments.
+8. **Suffixes de fichiers de Webb et de Hubble** [M] : relire chaque tableau de produits de la documentation.
+9. **Licence de la maquette d'Euclid** [A3] : aucune licence explicite sur SciFleet ; demande à l'ESA. Si elle n'autorise pas la redistribution, remplacer la maquette.
+10. Relecture de la version anglaise par un anglophone du domaine [H4].
+
+### Priorité 3 : vraies données
+
+11. **Images en couleurs** [E] : les aperçus actuels sont les vignettes en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition à plusieurs filtres).
+12. **Figer les observations** [E] : le choix est automatique (plus longue pose publique). Fixer les identifiants une fois validés, pour que le site ne change pas tout seul.
+13. **Roman** [E] : aucune donnée publique avant début 2027 ; ajouter alors un exemple réel et le code d'accès.
+14. **Requêtes en direct depuis le navigateur** [E3] : non commencé. Dépend des règles CORS de chaque archive.
+
+### Priorité 4 : orbites et animations
+
+15. Gaia : comparer la carte de balayage simulée à la vraie couverture de Gaia DR3 (nombre de passages par source) [F2].
+16. Euclid : ordre des observations à l'intérieur d'un mois sur la carte du relevé, via les fichiers S3 d'IRSA [F].
+17. Afficher le facteur d'accélération des animations et permettre de choisir une date [F].
+
+### Priorité 5 : socle technique
+
+18. **Publication par l'intégration continue** [H2] : construire `index.html` dans GitHub Actions plutôt que le commiter.
+19. **Poids des maquettes** [H5] : Euclid fait 6,0 Mo, Hubble 3,4 Mo, JWST 4,0 Mo ; viser moins de 3 Mo (allègement comme pour Roman, ou textures adaptées au téléphone).
+20. **Tests** [H1, H3] : ajouter un test du parcours au clavier et un autre navigateur que Chromium.
+
+## 4. Questions à trancher
+
+1. **Licence du dépôt** (code et textes) : à choisir (par exemple MIT pour le code, CC BY 4.0 pour les textes).
+2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
+3. **Navigation** (G3) : regroupement par domaine spectral, par agence, ou par époque ?
+4. **Ordre des prochains observatoires** : Chandra d'abord, puis lesquels ?
+
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra (19 novembre).
+
+## 5. Lots : exigences et état
+
+### A. Fiabiliser le contenu — livré, sauf A3
 
 **Besoin.** Un expert doit pouvoir se fier à chaque valeur.
 
-**Exigences**
+- A1. Relire chaque valeur face à une source primaire (manuels STScI et JDox, pages ESA et NASA, articles de référence). **Livré** : fiches (13 novembre), pages d'instruments (14 novembre), faits des pièces (15 novembre), Roman (16 novembre). Détail des corrections en annexe.
+- A2. Corriger ou retirer toute valeur non confirmée, sans la remplacer par une estimation. **Livré.**
+- A3. Établir la licence de la maquette d'Euclid. **À faire** (point 9).
+- A4. Dater le contenu. **Livré** : « valeurs vérifiées le … » par observatoire et par onglet.
 
-- A1. Relire toutes les valeurs de `src/data-tele.js` et `src/data-inst.js` face à une source primaire : manuels d'instrument STScI et JDox, pages mission ESA, articles de référence des instruments.
-- A2. Corriger ou retirer toute valeur non confirmée. Une valeur retirée n'est pas remplacée par une estimation.
-- A3. Établir la licence de la maquette Euclid (demande à l'ESA ou conditions SciFleet). Si elle n'autorise pas la redistribution, retirer le fichier et prévoir l'affichage d'Euclid sans vue 3D.
-- A4. Dater le contenu : mention « valeurs vérifiées le … » par observatoire.
+**Acceptation.** Chaque valeur porte une référence. Reste la bande G de Gaia (point 7).
 
-**Acceptation.** Chaque ligne de données porte une référence (voir B) ; la liste « valeurs les moins sûres » de la section 2 est vide.
+### B. Sources visibles — livré
 
-**Fait le 13 novembre 2026 : fiches des quatre observatoires.** Chaque valeur chiffrée a été confrontée à une source primaire (fiches NASA et ESA, article de référence de la mission, documentation des archives) ou retirée.
+- B1. Référence par ligne (`[libellé, valeur, idSource]`) et table des sources par observatoire (`refs`, `checked`).
+- B2. Appel de note par valeur, « ? » orangé pour une valeur chiffrée sans source, liste numérotée en bas de chaque fiche, instrument et onglet.
+- B3. Les schémas citent leur source dans leur légende.
 
-Corrections apportées :
+**Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.
+
+### C. Deux niveaux de lecture — livré
+
+- C1. Glossaire (`src/glossary.js`, 22 termes en français et en anglais) : première apparition soulignée, définition au survol, au focus clavier ou au toucher.
+- C2. « À quoi ça sert » en tête des 17 instruments (champ `use`).
+- C3. Un seul contenu, ordonné du plus accessible au plus pointu (règle de rédaction).
+
+### D. Trajet de la lumière et intérieur des télescopes — livré, avec des restes
+
+- D1. Schéma optique par observatoire. **Livré.** Entièrement à l'échelle pour Hubble (Lallo 2012) et JWST (McElwain et al. 2023, tableau 2 ; foyers calculés ; seuls les décalages latéraux de l'optique arrière sont agrandis). Euclid : diamètres, écart des miroirs, trou du primaire, plaque de base, tailles du tertiaire et des renvois (Racca et al. 2016). Gaia : banc, ouvertures, plan focal et angle de base. Roman : ouverture et obstruction publiées, écart des miroirs mesuré sur la maquette NASA. Reste : point 4.
+- D2. Plans focaux à l'échelle. **Livré** (revu le 17 novembre) : WFI de Roman en arc d'après les positions de GalSim, VIS et NISP avec leurs vrais espaces (Euclid I et II), écarts des CCD de WFC3 et d'ACS, RVS de Gaia en rangées 4 à 7 (documentation DR3). Reste : point 5.
+- D3. Lien dans les deux sens entre schéma et maquette 3D, avec surlignage. **Livré.**
+- D4. Vue en coupe. **Livré** : seule la coque est coupée ; intérieurs reconstruits (`src/interior.js`) d'après les sources publiées, emplacements indicatifs et dits comme tels ; plans de coupe propres pour les modules de Webb et de Roman.
+
+### E. Vraies données — E1 et E2 livrés, E3 à faire
+
+- E1. Un produit réel par instrument, traçable jusqu'à l'archive. **Livré** pour les 15 instruments de Hubble, JWST, Euclid et Gaia (Euclid sur DR1 depuis le 15 novembre). Roman : point 13.
+- E2. Aperçus légers stockés dans le dépôt (`tools/data/fetch_data.py`, `data/`). **Livré.**
+- E3. Requêtes en direct. **À faire** (point 14).
+
+Produits affichés :
+
+| Instrument | Produit réel |
+|---|---|
+| Hubble WFC3, ACS | aperçus de mosaïques de M83 et M51 (MAST) |
+| Hubble STIS, COS | spectres de HD 209458 et du quasar 3C 273 |
+| Hubble FGS | 13,5 h de photométrie de HD 17156 (programme 11945) |
+| JWST NIRCam, MIRI, NIRISS | images de l'amas SMACS 0723 (programme 2736) |
+| JWST NIRSpec | spectre d'une source du même champ |
+| JWST FGS | image FGS1 du champ d'étalonnage du Grand Nuage de Magellan (programme 1086) |
+| Euclid VIS | mosaïque VIS du champ COSMOS et comptages du catalogue MER (DR1, IRSA) |
+| Euclid NISP | composition Y, J, H, spectre rouge combiné et couleur VIS − H (DR1) |
+| Gaia Astro | diagramme de Hertzsprung-Russell à moins de 100 pc |
+| Gaia BP/RP, RVS | spectres d'une étoile de type solaire, distributions de couleurs et de vitesses |
+
+### F. Orbites et temps — livré, avec des restes
+
+- F1. Système Terre–Lune–L2 à l'échelle avec trajectoires réelles (JPL Horizons, mises à jour chaque jour, Roman compris) ; position de Hubble en direct (TLE CelesTrak, SGP4 dans le navigateur).
+- F2. Loi de balayage de Gaia simulée. Reste : point 15.
+- F3. Déploiement de Webb en 13 étapes (`src/deploy.js`), repliement par déformation de la maquette, contrôlé par `tools/deploy-check.js`. Formes repliées schématiques, dit sous le curseur.
+- F4. Ciel observable à une date choisie, contraintes d'angle solaire sourcées pour les cinq observatoires.
+- Cartes des pointés réels de Hubble et de JWST (MAST) et de l'avancée du relevé d'Euclid (DR1). Restes : points 16 et 17.
+
+### G. Autres observatoires — Roman et registre livrés
+
+- G1. Un observatoire n'est ajouté qu'avec une maquette de licence claire, un redécoupage vérifié, une fiche et des instruments sourcés.
+- G2. Procédure d'ajout documentée (`tools/models/README.md`). **Livré le 19 novembre**, avec le registre : `TELESCOPES` porte couleur, chiffre clé, encombrement, pièces optiques, place et orientation dans « Comparer », place dans la figure des plans focaux, fin de mission, déploiement ; matériaux dans `src/looks.js` ; `tools/smoke.js` liste ce qui manque à une entrée.
+- G3. Navigation au-delà de six ou sept observatoires. **À faire** (point 2).
+
+**Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js` : remplie.
+
+Roman (16 au 18 novembre) : maquette NASA de 2015 allégée à 3,1 Mo et redécoupée en sept pièces, fiche, WFI et coronographe, trajet de la lumière, mission et traitements, trajectoire réelle (Horizons, objet −211), intérieur du module de service, en français et en anglais.
+
+### H. Socle technique
+
+- H1. Tests automatiques à chaque push. **Livré** (`tools/smoke.js`, workflow « Tests », qui vérifie aussi que `index.html` correspond aux sources).
+- H2. Publication par l'intégration continue. **À faire** (point 18).
+- H3. Accessibilité. **Livré en partie** : axe-core sur huit vues, deux thèmes, deux langues ; onglets aux flèches selon le motif ARIA ; vue 3D au clavier (flèches entre les pièces, Échap). Reste : point 20.
+- H4. Version anglaise. **Livré** (`src/en/`, `src/i18n.js` ; `tools/i18n-scan.js` liste ce qui n'est pas traduit). À chaque ajout de texte, compléter `src/en/`. Non traduits : `README.md`, `SPECS.md`, les commentaires du code.
+- H5. Poids des maquettes. **À faire** (point 19).
+
+### M. Mission et traitements — livré
+
+Rubrique de la page « Mission et données » (`src/data-mission.js`) : déroulé daté, exploitation, chaîne de traitement (niveaux, suffixes, logiciels, centres), publications des données avec les dates prévues signalées, sources propres. Reste : point 8. Note : « DR1, 12 novembre 2026 » désigne la première partie de DR1 d'Euclid ; la partie complète est annoncée pour mi-2027.
+
+## 6. Hors périmètre pour l'instant
+
+- Télescopes au sol.
+- Comptes utilisateurs, contenu modifiable en ligne.
+- Simulation physique (thermique, orbitographie précise).
+
+## Annexe : valeurs corrigées lors des vérifications
+
+### Fiches (13 novembre)
 
 | Observatoire | Avant | Après | Source |
 |---|---|---|---|
@@ -73,7 +179,7 @@ Corrections apportées :
 | JWST | domaine 0,6–28,8 µm | 0,6–28,5 µm | NASA |
 | JWST | f/20,2 | f/20 | McElwain et al. 2023 |
 | JWST | hauteur ≈ 8 m, atténuation ≈ 1 million, 2 contacts de 4 h | retirés (non confirmés) | |
-| Euclid | 4,7 m × 3,7 m, ≈ 2 000 kg | 4,8 m × 3,74 m, 1 988 kg | Euclid I (Mellier et al.) |
+| Euclid | 4,7 m × 3,7 m, ≈ 2 000 kg | 4,8 m × 3,74 m, 1 988 kg | Euclid I |
 | Euclid | bande VIS 550–900 nm, CCD ≈ 150 K | 530–920 nm, 153 K | Euclid I |
 | Euclid | champ ≈ 0,53 deg² | ≈ 0,54 deg² | Euclid I |
 | Euclid | grisme rouge R > 380 | R ≳ 480 (bleu R ≳ 400) | Euclid I |
@@ -81,209 +187,28 @@ Corrections apportées :
 | Gaia | plan focal ≈ 1,0 × 0,4 m | 0,42 × 0,92 m | ESA |
 | Gaia | DR4 « fin 2026 » | 2 décembre 2026 | ESA Cosmos |
 
-Les périodes des orbites de halo (≈ 175 jours pour JWST, ≈ 170 pour Euclid) sont mesurées sur les éphémérides JPL Horizons déjà utilisées par la page « Orbite ».
+Ajoutés ensuite avec leur source : focale et rapport focal de Hubble (57,6 m, f/24) et écart de ses miroirs (4,9 m), Lallo 2012 ; focale d'Euclid (24,5 m, f/20,4), Racca et al. 2016 ; pare-soleil de Gaia (Ø 10,2 m), ESA ; écart primaire–secondaire de JWST (7,169 m), McElwain et al. 2023. Périodes des orbites de halo mesurées sur les éphémérides JPL Horizons.
 
-Plus aucune valeur des fiches sans source depuis le 16 novembre : longueur focale et rapport focal de Hubble (57,6 m, f/24) et écart de ses miroirs (4,9 m) d'après Lallo 2012 ; longueur focale d'Euclid (24,5 m, f/20,4) d'après Racca et al. 2016. Le schéma optique de Hubble trace désormais les rayons exactement : réfléchis vers le foyer du primaire (R = 11,04 m), coupés au plan du secondaire. Le pare-soleil de Gaia est sourcé depuis le 15 novembre (Ø 10,2 m, ESA).
-
-**Fait le 15 novembre 2026 : faits des 31 pièces.** Chaque fait est `[texte, clé de source]` dans `parts[].facts` ; la liste « Pièces » affiche l'appel de note et les sources de la pièce sous ses faits. Retirés faute de source : diamètre du volet de Hubble (≈ 3 m), masse du secondaire (12,4 kg), écart primaire–secondaire (4,9 m), « 10 baies », parabole de 1,3 m, nombre de panneaux et puissance d'Euclid. Corrigés : « 4 logements axiaux + 1 radial » de Hubble (le Primer donne 4 baies radiales : WFC3 et les 3 FGS), segment de JWST ≈ 20 kg (et non 20,1 kg), pare-soleil de Gaia Ø 10,2 m en 12 cadres et deux couvertures de 2 et 5 couches, panneaux de Gaia à triple jonction, 12,8 m², 1 910 W en fin de vie, plan focal de 938 millions de pixels. Le nombre de sources de Gaia DR3 est sourcé depuis le 14 novembre.
-
-**Fait le 14 novembre 2026 : pages des 15 instruments.** Sources : manuels STScI (WFC3 IHB, ACS IHB, STIS et COS Data Handbooks, HST Primer cycle 34), JDox et page STScI des modes spectroscopiques, articles Euclid I, II (VIS, Cropper et al.) et III (NISP, Jahnke et al.), page ESA Gaia DR3, page ESA de l'instrument photométrique, documentation Gaia DR2 et Prusti et al. 2016.
+### Pages d'instruments (14 novembre)
 
 | Instrument | Avant | Après | Source |
 |---|---|---|---|
-| WFC3 | f/31 et f/11 ; sensibilité S/N = 10 en 10 h | retirés (non confirmés) ; 62 filtres UVIS, 15 IR ; bruit IR 12 e⁻ | WFC3 IHB, HST Primer |
-| ACS | SBC 0,032″/px | ≈ 0,034″ × 0,030″/px, champ SBC 34,6″ × 30,5″ ajouté | ACS IHB |
+| WFC3 | f/31 et f/11 ; S/N = 10 en 10 h | retirés ; 62 filtres UVIS, 15 IR ; bruit IR 12 e⁻ | WFC3 IHB, HST Primer |
+| ACS | SBC 0,032″/px | ≈ 0,034″ × 0,030″/px, champ SBC 34,6″ × 30,5″ | ACS IHB |
 | STIS | CCD 250–1100 nm ; MAMA 0,024″/px ; R (M) 10 000–20 000 | ≈ 200–1030 nm ; 0,025″/px ; 4 900–17 400 ; E140M R ≈ 45 800 | STIS DHB |
-| COS | NUV 170–320 nm ; R moyenne 16 000–24 000 ; plages G160M, G185M, G225M, G285M, G230L | 165–320 nm ; 12 000–24 000 ; plages du manuel | COS DHB |
+| COS | NUV 170–320 nm ; R 16 000–24 000 | 165–320 nm ; 12 000–24 000 | COS DHB |
 | FGS (HST) | stabilité ≈ 0,007″ | retirée ; précision ≈ 1 mas, parallaxes ≈ 0,2 mas | HST Primer |
 | NIRCam | 2048 × 2048 px ; grisme R ≈ 1 700 | 2040 × 2040 utiles ; R ≈ 1 600 à 4 µm | JDox |
 | NIRSpec | champ MSA 3,4′ × 3,4′ | 3,6′ × 3,4′, volets 0,20″ × 0,46″ | JDox |
-| MIRI | MRS 4,9–28,8 µm, R 1 500–3 500 ; LRS 5–12 µm, fente 0,6″ × 5,5″ ; coronographes : rayon interne et contraste | 4,9–27,9 µm, R 1 550–3 250 ; 5–14 µm, fente 0,51″ × 4,7″ ; 3 masques de phase et 1 Lyot avec leurs champs | JDox |
-| NIRISS | imagerie 0,8–5,0 µm, 0,065″/px | 0,6–5,0 µm, 0,066″/px | JDox |
-| FGS (JWST) | ≈ 0,07″/px | ≈ 0,069″/px, détecteurs 2048 × 2048 (2040 actifs) | JDox |
-| VIS | saturation ≈ 200 000 e⁻ et limite brillante 17,8 ; f/20,4 ; obstruction 11 % | retirés ; faisceau f/20 | Euclid II |
-| NISP | 0,92–2,0 µm ; 0,298″/px ; optique ≈ 130 K ; « ≤ 200 W » | 0,95–2,02 µm ; 0,3″/px ; ≈ 135 K ; plafond de conception 200 W | Euclid III |
-| Gaia astrométrie | TDI ≈ 4,4 s | 4,42 s ; parallaxe 1,3 mas à G = 21 ajoutée | Prusti et al., DR3 |
-| Gaia BP/RP | R ≈ 20–100 ; ≈ 220 millions de spectres XP | dispersion 3–27 nm/px (BP), 7–15 nm/px (RP) ; ≈ 219 millions | ESA, DR3 |
+| MIRI | MRS 4,9–28,8 µm, R 1 500–3 500 ; LRS 5–12 µm | 4,9–27,9 µm, R 1 550–3 250 ; 5–14 µm, fente 0,51″ × 4,7″ | JDox |
+| NIRISS | 0,8–5,0 µm, 0,065″/px | 0,6–5,0 µm, 0,066″/px | JDox |
+| FGS (JWST) | ≈ 0,07″/px | ≈ 0,069″/px, 2040 px actifs | JDox |
+| VIS | saturation, limite brillante 17,8, f/20,4, obstruction 11 % | retirés ; faisceau f/20 | Euclid II |
+| NISP | 0,92–2,0 µm ; 0,298″/px ; ≈ 130 K | 0,95–2,02 µm ; 0,3″/px ; ≈ 135 K | Euclid III |
+| Gaia astrométrie | TDI ≈ 4,4 s | 4,42 s ; parallaxe 1,3 mas à G = 21 | Prusti et al., DR3 |
+| Gaia BP/RP | R ≈ 20–100 ; ≈ 220 millions de spectres | dispersion 3–27 nm/px (BP), 7–15 nm/px (RP) ; ≈ 219 millions | ESA, DR3 |
 | Gaia RVS | R ≈ 11 500 | R ≈ 11 700 | Prusti et al., doc. DR2 |
 
-Reste sans source sur les pages d'instruments : la bande G (≈ 330–1050 nm). Les tableaux de comparaison (échantillonnage, résolution) reprennent les valeurs sourcées des pages, sans appel de note.
+### Faits des pièces (15 novembre)
 
-### B. Sources visibles
-
-**Besoin.** L'étudiant veut aller plus loin, l'expert veut vérifier.
-
-**Exigences**
-
-- B1. Chaque ligne de caractéristique peut porter une référence (`[libellé, valeur, idSource]`), avec une table des sources par observatoire (titre, éditeur, URL, date de consultation). **Livré pour les fiches et les instruments** (`refs` et `checked` dans `src/data-tele.js` et par observatoire dans `src/data-inst.js`).
-- B2. Affichage discret : un appel de note par valeur, et une section « Sources » en bas de chaque fiche et de chaque instrument. **Livré pour les fiches et les instruments** : numéro en exposant, « ? » orangé pour une valeur chiffrée sans source, liste numérotée et date de vérification.
-- B3. Les schémas (couverture spectrale, champs de vue) citent aussi leur source. **Livré** : légende sous les schémas des pages d'instruments, qui renvoie aux sources de la page (les schémas sont tracés à partir des valeurs sourcées).
-
-**Acceptation.** Aucune valeur numérique affichée sans source, hors conversions d'unités.
-
-### C. Deux niveaux de lecture
-
-**Besoin.** Servir l'étudiant et l'expert sur la même page sans frustrer l'un ni l'autre.
-
-**Exigences**
-
-- C1. Glossaire : les termes techniques (TDI, grisme, point de Lagrange, R = λ/Δλ, magnitude AB, CTE, IFU…) sont définis une fois, et consultables au survol ou au toucher partout où ils apparaissent. **Livré** : `src/glossary.js`, 22 termes en français et en anglais. La première apparition d'un terme dans chaque bloc (fiche, section d'instrument) est soulignée en pointillé ; survol, focus clavier ou toucher affichent la définition, Échap la ferme. Ajouter un terme : une ligne dans `Glossary`, motif et définition dans les deux langues.
-- C2. Chaque fiche d'instrument commence par « À quoi ça sert » en deux ou trois phrases sans jargon, avant les tableaux. **Livré** : champ `use` des 17 instruments (`src/data-inst.js`, traduit dans `src/en/inst.js`), affiché en tête, avant le résumé technique.
-- C3. Pas de bascule « mode débutant / mode expert » : un seul contenu, ordonné du plus accessible au plus pointu.
-
-**Acceptation.** Un lecteur de licence scientifique comprend le premier écran de chaque fiche sans recherche extérieure ; aucune valeur experte n'a été retirée pour y parvenir.
-
-### D. Trajet de la lumière et intérieur des télescopes
-
-**Besoin.** Les maquettes montrent l'extérieur. Or ce qui distingue ces télescopes est à l'intérieur : combinaison optique, plan focal, partage du faisceau.
-
-**Exigences**
-
-- D1. Schéma optique par observatoire, à l'échelle : miroirs, foyers, trajet des rayons du primaire au détecteur (Ritchey-Chrétien pour Hubble, Korsch pour JWST et Euclid, deux télescopes et un plan focal commun pour Gaia).
-- D2. Plan focal dessiné à l'échelle : disposition réelle des détecteurs (36 CCD de VIS, 16 détecteurs de NISP, 106 CCD de Gaia avec leurs fonctions, détecteurs de NIRCam…).
-- D3. Lien avec la vue 3D : cliquer « miroir primaire » dans la maquette met en évidence le même élément dans le schéma, et inversement.
-- D4. En option : coupe ou transparence dans la vue 3D. À n'engager que si les maquettes contiennent une géométrie intérieure exploitable (à vérifier maquette par maquette).
-
-**Acceptation.** Pour chaque observatoire, on peut suivre un rayon de l'entrée au détecteur et lire la taille réelle du plan focal.
-
-**Livré (première version).** Page « Trajet de la lumière » dans Instruments et données, pour chaque observatoire (`src/optics.js`) : schéma optique, explication en quatre étapes, tableau de la combinaison optique, détecteurs dessinés à l'échelle.
-
-**Reste à faire**
-
-- Schémas optiques revus le 19 novembre. Hubble et **JWST** sont à l'échelle (JWST : rayons de courbure et positions des quatre miroirs d'après McElwain et al. 2023, tableau 2 ; foyers calculés ; seuls les décalages latéraux de l'optique arrière sont agrandis). Euclid : diamètres, écart M1–M2, trou du primaire, plaque de base et tailles du tertiaire et des renvois à l'échelle (Racca et al. 2016) ; courbures et positions arrière non publiées. Gaia : banc de ≈ 3 m, ouvertures, plan focal et angle de base à l'échelle ; positions de M2 à M6 non publiées. Roman : aucune prescription publique ; ouverture et obstruction exactes, écart des miroirs mesuré sur la maquette NASA. Reste : chercher les prescriptions d'Euclid, de Gaia et de Roman (documents de conception, demande aux équipes) ; le schéma de Gaia reste chargé.
-- Plans focaux : **revus le 17 novembre**. WFI de Roman placé détecteur par détecteur (centres de GalSim, `sca_positions_20210204.txt`), sur le plan focal et sur le ciel ; VIS avec ses vrais espaces (Euclid II, tableau 2), NISP avec des espaces déduits de son champ (Euclid I) ; écarts entre CCD de WFC3 et d'ACS d'après les manuels ; Gaia : RVS en rangées 4 à 7 et capteur de front d'onde à la place d'AF9 en rangée 4 (documentation DR3, Sartoretti et al.). Reste indicatif : les espaces de Webb et de Gaia, et la rangée des trois autres CCD de contrôle de Gaia dans la première colonne.
-- Livré depuis : comparaison des plans focaux des quatre observatoires à la même échelle dans « Comparer » ; D3 sous forme de liens dans les deux sens (boutons « Voir dans la maquette 3D » sous chaque schéma, qui sélectionnent la pièce ; lien « Voir le trajet de la lumière » dans la description des pièces optiques).
-- D3, suite : **livré le 15 novembre**. Les éléments des schémas optiques sont reliés aux pièces (`data-el`). Venir d'une pièce par « Voir le trajet de la lumière » surligne l'élément et son bouton ; survoler ou parcourir au clavier un bouton « Voir dans la maquette 3D » surligne aussi l'élément correspondant. Vérifié par `tools/smoke.js`.
-- D4 (coupe) : **livré le 16 novembre** sous la forme d'un bouton « Coupe » dans la barre de la vue 3D : un plan de coupe, recalculé à chaque image, retire la moitié de la maquette tournée vers l'observateur (plan de coupe local de three.js, faces arrière affichées). Vérification maquette par maquette : Euclid montre l'intérieur du tube et la structure du miroir secondaire ; Gaia, l'intérieur de la tente ; Hubble, l'intérieur du tube (sans miroirs modélisés) ; Webb n'a pas d'intérieur fermé. Les maquettes publiques étant des coques vides, **intérieurs reconstruits le 16 novembre** (src/interior.js), visibles seulement en coupe et nommés au survol. Règle de coupe : seule la coque est coupée ; l'intérieur reste entier, sauf les enveloppes qui le cacheraient (baies de Hubble, cône central d'Euclid, tube et panneaux radiaux de Gaia). Sur Webb, le module de service et le module d'instruments s'ouvrent, chacun avec son propre plan de coupe ; le bouclier et les miroirs restent entiers (la maquette de la NASA contient déjà les instruments). Contenu, refait après vérification des sources : Hubble d'après le guide SM3B, section 5 (primaire 2,4 m concave à trou de 0,6 m, anneau principal en titane de 2,9 m, secondaire 0,3 m à 4,9 m, déflecteur central conique de 3 m, treillis de 4,8 m à 48 barres sur trois anneaux, araignée, dix baies d'équipement avec leur contenu réel dont les roues de 59 cm en baies 6 et 9, trois FGS de 1,5 × 1 m et WFC3 en position radiale, quatre instruments axiaux de 0,9 × 0,9 × 2,2 m, viseurs d'étoiles) ; Euclid d'après Racca et al. 2016 (M1 1,2 m, M2 0,35 m à 1,756 m, M3, dichroïque, VIS, NISP ; cône central avec le réservoir d'hydrazine de 137,5 kg, quatre réservoirs d'azote pour 70 kg, quatre roues de réaction, électroniques sur les panneaux latéraux) ; Gaia d'après Prusti et al. 2016, l'ESA et Spaceflight101 (deux primaires 1,45 × 0,50 m à 106,5°, secondaires ; tube central de 1,17 m, six panneaux radiaux, deux réservoirs d'ergols pour environ 400 kg, deux réservoirs d'azote de 28,5 kg à 310 bar, unités de traitement vidéo, batterie ; pas de roues de réaction) ; Webb d'après la NASA et le STScI (réservoirs d'hydrazine 168 kg et de peroxyde d'azote 133 kg, deux réservoirs d'hélium, six roues de réaction, compresseur du cryoréfrigérateur de MIRI, commande et données, énergie, communications). Sourcé : dimensions, écarts, nombre et nature des équipements. Indicatif, et dit dans chaque libellé : l'emplacement précis dans les modules de service, le sens de numérotation des baies de Hubble. Reste : plans détaillés des modules de service non publics.
-
-### E. Vraies données
-
-**Besoin.** Passer de « voici la structure d'un fichier » à « voici ce que l'instrument a réellement vu ».
-
-**Exigences**
-
-- E1. Une image ou un spectre réel par instrument, avec son identifiant d'observation, son programme et sa licence, et le code qui permet de le retélécharger.
-- E2. Les fichiers sont réduits (aperçus, pas de FITS complets) et stockés dans le dépôt, pour que le site reste statique.
-- E3. Requêtes en direct vers les archives (MAST, ESA, Gaia TAP) : à étudier seulement après E1. Dépend des règles CORS de chaque archive ; un serveur intermédiaire ne se justifie que si elles l'imposent.
-
-**Acceptation.** Chaque instrument d'imagerie ou de spectroscopie montre au moins un produit réel, traçable jusqu'à l'archive.
-
-**Livré.** `tools/data/fetch_data.py` interroge les archives et écrit dans `data/` un aperçu léger par instrument (image JPEG ou mesures JSON) et un manifeste. Le workflow GitHub « Données réelles » le lance à chaque modification du script, ou à la demande, et commite le résultat. Le site affiche une section « Observation réelle » dans la fiche de l'instrument, avec l'identifiant d'observation, le programme, la requête utilisée et la date de récupération.
-
-| Instrument | Produit réel affiché |
-|---|---|
-| Hubble WFC3, ACS | aperçus de mosaïques combinées de M83 et M51 (MAST) |
-| Hubble STIS, COS | spectres extraits de HD 209458 et du quasar 3C 273 |
-| JWST NIRCam, MIRI, NIRISS | images combinées de l'amas SMACS 0723 (programme 2736) |
-| JWST NIRSpec | spectre d'une source du même champ, choisie automatiquement au meilleur signal sur bruit |
-| Euclid VIS | découpe d'une mosaïque VIS du champ COSMOS (DR1, champs profonds, via IRSA), et comptages par magnitude des 57 974 sources du catalogue MER final de la même tuile (DR1) |
-| Euclid NISP | composition colorée Y, J, H du même champ COSMOS (DR1), spectre rouge combiné d'une source (22 000 s de pose) et couleur visible − infrarouge (DR1) |
-| Gaia Astro | diagramme de Hertzsprung-Russell de 8 000 étoiles à moins de 100 pc |
-| Gaia BP/RP, RVS | spectre BP/RP et spectre RVS réels d'une même étoile de type solaire (DataLink), plus les distributions de couleurs et de vitesses radiales |
-
-**Reste à faire**
-
-- Les deux capteurs de guidage (FGS) n'ont pas de produit.
-- Images : ce sont les aperçus en niveaux de gris de l'archive. Les refaire à partir des FITS (étirement choisi, composition colorée à plusieurs filtres) donnerait un bien meilleur résultat.
-- Un instrument peut maintenant afficher plusieurs produits (clés `obs/inst:image`, `obs/inst:spectre`, `obs/inst` dans le manifeste).
-- Euclid DR1 (12 novembre 2026), **en cours le 15 novembre** :
-  - Fait : images VIS et NISP tirées des mosaïques DR1 du champ COSMOS ; textes, schéma de table, exemples de code et liens d'archives des pages VIS et NISP passés sur DR1 (tables `euclid_dr1_*` d'IRSA, relevées par la sonde `tools/probe/probe_euclid.py`).
-  - Fait le 15 novembre au soir : comptages, couleur VIS − H et spectre NISP passés sur DR1. Le service TAP d'IRSA renvoyant toujours 502, `fetch_data.py` lit les fichiers directement dans le stockage S3 public d'IRSA (`nasa-irsa-euclid-dr1`, lecture anonyme) : catalogue `MER_FINAL-CAT` et spectres `SIR_COMBINED_SPECTRA` de la tuile COSMOS 101544257, trouvée dans le nom des mosaïques. TAP reste en repli. Structure d'un fichier de spectres DR1 : pour chaque source, une extension `N_META` (OBJ_ID, position), puis `N_COMBINED1D_SIGNAL`, puis une extension par pose (avec `GWA_POS` : RGS ou BGS).
-  - Le workflow quotidien refait encore tout produit Euclid tiré de Q1 ; il n'en reste plus.
-  - Le workflow manuel « Sonde » lance un script de `tools/probe/` pour voir ce qu'une archive expose, sans rien écrire dans le dépôt.
-- Les choix d'observation sont automatiques (la plus longue pose publique sur la cible). Les figer par identifiant une fois validés, pour que le site ne change pas tout seul.
-- E3 (requêtes en direct depuis le navigateur) : non commencé.
-
-### F. Orbites et temps
-
-**Besoin.** Situer les observatoires et montrer ce qui bouge.
-
-**Exigences**
-
-- F1. Vue du système Terre–Lune–L2 à l'échelle, avec les orbites de halo et de Lissajous, et la position de Hubble sur son orbite.
-- F2. Loi de balayage de Gaia animée (rotation en 6 h, précession en 63 jours) et couverture du ciel qui en résulte.
-- F3. Déploiement de JWST par étapes, si la maquette permet d'articuler le bouclier et les ailes du miroir (à vérifier).
-- F4. Zones du ciel observables à un instant donné (contraintes d'angle solaire), pour les lecteurs qui préparent des observations.
-
-**Acceptation.** Les mouvements montrés respectent les périodes et les angles réels, ou indiquent le facteur d'accélération.
-
-**Livré (première version).** Page « Orbite » par observatoire, dans Instruments et données (`src/orbits.js`).
-
-- JWST, Euclid, Gaia : trajectoire réelle autour de L2, animée, vue depuis la Terre et vue de dessus, avec l'orbite de la Lune à la même échelle. Les positions viennent des éphémérides JPL Horizons (`tools/data/fetch_orbits.py`, fichier `data/orbits.json`), exprimées dans le repère tournant Soleil–Terre. Les distances extrêmes affichées sont mesurées sur ces données.
-- Hubble : orbite basse à l'échelle, avec l'ombre de la Terre. Le mouvement est calculé (période de 95 min, Soleil dans le plan de l'orbite), ce n'est pas une éphéméride.
-- Gaia : loi de balayage nominale simulée (rotation en 6 h, précession en 63 jours, axe à 45° du Soleil), qui dessine la couverture du ciel au fil des jours.
-
-**Reste à faire**
-
-- Livré depuis : les trois orbites de L2 sur une même figure animée dans « Comparer » ; carte des pointés réels de Hubble (1990 à aujourd'hui) et de JWST, année par année, tirée de l'archive MAST ; carte de l'avancée réelle du relevé d'Euclid, mois par mois, tirée des observations VIS de DR1 (`tools/data/fetch_sky.py`, fichier `data/sky.json`).
-- F1 : position réelle de Hubble, **livrée le 15 novembre**. `tools/data/fetch_tle.py` récupère chaque jour le TLE de Hubble (CelesTrak, NORAD 20580) ; la page « Orbite » le propage dans le navigateur (SGP4, satellite.js 5.0.0) et affiche sa position, la trace de l'orbite précédente et suivante, la nuit et le contour des terres (Natural Earth 1:110m, domaine public, `data/land-110m.json`). Latitude, longitude, altitude et vitesse sont mises à jour chaque seconde.
-- Cartes de pointés : l'écliptique et le plan de la Galaxie sont tracés. Instruments distingués depuis le 15 novembre pour Hubble et JWST : `fetch_sky.py` regroupe les pointés MAST par instrument (WFC3/UVIS et WFC3/IR réunis), la carte colore les six instruments les plus utilisés (les autres en gris) et des boutons en isolent un. Reste : l'ordre des plaques d'Euclid à l'intérieur d'un mois (l'archive ESA n'est pas joignable depuis les machines de GitHub ; à tenter via les fichiers S3 d'IRSA).
-- F2 : la carte de balayage est une simulation de la loi nominale ; la comparer à la vraie couverture de Gaia DR3 (nombre de passages par source).
-- F3 (déploiement de JWST) : **livré le 16 novembre** (src/deploy.js). Bouton « Déploiement » sur la fiche de Webb : un curseur en 13 étapes, du lancement (25 décembre 2021) à l'arrivée autour de L2 (24 janvier 2022), avec date, titre et explication, boutons étape précédente et suivante, et « Rejouer » (1,6 s par étape, désactivé si l'utilisateur réduit les animations). La maquette n'étant pas articulée, les pièces sont repliées par déformation des sommets : panneau solaire, antenne, palettes du bouclier (rotation à 88°), tour (−1,22 m, valeur publiée), volet arrière, bras médians (largeur réduite), couches non tendues (rapprochées), trépied du secondaire, ailes du primaire (rotation de 100° vers l'arrière). Dates et ordre : blog Webb de la NASA (décembre 2021, janvier 2022) et Spaceflight Now. Formes repliées : schématiques, dit sous le curseur. Côté bâbord et tribord des ailes dans la maquette : non vérifié. Le radiateur arrière (6 janvier) est cité sans être représenté. Pendant le déploiement, « Éclater » est désactivé. Repliement revu le 16 novembre : chaque triangle bouge d'un bloc (décision sur son centre), pour qu'aucun triangle ne s'étire à travers une charnière ; seules les longues bandes du bouclier (plus de 1,5 m) se plient sommet par sommet. La tour ne descend que de 1,0 m au lieu de 1,22 m, sinon le télescope abaissé entre dans le module de la maquette. Contrôle automatique : `tools/deploy-check.js` échantillonne les surfaces dans une grille de 6 cm à chaque état du curseur et signale les interpénétrations nouvelles (au-delà de 40 voxels) et les pièces qui perdent tout contact ; il reste des signalements sur les ailes repliées, dus au changement d'orientation par rapport à la grille (vérifiés visuellement).
-- F4 (zones du ciel observables) : **livré le 15 novembre**. Dans chaque page « Orbite », une carte du ciel montre la zone accessible à la date choisie (curseur sur un an à partir d'aujourd'hui) et sa part du ciel. Contraintes sourcées : Hubble à plus de 62,5° du Soleil (HST Primer, cycle 34) ; Webb entre 85° et 135° (JDox) ; Euclid entre 87° et 104° d'angle d'aspect solaire (Euclid I, sect. 4.1.1) ; Gaia, bande de 45° à 135° déduite de l'angle de son axe. Position du Soleil calculée (formule à basse précision, ≈ 0,01°). Non représentés : occultation par la Terre pour Hubble, Lune, contraintes de roulis.
-- Indiquer le facteur d'accélération des animations, et permettre de choisir une date.
-
-### M. Mission et traitements
-
-**Besoin.** Savoir comment la mission s'est déroulée et comment une donnée passe du satellite au catalogue, à la fois pour l'étudiant (schéma, phrases simples) et pour l'expert (niveaux de produits, noms des logiciels et des centres).
-
-**Livré le 16 novembre** (`src/data-mission.js`, rendu par `missionHtml` dans `src/app.js`) : une rubrique « Mission et traitements » dans la page de chaque observatoire, en français et en anglais. Le site sépare deux aspects : la plateforme (panneau de la vue 3D : fiche et pièces) et la mission (page « Mission et données », anciennement « Instruments et données » : mission et traitements, trajet de la lumière, orbite, instruments). La rubrique contient :
-
-- Déroulé daté (lancement, missions de service de Hubble, mise en service et premières images de Webb, début du relevé d'Euclid, fin des observations et passivation de Gaia…).
-- Exploitation : qui pilote, qui traite, liaison, volume, accès exclusif, archive.
-- Chaîne de traitement en étapes, chacune avec son niveau ou son suffixe de fichier, ce qui est fait et le logiciel ou le centre : pipeline du STScI pour Hubble (`_raw`, `_flt`/`_flc`, `_drz`/`_drc`, produits HAP) ; trois étapes `calwebb_*` pour Webb ; niveaux LE1, LE2, LE3 et fonctions VIS, NIR, SIR, EXT, MER, PHZ, SPE, SHE, LE3 pour Euclid ; unités de coordination CU1 à CU9 et six centres de traitement de DPAC pour Gaia.
-- Publications des données, avec les dates prévues signalées comme telles (Euclid DR1 complète mi-2027, DR2, DR3 ; Gaia DR4 décembre 2026, DR5).
-- Sources numérotées, propres à l'onglet, et date de vérification.
-
-Reste : les suffixes de fichiers de Webb et de Hubble sont donnés d'après les pages d'étapes de la documentation, sans avoir relu chaque tableau de produits ; la date de DR1 citée ailleurs sur le site (« DR1, 12 novembre 2026 ») désigne la première partie de DR1 (LE1 et LE2), la partie complète étant annoncée pour mi-2027.
-
-### G. Autres observatoires
-
-**Besoin.** Couvrir le spectre au-delà de l'ultraviolet–infrarouge et les missions à venir.
-
-**Candidats.** Chandra et XMM-Newton (rayons X), Spitzer et Herschel (infrarouge, missions terminées), Planck (micro-ondes), TESS et PLATO (exoplanètes), Roman (grand champ infrarouge).
-
-**Exigences**
-
-- G1. Un observatoire n'est ajouté que s'il a une maquette de licence claire, un redécoupage en pièces vérifié visuellement, une fiche et des instruments sourcés (A et B).
-- G2. Procédure d'ajout documentée dans `tools/models/README.md` : conversion, classifieur de pièces, entrée dans `data-tele.js` et `data-inst.js`.
-- G3. La navigation tient au-delà de six ou sept observatoires (les onglets d'en-tête ne suffiront plus) : prévoir un classement par domaine spectral ou par agence.
-
-**Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js`.
-
-**Roman, livré le 16 novembre.** Maquette NASA 3D Resources « Nancy Grace Roman Space Telescope (A) » (domaine public, conception AFTA de 2015, signalé dans la fiche), décodée, simplifiée et redécoupée en sept pièces (`tools/models/roman_cls.js`, `slim.mjs`, 3,1 Mo), mise à l'échelle sur le miroir de 2,4 m. Fiche, pièces, WFI (filtres, grisme, prisme, champ de vue, plan focal) et coronographe, trajet de la lumière (schéma de principe), mission et traitements (niveaux L1 à L5, RomanCal, MAST, aucune période réservée), ciel observable (54° à 126° du Soleil) et comparaisons, en français et en anglais, sourcés (NASA Goddard, NTRS 2021, STScI, ESA). Restes :
-- Aucune donnée scientifique publique avant début 2027 : pas d'exemple réel ni de code d'accès.
-- Trajectoire réelle : **livrée le 18 novembre** (JPL Horizons, objet −211, trouvé par son nom), mise à jour chaque jour ; en cas d'échec, la série précédente est gardée.
-- Masse au lancement : prévision de 2021 (≈ 10 500 kg). Les chiffres publiés au lancement divergent (≈ 8 200 kg pour Spaceflight Now, sans préciser s'il s'agit de la masse au lancement) : à remplacer par une valeur de la NASA.
-- Intérieur en coupe : **livré le 18 novembre** pour le module de service (module de propulsion, quatre réservoirs d'hydrazine, six roues de réaction, six panneaux d'avionique, centrale inertielle ; NTRS 2021 et 2024, NASA), avec son propre plan de coupe ; emplacements indicatifs. La maquette contient déjà miroirs et structure porteuse.
-- Registre des observatoires : **livré le 19 novembre**. `TELESCOPES` (`src/data-tele.js`) porte désormais couleur, chiffre clé, encombrement, pièces optiques, rang et orientation dans « Comparer », rang dans la figure des plans focaux, fin de mission et animation de déploiement ; le rendu des matériaux est passé dans `src/looks.js`. `app.js`, `build.js`, `inst-render.js`, la figure des plans focaux, les orbites comparées et les tests lisent le registre ; `tools/smoke.js` vérifie que chaque entrée a ses champs et ses textes. L'acceptation (aucune modification de `app.js`) est remplie ; procédure dans `tools/models/README.md` (G2). Reste G3 : la navigation par onglets au-delà de six ou sept observatoires.
-
-### H. Socle technique
-
-- H1. Tests automatiques dans le dépôt : chargement de toutes les maquettes, clic sur chaque pièce, vue éclatée, comparaison, pages d'instruments, sans erreur console ; lancés à chaque push. **Livré** : `tools/smoke.js` (bureau en thème clair, téléphone en thème sombre, absence de défilement horizontal) et workflow « Tests », qui vérifie aussi que `index.html` correspond bien aux sources.
-- H2. Publication GitHub Pages automatique depuis `main`, avec `index.html` construit par l'intégration continue plutôt que commité.
-- H3. Accessibilité : parcours complet au clavier, y compris la sélection des pièces ; contrastes vérifiés dans les deux thèmes. **Livré en partie le 15 novembre** : `tools/a11y.js` passe axe-core (WCAG 2.1 A et AA) sur huit vues, en clair et en sombre, en français et en anglais, et tourne dans le workflow « Tests ». Corrigé : gris secondaire trop clair en thème clair (#667077 → #5A6369), texte blanc sur vert en thème sombre (jeton `--on-ok`), onglets du panneau (le lien vers les instruments sortait du `tablist`), blocs de code défilants atteignables au clavier. Les onglets se parcourent aux flèches gauche et droite (Début, Fin), selon le motif ARIA. La vue 3D prend le focus : les flèches passent d'une pièce à l'autre (annoncée aux lecteurs d'écran), Échap désélectionne.
-- H4. Version anglaise. **Livré.** Le français reste la langue des sources ; l'anglais est dans `src/en/` et appliqué par `src/i18n.js`.
-  - Langue choisie d'après le navigateur, modifiable par le bouton EN / FR de l'en-tête (choix mémorisé). Un lien peut l'imposer : `#en-jwst`, `#fr-jwst`.
-  - Contenu structuré (fiches, pièces, instruments, optique, orbites, observations réelles) : traduit champ par champ dans `src/en/tele.js`, `inst.js`, `more.js`.
-  - Textes d'interface écrits dans le code : traduits à l'affichage par dictionnaire et par règles (`src/en/ui.js`). Une chaîne absente du dictionnaire reste en français.
-  - `node tools/i18n-scan.js` parcourt le site en anglais et liste ce qui n'est pas traduit ; le test de fumée échoue si du français subsiste dans les pages d'instruments.
-  - À faire à chaque ajout de texte : compléter `src/en/`. Les libellés produits par les scripts Python (`tools/data/`) sont en français et traduits côté site : un nouveau libellé doit être ajouté au dictionnaire.
-  - Non traduit : `README.md`, `SPECS.md`, les commentaires du code.
-- H5. Poids : la maquette d'Euclid fait 6 Mo ; viser moins de 3 Mo par maquette (textures KTX2 ou résolution adaptée au téléphone).
-
-## 4. Questions ouvertes
-
-1. Ordre des lots : l'ordre proposé (A, B, puis C et D) convient-il ?
-2. Langue : français seul, ou français et anglais (H4) ?
-3. Licence du dépôt lui-même (code et textes) : à choisir.
-4. Lot G : quels observatoires en premier ?
-5. Lot E : accepte-t-on un petit serveur si les archives l'imposent, ou le site doit-il rester strictement statique ?
-
-## 5. Hors périmètre pour l'instant
-
-- Télescopes au sol.
-- Comptes utilisateurs, contenu modifiable en ligne.
-- Simulation physique (thermique, orbitographie précise).
-
-**Ajouté le 16 novembre 2026 : exemples des deux FGS.** Hubble : 13,5 h de photométrie de l'étoile HD 17156 (programme 11945, pose fb8u5502m), somme des quatre photomultiplicateurs à 40 Hz, moyennée par 2 min et divisée par un modèle des oscillations orbitales (dispersion restante ≈ 168 ppm). Le programme visait des transits de HD 17156 b, mais aucune des longues poses examinées n'en montre un net : la courbe est présentée comme une mesure de précision, sans parler de transit. JWST : image FGS1 du champ d'étalonnage astrométrique du Grand Nuage de Magellan (programme 1086), lue par son identifiant d'observation (la recherche par position dépasse 10 min dans ce champ dense).
+Retirés faute de source : diamètre du volet de Hubble, masse du secondaire, « 10 baies », parabole de 1,3 m, nombre de panneaux et puissance d'Euclid. Corrigés : baies radiales de Hubble (WFC3 et les trois FGS), segment de JWST ≈ 20 kg, pare-soleil de Gaia (Ø 10,2 m, 12 cadres, deux couvertures), panneaux de Gaia (triple jonction, 12,8 m², 1 910 W en fin de vie), plan focal de 938 millions de pixels.

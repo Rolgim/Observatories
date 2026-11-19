@@ -26,13 +26,14 @@ const scripts = '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r1
 if (artifact) {
   const out = path.join(__dirname, 'dist');
   fs.mkdirSync(path.join(out, 'models'), { recursive: true });
-  fs.writeFileSync(path.join(out, 'index.html'), '<title>Observatoires en orbite</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n' + fonts + '\n' + style + '\n' + r('body.html') + scripts);
+  fs.writeFileSync(path.join(out, 'index.html'), '<title>Observatoires en orbite</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n' +
+    '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,' + encodeURIComponent(fs.readFileSync(path.join(__dirname, 'favicon.svg'), 'utf8')) + '">\n' + fonts + '\n' + style + '\n' + r('body.html') + scripts);
   for (const n of NAMES) fs.writeFileSync(path.join(out, 'models', n + '.txt'), fs.readFileSync(path.join(__dirname, 'models', n + '.glb')).toString('base64'));
   console.log('dist/index.html');
 } else {
   fs.writeFileSync(path.join(__dirname, 'index.html'),
     '<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' +
-    '<meta name="description" content="Hubble, JWST, Euclid et Gaia en 3D : pièces cliquables, vue éclatée, comparaison à l\'échelle, instruments et archives.">\n' +
-    '<title>Observatoires en orbite</title>\n' + fonts + '\n<style>[hidden]{display:none!important}</style>\n' + style + '\n</head>\n<body>\n' + r('body.html') + scripts + '</body>\n</html>\n');
+    '<meta name="description" content="Hubble, JWST, Euclid, Gaia et Roman en 3D : pièces cliquables, vue éclatée, comparaison à l\'échelle, instruments et archives.">\n' +
+    '<title>Observatoires en orbite</title>\n<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n<meta name="theme-color" content="#14171A">\n' + fonts + '\n<style>[hidden]{display:none!important}</style>\n' + style + '\n</head>\n<body>\n' + r('body.html') + scripts + '</body>\n</html>\n');
   console.log('index.html');
 }
