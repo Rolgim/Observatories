@@ -1392,5 +1392,101 @@
   "caption": "Chaque creux est le passage de la planète géante HAT-P-7 b devant son étoile, tous les 2,2 jours ; l'étoile perd alors environ 0,7 % de son éclat. Les trous correspondent aux arrêts mensuels pour transmettre les données.",
   "credit": "NASA, Ames, STScI",
   "fetched": "2026-11-19"
+ },
+ "xmm/rgs": {
+  "type": "plot",
+  "file": "xmm-rgs.json",
+  "title": "Spectre RGS de l'étoile Capella",
+  "meta": [
+   [
+    "Archive",
+    "XMM-Newton Science Archive (ESA), miroir du HEASARC"
+   ],
+   [
+    "Instrument",
+    "RGS1 et RGS2, premier ordre"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 0510780601"
+   ],
+   [
+    "Cible",
+    "Capella"
+   ],
+   [
+    "Début d'observation",
+    "2011-10-01"
+   ],
+   [
+    "Données",
+    "spectre « fluxed » du pipeline (rgsfluxer), 1 000 intervalles de 0,036 Å, de 6 à 38 Å tracés"
+   ],
+   [
+    "Temps de pose",
+    "66 395 s"
+   ],
+   [
+    "Fichier d'origine",
+    "P0510780601RGX000FLUXED1003.FTZ"
+   ]
+  ],
+  "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0510780601",
+  "caption": "La couronne de Capella, à plusieurs millions de degrés, émet des raies X : chaque pic est un élément chimique ionisé (fer, oxygène, néon…). Le RGS les sépare finement, entre 6 et 38 Å.",
+  "credit": "ESA, XMM-Newton",
+  "fetched": "2026-11-19"
+ },
+ "xmm/om": {
+  "type": "image",
+  "file": "xmm-om.jpg",
+  "width": 310,
+  "height": 312,
+  "title": "La galaxie du Moulinet (M101), OM en ultraviolet",
+  "meta": [
+   [
+    "Archive",
+    "XMM-Newton Science Archive (ESA), miroir du HEASARC"
+   ],
+   [
+    "Instrument",
+    "OM, filtre UVW1 (≈ 291 nm)"
+   ],
+   [
+    "Identifiant d'observation",
+    "ObsID 0104260101"
+   ],
+   [
+    "Cible",
+    "M101"
+   ],
+   [
+    "Début d'observation",
+    "2002-06-04"
+   ],
+   [
+    "Cible",
+    "M101, galaxie du Moulinet"
+   ],
+   [
+    "Échelle",
+    "0,48″ par pixel, 2,5′ de côté"
+   ],
+   [
+    "Temps de pose",
+    "≈ 0 s"
+   ],
+   [
+    "Traitement",
+    "image du ciel du pipeline, découpée, étirement asinh pour le site"
+   ],
+   [
+    "Fichier d'origine",
+    "P0104260101OMS008SIMAGE0000.FTZ"
+   ]
+  ],
+  "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0104260101",
+  "caption": "Dans l'ultraviolet proche (filtre UVW1), le petit télescope OM voit surtout les étoiles jeunes et chaudes, qui dessinent les bras de la galaxie. Il observe en même temps que les caméras X, sur le même champ.",
+  "credit": "ESA, XMM-Newton",
+  "fetched": "2026-11-19"
  }
 }
