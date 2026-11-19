@@ -9,12 +9,10 @@ def tap(adql, n=20):
         t = pyvo.dal.TAPService(TAP).search(adql).to_table(); t.pprint(max_lines=n, max_width=220); return t
     except Exception as e:
         print("   ÉCHEC", repr(e)[:300])
-print("== colonnes de xmmmaster")
-tap("SELECT TOP 80 column_name, datatype FROM TAP_SCHEMA.columns WHERE table_name = 'xmmmaster'", 80)
 res = {}
-for label, where in [("Cas A", "name LIKE '%CAS%A%'"), ("Capella", "name LIKE '%CAPELLA%'"), ("M31", "name LIKE '%M31%'"), ("Tycho", "name LIKE '%TYCHO%'"), ("Crabe", "name LIKE '%CRAB%'")]:
+for label, where in [(k, f"CONTAINS(POINT('ICRS', ra, dec), CIRCLE('ICRS', {ra}, {de}, 0.05)) = 1") for k, ra, de in (("Cas A", 350.85, 58.815), ("Capella", 79.172, 45.998), ("Tycho", 6.334, 64.14), ("Crabe", 83.633, 22.0145), ("Zeta Puppis", 120.896, -40.003))]:
     print("\n==", label)
-    res[label] = tap("SELECT TOP 10 obsid, name, ra, dec, time, duration, status, pi_lname FROM xmmmaster WHERE " + where + " ORDER BY duration DESC")
+    res[label] = tap("SELECT TOP 10 obsid, name, ra, dec, time, duration, status, pi_lname FROM xmmmaster WHERE " + where + " AND status = 'archived' ORDER BY duration DESC")
 def pps(obsid):
     for u in (f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{obsid}/PPS/", f"https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev1/{obsid}/PPS/"):
         r = requests.get(u, timeout=60); print("  ", u, r.status_code)
