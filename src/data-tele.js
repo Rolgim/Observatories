@@ -21,7 +21,7 @@ var TELESCOPES = [
     file:'models/hubble.txt', bytes:4466940, axis:'z', size:13.2,
     view:{ az:-0.95, el:0.20, dist:1.55 }, sun:[0.55,0.62,0.56], orbit:'leo',
     hero:{ num:'2,4', unit:'m', label:'diamètre du miroir primaire' },
-    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, len:13.2 },
+    cmp:{ tag:'13,2 m', dim:'13,2 m de long', mirror:2.4, mass:10800, approx:true, len:13.2 },
     color:'#3D6BE0', highlight:['Miroir primaire','2,4','m'], footprint:['13,2','m de long'], optical:['ota','aft'],
     compare:{ order:1, rot:[-Math.PI/2, 0, 0], fp:[2, 1] },
     desc:"Premier des grands observatoires de la NASA, Hubble tourne autour de la Terre depuis 1990. Cinq missions de navette l'ont réparé et modernisé en orbite : presque tous ses instruments actuels datent de ces visites. Son tube argenté abrite un télescope Ritchey-Chrétien et une baie d'instruments interchangeables.",
@@ -224,7 +224,7 @@ var TELESCOPES = [
     file:'models/jwst.txt', bytes:5328456, axis:null, size:0,
     view:{ az:0.62, el:0.30, dist:1.35 }, sun:[0.18,-0.97,-0.16], orbit:'l2',
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
-    cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, len:21.2 },
+    cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
     compare:{ order:4, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
@@ -365,8 +365,8 @@ var TELESCOPES = [
     file:'models/roman.glb', bytes:3112960, axis:'x', size:11.34,
     view:{ az:-2.3, el:0.32, dist:1.25 }, sun:[0.15,0.95,0.25], orbit:'l2',
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
-    cmp:{ tag:'> 12 m', dim:'plus de 12 m de haut, déployé', mirror:2.4, mass:10500, len:11.3 },
-    color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['> 12','m de haut'], optical:['ota','instr'],
+    cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
+    color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
     compare:{ order:6, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
@@ -374,6 +374,7 @@ var TELESCOPES = [
     refs:{
       ot:{ t:'Roman Observatory Technical Overview', p:'NASA Goddard', u:'https://roman.gsfc.nasa.gov/science/observatory_technical.html' },
       wfi:{ t:'Roman WFI Technical (performances, v1.4, mars 2026)', p:'NASA Goddard', u:'https://roman.gsfc.nasa.gov/science/WFI_technical.html' },
+      kit:{ t:'Nancy Grace Roman Space Telescope Press Kit (2026)', p:'NASA', u:'https://assets.science.nasa.gov/content/dam/science/missions/rst/education/Final%20Roman%20Press%20Kit-508compliant.pdf' },
       ntrs:{ t:'Nancy Grace Roman Space Telescope: Observatory Implementation and Challenges (2021)', p:'NASA NTRS', u:'https://ntrs.nasa.gov/api/citations/20210021677/downloads/NGRST%20Observatory%20Implementation%20and%20Challenges.pdf' },
       esa:{ t:'Roman factsheet', p:'ESA', u:'https://esa.int/Science_Exploration/Space_Science/Roman_factsheet' },
       gs:{ t:'Roman Ground Systems', p:'NASA', u:'https://science.nasa.gov/mission/roman-space-telescope/ground-systems/' },
@@ -384,7 +385,7 @@ var TELESCOPES = [
     },
     sections:[
       { title:'Véhicule', rows:[
-        ['Hauteur, déployé','plus de 12 m','ntrs'], ['Masse au lancement','≈ 10 500 kg avec ergols (prévision de 2021)','ntrs'],
+        ['Dimensions, déployé','12,7 m de long · 4,4 m de large','kit'], ['Masse','≈ 8 000 kg à sec (NASA, 2026) · ≈ 10 500 kg avec ergols (prévision de 2021)',['kit','ntrs']],
         ['Module de service','≈ 4 m × 2 m · 3 800 kg','bus'], ['Mission','5 ans, objectif 10 ans','ot'], ['Lancement','30 août 2026, Falcon Heavy, Kennedy (pas de tir 39A)','launch'] ]},
       { title:'Optique', rows:[
         ['Type','anastigmat à trois miroirs','ntrs'], ['Miroir primaire','2,4 m · ouverture utile 2,36 m · don d\'une autre agence fédérale',['ot','stobs']],

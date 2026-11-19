@@ -76,9 +76,9 @@ function orbitSvg(t){
 
 function lines(v){ return esc(v).split(' · ').join('<br>'); }
 function facts(t){
-  var hl = [t.highlight[0], t.highlight[1] + ' <small>' + t.highlight[2] + '</small>'];
-  var sz = t.footprint[0] + ' <small>' + t.footprint[1] + '</small>';
-  return [hl, ['Encombrement', sz], ['Masse au lancement', fr(t.cmp.mass) + ' <small>kg</small>'], ['Lancement', t.year]];
+  var hl = [t.highlight[0], OBS_NUM(t.highlight[1]) + ' <small>' + t.highlight[2] + '</small>'];
+  var sz = OBS_NUM(t.footprint[0]) + ' <small>' + t.footprint[1] + '</small>';
+  return [hl, ['Encombrement', sz], ['Masse au lancement', (t.cmp.approx ? '≈ ' : '') + fr(t.cmp.mass) + ' <small>kg</small>'], ['Lancement', t.year]];
 }
 /* thème : suit le système (ou l'hôte), sauf choix explicite mémorisé */
 function isDark(){ var a = document.documentElement.getAttribute('data-theme'); return a ? a === 'dark' : !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); }
@@ -161,7 +161,7 @@ function renderPanel(){
         TELESCOPES.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
             '<td><div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m</div></td>' +
-            '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + fr(x.cmp.mass) + ' kg</div></td></tr>';
+            '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + (x.cmp.approx ? '≈ ' : '') + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
         TELESCOPES.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +

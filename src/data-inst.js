@@ -768,7 +768,8 @@ var INST_DATA = (function(){
       dr3:{ t:"Gaia Data Release 3", p:"ESA Cosmos", u:"https://www.cosmos.esa.int/web/gaia/dr3" },
       phot:{ t:"Gaia photometric instrument", p:"ESA Cosmos", u:"https://www.cosmos.esa.int/web/gaia/photometric-instrument" },
       doc:{ t:"Gaia DR2 documentation, 1.2 Spacecraft", p:"ESA Gaia Archive", u:"https://gea.esac.esa.int/archive/documentation/GDR2/Introduction/chap_cu0int/cu0int_sec_mission/cu0int_ssec_spacecraft_intro.html" },
-      prusti:{ t:"Gaia Collaboration, Prusti et al. 2016, The Gaia mission, A&A 595, A1", p:"A&A", u:"https://doi.org/10.1051/0004-6361/201629272" }
+      prusti:{ t:"Gaia Collaboration, Prusti et al. 2016, The Gaia mission, A&A 595, A1", p:"A&A", u:"https://doi.org/10.1051/0004-6361/201629272" },
+      weiler:{ t:"Weiler 2018, Revised Gaia Data Release 2 passbands, A&A", p:"A&A", u:"https://arxiv.org/abs/1805.08082" }
     },
     axis: { min:0.3, max:1.1 },
     summary: "Gaia n'a pas d'instruments séparés au sens habituel. Un unique plan focal de 106 CCD, partagé par les deux télescopes, remplit trois fonctions qui lisent le même flux de lumière pendant que le satellite balaie le ciel.",
@@ -788,7 +789,7 @@ var INST_DATA = (function(){
           ["Détecteurs", "SM : 14 CCD (7 par télescope) · AF : 62 CCD", "doc"],
           ["Pixels", "4500×1966 px par CCD · 10 µm × 30 µm", "prusti"],
           ["Mode de lecture", "TDI : intégration synchronisée sur la rotation (4,42 s par CCD)", "prusti"],
-          ["Bande G", "≈ 330–1050 nm (lumière blanche)"],
+          ["Bande G", "≈ 330–1050 nm (lumière blanche)", "weiler"],
           ["Magnitudes observées", "G ≈ 3 à ≈ 21", "dr3"],
           ["Précision parallaxe (DR3)", "≈ 0,02–0,03 mas (G < 15) · 0,07 mas (G = 17) · 0,5 mas (G = 20) · 1,3 mas (G = 21)", "dr3"]
         ],

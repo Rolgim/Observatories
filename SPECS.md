@@ -41,8 +41,8 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
 4. **Prescriptions optiques** [D1] : les schémas d'Euclid, de Gaia et de Roman ne sont à l'échelle que pour les éléments publiés ; courbures et positions des miroirs arrière manquent. À demander aux équipes (consortium Euclid, DPAC, projet Roman) ou à chercher dans des documents de conception. Le schéma de Gaia reste chargé.
 5. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb et Gaia ; rangée des trois CCD de contrôle de Gaia dans la première colonne non confirmée.
-6. **Masse au lancement de Roman** [G] : la fiche donne la prévision de 2021 (≈ 10 500 kg) ; les chiffres publiés au lancement divergent. À remplacer par une valeur de la NASA.
-7. **Bande G de Gaia** (≈ 330–1050 nm) [A] : seule valeur sans source sur les pages d'instruments.
+6. *Fait le 19 novembre.* Roman : dimensions déployées (12,7 × 4,4 m) et masse à sec (≈ 8 000 kg) du dossier de presse de la NASA ; la masse avec ergols reste la prévision de 2021, signalée « ≈ » dans les comparaisons (comme Hubble et Webb, champ `cmp.approx`).
+7. *Fait le 19 novembre.* Bande G de Gaia : 330–1050 nm, Weiler 2018 (A&A).
 8. **Suffixes de fichiers de Webb et de Hubble** [M] : relire chaque tableau de produits de la documentation.
 9. **Licence de la maquette d'Euclid** [A3] : aucune licence explicite sur SciFleet ; demande à l'ESA. Si elle n'autorise pas la redistribution, remplacer la maquette.
 10. Relecture de la version anglaise par un anglophone du domaine [H4].
