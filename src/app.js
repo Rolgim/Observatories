@@ -160,17 +160,15 @@ function edgeScroll(el){
   marks();
 }
 function renderTabs(){
-  /* onglets groupés par domaine spectral (DOMAINS, teleGroups dans data-tele.js) ; le nom du groupe est écrit au-dessus de son premier onglet */
-  var h = '';
-  teleGroups().forEach(function(g){
-    g.list.forEach(function(t, i){
-      h += '<button class="tab' + (i === 0 ? ' g0' : '') + '" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '"' + (g.label ? ' title="' + esc(g.label) + '"' : '') + '>' +
-           (i === 0 ? domTag(g) : '') + esc(t.short) + '<small>' + t.year + '</small></button>';
-    });
+  /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
+  if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
+  var h = domRow(S.mode === 'tele' ? S.id : null) + '<div class="trow" role="tablist" aria-label="Observatoire">';
+  domList(S.id).forEach(function(t){
+    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button></div>';
   $('tabs').innerHTML = h;
-  edgeScroll($('tabs'));
+  edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
   var ll = OBS_LANG === 'en' ? 'Lire en français' : 'Read in English';
@@ -237,7 +235,7 @@ function renderHud(){
 function renderInst(keepScroll){
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills'));
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -257,7 +255,7 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
@@ -274,15 +272,17 @@ $('inst-page').addEventListener('click', function(e){
     var fs = $('fsec'); if (fs) fs.innerHTML = InstrumentsUI.filterPanel(S.id, S.instSel, S.filterIdx);
     return;
   }
+  if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); $('inst-pills').innerHTML = InstrumentsUI.pills(S.mode === 'compare' ? 'comparer' : S.id); edgeScroll($('inst-pills').querySelector('.trow')); var fp = $('inst-pills').querySelector('.trow .pill'); if (fp) fp.focus(); return; }
   if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
+  if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }

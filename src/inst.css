@@ -4,14 +4,11 @@
 .inst-back{ font-size:13px; font-weight:700; background:var(--sheet); color:var(--ink); border:2px solid var(--ink); padding:0 12px; margin:9px 16px 9px 0; height:30px; cursor:pointer; }
 .inst-back:hover{ background:var(--mark); color:var(--on-mark); }
 .inst-title{ font-weight:800; font-stretch:75%; font-size:21px; align-self:center; padding-block:10px; }
-.pills{ display:flex; margin-left:auto; }
-.pill{ border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); font-size:14px; font-weight:600; padding:0 16px; cursor:pointer; }
+.pills{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
+.pill{ flex:none; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); font-size:14px; font-weight:600; padding:6px 16px; cursor:pointer; }
 .pill:last-child{ border-right:1px solid var(--rule); }
 .pill:hover{ background:var(--sheet); }
 .pill.on{ background:var(--mark); color:var(--on-mark); }
-.pill{ position:relative; padding-top:13px; }
-.pill:not(.g0):not(.cmp){ border-left-style:dotted; }
-.pill .dom .dl{ display:none; } .pill .dom .ds{ display:inline; }   /* onglets sans l'année : nom court du groupe */
 .inst-body{ flex:1; display:flex; min-height:0; }
 .inst-nav{ width:232px; flex:none; border-right:1px solid var(--ink); overflow-y:auto; padding-left:env(safe-area-inset-left, 0px); }
 .nav-i{ display:block; width:100%; text-align:left; padding:10px 14px 10px 12px; border:0; border-bottom:1px solid var(--rule); border-left:6px solid var(--c, transparent); background:transparent; cursor:pointer; }
@@ -101,10 +98,11 @@ ol.notes{ padding-left:20px; }
   .inst-top{ padding:0; }
   .inst-back{ margin:9px 12px 9px var(--gl); }
   .inst-title{ font-size:17px; }
-  .pills{ margin-left:0; width:100%; border-top:1px solid var(--rule); overflow-x:auto; }
-  .pill{ flex:1 1 auto; padding:17px 4px 7px; font-size:13px; } .pill:first-child{ border-left:0; padding-left:var(--gl); }
-  .pill .dom{ left:4px; font-size:9.5px; } .pill:first-child .dom{ left:var(--gl); }
-  .dom .dl{ display:none; } .dom .ds{ display:inline; }
+  .pills{ border-top:1px solid var(--rule); margin-left:0; flex:1 1 100%; }
+  .pills .drow{ justify-content:flex-start; padding:4px var(--gr) 0 var(--gl); }
+  .pills .trow{ justify-content:flex-start; border-top:1px solid var(--rule); }
+  .pill{ flex:1 1 auto; padding:9px 6px; font-size:13.5px; }
+  .pills .trow .pill:first-child{ border-left:0; }
   .inst-body{ flex-direction:column; }
   .inst-nav{ width:auto; display:flex; overflow-x:auto; overflow-y:hidden; border-right:0; border-bottom:1px solid var(--ink); flex:none; padding-left:0; }
   .nav-i{ flex:none; width:auto; white-space:nowrap; border-bottom:0; border-left:0; border-top:5px solid var(--c, transparent); border-right:1px solid var(--rule); padding:7px 13px 9px; }

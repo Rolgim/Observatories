@@ -372,11 +372,11 @@ var InstrumentsUI = (function(){
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
   }
-  /* mêmes groupes par domaine spectral que l'en-tête de la vue 3D */
+  /* même navigation que l'en-tête de la vue 3D : domaines spectraux, puis observatoires du domaine choisi */
   function pillsFor(cur){
-    return teleGroups().map(function(g){ return g.list.map(function(t, i){
-      return '<button class="pill'+(i===0?' g0':'')+(t.id===cur?' on':'')+'" data-tele="'+t.id+'"'+(g.label?' title="'+esc(g.label)+'"':'')+'>'+(i===0?domTag(g):'')+NAMES[t.id]+'</button>'; }).join(''); }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button>'; }
+    return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
+      return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
+      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button></div>'; }
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
@@ -397,5 +397,5 @@ var InstrumentsUI = (function(){
     return { pills:pills, nav:nav, main: sel === 'mission' ? '<div class="inst-mission">' + window.OBS_MISSION(tid) + '</div>' : sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid], window.OBS_OPT || null) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
-  return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+  return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, pills:pillsFor, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
 })();

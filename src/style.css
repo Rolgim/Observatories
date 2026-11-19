@@ -29,18 +29,23 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #top{ flex:none; display:flex; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
 .brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
-#tabs{ display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
-#tabs::-webkit-scrollbar{ display:none; }
-#tabs.fade-r, .pills.fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
-#tabs.fade-l, .pills.fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
-#tabs.fade-l.fade-r, .pills.fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
+/* navigation en deux rangées : domaines spectraux (filtres), puis observatoires du domaine choisi */
+#tabs{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
+.drow, .trow{ display:flex; overflow-x:auto; scrollbar-width:none; min-width:0; }
+.drow::-webkit-scrollbar, .trow::-webkit-scrollbar{ display:none; }
+.trow{ flex:1; justify-content:flex-end; }
+.drow{ justify-content:flex-end; gap:2px; padding-top:5px; }
+.dsel{ flex:none; border:0; background:transparent; color:var(--mute); font-size:12px; font-weight:500; padding:2px 8px 3px; cursor:pointer; border-bottom:2px solid transparent; display:flex; align-items:baseline; gap:4px; white-space:nowrap; }
+.dsel:hover{ color:var(--ink); }
+.dsel[aria-pressed="true"]{ color:var(--ink); font-weight:700; border-bottom-color:var(--ink); }
+.dsel .dn{ font-size:10.5px; color:var(--mute); font-weight:400; font-variant-numeric:tabular-nums; }
+.dsel.cur .dl::after, .dsel.cur .ds::after{ content:""; display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--mark); margin-left:4px; vertical-align:2px; }
+.dsel .ds{ display:none; }
+#tabs .fade-r, .pills .fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+#tabs .fade-l, .pills .fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+#tabs .fade-l.fade-r, .pills .fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
 .tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
 /* groupes par domaine spectral : un trait plein entre les groupes, pointillé à l'intérieur, le nom du groupe au-dessus de son premier onglet */
-#tabs .tab:not(.g0):not(.cmp){ border-left-style:dotted; }
-#tabs .tab{ padding-top:19px; }
-.tab .dom, .pill .dom{ position:absolute; left:16px; top:4px; font-size:10.5px; font-weight:500; line-height:1; color:var(--mute); white-space:nowrap; pointer-events:none; }
-.dom .ds{ display:none; }
-.tab[aria-selected="true"] .dom, .pill.on .dom{ color:var(--on-mark); opacity:.75; }
 .tab small{ font-size:11.5px; font-weight:400; color:var(--mute); font-variant-numeric:tabular-nums; }
 .tab:hover{ background:var(--sheet); color:var(--ink); }
 .tab[aria-selected="true"]{ background:var(--mark); color:var(--on-mark); }
@@ -171,14 +176,15 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
   .brand{ padding:9px var(--gr) 8px var(--gl); }
   .brand h1{ font-size:18px; }
   #tabs{ margin-left:0; border-top:1px solid var(--rule); }
+  .drow{ justify-content:flex-start; padding:4px var(--gr) 0 var(--gl); gap:0; }
+  .dsel{ padding:3px 7px 4px; font-size:12px; }
+  .dsel:first-child{ padding-left:0; }
+  .dsel .dl{ display:none; } .dsel .ds{ display:inline; }
+  .dsel .dn{ display:none; }
+  .trow{ justify-content:flex-start; border-top:1px solid var(--rule); }
   .tab{ padding:9px 13px; font-size:13.5px; }
-  #tabs .tab{ flex:1 1 auto; padding-left:8px; padding-right:8px; justify-content:center; }   /* six onglets tiennent sur 400 px */
-  .tab:first-child{ border-left:0; padding-left:var(--gl); }
-  #tabs .tab{ padding-top:17px; padding-bottom:7px; }
-  .tab .dom{ left:5px; top:4px; font-size:9.5px; }
-  .tab:first-child .dom{ left:var(--gl); }
-  .dom .dl{ display:none; } .dom .ds{ display:inline; }
-  #tabs .tab{ padding-left:5px; padding-right:5px; }
+  #tabs .tab{ flex:1 1 auto; padding:9px 6px; justify-content:center; }   /* quatre observatoires et « Comparer » tiennent sur 400 px */
+  .tab:first-child{ border-left:0; }
   .tab small{ display:none; }
   .tab.util{ padding:0 8px; }
   #utils{ position:absolute; top:0; right:var(--gr); height:40px; margin:0; }

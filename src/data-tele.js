@@ -729,5 +729,16 @@ function teleGroups(){
   if (rest.length) g.push({ label:'', short:'', list:rest });
   return g;
 }
-/* étiquette de groupe au-dessus du premier onglet : version longue, et courte pour le téléphone */
-function domTag(g){ return g.label ? '<span class="dom" aria-hidden="true"><span class="dl">' + g.label + '</span><span class="ds">' + g.short + '</span></span>' : ''; }
+/* navigation en deux rangées : les domaines spectraux (boutons qui filtrent), puis les observatoires du domaine choisi.
+   OBS_DOM garde le domaine affiché ; par défaut, celui de l'observatoire ouvert. */
+window.OBS_DOM = window.OBS_DOM || null;
+function domainOf(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0]; return t ? t.domain : null; }
+function domRow(cur){
+  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id, curDom = domainOf(cur);
+  return '<div class="drow" role="group" aria-label="' + T('Domaine spectral') + '">' + DOMAINS.filter(function(x){ return TELESCOPES.some(function(t){ return t.domain === x.id; }); }).map(function(x){
+    var n = TELESCOPES.filter(function(t){ return t.domain === x.id; }).length;
+    return '<button class="dsel' + (x.id === curDom ? ' cur' : '') + '" data-dom="' + x.id + '" aria-pressed="' + (x.id === d) + '" title="' + T(x.label) + ' : ' + n + '">' +
+           '<span class="dl">' + T(x.label) + '</span><span class="ds">' + T(x.short) + '</span><span class="dn">' + n + '</span></button>';
+  }).join('') + '</div>';
+}
+function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id; return TELESCOPES.filter(function(t){ return t.domain === d; }); }

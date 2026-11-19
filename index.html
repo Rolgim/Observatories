@@ -42,18 +42,23 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #top{ flex:none; display:flex; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
 .brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
-#tabs{ display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none; }
-#tabs::-webkit-scrollbar{ display:none; }
-#tabs.fade-r, .pills.fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
-#tabs.fade-l, .pills.fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
-#tabs.fade-l.fade-r, .pills.fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
+/* navigation en deux rangées : domaines spectraux (filtres), puis observatoires du domaine choisi */
+#tabs{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
+.drow, .trow{ display:flex; overflow-x:auto; scrollbar-width:none; min-width:0; }
+.drow::-webkit-scrollbar, .trow::-webkit-scrollbar{ display:none; }
+.trow{ flex:1; justify-content:flex-end; }
+.drow{ justify-content:flex-end; gap:2px; padding-top:5px; }
+.dsel{ flex:none; border:0; background:transparent; color:var(--mute); font-size:12px; font-weight:500; padding:2px 8px 3px; cursor:pointer; border-bottom:2px solid transparent; display:flex; align-items:baseline; gap:4px; white-space:nowrap; }
+.dsel:hover{ color:var(--ink); }
+.dsel[aria-pressed="true"]{ color:var(--ink); font-weight:700; border-bottom-color:var(--ink); }
+.dsel .dn{ font-size:10.5px; color:var(--mute); font-weight:400; font-variant-numeric:tabular-nums; }
+.dsel.cur .dl::after, .dsel.cur .ds::after{ content:""; display:inline-block; width:5px; height:5px; border-radius:50%; background:var(--mark); margin-left:4px; vertical-align:2px; }
+.dsel .ds{ display:none; }
+#tabs .fade-r, .pills .fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
+#tabs .fade-l, .pills .fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
+#tabs .fade-l.fade-r, .pills .fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
 .tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
 /* groupes par domaine spectral : un trait plein entre les groupes, pointillé à l'intérieur, le nom du groupe au-dessus de son premier onglet */
-#tabs .tab:not(.g0):not(.cmp){ border-left-style:dotted; }
-#tabs .tab{ padding-top:19px; }
-.tab .dom, .pill .dom{ position:absolute; left:16px; top:4px; font-size:10.5px; font-weight:500; line-height:1; color:var(--mute); white-space:nowrap; pointer-events:none; }
-.dom .ds{ display:none; }
-.tab[aria-selected="true"] .dom, .pill.on .dom{ color:var(--on-mark); opacity:.75; }
 .tab small{ font-size:11.5px; font-weight:400; color:var(--mute); font-variant-numeric:tabular-nums; }
 .tab:hover{ background:var(--sheet); color:var(--ink); }
 .tab[aria-selected="true"]{ background:var(--mark); color:var(--on-mark); }
@@ -184,14 +189,15 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
   .brand{ padding:9px var(--gr) 8px var(--gl); }
   .brand h1{ font-size:18px; }
   #tabs{ margin-left:0; border-top:1px solid var(--rule); }
+  .drow{ justify-content:flex-start; padding:4px var(--gr) 0 var(--gl); gap:0; }
+  .dsel{ padding:3px 7px 4px; font-size:12px; }
+  .dsel:first-child{ padding-left:0; }
+  .dsel .dl{ display:none; } .dsel .ds{ display:inline; }
+  .dsel .dn{ display:none; }
+  .trow{ justify-content:flex-start; border-top:1px solid var(--rule); }
   .tab{ padding:9px 13px; font-size:13.5px; }
-  #tabs .tab{ flex:1 1 auto; padding-left:8px; padding-right:8px; justify-content:center; }   /* six onglets tiennent sur 400 px */
-  .tab:first-child{ border-left:0; padding-left:var(--gl); }
-  #tabs .tab{ padding-top:17px; padding-bottom:7px; }
-  .tab .dom{ left:5px; top:4px; font-size:9.5px; }
-  .tab:first-child .dom{ left:var(--gl); }
-  .dom .dl{ display:none; } .dom .ds{ display:inline; }
-  #tabs .tab{ padding-left:5px; padding-right:5px; }
+  #tabs .tab{ flex:1 1 auto; padding:9px 6px; justify-content:center; }   /* quatre observatoires et « Comparer » tiennent sur 400 px */
+  .tab:first-child{ border-left:0; }
   .tab small{ display:none; }
   .tab.util{ padding:0 8px; }
   #utils{ position:absolute; top:0; right:var(--gr); height:40px; margin:0; }
@@ -265,14 +271,11 @@ ol.refs.pref li{ margin:0 0 2px; }
 .inst-back{ font-size:13px; font-weight:700; background:var(--sheet); color:var(--ink); border:2px solid var(--ink); padding:0 12px; margin:9px 16px 9px 0; height:30px; cursor:pointer; }
 .inst-back:hover{ background:var(--mark); color:var(--on-mark); }
 .inst-title{ font-weight:800; font-stretch:75%; font-size:21px; align-self:center; padding-block:10px; }
-.pills{ display:flex; margin-left:auto; }
-.pill{ border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); font-size:14px; font-weight:600; padding:0 16px; cursor:pointer; }
+.pills{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
+.pill{ flex:none; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); font-size:14px; font-weight:600; padding:6px 16px; cursor:pointer; }
 .pill:last-child{ border-right:1px solid var(--rule); }
 .pill:hover{ background:var(--sheet); }
 .pill.on{ background:var(--mark); color:var(--on-mark); }
-.pill{ position:relative; padding-top:13px; }
-.pill:not(.g0):not(.cmp){ border-left-style:dotted; }
-.pill .dom .dl{ display:none; } .pill .dom .ds{ display:inline; }   /* onglets sans l'année : nom court du groupe */
 .inst-body{ flex:1; display:flex; min-height:0; }
 .inst-nav{ width:232px; flex:none; border-right:1px solid var(--ink); overflow-y:auto; padding-left:env(safe-area-inset-left, 0px); }
 .nav-i{ display:block; width:100%; text-align:left; padding:10px 14px 10px 12px; border:0; border-bottom:1px solid var(--rule); border-left:6px solid var(--c, transparent); background:transparent; cursor:pointer; }
@@ -362,10 +365,11 @@ ol.notes{ padding-left:20px; }
   .inst-top{ padding:0; }
   .inst-back{ margin:9px 12px 9px var(--gl); }
   .inst-title{ font-size:17px; }
-  .pills{ margin-left:0; width:100%; border-top:1px solid var(--rule); overflow-x:auto; }
-  .pill{ flex:1 1 auto; padding:17px 4px 7px; font-size:13px; } .pill:first-child{ border-left:0; padding-left:var(--gl); }
-  .pill .dom{ left:4px; font-size:9.5px; } .pill:first-child .dom{ left:var(--gl); }
-  .dom .dl{ display:none; } .dom .ds{ display:inline; }
+  .pills{ border-top:1px solid var(--rule); margin-left:0; flex:1 1 100%; }
+  .pills .drow{ justify-content:flex-start; padding:4px var(--gr) 0 var(--gl); }
+  .pills .trow{ justify-content:flex-start; border-top:1px solid var(--rule); }
+  .pill{ flex:1 1 auto; padding:9px 6px; font-size:13.5px; }
+  .pills .trow .pill:first-child{ border-left:0; }
   .inst-body{ flex-direction:column; }
   .inst-nav{ width:auto; display:flex; overflow-x:auto; overflow-y:hidden; border-right:0; border-bottom:1px solid var(--ink); flex:none; padding-left:0; }
   .nav-i{ flex:none; width:auto; white-space:nowrap; border-bottom:0; border-left:0; border-top:5px solid var(--c, transparent); border-right:1px solid var(--rule); padding:7px 13px 9px; }
@@ -438,7 +442,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
     <div class="brand">
       <h1>Observatoires en orbite</h1>
     </div>
-    <nav id="tabs" role="tablist" aria-label="Observatoire"></nav>
+    <nav id="tabs" aria-label="Observatoire"></nav>
     <div id="utils"></div>
   </header>
 
@@ -1271,8 +1275,19 @@ function teleGroups(){
   if (rest.length) g.push({ label:'', short:'', list:rest });
   return g;
 }
-/* étiquette de groupe au-dessus du premier onglet : version longue, et courte pour le téléphone */
-function domTag(g){ return g.label ? '<span class="dom" aria-hidden="true"><span class="dl">' + g.label + '</span><span class="ds">' + g.short + '</span></span>' : ''; }
+/* navigation en deux rangées : les domaines spectraux (boutons qui filtrent), puis les observatoires du domaine choisi.
+   OBS_DOM garde le domaine affiché ; par défaut, celui de l'observatoire ouvert. */
+window.OBS_DOM = window.OBS_DOM || null;
+function domainOf(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0]; return t ? t.domain : null; }
+function domRow(cur){
+  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id, curDom = domainOf(cur);
+  return '<div class="drow" role="group" aria-label="' + T('Domaine spectral') + '">' + DOMAINS.filter(function(x){ return TELESCOPES.some(function(t){ return t.domain === x.id; }); }).map(function(x){
+    var n = TELESCOPES.filter(function(t){ return t.domain === x.id; }).length;
+    return '<button class="dsel' + (x.id === curDom ? ' cur' : '') + '" data-dom="' + x.id + '" aria-pressed="' + (x.id === d) + '" title="' + T(x.label) + ' : ' + n + '">' +
+           '<span class="dl">' + T(x.label) + '</span><span class="ds">' + T(x.short) + '</span><span class="dn">' + n + '</span></button>';
+  }).join('') + '</div>';
+}
+function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id; return TELESCOPES.filter(function(t){ return t.domain === d; }); }
 
 /* =================================================================
    INSTRUMENTS — données par observatoire.
@@ -4255,11 +4270,11 @@ var InstrumentsUI = (function(){
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
   }
-  /* mêmes groupes par domaine spectral que l'en-tête de la vue 3D */
+  /* même navigation que l'en-tête de la vue 3D : domaines spectraux, puis observatoires du domaine choisi */
   function pillsFor(cur){
-    return teleGroups().map(function(g){ return g.list.map(function(t, i){
-      return '<button class="pill'+(i===0?' g0':'')+(t.id===cur?' on':'')+'" data-tele="'+t.id+'"'+(g.label?' title="'+esc(g.label)+'"':'')+'>'+(i===0?domTag(g):'')+NAMES[t.id]+'</button>'; }).join(''); }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button>'; }
+    return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
+      return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
+      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button></div>'; }
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
@@ -4280,7 +4295,7 @@ var InstrumentsUI = (function(){
     return { pills:pills, nav:nav, main: sel === 'mission' ? '<div class="inst-mission">' + window.OBS_MISSION(tid) + '</div>' : sel === 'orbite' ? Orbits.render(tid, NAMES[tid]) : sel === 'optique' ? Optics.render(tid, NAMES[tid], window.OBS_OPT || null) : sel ? detail(tid, sel, fidx) : overview(tid), sel:sel };
   }
 
-  return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+  return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, pills:pillsFor, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
 })();
 
 /* English text for the observatory sheets and clickable parts (applied over src/data-tele.js by src/i18n.js). */
@@ -6204,17 +6219,15 @@ function edgeScroll(el){
   marks();
 }
 function renderTabs(){
-  /* onglets groupés par domaine spectral (DOMAINS, teleGroups dans data-tele.js) ; le nom du groupe est écrit au-dessus de son premier onglet */
-  var h = '';
-  teleGroups().forEach(function(g){
-    g.list.forEach(function(t, i){
-      h += '<button class="tab' + (i === 0 ? ' g0' : '') + '" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '"' + (g.label ? ' title="' + esc(g.label) + '"' : '') + '>' +
-           (i === 0 ? domTag(g) : '') + esc(t.short) + '<small>' + t.year + '</small></button>';
-    });
+  /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
+  if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
+  var h = domRow(S.mode === 'tele' ? S.id : null) + '<div class="trow" role="tablist" aria-label="Observatoire">';
+  domList(S.id).forEach(function(t){
+    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button></div>';
   $('tabs').innerHTML = h;
-  edgeScroll($('tabs'));
+  edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
   var ll = OBS_LANG === 'en' ? 'Lire en français' : 'Read in English';
@@ -6281,7 +6294,7 @@ function renderHud(){
 function renderInst(keepScroll){
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills'));
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -6301,7 +6314,7 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
@@ -6318,15 +6331,17 @@ $('inst-page').addEventListener('click', function(e){
     var fs = $('fsec'); if (fs) fs.innerHTML = InstrumentsUI.filterPanel(S.id, S.instSel, S.filterIdx);
     return;
   }
+  if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); $('inst-pills').innerHTML = InstrumentsUI.pills(S.mode === 'compare' ? 'comparer' : S.id); edgeScroll($('inst-pills').querySelector('.trow')); var fp = $('inst-pills').querySelector('.trow .pill'); if (fp) fp.focus(); return; }
   if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
+  if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }
