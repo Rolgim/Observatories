@@ -50,7 +50,7 @@ Règle : la coupe ne montre que des éléments dont la forme, la taille **et** l
 
 **Livré le 19 novembre.** Tous les blocs à emplacement indicatif sont retirés ; chaque élément restant porte sa source (`cite`) et, s'il y a lieu, le calcul qui le place (`calc`), affichés au survol ; la coupe tranche aussi l'intérieur (demi-section). Coupe gardée pour Hubble, Euclid et Chandra ; retirée pour Gaia, Webb et Roman (aucun élément documenté à montrer). Les équipements retirés sont décrits sans position dans « Mission et traitements » (« Équipements du véhicule », champ `arch` de `data-mission.js`), chaque ligne sourcée ; pour Webb, seules les informations confirmées par JDox et la NASA sont gardées (masses d'ergols, nombre de roues et capacité de l'enregistreur retirés faute de source vérifiée). Inventaire en annexe.
 
-### Priorité 2 : refaire « Comparer » : comparer ce qui est comparable [K]
+### Priorité 2 : refaire « Comparer » : comparer ce qui est comparable [K] — fait le 19 novembre
 
 Constat (19 novembre) : « Comparer » met tous les observatoires sur les mêmes figures. Les orbites ne sont comparées qu'autour de L2. Les instruments n'ont pas de type commun : le champ `kind` est un texte libre, différent pour chacun des 31 instruments, et le type n'apparaît pas dans les figures. Avec la flotte complète (une soixantaine de missions), ces figures deviendraient illisibles.
 
@@ -67,6 +67,8 @@ Principe : on compare **à l'intérieur d'une famille**, et le **type d'instrume
 6. Les mêmes classifications servent aux filtres de la page « Flotte » (priorité 3).
 
 **Acceptation.** Chaque observatoire et chaque instrument a une valeur dans chaque classification, vérifiée par `tools/smoke.js` ; aucune figure ne mélange des familles sans le dire ; le type de chaque instrument se lit sans ouvrir sa fiche.
+
+**Livré le 19 novembre.** Registre : `ORBIT_FAMILIES` (champ `orbit`), `MISSION_TYPES` (champ `mission`), `INST_TYPES` (champ `type` des 31 instruments), pictogrammes SVG (`typeIcon`). Sélecteur commun à la vue 3D et à la page des instruments (`cmpSelector`, état `OBS_CMP`), « Tous » signalé comme mélange. Page des instruments : légende et filtre par type, couverture spectrale colorée par type, champs de vue (agrandissement automatique des champs trente fois plus petits), plans focaux, tableau avec colonne Type ; orbites : une figure par famille (Terre et Lune à l'échelle pour les orbites basses et très elliptiques, L2, trajectoires héliocentriques réelles). Vue 3D : seules les maquettes du groupe sont chargées et posées. Tests : classifications complètes, chaque groupe d'orbite affiché avec ses étiquettes et ses pictogrammes. Reste : tri du tableau par colonne.
 
 ### Priorité 3 : flottes de la NASA, de l'ESA et du CNES [G5]
 
@@ -232,7 +234,7 @@ Roman (16 au 18 novembre) : maquette NASA de 2015 allégée à 3,1 Mo et redéco
 - H4. Version anglaise. **Livré**, langue par défaut depuis le 19 novembre (le français se choisit par le bouton FR, mémorisé, ou un lien `#fr-…` ; les tests imposent leur langue par le stockage local) (`src/en/`, `src/i18n.js` ; `tools/i18n-scan.js` liste ce qui n'est pas traduit). À chaque ajout de texte, compléter `src/en/`. Non traduits : `README.md`, `SPECS.md`, les commentaires du code.
 - H5. Poids des maquettes. **À faire** (point 19).
 
-### K. Comparer — à refaire
+### K. Comparer — refait le 19 novembre
 
 Exigences et acceptation : priorité 2, section 3. Livré jusqu'ici : tailles à l'échelle en 3D, orbites autour de L2, couverture spectrale, champs de vue, plans focaux, tableau des instruments, pour tous les observatoires à la fois.
 

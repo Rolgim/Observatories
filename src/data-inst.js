@@ -62,7 +62,7 @@ var INST_DATA = (function(){
       { label:"Manuels d'instruments", url:"https://hst-docs.stsci.edu/", desc:"Instrument & Data Handbooks (WFC3, ACS, STIS, COS)." }
     ],
     instruments: [
-      { id:"wfc3", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
+      { id:"wfc3", type:"imager", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
         bands:[ {l:"UVIS",lo:0.2,hi:1.0}, {l:"IR",lo:0.8,hi:1.7} ],
         fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
         use:"Prendre des images très nettes du ciel, de l'ultraviolet à l'infrarouge proche : galaxies lointaines, nébuleuses, étoiles des amas. C'est aujourd'hui l'appareil photo le plus utilisé de Hubble.",
@@ -99,7 +99,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"WFC3 Instrument Handbook",u:"https://hst-docs.stsci.edu/wfc3ihb"}, {l:"WFC3 Data Handbook",u:"https://hst-docs.stsci.edu/wfc3dhb"} ] },
 
-      { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
+      { id:"acs", type:"imager", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
         bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
         fov:[ {l:"WFC",w:202,h:202}, {l:"SBC",w:34.6,h:30.5} ],
         use:"Photographier en lumière visible de grandes zones du ciel avec beaucoup de détails. Les célèbres champs profonds de Hubble et les cartes de matière noire des amas de galaxies doivent beaucoup à cette caméra.",
@@ -136,7 +136,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"ACS Instrument Handbook",u:"https://hst-docs.stsci.edu/acsihb"} ] },
 
-      { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
+      { id:"stis", type:"spectro", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
         bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.2,hi:1.03} ],
         fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
         use:"Décomposer la lumière d'un objet en ses couleurs, son spectre, pour connaître sa composition, sa température et sa vitesse. Sa fente montre aussi comment ces propriétés changent le long d'un objet étendu, par exemple le gaz qui tourne autour d'un trou noir.",
@@ -187,7 +187,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"STIS Instrument Handbook",u:"https://hst-docs.stsci.edu/stisihb"} ] },
 
-      { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
+      { id:"cos", type:"spectro", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
         bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.165,hi:0.32} ],
         fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
         use:"Recueillir le spectre ultraviolet de sources très faibles, surtout de quasars lointains. Leur lumière traverse le gaz situé entre les galaxies, qui y laisse son empreinte : COS lit ces empreintes pour analyser ce gaz invisible.",
@@ -237,7 +237,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"COS Instrument Handbook",u:"https://hst-docs.stsci.edu/cosihb"} ] },
 
-      { id:"fgs", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
+      { id:"fgs", type:"astrometry", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
         bands:null,
         use:"Garder le télescope pointé sans bouger pendant les poses, en suivant des étoiles guides. Utilisé comme instrument, il mesure aussi la position des étoiles avec une grande précision.",
 
@@ -273,7 +273,7 @@ var INST_DATA = (function(){
       { label:"Pipeline de calibration", url:"https://jwst-pipeline.readthedocs.io/", desc:"Étapes de calibration et formats des produits de données." }
     ],
     instruments: [
-      { id:"nircam", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
+      { id:"nircam", type:"imager", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
         bands:[ {l:"SW",lo:0.6,hi:2.3}, {l:"LW",lo:2.4,hi:5.0} ],
         fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
         use:"Photographier le ciel dans l'infrarouge proche, là où arrive la lumière des toutes premières galaxies, étirée par l'expansion de l'Univers. C'est la caméra principale de Webb ; elle sert aussi à régler l'alignement de son miroir.",
@@ -324,7 +324,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, NIRCam",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-camera"} ] },
 
-      { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
+      { id:"nirspec", type:"spectro", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
         bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
         fov:[ {l:"MSA",w:216,h:204}, {l:"IFU",w:3,h:3} ],
         use:"Obtenir en même temps le spectre de nombreuses galaxies lointaines, pour mesurer leur distance et leur composition. De minuscules volets ne s'ouvrent que devant les objets visés.",
@@ -367,7 +367,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, NIRSpec",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-spectrograph"} ] },
 
-      { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
+      { id:"miri", type:"specimager", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
         bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:27.9} ],
         fov:[ {l:"Imageur",w:74,h:113} ],
         use:"Voir l'infrarouge moyen, émis par les objets tièdes : poussière, disques où se forment les planètes, galaxies cachées par leur propre poussière. Il doit être bien plus froid que le reste du télescope pour ne pas être aveuglé par sa propre chaleur.",
@@ -407,7 +407,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, MIRI",u:"https://jwst-docs.stsci.edu/jwst-mid-infrared-instrument"} ] },
 
-      { id:"niriss", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
+      { id:"niriss", type:"specimager", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
         bands:[ {l:"0,6–5,0 µm",lo:0.6,hi:5.0} ],
         fov:[ {l:"Imageur",w:132,h:132} ],
         use:"Étudier l'atmosphère des exoplanètes quand elles passent devant leur étoile, chercher des galaxies lointaines dans de grands champs, et séparer des objets très proches les uns des autres grâce à un masque percé de trous.",
@@ -438,7 +438,7 @@ var INST_DATA = (function(){
         notes:["Le mode SOSS mesure le spectre de transmission de l'atmosphère d'une exoplanète pendant son transit."],
         docs:[ {l:"JDox, NIRISS",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-imager-and-slitless-spectrograph"} ] },
 
-      { id:"fgs", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
+      { id:"fgs", type:"guider", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
         bands:null, fov:[ {l:"Guider",w:138,h:138} ],
         use:"Repérer des étoiles guides et indiquer au télescope comment corriger son pointage, plusieurs fois par seconde, pour que les images restent nettes.",
 
@@ -473,7 +473,7 @@ var INST_DATA = (function(){
       { label:"astroquery.esa.euclid", url:"https://astroquery.readthedocs.io/en/latest/esa/euclid/euclid.html", desc:"Accès Python à l'archive (TAP+)." }
     ],
     instruments: [
-      { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
+      { id:"vis", type:"imager", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
         bands:[ {l:"IE",lo:0.53,hi:0.92} ],
         use:"Photographier des milliards de galaxies avec assez de netteté pour mesurer leur forme. Les petites déformations que ces formes ont en commun révèlent la matière noire située sur le trajet de leur lumière.",
 
@@ -523,7 +523,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Présentation de DR1",u:"https://arxiv.org/abs/2611.16510"} ] },
 
-      { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
+      { id:"nisp", type:"specimager", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
         bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
         use:"Mesurer les couleurs infrarouges et les spectres de millions de galaxies pour savoir à quelle distance elles se trouvent. Avec VIS, il permet de cartographier l'Univers en trois dimensions sur les dix derniers milliards d'années.",
 
@@ -590,7 +590,7 @@ var INST_DATA = (function(){
       { label:"Centre de support scientifique (IPAC)", url:"https://roman.ipac.caltech.edu/", desc:"Coronographe et soutien aux relevés." }
     ],
     instruments: [
-      { id:"wfi", name:"WFI", full:"Wide Field Instrument", kind:"Imageur et spectro grand champ IR",
+      { id:"wfi", type:"specimager", name:"WFI", full:"Wide Field Instrument", kind:"Imageur et spectro grand champ IR",
         bands:[ {l:"imagerie",lo:0.48,hi:2.3} ],
         use:"Photographier en une seule pose une portion de ciel plus grande que la pleine Lune, avec la netteté de Hubble. En répétant ces poses, Roman cartographie des milliards de galaxies pour la matière noire et l'énergie noire, et suit des millions d'étoiles du bulbe galactique pour y repérer des planètes.",
         summary:"Caméra de 300 millions de pixels : 18 détecteurs infrarouges en mosaïque de 6 × 3, huit filtres d'imagerie, un grisme et un prisme pour la spectroscopie sans fente.",
@@ -638,7 +638,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"WFI, données techniques (NASA)",u:"https://roman.gsfc.nasa.gov/science/WFI_technical.html"}, {l:"RomanDocs, WFI",u:"https://roman-docs.stsci.edu/roman-instruments/the-wide-field-instrument"} ] },
 
-      { id:"cgi", name:"Coronographe", full:"Coronagraph Instrument (CGI)", kind:"Démonstrateur de coronographie",
+      { id:"cgi", type:"coronagraph", name:"Coronographe", full:"Coronagraph Instrument (CGI)", kind:"Démonstrateur de coronographie",
         bands:[ {l:"visible",lo:0.4,hi:1.0} ],
         use:"Éteindre la lumière d'une étoile pour voir les planètes et les disques de poussière qui l'entourent. C'est un essai technologique, qui prépare un futur télescope capable de photographier des planètes semblables à la Terre.",
         summary:"Instrument de démonstration : masques coronographiques et miroirs déformables pour atténuer la lumière stellaire, avec des détecteurs à multiplication d'électrons fournis par l'ESA.",
@@ -673,7 +673,7 @@ var INST_DATA = (function(){
       { label:"Documentation de Spitzer", url:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/", desc:"Manuels des instruments et du télescope, à l'IRSA." }
     ],
     instruments: [
-      { id:"irac", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
+      { id:"irac", type:"imager", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
         bands:[ {l:"3,6 µm",lo:3.19,hi:3.94}, {l:"4,5 µm",lo:4.00,hi:5.02}, {l:"5,8 µm",lo:4.98,hi:6.41}, {l:"8,0 µm",lo:6.45,hi:9.34} ],
         use:"Photographier des galaxies lointaines, des nuages où naissent des étoiles et des exoplanètes en transit, à travers la poussière qui arrête la lumière visible.",
         summary:"Quatre voies photographiées en même temps sur deux champs voisins : des séparatrices dichroïques envoient 3,6 et 5,8 µm vers l'un, 4,5 et 8,0 µm vers l'autre. Chaque voie a sa matrice de 256 × 256 pixels.",
@@ -712,7 +712,7 @@ var INST_DATA = (function(){
         notes:[ "Pendant la mission chaude, le détecteur de 3,6 µm a servi à suivre des exoplanètes en transit avec une très grande stabilité : c'est ainsi qu'il a suivi en 2016 et 2017 les planètes du système TRAPPIST-1." ],
         docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
 
-      { id:"irs", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
+      { id:"irs", type:"spectro", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
         bands:[ {l:"SL",lo:5.2,hi:14.5}, {l:"LL",lo:14.0,hi:38.0}, {l:"SH",lo:9.9,hi:19.6}, {l:"LH",lo:18.7,hi:37.2} ],
         use:"Décomposer la lumière infrarouge en spectre, pour lire la composition de la poussière, des glaces et des molécules autour des étoiles jeunes et dans les galaxies.",
         summary:"Quatre modules, chacun avec sa matrice de 128 × 128 pixels : deux à basse résolution, à fente longue (SL et LL), deux à haute résolution, en échelle (SH et LH). Deux petites fenêtres d'imagerie (« peak-up ») servaient à centrer la source dans la fente.",
@@ -730,7 +730,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
 
-      { id:"mips", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
+      { id:"mips", type:"imager", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
         bands:[ {l:"24 µm",lo:21.5,hi:26.2}, {l:"70 µm",lo:62.5,hi:81.5}, {l:"160 µm",lo:139.5,hi:174.5}, {l:"SED",lo:55,hi:95} ],
         use:"Mesurer la chaleur de la poussière froide : disques autour des étoiles, galaxies qui forment des étoiles à toute vitesse, nuages interstellaires.",
         summary:"Trois matrices : Si:As à 24 µm, germanium dopé au gallium à 70 µm et germanium contraint à 160 µm. Un petit miroir mobile balayait le ciel sur les détecteurs ; un mode spectral (SED) donnait aussi un spectre grossier de 55 à 95 µm.",
@@ -772,7 +772,7 @@ var INST_DATA = (function(){
       { label:"Fermitools", url:"https://github.com/fermi-lat/Fermitools-conda", desc:"Logiciels d'analyse des données du LAT." }
     ],
     instruments: [
-      { id:"lat", name:"LAT", full:"Large Area Telescope", kind:"Télescope gamma à conversion de paires",
+      { id:"lat", type:"imager", name:"LAT", full:"Large Area Telescope", kind:"Télescope gamma à conversion de paires",
         bands:[ {l:"LAT",lo:4.133e-12,hi:6.199e-8} ],
         use:"Cartographier le ciel gamma : pulsars, restes de supernovae, noyaux actifs de galaxies dont le jet pointe vers nous, et la lueur diffuse de la Galaxie.",
         summary:"Seize tours identiques, chacune faite d'un trajectographe au-dessus d'un calorimètre, entourées d'un bouclier de scintillateurs. Le photon se convertit en paire électron–positon dans le tungstène ; la trace de la paire donne sa direction, le calorimètre son énergie.",
@@ -804,7 +804,7 @@ var INST_DATA = (function(){
         notes:["Le LAT ne vise pas : il balaie le ciel entier en deux orbites, environ trois heures. Chaque région est donc revue plusieurs fois par jour, ce qui permet de suivre les éruptions des noyaux actifs de galaxies."],
         docs:[ {l:"Atwood et al. 2009",u:"https://arxiv.org/abs/0902.1089"}, {l:"Préparation des données",u:"https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/data_preparation.html"} ] },
 
-      { id:"gbm", name:"GBM", full:"Gamma-ray Burst Monitor", kind:"Moniteur de sursauts gamma",
+      { id:"gbm", type:"burst", name:"GBM", full:"Gamma-ray Burst Monitor", kind:"Moniteur de sursauts gamma",
         bands:[ {l:"NaI",lo:1.2398e-6,hi:1.5498e-4}, {l:"BGO",lo:3.0995e-8,hi:6.199e-6} ],
         use:"Guetter les sursauts gamma, ces éclairs de quelques secondes qui viennent de la mort d'étoiles massives ou de la fusion d'étoiles à neutrons, et donner l'alerte aux autres télescopes.",
         summary:"Quatorze scintillateurs orientés dans toutes les directions : douze cristaux d'iodure de sodium (NaI) pour les basses énergies, deux de germanate de bismuth (BGO) pour les hautes. Le rapport des signaux entre détecteurs donne la direction du sursaut.",
@@ -842,7 +842,7 @@ var INST_DATA = (function(){
       { label:"NASA Exoplanet Archive", url:"https://exoplanetarchive.ipac.caltech.edu/", desc:"Catalogues des objets d'intérêt Kepler (KOI) et des planètes confirmées." }
     ],
     instruments: [
-      { id:"phot", name:"Photomètre", full:"Photomètre à grand champ", kind:"Photométrie de précision", color:"#6A8D2F",
+      { id:"phot", type:"photometer", name:"Photomètre", full:"Photomètre à grand champ", kind:"Photométrie de précision", color:"#6A8D2F",
         bands:[ {l:"Kepler",lo:0.42,hi:0.90} ],
         use:"Repérer les planètes qui passent devant leur étoile, en mesurant à quelques dizaines de millionièmes près l'éclat de plus de 100 000 étoiles, sans interruption pendant des années.",
         summary:"Le télescope de Schmidt forme une image sur un plan focal courbe de 21 modules de deux CCD ; une lentille de saphir sur chaque module ramène l'image courbe à plat. Chaque pose dure 6 s ; elles sont additionnées à bord par paquets de 29,4 min (longue cadence) ou de 58,85 s (courte cadence, pour quelques centaines de cibles).",
@@ -896,7 +896,7 @@ var INST_DATA = (function(){
       { label:"TESS Science Support Center", url:"https://heasarc.gsfc.nasa.gov/docs/tess/", desc:"Documentation, outils et calendrier des secteurs." }
     ],
     instruments: [
-      { id:"cams", name:"Caméras", full:"Quatre caméras grand champ", kind:"Photométrie grand champ", color:"#1F7A8C",
+      { id:"cams", type:"photometer", name:"Caméras", full:"Quatre caméras grand champ", kind:"Photométrie grand champ", color:"#1F7A8C",
         bands:[ {l:"TESS",lo:0.6,hi:1.0} ],
         use:"Repérer les planètes qui passent devant leur étoile, en mesurant son éclat toutes les quelques minutes pendant des semaines, pour des centaines de milliers d'étoiles proches à la fois.",
         summary:"Chaque caméra est un objectif de sept lentilles, ouvert à f/1,4, devant une mosaïque de quatre CCD. Les poses de 2 s sont additionnées à bord : images complètes du champ toutes les 30, 10 puis 3 min 20 s selon les années, et petites images de cibles choisies toutes les 2 min ou 20 s.",
@@ -950,7 +950,7 @@ var INST_DATA = (function(){
       { label:"SAS", url:"https://www.cosmos.esa.int/web/xmm-newton/what-is-sas", desc:"Logiciel d'analyse des données de XMM-Newton." }
     ],
     instruments: [
-      { id:"epic", name:"EPIC", full:"European Photon Imaging Camera", kind:"Caméras CCD imageuses et spectrométriques", color:"#2E7FA8",
+      { id:"epic", type:"specimager", name:"EPIC", full:"European Photon Imaging Camera", kind:"Caméras CCD imageuses et spectrométriques", color:"#2E7FA8",
         bands:[ {l:"EPIC",lo:0.0001033,hi:0.008266} ],
         use:"Photographier le ciel en rayons X en mesurant l'énergie de chaque photon, avec une grande surface collectrice : de quoi étudier des sources faibles, des amas de galaxies ou les variations rapides d'une étoile à neutrons.",
         summary:"Trois caméras, une au foyer de chaque télescope : la caméra pn, à 12 CCD éclairés par l'arrière, et deux caméras MOS à 7 CCD, qui ne reçoivent qu'une partie de la lumière de leur télescope, le reste étant envoyé vers les RGS. Chaque photon est enregistré avec sa position, son instant et son énergie.",
@@ -984,7 +984,7 @@ var INST_DATA = (function(){
         notes:["Les deux caméras MOS ne reçoivent qu'environ la moitié de la lumière de leur télescope : l'autre partie est déviée par les réseaux vers les RGS.",
                "Des protons de basse énergie, piégés autour de la Terre, provoquent parfois des « éruptions » de bruit : on retire ces moments des données."],
         docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"}, {l:"The Telescopes of XMM-Newton",u:"https://www.cosmos.esa.int/web/xmm-newton/technical-details-mirrors"} ] },
-      { id:"rgs", name:"RGS", full:"Reflection Grating Spectrometer", kind:"Spectromètre à réseaux", color:"#7A4FB5",
+      { id:"rgs", type:"spectro", name:"RGS", full:"Reflection Grating Spectrometer", kind:"Spectromètre à réseaux", color:"#7A4FB5",
         bands:[ {l:"RGS",lo:0.0005,hi:0.0035} ],
         use:"Décomposer les rayons X mous en un spectre très fin, où apparaissent les raies du carbone, de l'azote, de l'oxygène, du néon ou du fer : température, densité et composition du gaz chaud.",
         summary:"Derrière deux des trois télescopes, une pile de réseaux en réflexion intercepte une partie des rayons X et les disperse selon leur longueur d'onde vers une rangée de CCD. Les deux spectromètres sont presque identiques.",
@@ -1008,7 +1008,7 @@ var INST_DATA = (function(){
         notes:["Le spectre « fluxed » du pipeline sert d'aperçu ; une analyse se fait sur les spectres par ordre, avec leur matrice de réponse.",
                "Quelques CCD sont hors service depuis le début de la mission, d'où des trous dans les spectres de chaque RGS."],
         docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"} ] },
-      { id:"om", name:"OM", full:"Optical Monitor", kind:"Télescope visible et ultraviolet", color:"#C9A100",
+      { id:"om", type:"imager", name:"OM", full:"Optical Monitor", kind:"Télescope visible et ultraviolet", color:"#C9A100",
         bands:[ {l:"OM",lo:0.18,hi:0.60} ],
         use:"Voir les mêmes objets que les caméras X, au même moment, en visible et en ultraviolet : pour relier ce qui se passe dans les deux domaines, ou repérer les étoiles et galaxies du champ.",
         summary:"Un télescope Ritchey-Chrétien de 30 cm, avec une roue de filtres (trois visibles, trois ultraviolets) et deux grismes. Son détecteur amplifie chaque photon et en mesure la position.",
@@ -1051,7 +1051,7 @@ var INST_DATA = (function(){
       { label:"HEASARC", url:"https://heasarc.gsfc.nasa.gov/", desc:"Archive de la NASA pour les hautes énergies, qui donne aussi accès à Chandra." }
     ],
     instruments: [
-      { id:"acis", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
+      { id:"acis", type:"specimager", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
         bands:[ {l:"CCD FI",lo:0.000155,hi:0.0015498}, {l:"CCD BI",lo:0.000155,hi:0.0041327} ],
         use:"Photographier le ciel en rayons X tout en mesurant l'énergie de chaque photon. On obtient à la fois l'image d'un reste de supernova ou d'un amas de galaxies et la composition chimique et la température de son gaz.",
         summary:"Dix CCD en deux réseaux : ACIS-I, un carré de 2 × 2 pour l'imagerie, et ACIS-S, une rangée de six, qui sert aussi à lire les spectres du réseau HETG. Chaque photon est enregistré avec sa position, son instant et son énergie.",
@@ -1087,7 +1087,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"}, {l:"Proposers' Observatory Guide",u:"https://cxc.cfa.harvard.edu/proposer/POG/"} ] },
 
-      { id:"hrc", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
+      { id:"hrc", type:"imager", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
         bands:[ {l:"HRC",lo:0.000124,hi:0.0154975} ],
         use:"Prendre les images X les plus nettes et dater chaque photon à quelques microsecondes près, par exemple pour suivre la rotation rapide d'un pulsar.",
         summary:"Deux détecteurs à galettes à microcanaux : HRC-I, pour l'imagerie sur un grand champ, et HRC-S, une bande allongée qui lit les spectres du réseau LETG. Résolution en énergie très faible, mais grande netteté et datation très fine.",
@@ -1107,7 +1107,7 @@ var INST_DATA = (function(){
         notes:[ "Les poses avec HRC sont limitées à 14,5 ks d'un seul tenant, pour des raisons thermiques." ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
 
-      { id:"hetg", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
+      { id:"hetg", type:"spectro", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
         bands:[ {l:"HEG",lo:0.000124,hi:0.0015498}, {l:"MEG",lo:0.000248,hi:0.0030995} ],
         use:"Décomposer les rayons X en un spectre très fin, où l'on voit les raies de chaque élément chimique : on mesure ainsi la température, la densité et la vitesse du gaz autour des étoiles et des trous noirs.",
         summary:"Un ensemble de réseaux de transmission en or, inséré juste derrière les miroirs. Deux familles de réseaux (HEG et MEG) dispersent la lumière dans deux directions écartées de 10° ; le spectre est lu par ACIS-S.",
@@ -1121,7 +1121,7 @@ var INST_DATA = (function(){
         products:[ ["pha2","spectres par ordre de diffraction, extraits de l'evt2"] ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
 
-      { id:"letg", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
+      { id:"letg", type:"spectro", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
         bands:[ {l:"LETG + HRC-S",lo:0.0001701,hi:0.0177114} ],
         use:"Obtenir les spectres X les plus détaillés aux basses énergies, par exemple pour étudier l'atmosphère très chaude des étoiles ou le gaz entre les galaxies.",
         summary:"Un réseau de transmission inséré derrière les miroirs, lu par HRC-S ou par ACIS-S. C'est l'instrument de Chandra qui a la plus haute résolution aux basses énergies.",
@@ -1154,7 +1154,7 @@ var INST_DATA = (function(){
       { label:"astroquery.gaia", url:"https://astroquery.readthedocs.io/en/latest/gaia/gaia.html", desc:"Accès Python à l'archive." }
     ],
     instruments: [
-      { id:"astro", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
+      { id:"astro", type:"astrometry", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
         bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
         use:"Mesurer la position des étoiles avec une précision extrême, de nombreuses fois en plusieurs années. On en tire leur distance, par la parallaxe, et leur mouvement dans la Galaxie.",
 
@@ -1199,7 +1199,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
 
-      { id:"bprp", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
+      { id:"bprp", type:"spectro", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
         bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
         use:"Mesurer la couleur de chaque étoile observée à partir d'un spectre très grossier. On en déduit sa température et la quantité de poussière qui l'atténue.",
 
@@ -1231,7 +1231,7 @@ var INST_DATA = (function(){
         notes:["La différence BP − RP est un indice de couleur : plus elle est grande, plus l'étoile est rouge (Proxima : 3,8)."],
         docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
 
-      { id:"rvs", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
+      { id:"rvs", type:"spectro", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
         bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
         use:"Mesurer à quelle vitesse les étoiles s'approchent ou s'éloignent de nous. Ajoutée à leur déplacement sur le ciel, cette vitesse donne leur mouvement complet dans l'espace.",
 

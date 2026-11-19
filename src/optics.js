@@ -410,13 +410,15 @@ var Optics = (function(){
   }
 
   /* tous les plans focaux à la même échelle, pour la page « Comparer » */
-  function compareFocal(OBS, NAMES){
+  function compareFocal(OBS, NAMES, LIST){
     var W = 1000, k = 0.8, gap = 40, rows = [[], [], []], s = '';
-    /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js */
-    TELESCOPES.filter(function(t){ return FP[t.id] && t.compare.fp; }).sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
+    /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js ; seuls les observatoires comparés */
+    var sel = TELESCOPES.filter(function(t){ return FP[t.id] && t.compare.fp && (!LIST || LIST.indexOf(t.id) >= 0); });
+    if (!sel.length) return '';
+    sel.sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
       .forEach(function(T){ var r = rows[T.compare.fp[0]] || (rows[T.compare.fp[0]] = []); FP[T.id].groups.forEach(function(g){ r.push({ t:T.id, g:g }); }); });
     var y = 10;
-    rows.forEach(function(r){
+    rows.filter(function(r){ return r.length; }).forEach(function(r){
       var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
       var x = Math.max(8, (W - tw)/2);
       r.forEach(function(o){
@@ -430,7 +432,7 @@ var Optics = (function(){
     });
     s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
     return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des observatoires à la même échelle') +
-      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 34 × 30 cm ; celui du WFI de Roman, environ 27 × 17 cm ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs pour Gaia et Webb ; un seul module de NIRCam est dessiné.</div></div>';
+      '<div class="cap">Taille réelle des mosaïques de détecteurs, à la même échelle. Espaces entre détecteurs indicatifs pour Gaia, Webb, Kepler et XMM-Newton ; un seul module de NIRCam est dessiné.</div></div>';
   }
 
   function render(tid, name, part){

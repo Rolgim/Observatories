@@ -15,7 +15,7 @@
 ================================================================= */
 var TELESCOPES = [
   {
-    id:'hubble', domain:'uv', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
+    id:'hubble', mission:['general'], domain:'uv', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
     agency:'NASA / ESA', launch:'Lancé le 24 avril 1990, navette Discovery (STS-31)',
     sub:'Orbite basse terrestre, ultraviolet, visible, proche infrarouge',
     src:'Maquette : NASA VTAD, via Gaia Sky',
@@ -87,7 +87,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'chandra', domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
+    id:'chandra', mission:['general'], domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
     agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
     sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -152,7 +152,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'xmm', domain:'x', name:'XMM-Newton', short:'XMM-Newton', year:'1999',
+    id:'xmm', mission:['general'], domain:'x', name:'XMM-Newton', short:'XMM-Newton', year:'1999',
     agency:'ESA', launch:'Lancé le 10 décembre 1999, Ariane 5, Kourou',
     sub:'Orbite terrestre très elliptique de 48 heures, rayons X (depuis 1999)',
     src:'Maquette : ESA, service SPICE (pour Cosmographia)',
@@ -210,7 +210,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'spitzer', domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
+    id:'spitzer', mission:['general'], domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
     agency:'NASA (JPL, Caltech)', launch:'Lancé le 25 août 2003, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, infrarouge (2003–2020)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -273,7 +273,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'fermi', domain:'gamma', name:'Fermi Gamma-ray Space Telescope', short:'Fermi', year:'2008',
+    id:'fermi', mission:['survey','transient'], domain:'gamma', name:'Fermi Gamma-ray Space Telescope', short:'Fermi', year:'2008',
     agency:'NASA et département de l\'Énergie des États-Unis, avec la France, l\'Allemagne, l\'Italie, le Japon et la Suède', launch:'Lancé le 11 juin 2008, Delta II, Cap Canaveral',
     sub:'Orbite basse, rayons gamma (depuis 2008)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -326,7 +326,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
+    id:'gaia', mission:['survey'], domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
     src:'Maquette : Toni Sagristà, Gaia Sky',
@@ -392,7 +392,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'kepler', domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
+    id:'kepler', mission:['transit'], domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
     agency:'NASA (Ames, JPL), construit par Ball Aerospace', launch:'Lancé le 7 mars 2009, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, recherche d\'exoplanètes (2009–2018)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -445,7 +445,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'tess', domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
+    id:'tess', mission:['transit'], domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
     agency:'NASA, mission dirigée par le MIT', launch:'Lancé le 18 avril 2018, Falcon 9, Cap Canaveral',
     sub:'Orbite très elliptique en résonance avec la Lune, recherche d\'exoplanètes (depuis 2018)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -502,7 +502,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'jwst', domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
+    id:'jwst', mission:['general'], domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -578,7 +578,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'euclid', domain:'ir', name:'Euclid', short:'Euclid', year:'2023',
+    id:'euclid', mission:['survey'], domain:'ir', name:'Euclid', short:'Euclid', year:'2023',
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
     sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
@@ -643,7 +643,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'roman', domain:'ir', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
+    id:'roman', mission:['survey'], domain:'ir', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
     agency:'NASA (avec l\'ESA, la JAXA et le CNES)', launch:'Lancé le 30 août 2026, Falcon Heavy, Kennedy',
     sub:'Point de Lagrange L2, proche infrarouge grand champ',
     src:'Maquette : NASA 3D Resources (conception de 2015)',
@@ -729,16 +729,84 @@ function teleGroups(){
   if (rest.length) g.push({ label:'', short:'', list:rest });
   return g;
 }
+/* classifications contrôlées pour « Comparer » et la future page Flotte (spécifications, priorité 2).
+   Famille d'orbite : champ orbit du registre. Type de mission : champ mission (une ou deux valeurs).
+   Type d'instrument : champ type de chaque instrument (data-inst.js). Libellés traduits par OBS_T. */
+var ORBIT_FAMILIES = [
+  { id:'leo', label:'Orbite basse', def:'autour de la Terre, à quelques centaines de kilomètres' },
+  { id:'heo', label:'Orbite terrestre très elliptique', def:'autour de la Terre, jusqu\'à des centaines de milliers de kilomètres' },
+  { id:'l2', label:'Autour de L2', def:'autour du point de Lagrange L2, à 1,5 million de kilomètres' },
+  { id:'helio', label:'Autour du Soleil', def:'sur une orbite solaire, dans le sillage de la Terre' }
+];
+var MISSION_TYPES = [
+  { id:'general', label:'Observatoire généraliste', def:'temps d\'observation ouvert à tous par appel à propositions' },
+  { id:'survey', label:'Relevé du ciel', def:'cartographie systématique d\'une grande partie du ciel' },
+  { id:'transit', label:'Exoplanètes par transits', def:'suivi de l\'éclat des étoiles pour y voir passer des planètes' },
+  { id:'transient', label:'Sursauts et ciel variable', def:'détection rapide des phénomènes brefs' }
+];
+/* couleurs choisies pour rester distinctes en clair et en sombre, et doublées d'un pictogramme (forme) */
+var INST_TYPES = [
+  { id:'imager', label:'Imageur', color:'#2F6FDB' },
+  { id:'specimager', label:'Imageur et spectrographe', color:'#0F987A' },
+  { id:'spectro', label:'Spectrographe', color:'#C2367A' },
+  { id:'photometer', label:'Photomètre', color:'#DB7A14' },
+  { id:'astrometry', label:'Astrométrie', color:'#7A4FB5' },
+  { id:'coronagraph', label:'Coronographe', color:'#5B6770' },
+  { id:'guider', label:'Guidage', color:'#8C8C3A' },
+  { id:'burst', label:'Détecteur de sursauts', color:'#B8461E' },
+  { id:'polarimeter', label:'Polarimètre', color:'#1E8FB8' }
+];
+function instType(id){ return INST_TYPES.filter(function(x){ return x.id === id; })[0] || INST_TYPES[0]; }
+/* pictogramme d'un type d'instrument, en SVG (taille en px) */
+function typeIcon(id, sz){
+  var t = instType(id), c = t.color, z = sz || 14, T = window.OBS_T || function(x){ return x; }, g;
+  switch (id){
+    case 'imager': g = '<rect x="2.5" y="2.5" width="11" height="11" fill="'+c+'"/>'; break;
+    case 'specimager': g = '<rect x="2.5" y="2.5" width="7" height="11" fill="'+c+'"/><path d="M11 3v10M13.5 3v10" stroke="'+c+'" stroke-width="1.6"/>'; break;
+    case 'spectro': g = '<path d="M3 3v10M6 3v10M9 3v10M12 3v10" stroke="'+c+'" stroke-width="1.8"/>'; break;
+    case 'photometer': g = '<path d="M1.5 6h4l1.5 4h2l1.5-4h4" fill="none" stroke="'+c+'" stroke-width="2"/>'; break;
+    case 'astrometry': g = '<circle cx="8" cy="8" r="5" fill="none" stroke="'+c+'" stroke-width="1.8"/><path d="M8 1v14M1 8h14" stroke="'+c+'" stroke-width="1.4"/>'; break;
+    case 'coronagraph': g = '<circle cx="8" cy="8" r="6" fill="none" stroke="'+c+'" stroke-width="1.6"/><circle cx="8" cy="8" r="3" fill="'+c+'"/>'; break;
+    case 'guider': g = '<path d="M8 1.5l6.5 6.5L8 14.5 1.5 8z" fill="none" stroke="'+c+'" stroke-width="1.8"/><circle cx="8" cy="8" r="1.6" fill="'+c+'"/>'; break;
+    case 'burst': g = '<path d="M8 1l1.6 4.6L14 4l-2.6 4L14 12l-4.4-1.6L8 15l-1.6-4.6L2 12l2.6-4L2 4l4.4 1.6z" fill="'+c+'"/>'; break;
+    default: g = '<path d="M2 14L14 2M2 8l6-6M8 14l6-6" stroke="'+c+'" stroke-width="1.8"/>';
+  }
+  return '<svg class="ticon" width="'+z+'" height="'+z+'" viewBox="0 0 16 16" role="img" aria-label="'+T(t.label)+'"><title>'+T(t.label)+'</title>'+g+'</svg>';
+}
+/* état de la comparaison, partagé par la vue 3D et la page des instruments : critère (by), groupe (g), type d'instrument filtré */
+window.OBS_CMP = window.OBS_CMP || { by:'orbit', g:'l2', type:null };
+function cmpGroups(by){
+  var T = window.OBS_T || function(x){ return x; };
+  var src = by === 'mission' ? MISSION_TYPES : by === 'domain' ? DOMAINS : ORBIT_FAMILIES;
+  return src.map(function(d){ return { id:d.id, label:T(d.label), def:d.def ? T(d.def) : '', list:TELESCOPES.filter(function(t){ return by === 'mission' ? (t.mission || []).indexOf(d.id) >= 0 : by === 'domain' ? t.domain === d.id : t.orbit === d.id; }) }; })
+    .filter(function(x){ return x.list.length; });
+}
+/* observatoires de la comparaison en cours, dans l'ordre chronologique ; « all » = tous (mélange signalé) */
+function cmpList(){
+  var c = window.OBS_CMP, l = c.g === 'all' ? TELESCOPES.slice() : ((cmpGroups(c.by).filter(function(x){ return x.id === c.g; })[0] || cmpGroups(c.by)[0]).list).slice();
+  return l.sort(function(a, b){ return a.compare.order - b.compare.order; });
+}
+/* sélecteur de comparaison (boutons data-cmpby et data-cmpg) */
+function cmpSelector(){
+  var T = window.OBS_T || function(x){ return x; }, c = window.OBS_CMP, gs = cmpGroups(c.by);
+  if (c.g !== 'all' && !gs.some(function(x){ return x.id === c.g; })) c.g = gs[0].id;
+  var cur = gs.filter(function(x){ return x.id === c.g; })[0];
+  return '<div class="cmpsel"><div class="cmpsel-by" role="group" aria-label="' + T('Comparer par') + '"><span>' + T('Comparer par') + '</span>' +
+    [['orbit','famille d\'orbite'],['mission','type de mission'],['domain','domaine spectral']].map(function(b){ return '<button class="chip" data-cmpby="' + b[0] + '" aria-pressed="' + (c.by === b[0]) + '">' + T(b[1]) + '</button>'; }).join('') + '</div>' +
+    '<div class="cmpsel-g" role="group" aria-label="' + T('Groupe') + '">' + gs.map(function(x){ return '<button class="chip" data-cmpg="' + x.id + '" aria-pressed="' + (c.g === x.id) + '">' + x.label + ' <small>' + x.list.length + '</small></button>'; }).join('') +
+    '<button class="chip mix" data-cmpg="all" aria-pressed="' + (c.g === 'all') + '">' + T('Tous') + ' <small>' + TELESCOPES.length + '</small></button></div>' +
+    '<p class="cmpsel-def">' + (c.g === 'all' ? T('Tous les observatoires : les familles sont mélangées, les écarts de taille et d\'orbite peuvent écraser les figures.') : (cur && cur.def ? cur.def.charAt(0).toUpperCase() + cur.def.slice(1) + '.' : '')) + '</p></div>';
+}
 /* navigation en deux rangées : les domaines spectraux (boutons qui filtrent), puis les observatoires du domaine choisi.
    OBS_DOM garde le domaine affiché ; par défaut, celui de l'observatoire ouvert. */
 window.OBS_DOM = window.OBS_DOM || null;
 function domainOf(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0]; return t ? t.domain : null; }
 function domRow(cur){
-  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id, curDom = domainOf(cur);
+  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || null, curDom = domainOf(cur);
   return '<div class="drow" role="group" aria-label="' + T('Domaine spectral') + '">' + DOMAINS.filter(function(x){ return TELESCOPES.some(function(t){ return t.domain === x.id; }); }).map(function(x){
     var n = TELESCOPES.filter(function(t){ return t.domain === x.id; }).length;
     return '<button class="dsel' + (x.id === curDom ? ' cur' : '') + '" data-dom="' + x.id + '" aria-pressed="' + (x.id === d) + '" title="' + T(x.label) + ' : ' + n + '">' +
            '<span class="dl">' + T(x.label) + '</span><span class="ds">' + T(x.short) + '</span><span class="dn">' + n + '</span></button>';
   }).join('') + '</div>';
 }
-function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id; return TELESCOPES.filter(function(t){ return t.domain === d; }); }
+function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || null; return d ? TELESCOPES.filter(function(t){ return t.domain === d; }) : []; }

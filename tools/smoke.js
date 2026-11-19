@@ -72,8 +72,19 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     const picked2 = await pg.evaluate(() => { const o = window.__obs, seen = {}; for (let y = 110; y < 770; y += 22) for (let x = 30; x < 950; x += 22){ const h = o.pick(x, y); if (h) seen[h.part] = 1; } return Object.keys(seen).length; });
     notes.push(t + ' : ' + r.parts + ' pièces, ' + r.picked + ' atteignables assemblé, ' + picked2 + ' éclaté');
   }
-  await go(pg, 'comparer'); await loaded(pg); await pg.waitForTimeout(800);
-  if (await pg.evaluate(() => document.querySelectorAll('.cmp-label').length) !== TELE_IDS.length) fail('comparaison : il manque des étiquettes');
+  // ---- comparaison (priorité 2) : chaque groupe affiche ses observatoires ; classifications complètes
+  for (const e of await pg.evaluate(() => { const out = []; TELESCOPES.forEach(t => { if (!t.mission || !t.mission.length) out.push(t.id + ' : type de mission'); if (!ORBIT_FAMILIES.some(f => f.id === t.orbit)) out.push(t.id + ' : famille d\'orbite'); INST_DATA[t.id].instruments.forEach(it => { if (!INST_TYPES.some(x => x.id === it.type)) out.push(t.id + '/' + it.id + ' : type d\'instrument'); }); }); return out; })) fail('classification manquante, ' + e);
+  for (const g of ['l2', 'leo', 'heo', 'helio', 'all']){
+    await pg.evaluate(gg => { OBS_CMP.by = 'orbit'; OBS_CMP.g = gg; OBS_CMP.type = null; }, g);
+    await go(pg, 'accueil'); await go(pg, 'comparer'); await loaded(pg); await pg.waitForTimeout(800);
+    const [n, want] = await pg.evaluate(() => [document.querySelectorAll('.cmp-label').length, cmpList().length]);
+    if (n !== want) fail('comparaison ' + g + ' : ' + n + ' étiquettes pour ' + want + ' observatoires');
+    await go(pg, 'comparer-instruments'); await pg.waitForTimeout(900);
+    const st = await pg.evaluate(() => ({ rows: document.querySelectorAll('.ctable tr[data-jump]').length, icons: document.querySelectorAll('.ctable .ticon').length, bad: document.getElementById('inst-main').innerHTML.match(/undefined|NaN|\[object/g) }));
+    if (!st.rows || st.icons !== st.rows) fail('comparaison des instruments ' + g + ' : ' + st.rows + ' lignes, ' + st.icons + ' pictogrammes');
+    if (st.bad) fail('comparaison des instruments ' + g + ' : texte suspect ' + st.bad.slice(0, 3).join(', '));
+  }
+  await pg.evaluate(() => { OBS_CMP.by = 'orbit'; OBS_CMP.g = 'all'; OBS_CMP.type = null; });
 
   // ---- pages d'instruments, trajet de la lumière, orbites
   for (const t of TELES){

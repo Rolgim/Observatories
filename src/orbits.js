@@ -396,8 +396,62 @@ var Orbits = (function(){
   }
   /* ---------- comparaison des trois orbites autour de L2 ---------- */
   /* observatoires autour de L2 : registre de data-tele.js */
-  var L2IDS = TELESCOPES.filter(function(t){ return t.orbit === 'l2'; }).map(function(t){ return t.id; });
-  function renderCompare(OBS, NAMES){
+  var L2IDS = [];
+  /* une figure par famille d'orbite présente dans la comparaison (spécifications, priorité 2) */
+  function renderCompare(OBS, NAMES, LIST){
+    LIST = LIST || TELESCOPES.map(function(t){ return t.id; });
+    var tl = TELESCOPES.filter(function(t){ return LIST.indexOf(t.id) >= 0; });
+    L2IDS = tl.filter(function(t){ return t.orbit === 'l2'; }).map(function(t){ return t.id; });
+    var earth = tl.filter(function(t){ return t.orbit === 'leo' || t.orbit === 'heo'; }), helio = tl.filter(function(t){ return t.orbit === 'helio'; }), s = '';
+    if (earth.length) s += earthCompare(earth, OBS, NAMES);
+    if (L2IDS.length) s += l2Compare(OBS, NAMES);
+    if (helio.length) s += '<div class="isec"><h4>Orbites autour du Soleil, à la même échelle</h4><ul class="orb-key">' + helio.map(function(t){ return '<li><i style="background:'+OBS[t.id]+'"></i>'+NAMES[t.id]+'</li>'; }).join('') + '</ul>' +
+      '<div data-orb-helio="' + helio.map(function(t){ return t.id; }).join(',') + '"><div class="cap">Chargement des trajectoires…</div></div>' +
+      '<div class="cap">Trajectoires réelles sur toute la mission (JPL Horizons), dans le repère qui tourne avec la Terre : la Terre reste fixe à droite, et chaque courbe montre comment l\'observatoire prend du retard sur elle, année après année.</div></div>';
+    return s;
+  }
+  /* orbites terrestres basses et très elliptiques, à l'échelle, avec la Terre et l'orbite de la Lune ; valeurs du registre (sourcées sur chaque fiche) */
+  function earthCompare(list, OBS, NAMES){
+    var W = 560, H = 380, ra = 6371, maxR = 6371, i;
+    list.forEach(function(t){ if (t.orbit === 'heo' && t.heo) maxR = Math.max(maxR, t.heo.ra); if (t.orbit === 'leo' && t.leo) maxR = Math.max(maxR, ra + t.leo.alt); });
+    var moon = maxR > 200000, R = moon ? 384400 : maxR, k = (Math.min(W, H*1.6)/2 - 24)/R, cx = W/2 + (moon ? 40 : 0), cy = H/2, s = '';
+    if (moon) s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+(384400*k)+'" fill="none" stroke="var(--rule-2)" stroke-dasharray="3 4"/><text class="cov-tick" x="'+(cx + 384400*k*0.71)+'" y="'+(cy - 384400*k*0.71 - 4)+'">orbite de la Lune</text>';
+    s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+Math.max(2.5, ra*k)+'" fill="#2C5E9E"/>';
+    var lab = [];
+    list.forEach(function(t, n){
+      if (t.orbit === 'heo' && t.heo){
+        var a = (t.heo.rp + t.heo.ra)/2, e = (t.heo.ra - t.heo.rp)/(t.heo.ra + t.heo.rp), b = a*Math.sqrt(1 - e*e), c = a*e, rot = [-25, 20, 60, -60, 100][n % 5];
+        s += '<g transform="rotate('+rot+' '+cx+' '+cy+')"><ellipse cx="'+(cx - c*k)+'" cy="'+cy+'" rx="'+(a*k)+'" ry="'+(b*k)+'" fill="none" stroke="'+OBS[t.id]+'" stroke-width="2"/></g>';
+        lab.push([t.id, t.heo.apo + ' · ' + t.heo.per]);
+      } else if (t.leo){
+        s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+Math.max(4, (ra + t.leo.alt)*k)+'" fill="none" stroke="'+OBS[t.id]+'" stroke-width="2"/>';
+        lab.push([t.id, '≈ ' + t.leo.alt + ' km · ' + t.leo.per + ' min']);
+      }
+    });
+    var bar = moon ? 100000 : 1000, bl = bar*k;
+    s += '<line x1="14" y1="'+(H-14)+'" x2="'+(14+bl)+'" y2="'+(H-14)+'" stroke="var(--ink)" stroke-width="2"/><text class="cov-tick" x="'+(20+bl)+'" y="'+(H-10)+'">'+(moon ? '100 000 km' : '1 000 km')+'</text>';
+    var leo = list.some(function(t){ return t.orbit === 'leo'; });
+    return '<div class="isec"><h4>Orbites autour de la Terre, à la même échelle</h4><ul class="orb-key">' + lab.map(function(l){ return '<li><i style="background:'+OBS[l[0]]+'"></i>'+NAMES[l[0]]+' <small>'+l[1]+'</small></li>'; }).join('') + '</ul>' +
+      '<div class="svgwrap orb-fam"><svg class="optic" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Orbites terrestres à la même échelle">'+s+'</svg></div>' +
+      '<div class="cap">Terre, orbites et orbite de la Lune à la même échelle, vues de dessus ; altitudes et périodes des fiches de chaque observatoire. Les orbites très elliptiques sont dessinées avec leur forme, leur orientation est arbitraire.' + (leo && moon ? ' À cette échelle, une orbite basse se confond presque avec la Terre.' : '') + '</div></div>';
+  }
+  /* trajectoires héliocentriques réelles (orbits.json), dessinées une fois chargées */
+  function drawHelioCompare(root, OBS){
+    var el = root.querySelector('[data-orb-helio]'); if (!el) return;
+    var ids = el.getAttribute('data-orb-helio').split(',');
+    load().then(function(j){
+      if (!j || !j.bodies){ el.innerHTML = '<div class="cap">Les trajectoires n\'ont pas pu être chargées.</div>'; return; }
+      var W = 560, H = 380, k = (H/2 - 20)/1.25, cx = W/2 - 20, cy = H/2, s = '';
+      s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+k+'" fill="none" stroke="var(--rule-2)" stroke-dasharray="3 4"/><circle cx="'+cx+'" cy="'+cy+'" r="7" fill="#E8B21A"/><text class="cov-tick" x="'+cx+'" y="'+(cy+22)+'" text-anchor="middle">Soleil</text>';
+      s += '<circle cx="'+(cx + k)+'" cy="'+cy+'" r="5" fill="#2C5E9E"/><text class="cov-tick" x="'+(cx + k + 8)+'" y="'+(cy - 8)+'">Terre</text>';
+      ids.forEach(function(id){ var b = j.bodies[id]; if (!b) return; var d = '';
+        for (var p=0;p<b.x.length;p++) d += (p ? 'L' : 'M') + (cx + b.x[p]*k).toFixed(1) + ' ' + (cy - b.y[p]*k).toFixed(1);
+        s += '<path d="'+d+'" fill="none" stroke="'+OBS[id]+'" stroke-width="1.8"/>'; });
+      s += '<line x1="14" y1="'+(H-14)+'" x2="'+(14 + 0.5*k)+'" y2="'+(H-14)+'" stroke="var(--ink)" stroke-width="2"/><text class="cov-tick" x="'+(20 + 0.5*k)+'" y="'+(H-10)+'">0,5 UA</text>';
+      el.innerHTML = '<div class="svgwrap orb-fam"><svg class="optic" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Trajectoires autour du Soleil">'+s+'</svg></div>';
+    });
+  }
+  function l2Compare(OBS, NAMES){
     var key = '<ul class="orb-key">' + L2IDS.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     return '<div class="isec"><h4>Orbites autour de L2, à la même échelle</h4>' + key + '<div class="cmp-figs"><div><h5>Vu depuis la Terre</h5>'+cv('cfront', 560, 430, 'Les trois orbites vues depuis la Terre')+'</div><div><h5>Vu de dessus</h5>'+cv('ctop', 560, 400, 'Les trois orbites vues de dessus')+'</div></div>' +
       '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read>Chargement des trajectoires…</span></div>' +
@@ -405,6 +459,7 @@ var Orbits = (function(){
       '<div data-orb-cmpstats></div></div>';
   }
   function startCompare(root, OBS, NAMES){
+    drawHelioCompare(root, OBS);
     var my = ++run, playing = true, last = performance.now(), jd = 0, cf = root.querySelector('[data-orb="cfront"]'), ct = root.querySelector('[data-orb="ctop"]'), read = root.querySelector('[data-orb-read]'), play = root.querySelector('[data-orb-play]');
     if (!cf) return;
     if (play) play.onclick = function(){ playing = !playing; play.textContent = playing ? 'Pause' : 'Lecture'; };

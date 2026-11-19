@@ -166,3 +166,22 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .sky-ins .chip i{ display:inline-block; width:9px; height:9px; margin-right:6px; vertical-align:0; }
 .sky-ins .chip.on{ background:var(--mark); color:var(--on-mark); border-color:var(--mark); }
 .sky-more{ font-size:12px; color:var(--mute); }
+
+/* ===== Comparer : sélecteur de groupe et types d'instrument (spécifications, priorité 2) ===== */
+.chip[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
+.chip small{ font-weight:400; opacity:.75; margin-left:2px; }
+.chip .ticon{ vertical-align:-2px; }
+.cmpsel{ display:flex; flex-direction:column; gap:6px; margin:4px 0 6px; }
+.cmpsel-by, .cmpsel-g{ display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+.cmpsel-by > span{ font-size:12px; color:var(--mute); margin-right:4px; }
+.cmpsel-g .chip{ font-size:13px; padding:4px 9px; }
+.cmpsel-g .chip.mix{ border-style:dashed; }
+.cmpsel-def{ font-size:12.5px; color:var(--mute); margin:0; }
+.tkey{ display:flex; flex-wrap:wrap; gap:4px; }
+.ticon{ display:inline-block; flex:none; }
+.ctable td.ty{ white-space:nowrap; font-weight:600; }
+.ctable td.ty .ticon{ vertical-align:-2px; margin-right:3px; }
+.ctable td.ty small{ display:block; font-weight:400; color:var(--mute); white-space:normal; max-width:22ch; }
+.fov-leg .ticon{ vertical-align:-1px; }
+.orb-key small{ font-weight:400; color:var(--mute); margin-left:4px; }
+.orb-fam{ max-width:580px; }

@@ -187,16 +187,17 @@ function renderPanel(){
   if (S.mode === 'compare'){
     pt.innerHTML = '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" aria-selected="true">À la même échelle</button></div>';
     var maxM = 6.5, maxK = 11110;
-    h = '<h2>Tous les observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
+    var CL = cmpList();
+    h = '<h2>À la même échelle</h2>' + cmpSelector() + '<p class="desc">Les maquettes du groupe choisi sont posées côte à côte à leur taille réelle, à côté d\'une silhouette humaine de 1,75 m.</p>' +
         '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau de tous les instruments sur les mêmes axes.</small></button>' +
         '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
-        TELESCOPES.map(function(x){
+        CL.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
             '<td>' + (x.cmp.mirror == null ? '<span class="na">sans miroir</span>' : '<div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m' + (x.cmp.lens ? ' <small>lentilles</small>' : '') + '</div>') + '</td>' +
             '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + (x.cmp.approx ? '≈ ' : '') + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
-        TELESCOPES.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
+        CL.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
         '<p class="source-note">Pour Gaia, la valeur de miroir est le grand côté de ses deux miroirs rectangulaires (1,45 × 0,50 m). Cliquer une maquette ou une ligne ouvre sa fiche.</p>';
     pb.innerHTML = h; pb.scrollTop = 0; return;
   }
@@ -229,7 +230,8 @@ function renderPanel(){
 
 function renderHud(){
   var t = tele(S.id);
-  if (S.mode === 'compare'){ $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = 'Tous les observatoires côte à côte, en taille réelle'; $('t-src').textContent = ''; }
+  if (S.mode === 'compare'){ var cg = OBS_CMP.g === 'all' ? null : cmpGroups(OBS_CMP.by).filter(function(x){ return x.id === OBS_CMP.g; })[0];
+    $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = cg ? cg.label + (OBS_LANG === 'en' ? ': ' : ' : ') + cg.list.map(function(t){ return t.short; }).join(', ') : 'Tous les observatoires côte à côte, en taille réelle'; $('t-src').textContent = ''; }
   else { $('t-name').textContent = t.name; $('t-sub').textContent = t.sub; $('t-src').textContent = t.src; }
 }
 
@@ -257,7 +259,7 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
@@ -274,16 +276,25 @@ $('inst-page').addEventListener('click', function(e){
     var fs = $('fsec'); if (fs) fs.innerHTML = InstrumentsUI.filterPanel(S.id, S.instSel, S.filterIdx);
     return;
   }
+  if (cmpClick(el)){ renderInst(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); $('inst-pills').innerHTML = InstrumentsUI.pills(S.mode === 'compare' ? 'comparer' : S.id); edgeScroll($('inst-pills').querySelector('.trow')); var fp = $('inst-pills').querySelector('.trow .pill'); if (fp) fp.focus(); return; }
   if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
+/* sélecteur de comparaison (critère, groupe, type d'instrument) : état partagé OBS_CMP (data-tele.js) */
+function cmpClick(el){
+  if (el.hasAttribute('data-cmpby')){ var b = el.getAttribute('data-cmpby'); if (OBS_CMP.by !== b){ OBS_CMP.by = b; OBS_CMP.g = cmpGroups(b)[0].id; } return true; }
+  if (el.hasAttribute('data-cmpg')){ OBS_CMP.g = el.getAttribute('data-cmpg'); return true; }
+  if (el.hasAttribute('data-itype')){ OBS_CMP.type = el.getAttribute('data-itype') || null; return true; }
+  return false;
+}
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-cmpby],[data-cmpg],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
+  if (cmpClick(el)){ renderPanel(); renderHud(); if (S.mode === 'compare') show3D(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
@@ -789,7 +800,8 @@ scene.add(cmp.group);
 function resetRoot(M){ M.root.position.set(0,0,0); M.root.rotation.set(0,0,0); M.root.updateMatrixWorld(true); setExplode(M, 0); }
 
 function layoutCompare(){
-  var order = TELESCOPES.filter(function(t){ return models[t.id]; }).sort(function(a, b){ return a.compare.order - b.compare.order; }).map(function(t){ return t.id; }), gap = 3.4, portrait = camera.aspect < 0.95;
+  var order = cmpList().filter(function(t){ return models[t.id]; }).map(function(t){ return t.id; }), gap = 3.4, portrait = camera.aspect < 0.95;
+  cmp.items.forEach(function(it){ if (order.indexOf(it.M.t.id) < 0 && it.M.root.parent === cmp.group) cmp.group.remove(it.M.root); });
   cmp.items = order.map(function(id){
     var M = models[id]; resetRoot(M);
     M.meshes.forEach(function(o){ var m = o.material; if (m.userData.c0) m.color.copy(m.userData.c0); if (m.userData.em0){ m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; } });
@@ -854,12 +866,12 @@ show3D = function(changed){
   $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
   $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode));
   if (cmpMode){
-    var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
-    var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
+    var CLT = cmpList(), done = 0, total = CLT.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
+    var need = CLT.filter(function(t){ return !models[t.id]; });
     if (need.length) loaderUI('load', 'Chargement des maquettes', 0, total);
-    Promise.all(TELESCOPES.map(function(t){
+    Promise.all(CLT.map(function(t){
       return loadModel(t, function(a){ got[t.id] = a; }).then(function(M){ got[t.id] = t.bytes; return M; });
-    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; TELESCOPES.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des maquettes', s, total); if (TELESCOPES.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
+    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; CLT.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des maquettes', s, total); if (CLT.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
       if (token !== loadToken) return;
       if (current){ scene.remove(current.root); current = null; }
       cmp.group.visible = true; layoutCompare(); loaderUI('off'); $('cmp-labels').hidden = false;

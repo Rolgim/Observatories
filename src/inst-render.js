@@ -291,14 +291,16 @@ var InstrumentsUI = (function(){
     return hi < 2e-5 ? ener(hi) + ' – ' + ener(lo) : wl(lo) + ' – ' + wl(hi); }   /* rayons gamma : en énergie, de la plus basse à la plus haute */
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 
-  function cmpCoverage(){
-    /* axe commun : des rayons X (Chandra) à l'infrarouge moyen, si un observatoire du registre descend sous 0,09 µm */
-    var lo = 0.09, hi = 30; ORDER.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); hi = Math.max(hi, INST_DATA[t].axis.max); });
-    var W = 1000, L = 172, R = 14, ax = new Axis(lo, hi, L, W-R), y = 40, rows = [], seps = [];
-    ORDER.forEach(function(tid){
+  /* instruments retenus par le filtre de type de la comparaison */
+  function keepInst(it){ var ty = window.OBS_CMP && OBS_CMP.type; return !ty || it.type === ty; }
+  function cmpCoverage(LIST){
+    /* axe commun ajusté aux observatoires comparés ; barres colorées selon le type d'instrument (INST_TYPES) */
+    var lo = 0.09, hi = 30; LIST.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); hi = Math.max(hi, INST_DATA[t].axis.max); });
+    var W = 1000, L = 188, R = 14, ax = new Axis(lo, hi, L, W-R), y = 40, rows = [], seps = [];
+    LIST.forEach(function(tid){
       var first = true; seps.push(y);
       INST_DATA[tid].instruments.forEach(function(it){
-        if (!it.bands) return;
+        if (!it.bands || !keepInst(it)) return;
         var lanes = [], placed = it.bands.map(function(b){
           var a = ax.x(b.lo), z = ax.x(b.hi), lane = 0;
           for (;; lane++){ var clash = (lanes[lane]||[]).some(function(o){ var ov = Math.min(z,o[1]) - Math.max(a,o[0]); return ov > 0.4*Math.min(z-a, o[1]-o[0]); }); if (!clash) break; }
@@ -320,11 +322,11 @@ var InstrumentsUI = (function(){
     seps.forEach(function(v){ s += '<line class="cov-sep" x1="0" y1="'+(v-3)+'" x2="'+(W-R)+'" y2="'+(v-3)+'"/>'; });
     rows.forEach(function(r){
       s += '<g class="cov-row" data-jump="'+r.tid+':'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
-      if (r.first) s += '<text class="cov-obs" x="2" y="'+(r.y+16)+'">'+NAMES[r.tid]+'</text>';
-      s += '<text class="cov-lab" x="80" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
+      if (r.first) s += '<rect x="0" y="'+(r.y+4)+'" width="4" height="13" fill="'+OBS[r.tid]+'"/><text class="cov-obs" x="8" y="'+(r.y+16)+'">'+NAMES[r.tid]+'</text>';
+      s += '<g transform="translate(78 '+(r.y + r.h/2 - 7)+')">'+typeIcon(r.it.type, 14)+'</g><text class="cov-lab" x="96" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
       r.placed.forEach(function(p){
         var yy = r.y + 4 + p.lane*16, w = Math.max(3, p.z - p.a);
-        s += '<rect x="'+p.a+'" y="'+yy+'" width="'+w+'" height="13" rx="2" fill="'+OBS[r.tid]+'"><title>'+esc(NAMES[r.tid]+' '+r.it.name+' '+p.b.l+' : '+wl(p.b.lo)+' – '+wl(p.b.hi))+'</title></rect>';
+        s += '<rect x="'+p.a+'" y="'+yy+'" width="'+w+'" height="13" rx="2" fill="'+instType(r.it.type).color+'"><title>'+esc(NAMES[r.tid]+' '+r.it.name+' '+p.b.l+' : '+wl(p.b.lo)+' – '+wl(p.b.hi))+'</title></rect>';
         if (w > p.b.l.length*6.4 + 8) s += '<text class="cov-band" x="'+(p.a + w/2)+'" y="'+(yy+10)+'" text-anchor="middle">'+esc(p.b.l)+'</text>';
       });
       s += '</g>';
@@ -334,7 +336,8 @@ var InstrumentsUI = (function(){
 
   function cmpFov(tids, legendMin){
     var items = [];
-    tids.forEach(function(tid){ INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ items.push({ tid:tid, it:it, f:f }); }); }); });
+    tids.forEach(function(tid){ INST_DATA[tid].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ items.push({ tid:tid, it:it, f:f }); }); }); });
+    if (!items.length) return '<p class="cap">Aucun champ de vue pour cette sélection.</p>';
     var ext = 0; items.forEach(function(o){ ext = Math.max(ext, Math.abs(o.f.dx||0)*2 + o.f.w, o.f.h); });
     var moon = ext > 1200, S = 300, pad = 22, k = (S - 2*pad)/ext, c = S/2;
     var s = '<svg class="fov-svg" viewBox="0 0 '+S+' '+(S+18)+'" role="img" aria-label="Champs de vue à la même échelle"><rect x="0.5" y="0.5" width="'+(S-1)+'" height="'+(S-1)+'" fill="#F7F8F8" stroke="#98A1A7"/>';
@@ -348,26 +351,44 @@ var InstrumentsUI = (function(){
     for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
     s += '<line class="fov-bar" x1="'+pad+'" y1="'+(S-12)+'" x2="'+(pad+bar*k)+'" y2="'+(S-12)+'"/><text class="fov-barlab" x="'+(pad+bar*k+6)+'" y="'+(S-8)+'">'+ang(bar)+'</text></svg>';
     var seen = {}, leg = '<ul class="fov-leg">' + items.filter(function(o){ var key = o.tid+o.it.id+o.f.w+'x'+o.f.h; if (seen[key] || Math.max(o.f.w, o.f.h) < legendMin) return false; return (seen[key] = true); }).map(function(o){
-      return '<li data-jump="'+o.tid+':'+o.it.id+'"><i style="background:'+OBS[o.tid]+'"></i>'+esc(NAMES[o.tid]+' '+o.it.name + (o.f.l && o.f.l!==o.it.name && !/^Module|^Champ/.test(o.f.l) ? ', '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
+      return '<li data-jump="'+o.tid+':'+o.it.id+'"><i style="background:'+OBS[o.tid]+'"></i>'+typeIcon(o.it.type, 12)+' '+esc(NAMES[o.tid]+' '+o.it.name + (o.f.l && o.f.l!==o.it.name && !/^Module|^Champ/.test(o.f.l) ? ', '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
     }).join('') + '</ul>';
     return '<div class="fov">' + s + leg + '</div>';
   }
 
   function compare(){
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<p class="inst-sum">Fermi capte les rayons gamma, des dizaines de millions à des centaines de milliards de fois plus énergétiques que la lumière visible, et Chandra les rayons X. Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen, Spitzer allait jusqu\'à l\'infrarouge lointain. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
-    var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
-    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Tous les observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
-      '<div class="cap">À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d\'Euclid. Le champ de Gaia est une valeur approchée ; celui du WFI de Roman est dessiné détecteur par détecteur.</div></div>';
+    var LIST = cmpList().map(function(t){ return t.id; }), ty = OBS_CMP.type, ninst = 0;
+    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) ninst++; }); });
+    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Ce qui est comparable, sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
+      '<div>' + cmpSelector() + '</div></div>';
+    /* types d'instrument : légende et filtre (data-itype) */
+    var used = {}; LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; }); });
+    s += '<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
+      '<button class="chip" data-itype="" aria-pressed="' + !ty + '">Tous <small>' + Object.keys(used).reduce(function(a, k){ return a + used[k]; }, 0) + '</small></button>' +
+      INST_TYPES.filter(function(x){ return used[x.id]; }).map(function(x){ return '<button class="chip" data-itype="' + x.id + '" aria-pressed="' + (ty === x.id) + '">' + typeIcon(x.id, 14) + ' ' + OBS_T(x.label) + ' <small>' + used[x.id] + '</small></button>'; }).join('') +
+      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>';
+    if (!ninst) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
+    var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
+    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage(LIST)+'</div>';
+    /* champs de vue : figure d'ensemble, puis agrandissement des champs cent fois plus petits que le plus grand */
+    var big = 0, small = [];
+    LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
+    LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
+    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
+      (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
+      '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
     var rows = '';
-    ORDER.forEach(function(tid){
-      INST_DATA[tid].instruments.forEach(function(it, i){
-        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(i===0?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(i===0?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td>'+esc(it.kind)+'</td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+    LIST.forEach(function(tid){
+      var first = true;
+      INST_DATA[tid].instruments.forEach(function(it){
+        if (!keepInst(it)) return;
+        var T = instType(it.type);
+        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+        first = false;
       });
     });
-    s += Optics.compareFocal(OBS, NAMES);
-    s += Orbits.renderCompare(OBS, NAMES);
+    s += Optics.compareFocal(OBS, NAMES, LIST, keepInst);
+    s += Orbits.renderCompare(OBS, NAMES, LIST);
     s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
@@ -380,7 +401,7 @@ var InstrumentsUI = (function(){
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
-      ORDER.map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
+      cmpList().map(function(t){ return t.id; }).map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
     return { pills:pillsFor('comparer'), nav:nav, main:compare(), sel:null };
   }
 

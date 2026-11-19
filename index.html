@@ -434,6 +434,25 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .sky-ins .chip.on{ background:var(--mark); color:var(--on-mark); border-color:var(--mark); }
 .sky-more{ font-size:12px; color:var(--mute); }
 
+/* ===== Comparer : sélecteur de groupe et types d'instrument (spécifications, priorité 2) ===== */
+.chip[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
+.chip small{ font-weight:400; opacity:.75; margin-left:2px; }
+.chip .ticon{ vertical-align:-2px; }
+.cmpsel{ display:flex; flex-direction:column; gap:6px; margin:4px 0 6px; }
+.cmpsel-by, .cmpsel-g{ display:flex; flex-wrap:wrap; gap:4px; align-items:center; }
+.cmpsel-by > span{ font-size:12px; color:var(--mute); margin-right:4px; }
+.cmpsel-g .chip{ font-size:13px; padding:4px 9px; }
+.cmpsel-g .chip.mix{ border-style:dashed; }
+.cmpsel-def{ font-size:12.5px; color:var(--mute); margin:0; }
+.tkey{ display:flex; flex-wrap:wrap; gap:4px; }
+.ticon{ display:inline-block; flex:none; }
+.ctable td.ty{ white-space:nowrap; font-weight:600; }
+.ctable td.ty .ticon{ vertical-align:-2px; margin-right:3px; }
+.ctable td.ty small{ display:block; font-weight:400; color:var(--mute); white-space:normal; max-width:22ch; }
+.fov-leg .ticon{ vertical-align:-1px; }
+.orb-key small{ font-weight:400; color:var(--mute); margin-left:4px; }
+.orb-fam{ max-width:580px; }
+
 </style>
 </head>
 <body>
@@ -561,7 +580,7 @@ function OBS_NUM(s){ return OBS_LANG === 'en' ? String(s).replace(/(\d),(\d)/g, 
 ================================================================= */
 var TELESCOPES = [
   {
-    id:'hubble', domain:'uv', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
+    id:'hubble', mission:['general'], domain:'uv', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
     agency:'NASA / ESA', launch:'Lancé le 24 avril 1990, navette Discovery (STS-31)',
     sub:'Orbite basse terrestre, ultraviolet, visible, proche infrarouge',
     src:'Maquette : NASA VTAD, via Gaia Sky',
@@ -633,7 +652,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'chandra', domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
+    id:'chandra', mission:['general'], domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
     agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
     sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -698,7 +717,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'xmm', domain:'x', name:'XMM-Newton', short:'XMM-Newton', year:'1999',
+    id:'xmm', mission:['general'], domain:'x', name:'XMM-Newton', short:'XMM-Newton', year:'1999',
     agency:'ESA', launch:'Lancé le 10 décembre 1999, Ariane 5, Kourou',
     sub:'Orbite terrestre très elliptique de 48 heures, rayons X (depuis 1999)',
     src:'Maquette : ESA, service SPICE (pour Cosmographia)',
@@ -756,7 +775,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'spitzer', domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
+    id:'spitzer', mission:['general'], domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
     agency:'NASA (JPL, Caltech)', launch:'Lancé le 25 août 2003, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, infrarouge (2003–2020)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -819,7 +838,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'fermi', domain:'gamma', name:'Fermi Gamma-ray Space Telescope', short:'Fermi', year:'2008',
+    id:'fermi', mission:['survey','transient'], domain:'gamma', name:'Fermi Gamma-ray Space Telescope', short:'Fermi', year:'2008',
     agency:'NASA et département de l\'Énergie des États-Unis, avec la France, l\'Allemagne, l\'Italie, le Japon et la Suède', launch:'Lancé le 11 juin 2008, Delta II, Cap Canaveral',
     sub:'Orbite basse, rayons gamma (depuis 2008)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -872,7 +891,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
+    id:'gaia', mission:['survey'], domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
     src:'Maquette : Toni Sagristà, Gaia Sky',
@@ -938,7 +957,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'kepler', domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
+    id:'kepler', mission:['transit'], domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
     agency:'NASA (Ames, JPL), construit par Ball Aerospace', launch:'Lancé le 7 mars 2009, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, recherche d\'exoplanètes (2009–2018)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -991,7 +1010,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'tess', domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
+    id:'tess', mission:['transit'], domain:'uv', name:'Transiting Exoplanet Survey Satellite', short:'TESS', year:'2018',
     agency:'NASA, mission dirigée par le MIT', launch:'Lancé le 18 avril 2018, Falcon 9, Cap Canaveral',
     sub:'Orbite très elliptique en résonance avec la Lune, recherche d\'exoplanètes (depuis 2018)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -1048,7 +1067,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'jwst', domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
+    id:'jwst', mission:['general'], domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -1124,7 +1143,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'euclid', domain:'ir', name:'Euclid', short:'Euclid', year:'2023',
+    id:'euclid', mission:['survey'], domain:'ir', name:'Euclid', short:'Euclid', year:'2023',
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
     sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
@@ -1189,7 +1208,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'roman', domain:'ir', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
+    id:'roman', mission:['survey'], domain:'ir', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
     agency:'NASA (avec l\'ESA, la JAXA et le CNES)', launch:'Lancé le 30 août 2026, Falcon Heavy, Kennedy',
     sub:'Point de Lagrange L2, proche infrarouge grand champ',
     src:'Maquette : NASA 3D Resources (conception de 2015)',
@@ -1275,19 +1294,87 @@ function teleGroups(){
   if (rest.length) g.push({ label:'', short:'', list:rest });
   return g;
 }
+/* classifications contrôlées pour « Comparer » et la future page Flotte (spécifications, priorité 2).
+   Famille d'orbite : champ orbit du registre. Type de mission : champ mission (une ou deux valeurs).
+   Type d'instrument : champ type de chaque instrument (data-inst.js). Libellés traduits par OBS_T. */
+var ORBIT_FAMILIES = [
+  { id:'leo', label:'Orbite basse', def:'autour de la Terre, à quelques centaines de kilomètres' },
+  { id:'heo', label:'Orbite terrestre très elliptique', def:'autour de la Terre, jusqu\'à des centaines de milliers de kilomètres' },
+  { id:'l2', label:'Autour de L2', def:'autour du point de Lagrange L2, à 1,5 million de kilomètres' },
+  { id:'helio', label:'Autour du Soleil', def:'sur une orbite solaire, dans le sillage de la Terre' }
+];
+var MISSION_TYPES = [
+  { id:'general', label:'Observatoire généraliste', def:'temps d\'observation ouvert à tous par appel à propositions' },
+  { id:'survey', label:'Relevé du ciel', def:'cartographie systématique d\'une grande partie du ciel' },
+  { id:'transit', label:'Exoplanètes par transits', def:'suivi de l\'éclat des étoiles pour y voir passer des planètes' },
+  { id:'transient', label:'Sursauts et ciel variable', def:'détection rapide des phénomènes brefs' }
+];
+/* couleurs choisies pour rester distinctes en clair et en sombre, et doublées d'un pictogramme (forme) */
+var INST_TYPES = [
+  { id:'imager', label:'Imageur', color:'#2F6FDB' },
+  { id:'specimager', label:'Imageur et spectrographe', color:'#0F987A' },
+  { id:'spectro', label:'Spectrographe', color:'#C2367A' },
+  { id:'photometer', label:'Photomètre', color:'#DB7A14' },
+  { id:'astrometry', label:'Astrométrie', color:'#7A4FB5' },
+  { id:'coronagraph', label:'Coronographe', color:'#5B6770' },
+  { id:'guider', label:'Guidage', color:'#8C8C3A' },
+  { id:'burst', label:'Détecteur de sursauts', color:'#B8461E' },
+  { id:'polarimeter', label:'Polarimètre', color:'#1E8FB8' }
+];
+function instType(id){ return INST_TYPES.filter(function(x){ return x.id === id; })[0] || INST_TYPES[0]; }
+/* pictogramme d'un type d'instrument, en SVG (taille en px) */
+function typeIcon(id, sz){
+  var t = instType(id), c = t.color, z = sz || 14, T = window.OBS_T || function(x){ return x; }, g;
+  switch (id){
+    case 'imager': g = '<rect x="2.5" y="2.5" width="11" height="11" fill="'+c+'"/>'; break;
+    case 'specimager': g = '<rect x="2.5" y="2.5" width="7" height="11" fill="'+c+'"/><path d="M11 3v10M13.5 3v10" stroke="'+c+'" stroke-width="1.6"/>'; break;
+    case 'spectro': g = '<path d="M3 3v10M6 3v10M9 3v10M12 3v10" stroke="'+c+'" stroke-width="1.8"/>'; break;
+    case 'photometer': g = '<path d="M1.5 6h4l1.5 4h2l1.5-4h4" fill="none" stroke="'+c+'" stroke-width="2"/>'; break;
+    case 'astrometry': g = '<circle cx="8" cy="8" r="5" fill="none" stroke="'+c+'" stroke-width="1.8"/><path d="M8 1v14M1 8h14" stroke="'+c+'" stroke-width="1.4"/>'; break;
+    case 'coronagraph': g = '<circle cx="8" cy="8" r="6" fill="none" stroke="'+c+'" stroke-width="1.6"/><circle cx="8" cy="8" r="3" fill="'+c+'"/>'; break;
+    case 'guider': g = '<path d="M8 1.5l6.5 6.5L8 14.5 1.5 8z" fill="none" stroke="'+c+'" stroke-width="1.8"/><circle cx="8" cy="8" r="1.6" fill="'+c+'"/>'; break;
+    case 'burst': g = '<path d="M8 1l1.6 4.6L14 4l-2.6 4L14 12l-4.4-1.6L8 15l-1.6-4.6L2 12l2.6-4L2 4l4.4 1.6z" fill="'+c+'"/>'; break;
+    default: g = '<path d="M2 14L14 2M2 8l6-6M8 14l6-6" stroke="'+c+'" stroke-width="1.8"/>';
+  }
+  return '<svg class="ticon" width="'+z+'" height="'+z+'" viewBox="0 0 16 16" role="img" aria-label="'+T(t.label)+'"><title>'+T(t.label)+'</title>'+g+'</svg>';
+}
+/* état de la comparaison, partagé par la vue 3D et la page des instruments : critère (by), groupe (g), type d'instrument filtré */
+window.OBS_CMP = window.OBS_CMP || { by:'orbit', g:'l2', type:null };
+function cmpGroups(by){
+  var T = window.OBS_T || function(x){ return x; };
+  var src = by === 'mission' ? MISSION_TYPES : by === 'domain' ? DOMAINS : ORBIT_FAMILIES;
+  return src.map(function(d){ return { id:d.id, label:T(d.label), def:d.def ? T(d.def) : '', list:TELESCOPES.filter(function(t){ return by === 'mission' ? (t.mission || []).indexOf(d.id) >= 0 : by === 'domain' ? t.domain === d.id : t.orbit === d.id; }) }; })
+    .filter(function(x){ return x.list.length; });
+}
+/* observatoires de la comparaison en cours, dans l'ordre chronologique ; « all » = tous (mélange signalé) */
+function cmpList(){
+  var c = window.OBS_CMP, l = c.g === 'all' ? TELESCOPES.slice() : ((cmpGroups(c.by).filter(function(x){ return x.id === c.g; })[0] || cmpGroups(c.by)[0]).list).slice();
+  return l.sort(function(a, b){ return a.compare.order - b.compare.order; });
+}
+/* sélecteur de comparaison (boutons data-cmpby et data-cmpg) */
+function cmpSelector(){
+  var T = window.OBS_T || function(x){ return x; }, c = window.OBS_CMP, gs = cmpGroups(c.by);
+  if (c.g !== 'all' && !gs.some(function(x){ return x.id === c.g; })) c.g = gs[0].id;
+  var cur = gs.filter(function(x){ return x.id === c.g; })[0];
+  return '<div class="cmpsel"><div class="cmpsel-by" role="group" aria-label="' + T('Comparer par') + '"><span>' + T('Comparer par') + '</span>' +
+    [['orbit','famille d\'orbite'],['mission','type de mission'],['domain','domaine spectral']].map(function(b){ return '<button class="chip" data-cmpby="' + b[0] + '" aria-pressed="' + (c.by === b[0]) + '">' + T(b[1]) + '</button>'; }).join('') + '</div>' +
+    '<div class="cmpsel-g" role="group" aria-label="' + T('Groupe') + '">' + gs.map(function(x){ return '<button class="chip" data-cmpg="' + x.id + '" aria-pressed="' + (c.g === x.id) + '">' + x.label + ' <small>' + x.list.length + '</small></button>'; }).join('') +
+    '<button class="chip mix" data-cmpg="all" aria-pressed="' + (c.g === 'all') + '">' + T('Tous') + ' <small>' + TELESCOPES.length + '</small></button></div>' +
+    '<p class="cmpsel-def">' + (c.g === 'all' ? T('Tous les observatoires : les familles sont mélangées, les écarts de taille et d\'orbite peuvent écraser les figures.') : (cur && cur.def ? cur.def.charAt(0).toUpperCase() + cur.def.slice(1) + '.' : '')) + '</p></div>';
+}
 /* navigation en deux rangées : les domaines spectraux (boutons qui filtrent), puis les observatoires du domaine choisi.
    OBS_DOM garde le domaine affiché ; par défaut, celui de l'observatoire ouvert. */
 window.OBS_DOM = window.OBS_DOM || null;
 function domainOf(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0]; return t ? t.domain : null; }
 function domRow(cur){
-  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id, curDom = domainOf(cur);
+  var T = window.OBS_T || function(x){ return x; }, d = window.OBS_DOM || domainOf(cur) || null, curDom = domainOf(cur);
   return '<div class="drow" role="group" aria-label="' + T('Domaine spectral') + '">' + DOMAINS.filter(function(x){ return TELESCOPES.some(function(t){ return t.domain === x.id; }); }).map(function(x){
     var n = TELESCOPES.filter(function(t){ return t.domain === x.id; }).length;
     return '<button class="dsel' + (x.id === curDom ? ' cur' : '') + '" data-dom="' + x.id + '" aria-pressed="' + (x.id === d) + '" title="' + T(x.label) + ' : ' + n + '">' +
            '<span class="dl">' + T(x.label) + '</span><span class="ds">' + T(x.short) + '</span><span class="dn">' + n + '</span></button>';
   }).join('') + '</div>';
 }
-function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || DOMAINS[0].id; return TELESCOPES.filter(function(t){ return t.domain === d; }); }
+function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || null; return d ? TELESCOPES.filter(function(t){ return t.domain === d; }) : []; }
 
 /* =================================================================
    INSTRUMENTS — données par observatoire.
@@ -1353,7 +1440,7 @@ var INST_DATA = (function(){
       { label:"Manuels d'instruments", url:"https://hst-docs.stsci.edu/", desc:"Instrument & Data Handbooks (WFC3, ACS, STIS, COS)." }
     ],
     instruments: [
-      { id:"wfc3", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
+      { id:"wfc3", type:"imager", name:"WFC3", full:"Wide Field Camera 3", kind:"Caméra grand champ", color:"#D4A461",
         bands:[ {l:"UVIS",lo:0.2,hi:1.0}, {l:"IR",lo:0.8,hi:1.7} ],
         fov:[ {l:"UVIS",w:162,h:162}, {l:"IR",w:136,h:123} ],
         use:"Prendre des images très nettes du ciel, de l'ultraviolet à l'infrarouge proche : galaxies lointaines, nébuleuses, étoiles des amas. C'est aujourd'hui l'appareil photo le plus utilisé de Hubble.",
@@ -1390,7 +1477,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"WFC3 Instrument Handbook",u:"https://hst-docs.stsci.edu/wfc3ihb"}, {l:"WFC3 Data Handbook",u:"https://hst-docs.stsci.edu/wfc3dhb"} ] },
 
-      { id:"acs", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
+      { id:"acs", type:"imager", name:"ACS", full:"Advanced Camera for Surveys", kind:"Caméra de relevés", color:"#93D2DC",
         bands:[ {l:"WFC",lo:0.35,hi:1.1}, {l:"SBC",lo:0.115,hi:0.17} ],
         fov:[ {l:"WFC",w:202,h:202}, {l:"SBC",w:34.6,h:30.5} ],
         use:"Photographier en lumière visible de grandes zones du ciel avec beaucoup de détails. Les célèbres champs profonds de Hubble et les cartes de matière noire des amas de galaxies doivent beaucoup à cette caméra.",
@@ -1427,7 +1514,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"ACS Instrument Handbook",u:"https://hst-docs.stsci.edu/acsihb"} ] },
 
-      { id:"stis", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
+      { id:"stis", type:"spectro", name:"STIS", full:"Space Telescope Imaging Spectrograph", kind:"Spectrographe imageur", color:"#8FA6E8",
         bands:[ {l:"FUV",lo:0.115,hi:0.17}, {l:"NUV",lo:0.165,hi:0.31}, {l:"CCD",lo:0.2,hi:1.03} ],
         fov:[ {l:"CCD",w:52,h:52}, {l:"MAMA",w:25,h:25} ],
         use:"Décomposer la lumière d'un objet en ses couleurs, son spectre, pour connaître sa composition, sa température et sa vitesse. Sa fente montre aussi comment ces propriétés changent le long d'un objet étendu, par exemple le gaz qui tourne autour d'un trou noir.",
@@ -1478,7 +1565,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"STIS Instrument Handbook",u:"https://hst-docs.stsci.edu/stisihb"} ] },
 
-      { id:"cos", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
+      { id:"cos", type:"spectro", name:"COS", full:"Cosmic Origins Spectrograph", kind:"Spectrographe UV", color:"#C58FD8",
         bands:[ {l:"FUV",lo:0.09,hi:0.215}, {l:"NUV",lo:0.165,hi:0.32} ],
         fov:[ {l:"ouverture PSA (Ø 2,5″)",w:2.5,h:2.5,circle:true} ],
         use:"Recueillir le spectre ultraviolet de sources très faibles, surtout de quasars lointains. Leur lumière traverse le gaz situé entre les galaxies, qui y laisse son empreinte : COS lit ces empreintes pour analyser ce gaz invisible.",
@@ -1528,7 +1615,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"COS Instrument Handbook",u:"https://hst-docs.stsci.edu/cosihb"} ] },
 
-      { id:"fgs", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
+      { id:"fgs", type:"astrometry", name:"FGS", full:"Fine Guidance Sensors", kind:"Guidage et astrométrie", color:"#8FD69A",
         bands:null,
         use:"Garder le télescope pointé sans bouger pendant les poses, en suivant des étoiles guides. Utilisé comme instrument, il mesure aussi la position des étoiles avec une grande précision.",
 
@@ -1564,7 +1651,7 @@ var INST_DATA = (function(){
       { label:"Pipeline de calibration", url:"https://jwst-pipeline.readthedocs.io/", desc:"Étapes de calibration et formats des produits de données." }
     ],
     instruments: [
-      { id:"nircam", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
+      { id:"nircam", type:"imager", name:"NIRCam", full:"Near-Infrared Camera", kind:"Caméra proche IR", color:"#D4A461",
         bands:[ {l:"SW",lo:0.6,hi:2.3}, {l:"LW",lo:2.4,hi:5.0} ],
         fov:[ {l:"Module A",w:132,h:132,dx:-88}, {l:"Module B",w:132,h:132,dx:88} ],
         use:"Photographier le ciel dans l'infrarouge proche, là où arrive la lumière des toutes premières galaxies, étirée par l'expansion de l'Univers. C'est la caméra principale de Webb ; elle sert aussi à régler l'alignement de son miroir.",
@@ -1615,7 +1702,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, NIRCam",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-camera"} ] },
 
-      { id:"nirspec", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
+      { id:"nirspec", type:"spectro", name:"NIRSpec", full:"Near-Infrared Spectrograph", kind:"Spectrographe multi-objets", color:"#93D2DC",
         bands:[ {l:"0,6–5,3 µm",lo:0.6,hi:5.3} ],
         fov:[ {l:"MSA",w:216,h:204}, {l:"IFU",w:3,h:3} ],
         use:"Obtenir en même temps le spectre de nombreuses galaxies lointaines, pour mesurer leur distance et leur composition. De minuscules volets ne s'ouvrent que devant les objets visés.",
@@ -1658,7 +1745,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, NIRSpec",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-spectrograph"} ] },
 
-      { id:"miri", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
+      { id:"miri", type:"specimager", name:"MIRI", full:"Mid-Infrared Instrument", kind:"Imageur et spectro moyen IR", color:"#C58FD8",
         bands:[ {l:"Imageur",lo:5.6,hi:25.5}, {l:"MRS",lo:4.9,hi:27.9} ],
         fov:[ {l:"Imageur",w:74,h:113} ],
         use:"Voir l'infrarouge moyen, émis par les objets tièdes : poussière, disques où se forment les planètes, galaxies cachées par leur propre poussière. Il doit être bien plus froid que le reste du télescope pour ne pas être aveuglé par sa propre chaleur.",
@@ -1698,7 +1785,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"JDox, MIRI",u:"https://jwst-docs.stsci.edu/jwst-mid-infrared-instrument"} ] },
 
-      { id:"niriss", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
+      { id:"niriss", type:"specimager", name:"NIRISS", full:"Near-Infrared Imager and Slitless Spectrograph", kind:"Imageur et spectro sans fente", color:"#8FA6E8",
         bands:[ {l:"0,6–5,0 µm",lo:0.6,hi:5.0} ],
         fov:[ {l:"Imageur",w:132,h:132} ],
         use:"Étudier l'atmosphère des exoplanètes quand elles passent devant leur étoile, chercher des galaxies lointaines dans de grands champs, et séparer des objets très proches les uns des autres grâce à un masque percé de trous.",
@@ -1729,7 +1816,7 @@ var INST_DATA = (function(){
         notes:["Le mode SOSS mesure le spectre de transmission de l'atmosphère d'une exoplanète pendant son transit."],
         docs:[ {l:"JDox, NIRISS",u:"https://jwst-docs.stsci.edu/jwst-near-infrared-imager-and-slitless-spectrograph"} ] },
 
-      { id:"fgs", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
+      { id:"fgs", type:"guider", name:"FGS", full:"Fine Guidance Sensor", kind:"Guidage fin", color:"#8FD69A",
         bands:null, fov:[ {l:"Guider",w:138,h:138} ],
         use:"Repérer des étoiles guides et indiquer au télescope comment corriger son pointage, plusieurs fois par seconde, pour que les images restent nettes.",
 
@@ -1764,7 +1851,7 @@ var INST_DATA = (function(){
       { label:"astroquery.esa.euclid", url:"https://astroquery.readthedocs.io/en/latest/esa/euclid/euclid.html", desc:"Accès Python à l'archive (TAP+)." }
     ],
     instruments: [
-      { id:"vis", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
+      { id:"vis", type:"imager", name:"VIS", full:"Visible Imager", kind:"Imageur visible", color:"#D4A461",
         bands:[ {l:"IE",lo:0.53,hi:0.92} ],
         use:"Photographier des milliards de galaxies avec assez de netteté pour mesurer leur forme. Les petites déformations que ces formes ont en commun révèlent la matière noire située sur le trajet de leur lumière.",
 
@@ -1814,7 +1901,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Euclid Consortium, VIS",u:"https://www.euclid-ec.org/public/mission/vis/"}, {l:"Présentation de DR1",u:"https://arxiv.org/abs/2611.16510"} ] },
 
-      { id:"nisp", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
+      { id:"nisp", type:"specimager", name:"NISP", full:"Near-Infrared Spectrometer and Photometer", kind:"Photomètre et spectro-imageur IR", color:"#93D2DC",
         bands:[ {l:"YE",lo:0.95,hi:1.21}, {l:"JE",lo:1.17,hi:1.57}, {l:"HE",lo:1.52,hi:2.02} ],
         use:"Mesurer les couleurs infrarouges et les spectres de millions de galaxies pour savoir à quelle distance elles se trouvent. Avec VIS, il permet de cartographier l'Univers en trois dimensions sur les dix derniers milliards d'années.",
 
@@ -1881,7 +1968,7 @@ var INST_DATA = (function(){
       { label:"Centre de support scientifique (IPAC)", url:"https://roman.ipac.caltech.edu/", desc:"Coronographe et soutien aux relevés." }
     ],
     instruments: [
-      { id:"wfi", name:"WFI", full:"Wide Field Instrument", kind:"Imageur et spectro grand champ IR",
+      { id:"wfi", type:"specimager", name:"WFI", full:"Wide Field Instrument", kind:"Imageur et spectro grand champ IR",
         bands:[ {l:"imagerie",lo:0.48,hi:2.3} ],
         use:"Photographier en une seule pose une portion de ciel plus grande que la pleine Lune, avec la netteté de Hubble. En répétant ces poses, Roman cartographie des milliards de galaxies pour la matière noire et l'énergie noire, et suit des millions d'étoiles du bulbe galactique pour y repérer des planètes.",
         summary:"Caméra de 300 millions de pixels : 18 détecteurs infrarouges en mosaïque de 6 × 3, huit filtres d'imagerie, un grisme et un prisme pour la spectroscopie sans fente.",
@@ -1929,7 +2016,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"WFI, données techniques (NASA)",u:"https://roman.gsfc.nasa.gov/science/WFI_technical.html"}, {l:"RomanDocs, WFI",u:"https://roman-docs.stsci.edu/roman-instruments/the-wide-field-instrument"} ] },
 
-      { id:"cgi", name:"Coronographe", full:"Coronagraph Instrument (CGI)", kind:"Démonstrateur de coronographie",
+      { id:"cgi", type:"coronagraph", name:"Coronographe", full:"Coronagraph Instrument (CGI)", kind:"Démonstrateur de coronographie",
         bands:[ {l:"visible",lo:0.4,hi:1.0} ],
         use:"Éteindre la lumière d'une étoile pour voir les planètes et les disques de poussière qui l'entourent. C'est un essai technologique, qui prépare un futur télescope capable de photographier des planètes semblables à la Terre.",
         summary:"Instrument de démonstration : masques coronographiques et miroirs déformables pour atténuer la lumière stellaire, avec des détecteurs à multiplication d'électrons fournis par l'ESA.",
@@ -1964,7 +2051,7 @@ var INST_DATA = (function(){
       { label:"Documentation de Spitzer", url:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/", desc:"Manuels des instruments et du télescope, à l'IRSA." }
     ],
     instruments: [
-      { id:"irac", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
+      { id:"irac", type:"imager", name:"IRAC", full:"Infrared Array Camera", kind:"Caméra proche et moyen infrarouge", color:"#2F6FDB",
         bands:[ {l:"3,6 µm",lo:3.19,hi:3.94}, {l:"4,5 µm",lo:4.00,hi:5.02}, {l:"5,8 µm",lo:4.98,hi:6.41}, {l:"8,0 µm",lo:6.45,hi:9.34} ],
         use:"Photographier des galaxies lointaines, des nuages où naissent des étoiles et des exoplanètes en transit, à travers la poussière qui arrête la lumière visible.",
         summary:"Quatre voies photographiées en même temps sur deux champs voisins : des séparatrices dichroïques envoient 3,6 et 5,8 µm vers l'un, 4,5 et 8,0 µm vers l'autre. Chaque voie a sa matrice de 256 × 256 pixels.",
@@ -2003,7 +2090,7 @@ var INST_DATA = (function(){
         notes:[ "Pendant la mission chaude, le détecteur de 3,6 µm a servi à suivre des exoplanètes en transit avec une très grande stabilité : c'est ainsi qu'il a suivi en 2016 et 2017 les planètes du système TRAPPIST-1." ],
         docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
 
-      { id:"irs", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
+      { id:"irs", type:"spectro", name:"IRS", full:"Infrared Spectrograph", kind:"Spectrographe moyen infrarouge", color:"#0F987A",
         bands:[ {l:"SL",lo:5.2,hi:14.5}, {l:"LL",lo:14.0,hi:38.0}, {l:"SH",lo:9.9,hi:19.6}, {l:"LH",lo:18.7,hi:37.2} ],
         use:"Décomposer la lumière infrarouge en spectre, pour lire la composition de la poussière, des glaces et des molécules autour des étoiles jeunes et dans les galaxies.",
         summary:"Quatre modules, chacun avec sa matrice de 128 × 128 pixels : deux à basse résolution, à fente longue (SL et LL), deux à haute résolution, en échelle (SH et LH). Deux petites fenêtres d'imagerie (« peak-up ») servaient à centrer la source dans la fente.",
@@ -2021,7 +2108,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Spitzer Telescope Handbook",u:"https://irsa.ipac.caltech.edu/data/SPITZER/docs/spitzermission/missionoverview/spitzertelescopehandbook/"} ] },
 
-      { id:"mips", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
+      { id:"mips", type:"imager", name:"MIPS", full:"Multiband Imaging Photometer for Spitzer", kind:"Photomètre infrarouge lointain", color:"#9A52D6",
         bands:[ {l:"24 µm",lo:21.5,hi:26.2}, {l:"70 µm",lo:62.5,hi:81.5}, {l:"160 µm",lo:139.5,hi:174.5}, {l:"SED",lo:55,hi:95} ],
         use:"Mesurer la chaleur de la poussière froide : disques autour des étoiles, galaxies qui forment des étoiles à toute vitesse, nuages interstellaires.",
         summary:"Trois matrices : Si:As à 24 µm, germanium dopé au gallium à 70 µm et germanium contraint à 160 µm. Un petit miroir mobile balayait le ciel sur les détecteurs ; un mode spectral (SED) donnait aussi un spectre grossier de 55 à 95 µm.",
@@ -2063,7 +2150,7 @@ var INST_DATA = (function(){
       { label:"Fermitools", url:"https://github.com/fermi-lat/Fermitools-conda", desc:"Logiciels d'analyse des données du LAT." }
     ],
     instruments: [
-      { id:"lat", name:"LAT", full:"Large Area Telescope", kind:"Télescope gamma à conversion de paires",
+      { id:"lat", type:"imager", name:"LAT", full:"Large Area Telescope", kind:"Télescope gamma à conversion de paires",
         bands:[ {l:"LAT",lo:4.133e-12,hi:6.199e-8} ],
         use:"Cartographier le ciel gamma : pulsars, restes de supernovae, noyaux actifs de galaxies dont le jet pointe vers nous, et la lueur diffuse de la Galaxie.",
         summary:"Seize tours identiques, chacune faite d'un trajectographe au-dessus d'un calorimètre, entourées d'un bouclier de scintillateurs. Le photon se convertit en paire électron–positon dans le tungstène ; la trace de la paire donne sa direction, le calorimètre son énergie.",
@@ -2095,7 +2182,7 @@ var INST_DATA = (function(){
         notes:["Le LAT ne vise pas : il balaie le ciel entier en deux orbites, environ trois heures. Chaque région est donc revue plusieurs fois par jour, ce qui permet de suivre les éruptions des noyaux actifs de galaxies."],
         docs:[ {l:"Atwood et al. 2009",u:"https://arxiv.org/abs/0902.1089"}, {l:"Préparation des données",u:"https://fermi.gsfc.nasa.gov/ssc/data/analysis/scitools/data_preparation.html"} ] },
 
-      { id:"gbm", name:"GBM", full:"Gamma-ray Burst Monitor", kind:"Moniteur de sursauts gamma",
+      { id:"gbm", type:"burst", name:"GBM", full:"Gamma-ray Burst Monitor", kind:"Moniteur de sursauts gamma",
         bands:[ {l:"NaI",lo:1.2398e-6,hi:1.5498e-4}, {l:"BGO",lo:3.0995e-8,hi:6.199e-6} ],
         use:"Guetter les sursauts gamma, ces éclairs de quelques secondes qui viennent de la mort d'étoiles massives ou de la fusion d'étoiles à neutrons, et donner l'alerte aux autres télescopes.",
         summary:"Quatorze scintillateurs orientés dans toutes les directions : douze cristaux d'iodure de sodium (NaI) pour les basses énergies, deux de germanate de bismuth (BGO) pour les hautes. Le rapport des signaux entre détecteurs donne la direction du sursaut.",
@@ -2133,7 +2220,7 @@ var INST_DATA = (function(){
       { label:"NASA Exoplanet Archive", url:"https://exoplanetarchive.ipac.caltech.edu/", desc:"Catalogues des objets d'intérêt Kepler (KOI) et des planètes confirmées." }
     ],
     instruments: [
-      { id:"phot", name:"Photomètre", full:"Photomètre à grand champ", kind:"Photométrie de précision", color:"#6A8D2F",
+      { id:"phot", type:"photometer", name:"Photomètre", full:"Photomètre à grand champ", kind:"Photométrie de précision", color:"#6A8D2F",
         bands:[ {l:"Kepler",lo:0.42,hi:0.90} ],
         use:"Repérer les planètes qui passent devant leur étoile, en mesurant à quelques dizaines de millionièmes près l'éclat de plus de 100 000 étoiles, sans interruption pendant des années.",
         summary:"Le télescope de Schmidt forme une image sur un plan focal courbe de 21 modules de deux CCD ; une lentille de saphir sur chaque module ramène l'image courbe à plat. Chaque pose dure 6 s ; elles sont additionnées à bord par paquets de 29,4 min (longue cadence) ou de 58,85 s (courte cadence, pour quelques centaines de cibles).",
@@ -2187,7 +2274,7 @@ var INST_DATA = (function(){
       { label:"TESS Science Support Center", url:"https://heasarc.gsfc.nasa.gov/docs/tess/", desc:"Documentation, outils et calendrier des secteurs." }
     ],
     instruments: [
-      { id:"cams", name:"Caméras", full:"Quatre caméras grand champ", kind:"Photométrie grand champ", color:"#1F7A8C",
+      { id:"cams", type:"photometer", name:"Caméras", full:"Quatre caméras grand champ", kind:"Photométrie grand champ", color:"#1F7A8C",
         bands:[ {l:"TESS",lo:0.6,hi:1.0} ],
         use:"Repérer les planètes qui passent devant leur étoile, en mesurant son éclat toutes les quelques minutes pendant des semaines, pour des centaines de milliers d'étoiles proches à la fois.",
         summary:"Chaque caméra est un objectif de sept lentilles, ouvert à f/1,4, devant une mosaïque de quatre CCD. Les poses de 2 s sont additionnées à bord : images complètes du champ toutes les 30, 10 puis 3 min 20 s selon les années, et petites images de cibles choisies toutes les 2 min ou 20 s.",
@@ -2241,7 +2328,7 @@ var INST_DATA = (function(){
       { label:"SAS", url:"https://www.cosmos.esa.int/web/xmm-newton/what-is-sas", desc:"Logiciel d'analyse des données de XMM-Newton." }
     ],
     instruments: [
-      { id:"epic", name:"EPIC", full:"European Photon Imaging Camera", kind:"Caméras CCD imageuses et spectrométriques", color:"#2E7FA8",
+      { id:"epic", type:"specimager", name:"EPIC", full:"European Photon Imaging Camera", kind:"Caméras CCD imageuses et spectrométriques", color:"#2E7FA8",
         bands:[ {l:"EPIC",lo:0.0001033,hi:0.008266} ],
         use:"Photographier le ciel en rayons X en mesurant l'énergie de chaque photon, avec une grande surface collectrice : de quoi étudier des sources faibles, des amas de galaxies ou les variations rapides d'une étoile à neutrons.",
         summary:"Trois caméras, une au foyer de chaque télescope : la caméra pn, à 12 CCD éclairés par l'arrière, et deux caméras MOS à 7 CCD, qui ne reçoivent qu'une partie de la lumière de leur télescope, le reste étant envoyé vers les RGS. Chaque photon est enregistré avec sa position, son instant et son énergie.",
@@ -2275,7 +2362,7 @@ var INST_DATA = (function(){
         notes:["Les deux caméras MOS ne reçoivent qu'environ la moitié de la lumière de leur télescope : l'autre partie est déviée par les réseaux vers les RGS.",
                "Des protons de basse énergie, piégés autour de la Terre, provoquent parfois des « éruptions » de bruit : on retire ces moments des données."],
         docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"}, {l:"The Telescopes of XMM-Newton",u:"https://www.cosmos.esa.int/web/xmm-newton/technical-details-mirrors"} ] },
-      { id:"rgs", name:"RGS", full:"Reflection Grating Spectrometer", kind:"Spectromètre à réseaux", color:"#7A4FB5",
+      { id:"rgs", type:"spectro", name:"RGS", full:"Reflection Grating Spectrometer", kind:"Spectromètre à réseaux", color:"#7A4FB5",
         bands:[ {l:"RGS",lo:0.0005,hi:0.0035} ],
         use:"Décomposer les rayons X mous en un spectre très fin, où apparaissent les raies du carbone, de l'azote, de l'oxygène, du néon ou du fer : température, densité et composition du gaz chaud.",
         summary:"Derrière deux des trois télescopes, une pile de réseaux en réflexion intercepte une partie des rayons X et les disperse selon leur longueur d'onde vers une rangée de CCD. Les deux spectromètres sont presque identiques.",
@@ -2299,7 +2386,7 @@ var INST_DATA = (function(){
         notes:["Le spectre « fluxed » du pipeline sert d'aperçu ; une analyse se fait sur les spectres par ordre, avec leur matrice de réponse.",
                "Quelques CCD sont hors service depuis le début de la mission, d'où des trous dans les spectres de chaque RGS."],
         docs:[ {l:"Users Handbook",u:"https://heasarc.gsfc.nasa.gov/docs/xmm/uhb2.20/uhb/basics.html"} ] },
-      { id:"om", name:"OM", full:"Optical Monitor", kind:"Télescope visible et ultraviolet", color:"#C9A100",
+      { id:"om", type:"imager", name:"OM", full:"Optical Monitor", kind:"Télescope visible et ultraviolet", color:"#C9A100",
         bands:[ {l:"OM",lo:0.18,hi:0.60} ],
         use:"Voir les mêmes objets que les caméras X, au même moment, en visible et en ultraviolet : pour relier ce qui se passe dans les deux domaines, ou repérer les étoiles et galaxies du champ.",
         summary:"Un télescope Ritchey-Chrétien de 30 cm, avec une roue de filtres (trois visibles, trois ultraviolets) et deux grismes. Son détecteur amplifie chaque photon et en mesure la position.",
@@ -2342,7 +2429,7 @@ var INST_DATA = (function(){
       { label:"HEASARC", url:"https://heasarc.gsfc.nasa.gov/", desc:"Archive de la NASA pour les hautes énergies, qui donne aussi accès à Chandra." }
     ],
     instruments: [
-      { id:"acis", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
+      { id:"acis", type:"specimager", name:"ACIS", full:"Advanced CCD Imaging Spectrometer", kind:"Caméra CCD imageuse et spectrométrique",
         bands:[ {l:"CCD FI",lo:0.000155,hi:0.0015498}, {l:"CCD BI",lo:0.000155,hi:0.0041327} ],
         use:"Photographier le ciel en rayons X tout en mesurant l'énergie de chaque photon. On obtient à la fois l'image d'un reste de supernova ou d'un amas de galaxies et la composition chimique et la température de son gaz.",
         summary:"Dix CCD en deux réseaux : ACIS-I, un carré de 2 × 2 pour l'imagerie, et ACIS-S, une rangée de six, qui sert aussi à lire les spectres du réseau HETG. Chaque photon est enregistré avec sa position, son instant et son énergie.",
@@ -2378,7 +2465,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"}, {l:"Proposers' Observatory Guide",u:"https://cxc.cfa.harvard.edu/proposer/POG/"} ] },
 
-      { id:"hrc", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
+      { id:"hrc", type:"imager", name:"HRC", full:"High Resolution Camera", kind:"Caméra à galettes à microcanaux",
         bands:[ {l:"HRC",lo:0.000124,hi:0.0154975} ],
         use:"Prendre les images X les plus nettes et dater chaque photon à quelques microsecondes près, par exemple pour suivre la rotation rapide d'un pulsar.",
         summary:"Deux détecteurs à galettes à microcanaux : HRC-I, pour l'imagerie sur un grand champ, et HRC-S, une bande allongée qui lit les spectres du réseau LETG. Résolution en énergie très faible, mais grande netteté et datation très fine.",
@@ -2398,7 +2485,7 @@ var INST_DATA = (function(){
         notes:[ "Les poses avec HRC sont limitées à 14,5 ks d'un seul tenant, pour des raisons thermiques." ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
 
-      { id:"hetg", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
+      { id:"hetg", type:"spectro", name:"HETG", full:"High Energy Transmission Grating", kind:"Réseau de spectroscopie haute énergie",
         bands:[ {l:"HEG",lo:0.000124,hi:0.0015498}, {l:"MEG",lo:0.000248,hi:0.0030995} ],
         use:"Décomposer les rayons X en un spectre très fin, où l'on voit les raies de chaque élément chimique : on mesure ainsi la température, la densité et la vitesse du gaz autour des étoiles et des trous noirs.",
         summary:"Un ensemble de réseaux de transmission en or, inséré juste derrière les miroirs. Deux familles de réseaux (HEG et MEG) dispersent la lumière dans deux directions écartées de 10° ; le spectre est lu par ACIS-S.",
@@ -2412,7 +2499,7 @@ var INST_DATA = (function(){
         products:[ ["pha2","spectres par ordre de diffraction, extraits de l'evt2"] ],
         docs:[ {l:"About Chandra (caractéristiques)",u:"https://cxc.cfa.harvard.edu/cdo/about_chandra/"} ] },
 
-      { id:"letg", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
+      { id:"letg", type:"spectro", name:"LETG", full:"Low Energy Transmission Grating", kind:"Réseau de spectroscopie basse énergie",
         bands:[ {l:"LETG + HRC-S",lo:0.0001701,hi:0.0177114} ],
         use:"Obtenir les spectres X les plus détaillés aux basses énergies, par exemple pour étudier l'atmosphère très chaude des étoiles ou le gaz entre les galaxies.",
         summary:"Un réseau de transmission inséré derrière les miroirs, lu par HRC-S ou par ACIS-S. C'est l'instrument de Chandra qui a la plus haute résolution aux basses énergies.",
@@ -2445,7 +2532,7 @@ var INST_DATA = (function(){
       { label:"astroquery.gaia", url:"https://astroquery.readthedocs.io/en/latest/gaia/gaia.html", desc:"Accès Python à l'archive." }
     ],
     instruments: [
-      { id:"astro", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
+      { id:"astro", type:"astrometry", name:"Astro", full:"Sky Mapper + Astrometric Field", kind:"Astrométrie et photométrie G", color:"#D4A461",
         bands:[ {l:"bande G",lo:0.33,hi:1.05} ],
         use:"Mesurer la position des étoiles avec une précision extrême, de nombreuses fois en plusieurs années. On en tire leur distance, par la parallaxe, et leur mouvement dans la Galaxie.",
 
@@ -2490,7 +2577,7 @@ var INST_DATA = (function(){
         ],
         docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
 
-      { id:"bprp", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
+      { id:"bprp", type:"spectro", name:"BP / RP", full:"Blue & Red Photometers", kind:"Spectro-photométrie basse résolution", color:"#93D2DC",
         bands:[ {l:"BP",lo:0.33,hi:0.68}, {l:"RP",lo:0.64,hi:1.05} ],
         use:"Mesurer la couleur de chaque étoile observée à partir d'un spectre très grossier. On en déduit sa température et la quantité de poussière qui l'atténue.",
 
@@ -2522,7 +2609,7 @@ var INST_DATA = (function(){
         notes:["La différence BP − RP est un indice de couleur : plus elle est grande, plus l'étoile est rouge (Proxima : 3,8)."],
         docs:[ {l:"Documentation Gaia DR3",u:"https://gea.esac.esa.int/archive/documentation/GDR3/index.html"} ] },
 
-      { id:"rvs", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
+      { id:"rvs", type:"spectro", name:"RVS", full:"Radial Velocity Spectrometer", kind:"Spectromètre sans fente", color:"#C58FD8",
         bands:[ {l:"Ca II",lo:0.845,hi:0.872} ],
         use:"Mesurer à quelle vitesse les étoiles s'approchent ou s'éloignent de nous. Ajoutée à leur déplacement sur le ciel, cette vitesse donne leur mouvement complet dans l'espace.",
 
@@ -3445,13 +3532,15 @@ var Optics = (function(){
   }
 
   /* tous les plans focaux à la même échelle, pour la page « Comparer » */
-  function compareFocal(OBS, NAMES){
+  function compareFocal(OBS, NAMES, LIST){
     var W = 1000, k = 0.8, gap = 40, rows = [[], [], []], s = '';
-    /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js */
-    TELESCOPES.filter(function(t){ return FP[t.id] && t.compare.fp; }).sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
+    /* rangée et rang de chaque observatoire : compare.fp dans data-tele.js ; seuls les observatoires comparés */
+    var sel = TELESCOPES.filter(function(t){ return FP[t.id] && t.compare.fp && (!LIST || LIST.indexOf(t.id) >= 0); });
+    if (!sel.length) return '';
+    sel.sort(function(a, b){ return a.compare.fp[0] - b.compare.fp[0] || a.compare.fp[1] - b.compare.fp[1]; })
       .forEach(function(T){ var r = rows[T.compare.fp[0]] || (rows[T.compare.fp[0]] = []); FP[T.id].groups.forEach(function(g){ r.push({ t:T.id, g:g }); }); });
     var y = 10;
-    rows.forEach(function(r){
+    rows.filter(function(r){ return r.length; }).forEach(function(r){
       var tw = 0, th = 0; r.forEach(function(o){ tw += o.g.w*k; th = Math.max(th, o.g.h*k); }); tw += gap*(r.length - 1);
       var x = Math.max(8, (W - tw)/2);
       r.forEach(function(o){
@@ -3465,7 +3554,7 @@ var Optics = (function(){
     });
     s += L(12, y, 12 + 100*k, y, INK, 2) + T(18 + 100*k, y + 4, '10 cm');
     return '<div class="isec"><h4>Plans focaux, à la même échelle</h4>' + svg(W, y + 14, s, 'Détecteurs des observatoires à la même échelle') +
-      '<div class="cap">Taille réelle des mosaïques de détecteurs. Le plan focal de Gaia mesure près d\'un mètre de long ; celui de VIS, sur Euclid, environ 34 × 30 cm ; celui du WFI de Roman, environ 27 × 17 cm ; un détecteur de Webb, moins de 4 cm. Espaces entre détecteurs indicatifs pour Gaia et Webb ; un seul module de NIRCam est dessiné.</div></div>';
+      '<div class="cap">Taille réelle des mosaïques de détecteurs, à la même échelle. Espaces entre détecteurs indicatifs pour Gaia, Webb, Kepler et XMM-Newton ; un seul module de NIRCam est dessiné.</div></div>';
   }
 
   function render(tid, name, part){
@@ -3887,8 +3976,62 @@ var Orbits = (function(){
   }
   /* ---------- comparaison des trois orbites autour de L2 ---------- */
   /* observatoires autour de L2 : registre de data-tele.js */
-  var L2IDS = TELESCOPES.filter(function(t){ return t.orbit === 'l2'; }).map(function(t){ return t.id; });
-  function renderCompare(OBS, NAMES){
+  var L2IDS = [];
+  /* une figure par famille d'orbite présente dans la comparaison (spécifications, priorité 2) */
+  function renderCompare(OBS, NAMES, LIST){
+    LIST = LIST || TELESCOPES.map(function(t){ return t.id; });
+    var tl = TELESCOPES.filter(function(t){ return LIST.indexOf(t.id) >= 0; });
+    L2IDS = tl.filter(function(t){ return t.orbit === 'l2'; }).map(function(t){ return t.id; });
+    var earth = tl.filter(function(t){ return t.orbit === 'leo' || t.orbit === 'heo'; }), helio = tl.filter(function(t){ return t.orbit === 'helio'; }), s = '';
+    if (earth.length) s += earthCompare(earth, OBS, NAMES);
+    if (L2IDS.length) s += l2Compare(OBS, NAMES);
+    if (helio.length) s += '<div class="isec"><h4>Orbites autour du Soleil, à la même échelle</h4><ul class="orb-key">' + helio.map(function(t){ return '<li><i style="background:'+OBS[t.id]+'"></i>'+NAMES[t.id]+'</li>'; }).join('') + '</ul>' +
+      '<div data-orb-helio="' + helio.map(function(t){ return t.id; }).join(',') + '"><div class="cap">Chargement des trajectoires…</div></div>' +
+      '<div class="cap">Trajectoires réelles sur toute la mission (JPL Horizons), dans le repère qui tourne avec la Terre : la Terre reste fixe à droite, et chaque courbe montre comment l\'observatoire prend du retard sur elle, année après année.</div></div>';
+    return s;
+  }
+  /* orbites terrestres basses et très elliptiques, à l'échelle, avec la Terre et l'orbite de la Lune ; valeurs du registre (sourcées sur chaque fiche) */
+  function earthCompare(list, OBS, NAMES){
+    var W = 560, H = 380, ra = 6371, maxR = 6371, i;
+    list.forEach(function(t){ if (t.orbit === 'heo' && t.heo) maxR = Math.max(maxR, t.heo.ra); if (t.orbit === 'leo' && t.leo) maxR = Math.max(maxR, ra + t.leo.alt); });
+    var moon = maxR > 200000, R = moon ? 384400 : maxR, k = (Math.min(W, H*1.6)/2 - 24)/R, cx = W/2 + (moon ? 40 : 0), cy = H/2, s = '';
+    if (moon) s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+(384400*k)+'" fill="none" stroke="var(--rule-2)" stroke-dasharray="3 4"/><text class="cov-tick" x="'+(cx + 384400*k*0.71)+'" y="'+(cy - 384400*k*0.71 - 4)+'">orbite de la Lune</text>';
+    s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+Math.max(2.5, ra*k)+'" fill="#2C5E9E"/>';
+    var lab = [];
+    list.forEach(function(t, n){
+      if (t.orbit === 'heo' && t.heo){
+        var a = (t.heo.rp + t.heo.ra)/2, e = (t.heo.ra - t.heo.rp)/(t.heo.ra + t.heo.rp), b = a*Math.sqrt(1 - e*e), c = a*e, rot = [-25, 20, 60, -60, 100][n % 5];
+        s += '<g transform="rotate('+rot+' '+cx+' '+cy+')"><ellipse cx="'+(cx - c*k)+'" cy="'+cy+'" rx="'+(a*k)+'" ry="'+(b*k)+'" fill="none" stroke="'+OBS[t.id]+'" stroke-width="2"/></g>';
+        lab.push([t.id, t.heo.apo + ' · ' + t.heo.per]);
+      } else if (t.leo){
+        s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+Math.max(4, (ra + t.leo.alt)*k)+'" fill="none" stroke="'+OBS[t.id]+'" stroke-width="2"/>';
+        lab.push([t.id, '≈ ' + t.leo.alt + ' km · ' + t.leo.per + ' min']);
+      }
+    });
+    var bar = moon ? 100000 : 1000, bl = bar*k;
+    s += '<line x1="14" y1="'+(H-14)+'" x2="'+(14+bl)+'" y2="'+(H-14)+'" stroke="var(--ink)" stroke-width="2"/><text class="cov-tick" x="'+(20+bl)+'" y="'+(H-10)+'">'+(moon ? '100 000 km' : '1 000 km')+'</text>';
+    var leo = list.some(function(t){ return t.orbit === 'leo'; });
+    return '<div class="isec"><h4>Orbites autour de la Terre, à la même échelle</h4><ul class="orb-key">' + lab.map(function(l){ return '<li><i style="background:'+OBS[l[0]]+'"></i>'+NAMES[l[0]]+' <small>'+l[1]+'</small></li>'; }).join('') + '</ul>' +
+      '<div class="svgwrap orb-fam"><svg class="optic" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Orbites terrestres à la même échelle">'+s+'</svg></div>' +
+      '<div class="cap">Terre, orbites et orbite de la Lune à la même échelle, vues de dessus ; altitudes et périodes des fiches de chaque observatoire. Les orbites très elliptiques sont dessinées avec leur forme, leur orientation est arbitraire.' + (leo && moon ? ' À cette échelle, une orbite basse se confond presque avec la Terre.' : '') + '</div></div>';
+  }
+  /* trajectoires héliocentriques réelles (orbits.json), dessinées une fois chargées */
+  function drawHelioCompare(root, OBS){
+    var el = root.querySelector('[data-orb-helio]'); if (!el) return;
+    var ids = el.getAttribute('data-orb-helio').split(',');
+    load().then(function(j){
+      if (!j || !j.bodies){ el.innerHTML = '<div class="cap">Les trajectoires n\'ont pas pu être chargées.</div>'; return; }
+      var W = 560, H = 380, k = (H/2 - 20)/1.25, cx = W/2 - 20, cy = H/2, s = '';
+      s += '<circle cx="'+cx+'" cy="'+cy+'" r="'+k+'" fill="none" stroke="var(--rule-2)" stroke-dasharray="3 4"/><circle cx="'+cx+'" cy="'+cy+'" r="7" fill="#E8B21A"/><text class="cov-tick" x="'+cx+'" y="'+(cy+22)+'" text-anchor="middle">Soleil</text>';
+      s += '<circle cx="'+(cx + k)+'" cy="'+cy+'" r="5" fill="#2C5E9E"/><text class="cov-tick" x="'+(cx + k + 8)+'" y="'+(cy - 8)+'">Terre</text>';
+      ids.forEach(function(id){ var b = j.bodies[id]; if (!b) return; var d = '';
+        for (var p=0;p<b.x.length;p++) d += (p ? 'L' : 'M') + (cx + b.x[p]*k).toFixed(1) + ' ' + (cy - b.y[p]*k).toFixed(1);
+        s += '<path d="'+d+'" fill="none" stroke="'+OBS[id]+'" stroke-width="1.8"/>'; });
+      s += '<line x1="14" y1="'+(H-14)+'" x2="'+(14 + 0.5*k)+'" y2="'+(H-14)+'" stroke="var(--ink)" stroke-width="2"/><text class="cov-tick" x="'+(20 + 0.5*k)+'" y="'+(H-10)+'">0,5 UA</text>';
+      el.innerHTML = '<div class="svgwrap orb-fam"><svg class="optic" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Trajectoires autour du Soleil">'+s+'</svg></div>';
+    });
+  }
+  function l2Compare(OBS, NAMES){
     var key = '<ul class="orb-key">' + L2IDS.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
     return '<div class="isec"><h4>Orbites autour de L2, à la même échelle</h4>' + key + '<div class="cmp-figs"><div><h5>Vu depuis la Terre</h5>'+cv('cfront', 560, 430, 'Les trois orbites vues depuis la Terre')+'</div><div><h5>Vu de dessus</h5>'+cv('ctop', 560, 400, 'Les trois orbites vues de dessus')+'</div></div>' +
       '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read>Chargement des trajectoires…</span></div>' +
@@ -3896,6 +4039,7 @@ var Orbits = (function(){
       '<div data-orb-cmpstats></div></div>';
   }
   function startCompare(root, OBS, NAMES){
+    drawHelioCompare(root, OBS);
     var my = ++run, playing = true, last = performance.now(), jd = 0, cf = root.querySelector('[data-orb="cfront"]'), ct = root.querySelector('[data-orb="ctop"]'), read = root.querySelector('[data-orb-read]'), play = root.querySelector('[data-orb-play]');
     if (!cf) return;
     if (play) play.onclick = function(){ playing = !playing; play.textContent = playing ? 'Pause' : 'Lecture'; };
@@ -4224,14 +4368,16 @@ var InstrumentsUI = (function(){
     return hi < 2e-5 ? ener(hi) + ' – ' + ener(lo) : wl(lo) + ' – ' + wl(hi); }   /* rayons gamma : en énergie, de la plus basse à la plus haute */
   function bigFov(it){ if (!it.fov || !it.fov.length) return 'sans objet'; var f = it.fov.slice().sort(function(a,b){ return b.w*b.h - a.w*a.h; })[0]; var n = it.fov.filter(function(x){ return x.w===f.w && x.h===f.h; }).length; return (n > 1 ? n+' × ' : '') + (f.circle ? 'Ø '+ang(f.w) : ang(f.w)+' × '+ang(f.h)); }
 
-  function cmpCoverage(){
-    /* axe commun : des rayons X (Chandra) à l'infrarouge moyen, si un observatoire du registre descend sous 0,09 µm */
-    var lo = 0.09, hi = 30; ORDER.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); hi = Math.max(hi, INST_DATA[t].axis.max); });
-    var W = 1000, L = 172, R = 14, ax = new Axis(lo, hi, L, W-R), y = 40, rows = [], seps = [];
-    ORDER.forEach(function(tid){
+  /* instruments retenus par le filtre de type de la comparaison */
+  function keepInst(it){ var ty = window.OBS_CMP && OBS_CMP.type; return !ty || it.type === ty; }
+  function cmpCoverage(LIST){
+    /* axe commun ajusté aux observatoires comparés ; barres colorées selon le type d'instrument (INST_TYPES) */
+    var lo = 0.09, hi = 30; LIST.forEach(function(t){ lo = Math.min(lo, INST_DATA[t].axis.min); hi = Math.max(hi, INST_DATA[t].axis.max); });
+    var W = 1000, L = 188, R = 14, ax = new Axis(lo, hi, L, W-R), y = 40, rows = [], seps = [];
+    LIST.forEach(function(tid){
       var first = true; seps.push(y);
       INST_DATA[tid].instruments.forEach(function(it){
-        if (!it.bands) return;
+        if (!it.bands || !keepInst(it)) return;
         var lanes = [], placed = it.bands.map(function(b){
           var a = ax.x(b.lo), z = ax.x(b.hi), lane = 0;
           for (;; lane++){ var clash = (lanes[lane]||[]).some(function(o){ var ov = Math.min(z,o[1]) - Math.max(a,o[0]); return ov > 0.4*Math.min(z-a, o[1]-o[0]); }); if (!clash) break; }
@@ -4253,11 +4399,11 @@ var InstrumentsUI = (function(){
     seps.forEach(function(v){ s += '<line class="cov-sep" x1="0" y1="'+(v-3)+'" x2="'+(W-R)+'" y2="'+(v-3)+'"/>'; });
     rows.forEach(function(r){
       s += '<g class="cov-row" data-jump="'+r.tid+':'+r.it.id+'"><rect x="0" y="'+r.y+'" width="'+W+'" height="'+r.h+'" fill="transparent"/>';
-      if (r.first) s += '<text class="cov-obs" x="2" y="'+(r.y+16)+'">'+NAMES[r.tid]+'</text>';
-      s += '<text class="cov-lab" x="80" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
+      if (r.first) s += '<rect x="0" y="'+(r.y+4)+'" width="4" height="13" fill="'+OBS[r.tid]+'"/><text class="cov-obs" x="8" y="'+(r.y+16)+'">'+NAMES[r.tid]+'</text>';
+      s += '<g transform="translate(78 '+(r.y + r.h/2 - 7)+')">'+typeIcon(r.it.type, 14)+'</g><text class="cov-lab" x="96" y="'+(r.y + r.h/2 + 4)+'">'+esc(r.it.name)+'</text>';
       r.placed.forEach(function(p){
         var yy = r.y + 4 + p.lane*16, w = Math.max(3, p.z - p.a);
-        s += '<rect x="'+p.a+'" y="'+yy+'" width="'+w+'" height="13" rx="2" fill="'+OBS[r.tid]+'"><title>'+esc(NAMES[r.tid]+' '+r.it.name+' '+p.b.l+' : '+wl(p.b.lo)+' – '+wl(p.b.hi))+'</title></rect>';
+        s += '<rect x="'+p.a+'" y="'+yy+'" width="'+w+'" height="13" rx="2" fill="'+instType(r.it.type).color+'"><title>'+esc(NAMES[r.tid]+' '+r.it.name+' '+p.b.l+' : '+wl(p.b.lo)+' – '+wl(p.b.hi))+'</title></rect>';
         if (w > p.b.l.length*6.4 + 8) s += '<text class="cov-band" x="'+(p.a + w/2)+'" y="'+(yy+10)+'" text-anchor="middle">'+esc(p.b.l)+'</text>';
       });
       s += '</g>';
@@ -4267,7 +4413,8 @@ var InstrumentsUI = (function(){
 
   function cmpFov(tids, legendMin){
     var items = [];
-    tids.forEach(function(tid){ INST_DATA[tid].instruments.forEach(function(it){ (it.fov||[]).forEach(function(f){ items.push({ tid:tid, it:it, f:f }); }); }); });
+    tids.forEach(function(tid){ INST_DATA[tid].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ items.push({ tid:tid, it:it, f:f }); }); }); });
+    if (!items.length) return '<p class="cap">Aucun champ de vue pour cette sélection.</p>';
     var ext = 0; items.forEach(function(o){ ext = Math.max(ext, Math.abs(o.f.dx||0)*2 + o.f.w, o.f.h); });
     var moon = ext > 1200, S = 300, pad = 22, k = (S - 2*pad)/ext, c = S/2;
     var s = '<svg class="fov-svg" viewBox="0 0 '+S+' '+(S+18)+'" role="img" aria-label="Champs de vue à la même échelle"><rect x="0.5" y="0.5" width="'+(S-1)+'" height="'+(S-1)+'" fill="#F7F8F8" stroke="#98A1A7"/>';
@@ -4281,26 +4428,44 @@ var InstrumentsUI = (function(){
     for (var i=0;i<nice.length;i++) if (nice[i]*k <= S*0.34) bar = nice[i];
     s += '<line class="fov-bar" x1="'+pad+'" y1="'+(S-12)+'" x2="'+(pad+bar*k)+'" y2="'+(S-12)+'"/><text class="fov-barlab" x="'+(pad+bar*k+6)+'" y="'+(S-8)+'">'+ang(bar)+'</text></svg>';
     var seen = {}, leg = '<ul class="fov-leg">' + items.filter(function(o){ var key = o.tid+o.it.id+o.f.w+'x'+o.f.h; if (seen[key] || Math.max(o.f.w, o.f.h) < legendMin) return false; return (seen[key] = true); }).map(function(o){
-      return '<li data-jump="'+o.tid+':'+o.it.id+'"><i style="background:'+OBS[o.tid]+'"></i>'+esc(NAMES[o.tid]+' '+o.it.name + (o.f.l && o.f.l!==o.it.name && !/^Module|^Champ/.test(o.f.l) ? ', '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
+      return '<li data-jump="'+o.tid+':'+o.it.id+'"><i style="background:'+OBS[o.tid]+'"></i>'+typeIcon(o.it.type, 12)+' '+esc(NAMES[o.tid]+' '+o.it.name + (o.f.l && o.f.l!==o.it.name && !/^Module|^Champ/.test(o.f.l) ? ', '+o.f.l : ''))+'<span>'+(o.f.circle ? 'Ø '+ang(o.f.w) : ang(o.f.w)+' × '+ang(o.f.h))+'</span></li>';
     }).join('') + '</ul>';
     return '<div class="fov">' + s + leg + '</div>';
   }
 
   function compare(){
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Tous les observatoires sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<p class="inst-sum">Fermi capte les rayons gamma, des dizaines de millions à des centaines de milliards de fois plus énergétiques que la lumière visible, et Chandra les rayons X. Hubble couvre l\'ultraviolet et le visible avec une grande finesse sur un champ minuscule. Webb prolonge vers l\'infrarouge moyen, Spitzer allait jusqu\'à l\'infrarouge lointain. Euclid et Gaia font l\'inverse : un domaine spectral étroit, mais un champ des centaines de fois plus grand, pour cartographier le ciel entier.</p></div>';
-    var key = '<ul class="obs-key">' + ORDER.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage()+'</div>';
-    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Tous les observatoires</h5>'+cmpFov(ORDER, 600)+'</div><div><h5>Agrandissement : Hubble et Webb seuls</h5>'+cmpFov(['hubble','jwst'], 20)+'</div></div>' +
-      '<div class="cap">À gauche, les champs de Hubble et de Webb se réduisent au petit amas de rectangles au centre : chacun tient plusieurs centaines de fois dans celui d\'Euclid. Le champ de Gaia est une valeur approchée ; celui du WFI de Roman est dessiné détecteur par détecteur.</div></div>';
+    var LIST = cmpList().map(function(t){ return t.id; }), ty = OBS_CMP.type, ninst = 0;
+    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) ninst++; }); });
+    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Ce qui est comparable, sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
+      '<div>' + cmpSelector() + '</div></div>';
+    /* types d'instrument : légende et filtre (data-itype) */
+    var used = {}; LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; }); });
+    s += '<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
+      '<button class="chip" data-itype="" aria-pressed="' + !ty + '">Tous <small>' + Object.keys(used).reduce(function(a, k){ return a + used[k]; }, 0) + '</small></button>' +
+      INST_TYPES.filter(function(x){ return used[x.id]; }).map(function(x){ return '<button class="chip" data-itype="' + x.id + '" aria-pressed="' + (ty === x.id) + '">' + typeIcon(x.id, 14) + ' ' + OBS_T(x.label) + ' <small>' + used[x.id] + '</small></button>'; }).join('') +
+      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>';
+    if (!ninst) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
+    var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
+    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage(LIST)+'</div>';
+    /* champs de vue : figure d'ensemble, puis agrandissement des champs cent fois plus petits que le plus grand */
+    var big = 0, small = [];
+    LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
+    LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
+    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
+      (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
+      '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
     var rows = '';
-    ORDER.forEach(function(tid){
-      INST_DATA[tid].instruments.forEach(function(it, i){
-        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(i===0?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(i===0?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td>'+esc(it.kind)+'</td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+    LIST.forEach(function(tid){
+      var first = true;
+      INST_DATA[tid].instruments.forEach(function(it){
+        if (!keepInst(it)) return;
+        var T = instType(it.type);
+        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+        first = false;
       });
     });
-    s += Optics.compareFocal(OBS, NAMES);
-    s += Orbits.renderCompare(OBS, NAMES);
+    s += Optics.compareFocal(OBS, NAMES, LIST, keepInst);
+    s += Orbits.renderCompare(OBS, NAMES, LIST);
     s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
@@ -4313,7 +4478,7 @@ var InstrumentsUI = (function(){
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
-      ORDER.map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
+      cmpList().map(function(t){ return t.id; }).map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
     return { pills:pillsFor('comparer'), nav:nav, main:compare(), sel:null };
   }
 
@@ -5131,7 +5296,7 @@ var EN_UI = {
   "Éclater":"Explode", "Écarter les pièces":"Pull the parts apart", "Éclater les pièces":"Explode the parts", "Soleil réel":"Real Sun", "Éclairer la maquette comme elle l'est réellement en vol":"Light the model as it really is in flight",
   "Rotation":"Spin", "Rotation automatique":"Automatic rotation", "Recadrer":"Reset view", "Recadrer la vue":"Reset the view", "Réessayer":"Retry", "Affichage":"Display", "Vue 3D":"3D view", "Observatoire":"Observatory",
   "Fiche":"Overview", "Pièces":"Parts", "Instruments et données":"Instruments and data", "Mission et données":"Mission and data", "Voir les instruments et les données":"See the instruments and data", "Voir la mission et les données":"See the mission and data", "Mission et traitements":"Mission and processing", "Déroulé, exploitation, chaîne de traitement":"Timeline, operations, processing pipeline",
-  "Miroir primaire":"Primary mirror", "Focale":"Focal length", "Miroirs":"Mirrors", "Terre, orbite initiale et Lune à l'échelle.":"Earth, initial orbit and Moon to scale.", "XMM-Newton ne vise qu'entre 70° et 110° du Soleil, pour garder les miroirs à l'ombre et les panneaux face au Soleil : une bande d'environ 40° de large, qui fait le tour du ciel en un an (XMM-Newton Users Handbook). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"XMM-Newton only points between 70° and 110° from the Sun, to keep the mirrors in shade and the arrays facing the Sun: a band about 40° wide, which sweeps round the whole sky in a year (XMM-Newton Users Handbook). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "XMM-Newton First Light: X-Rays from the LMC (APOD, 11 février 2000)":"XMM-Newton First Light: X-Rays from the LMC (APOD, 11 February 2000)", "m de long":"m long", "58 coques emboîtées (8 dessinées)":"58 nested shells (8 drawn)", "Ø 70 à 30,6 cm · 60 cm de long":"Ø 70 to 30.6 cm · 60 cm long", "réseaux RGA":"RGA gratings", "(deux télescopes sur trois)":"(two telescopes out of three)", "rayons X":"X-rays", "focale 7,5 m":"focal length 7.5 m", "Schéma optique d'un télescope de XMM-Newton":"Optical diagram of an XMM-Newton telescope", "miroirs":"mirrors", "tube":"tube", "plan focal":"focal plane", "apogée ≈ 114 000 km":"apogee ≈ 114,000 km", "un tour en 48 h":"one orbit in 48 h", "XMM-Newton factsheet":"XMM-Newton factsheet", "The Telescopes of XMM-Newton":"The Telescopes of XMM-Newton", "EPIC (caméras pn, MOS1 et MOS2)":"EPIC (pn, MOS1 and MOS2 cameras)", "RGS1 et RGS2, premier ordre":"RGS1 and RGS2, first order", "0,5–1 keV en rouge, 1–2 keV en vert, 2–12 keV en bleu":"0.5–1 keV in red, 1–2 keV in green, 2–12 keV in blue", "M101, galaxie du Moulinet":"M101, Pinwheel Galaxy", "flux (photons/s/cm²/Å)":"flux (photons/s/cm²/Å)", "XMM-Newton Science Archive (ESA), miroir du HEASARC":"XMM-Newton Science Archive (ESA), HEASARC mirror", "Temps de pose (pn)":"Exposure time (pn)", "image du ciel du pipeline, découpée, étirement asinh pour le site":"pipeline sky image, cropped, asinh stretch for the site", "spectre « fluxed » du pipeline (rgsfluxer), 1 000 intervalles de 0,036 Å, de 6 à 38 Å tracés":"pipeline fluxed spectrum (rgsfluxer), 1,000 bins of 0.036 Å, 6 to 38 Å plotted", "non indiqué":"not given", "Photomètre":"Photometer", "lame correctrice, 0,95 m":"corrector plate, 0.95 m", "miroir sphérique, 1,4 m":"spherical mirror, 1.4 m", "plan focal courbe":"curved focal plane", "42 CCD, Ø ≈ 0,39 m":"42 CCDs, Ø ≈ 0.39 m", "lumière des étoiles":"starlight", "focale 1,40 m · f/1,47":"focal length 1.40 m · f/1.47", "lame au centre de courbure : ≈ 2,8 m (déduit)":"plate at the centre of curvature: ≈ 2.8 m (derived)", "Schéma optique du photomètre de Kepler":"Optical diagram of the Kepler photometer", "Trimestre":"Quarter", "temps depuis le début du trimestre (jours)":"time since start of quarter (days)", "PDCSAP_FLUX du pipeline SOC, longue cadence (29,4 min), points de qualité 0":"SOC pipeline PDCSAP_FLUX, long cadence (29.4 min), quality-0 points", "division par la médiane, aucun lissage":"divided by the median, no smoothing", "s'est éloigné jusqu'à ≈ 1,1 UA de la Terre en 2018.":"drifted to ≈ 1.1 AU from the Earth by 2018.", "Kepler, dossier de presse du lancement (février 2009)":"Kepler, launch press kit (February 2009)", "photomètre":"photometer", "m de haut":"m tall", "Caméras":"Cameras", "lentilles":"lenses", "Écran conique":"Conical screen", "Terre, orbite nominale et Lune à l'échelle.":"Earth, nominal orbit and Moon to scale.", "apogée ≈ 373 000 km":"apogee ≈ 373,000 km", "un tour en 13,7 jours":"one orbit in 13.7 days", "pupille de 10,5 cm":"10.5 cm entrance pupil", "premier groupe":"first group", "second groupe":"second group", "CCD, 63 mm":"CCDs, 63 mm", "capot":"hood", "lumière du ciel, jusqu'à 12° de l'axe":"light from the sky, up to 12° off axis", "focale ≈ 147 mm (f/1,4)":"focal length ≈ 147 mm (f/1.4)", "Schéma optique d'une caméra de TESS":"Optical diagram of a TESS camera", "Secteur":"Sector", "PDCSAP_FLUX du pipeline SPOC, cadence de 2 min, points de qualité 0":"SPOC pipeline PDCSAP_FLUX, 2-min cadence, quality-0 points", "division par la médiane, moyenne par paquets de 5 points (10 min)":"divided by the median, averaged in groups of 5 points (10 min)", "temps depuis le début du secteur (jours)":"time since start of sector (days)", "TESS, fiche de mission (2015)":"TESS, mission fact sheet (2015)", "GLAST Observatory Renamed for Fermi, Reveals Entire Gamma-Ray Sky (26 août 2008)":"GLAST Observatory Renamed for Fermi, Reveals Entire Gamma-Ray Sky (26 August 2008)", "LIGO, Virgo, Fermi-GBM et INTEGRAL":"LIGO, Virgo, Fermi-GBM and INTEGRAL", "Fermi GBM, description de l'instrument":"Fermi GBM, instrument description", "Fermi Gamma-ray Space Telescope, fiche de mission":"Fermi Gamma-ray Space Telescope, mission fact sheet", "Bandes":"Bands", "8,0 µm en rouge, 4,5 µm en vert, 3,6 µm en bleu":"8.0 µm in red, 4.5 µm in green, 3.6 µm in blue", "M51, galaxie du Tourbillon":"M51, the Whirlpool Galaxy", "découpes des mosaïques SEIP, étirement asinh par bande, superposées pour le site":"cutouts of the SEIP mosaics, asinh stretch per band, combined for the site", "découpe de la mosaïque SEIP, étirement asinh pour le site":"cutout of the SEIP mosaic, asinh stretch for the site", "Catalogue":"Catalogue", "Sources":"Sources", "Sursauts":"Bursts", "4FGL-DR4, 14 ans de données du LAT":"4FGL-DR4, 14 years of LAT data", "sursauts gamma du GBM":"GBM gamma-ray bursts", "T90 : durée pendant laquelle arrivent 90 % des photons du sursaut":"T90: the time over which 90% of the burst's photons arrive", "nombre de sursauts":"number of bursts", "latitude galactique (°)":"Galactic latitude (°)", "longitude galactique (°), centre de la Galaxie au milieu":"Galactic longitude (°), centre of the Galaxy in the middle", "durée T90, en puissance de dix de secondes (0 = 1 s, 1 = 10 s, 2 = 100 s)":"T90 duration, as a power of ten of seconds (0 = 1 s, 1 = 10 s, 2 = 100 s)", "Champ":"Field", "Rayons gamma":"Gamma rays", "Gamma":"Gamma", "sans miroir":"no mirror", "Domaine":"Range", "m d'envergure":"m span", "Fermi ne vise pas de cible : en mode relevé, il balaie le ciel entier en deux orbites, environ trois heures. Seule la Terre, sous le satellite, masque une partie du ciel (Fermi Cicerone). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Fermi does not point at targets: in survey mode, it sweeps the whole sky in two orbits, about three hours. Only the Earth, below the spacecraft, hides part of the sky (Fermi Cicerone). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "Altitude":"Altitude", "≈ 565 km au lancement (valeur du jour ci-dessus)":"≈ 565 km at launch (today's value above)", "96,5 min":"96.5 min", "25,6°":"25.6°", "Précession de l'orbite":"Orbit precession", "53,4 jours":"53.4 days", "Anomalie de l'Atlantique Sud":"South Atlantic Anomaly", "≈ 15 % du temps d'observation perdu":"≈ 15% of observing time lost", "photon gamma":"gamma-ray photon", "bouclier de scintillateurs":"scintillator shield", "trajectographe : 18 plans de silicium":"tracker: 18 silicon planes", "tungstène dans les 16 premiers":"tungsten in the first 16", "calorimètre : 8 couches":"calorimeter: 8 layers", "de 12 cristaux de CsI":"of 12 CsI crystals", "conversion en paire":"pair conversion", "Une des 16 tours, en coupe ; schéma de principe":"One of the 16 towers, in section; schematic", "Principe du LAT de Fermi : une tour en coupe":"Principle of Fermi's LAT: one tower in section", "Télescope de grande surface (LAT)":"Large Area Telescope (LAT)", "ΔE/E ≈ 4 % à 5 GeV · 2 % à 196 GeV":"ΔE/E ≈ 4% at 5 GeV · 2% at 196 GeV", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "15 à 25 (mode SED)":"15 to 25 (SED mode)", "64 à 128 (SL, LL) · ≈ 600 (SH, LH)":"64 to 128 (SL, LL) · ≈ 600 (SH, LH)", "1,8″ à 5,1″":"1.8″ to 5.1″", "2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)":"2.55″ (24 µm) · 9.98″ (70 µm) · 16–18″ (160 µm)", "Toute la mission, vue du nord de l'écliptique":"The whole mission, seen from north of the ecliptic", "Distance à la Terre à la fin":"Distance from the Earth at the end", "Éloignement moyen":"Average drift", "Distance au Soleil":"Distance from the Sun", "sens du mouvement":"direction of motion", "0,5 UA (75 millions de km)":"0.5 AU (75 million km)", "UA de la Terre":"AU from the Earth", "tourne autour du Soleil":"orbits the Sun", "dans le sillage de la Terre,":"in the Earth's wake,", "s'éloigne de ≈ 0,12 UA par an.":"drifting away by ≈ 0.12 AU a year.", "Schéma de principe, vu du nord":"Schematic, seen from north", "de l'écliptique.":"of the ecliptic.", "Le Soleil est au centre, le cercle en pointillé est l'orbite de la Terre. Le repère tourne avec la Terre, qui reste donc fixe à droite : la courbe montre comment l'observatoire prend du retard sur elle, année après année. Positions réelles (éphémérides JPL Horizons), une tous les dix jours, distances à l'échelle.":"The Sun is at the centre, the dashed circle is the Earth's orbit. The frame turns with the Earth, which therefore stays fixed on the right: the curve shows how the observatory falls behind it, year after year. Real positions (JPL Horizons ephemerides), one every ten days, distances to scale.", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006).", "Chambre des instruments":"Instrument chamber", "Secondaire, 0,12 m":"Secondary, 0.12 m", "Miroir primaire, 0,85 m":"Primary mirror, 0.85 m", "Schéma optique de Spitzer, à l'échelle":"Spitzer optical diagram, to scale", "Orbite autour du Soleil, dans le sillage de la Terre":"Orbit around the Sun, trailing the Earth", "Ensemble cryogénique (CTA)":"Cryogenic telescope assembly (CTA)", "Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1":"Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1", "Rayons X":"X-rays", "UV et visible":"UV and visible", "Infrarouge":"Infrared", "Astrométrie":"Astrometry", "UV, visible":"UV, visible", "Astrom.":"Astrom.", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
+  "Miroir primaire":"Primary mirror", "Focale":"Focal length", "Miroirs":"Mirrors", "Orbite basse":"Low Earth orbit", "Orbite terrestre très elliptique":"Highly elliptical Earth orbit", "Autour de L2":"Around L2", "Autour du Soleil":"Around the Sun", "autour de la Terre, à quelques centaines de kilomètres":"around the Earth, a few hundred kilometres up", "autour de la Terre, jusqu'à des centaines de milliers de kilomètres":"around the Earth, out to hundreds of thousands of kilometres", "autour du point de Lagrange L2, à 1,5 million de kilomètres":"around the L2 Lagrange point, 1.5 million kilometres away", "sur une orbite solaire, dans le sillage de la Terre":"on a solar orbit, trailing the Earth", "Autour de la Terre, à quelques centaines de kilomètres.":"Around the Earth, a few hundred kilometres up.", "Autour de la Terre, jusqu'à des centaines de milliers de kilomètres.":"Around the Earth, out to hundreds of thousands of kilometres.", "Autour du point de Lagrange L2, à 1,5 million de kilomètres.":"Around the L2 Lagrange point, 1.5 million kilometres away.", "Sur une orbite solaire, dans le sillage de la Terre.":"On a solar orbit, trailing the Earth.", "Observatoire généraliste":"General observatory", "Relevé du ciel":"Sky survey", "Exoplanètes par transits":"Transiting exoplanets", "Sursauts et ciel variable":"Bursts and the variable sky", "temps d'observation ouvert à tous par appel à propositions":"observing time open to all through calls for proposals", "cartographie systématique d'une grande partie du ciel":"systematic mapping of a large part of the sky", "suivi de l'éclat des étoiles pour y voir passer des planètes":"monitoring the brightness of stars to catch planets passing in front", "détection rapide des phénomènes brefs":"fast detection of brief phenomena", "Temps d'observation ouvert à tous par appel à propositions.":"Observing time open to all through calls for proposals.", "Cartographie systématique d'une grande partie du ciel.":"Systematic mapping of a large part of the sky.", "Suivi de l'éclat des étoiles pour y voir passer des planètes.":"Monitoring the brightness of stars to catch planets passing in front.", "Détection rapide des phénomènes brefs.":"Fast detection of brief phenomena.", "Imageur":"Imager", "Imageur et spectrographe":"Imager and spectrograph", "Spectrographe":"Spectrograph", "Photomètre":"Photometer", "Coronographe":"Coronagraph", "Guidage":"Guiding", "Détecteur de sursauts":"Burst detector", "Polarimètre":"Polarimeter", "Comparer par":"Compare by", "famille d'orbite":"orbit family", "type de mission":"mission type", "domaine spectral":"spectral range", "Groupe":"Group", "Tous":"All", "Tous les observatoires : les familles sont mélangées, les écarts de taille et d'orbite peuvent écraser les figures.":"All observatories: families are mixed, and differences in size and orbit can crush the figures.", "Ce qui est comparable, sur les mêmes axes. Cliquer un instrument ouvre sa fiche.":"What is comparable, on the same axes. Click an instrument to open its page.", "Types d'instrument":"Instrument types", "Filtrer par type d'instrument":"Filter by instrument type", "Observatoires comparés":"Observatories compared", "Aucun champ de vue pour cette sélection.":"No field of view for this selection.", "Aucun instrument de ce type dans ce groupe.":"No instrument of this type in this group.", "Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère. Le champ de Gaia est une valeur approchée.":"Fields to the same scale; for large fields, the full Moon gives a reference. Gaia's field is an approximate value.", "Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère. Les plus petits champs sont agrandis à droite. Le champ de Gaia est une valeur approchée.":"Fields to the same scale; for large fields, the full Moon gives a reference. The smallest fields are enlarged on the right. Gaia's field is an approximate value.", "Taille réelle des mosaïques de détecteurs, à la même échelle. Espaces entre détecteurs indicatifs pour Gaia, Webb, Kepler et XMM-Newton ; un seul module de NIRCam est dessiné.":"True size of the detector mosaics, to the same scale. Gaps between detectors are indicative for Gaia, Webb, Kepler and XMM-Newton; only one NIRCam module is drawn.", "Orbites autour de la Terre, à la même échelle":"Orbits around the Earth, to the same scale", "Orbites autour du Soleil, à la même échelle":"Orbits around the Sun, to the same scale", "Terre, orbites et orbite de la Lune à la même échelle, vues de dessus ; altitudes et périodes des fiches de chaque observatoire. Les orbites très elliptiques sont dessinées avec leur forme, leur orientation est arbitraire.":"Earth, orbits and the Moon's orbit to the same scale, seen from above; altitudes and periods from each observatory's page. Highly elliptical orbits are drawn with their shape; their orientation is arbitrary.", "Terre, orbites et orbite de la Lune à la même échelle, vues de dessus ; altitudes et périodes des fiches de chaque observatoire. Les orbites très elliptiques sont dessinées avec leur forme, leur orientation est arbitraire. À cette échelle, une orbite basse se confond presque avec la Terre.":"Earth, orbits and the Moon's orbit to the same scale, seen from above; altitudes and periods from each observatory's page. Highly elliptical orbits are drawn with their shape; their orientation is arbitrary. At this scale, a low orbit almost merges with the Earth.", "Trajectoires réelles sur toute la mission (JPL Horizons), dans le repère qui tourne avec la Terre : la Terre reste fixe à droite, et chaque courbe montre comment l'observatoire prend du retard sur elle, année après année.":"Real trajectories over the whole mission (JPL Horizons), in the frame that turns with the Earth: the Earth stays fixed on the right, and each curve shows how the observatory falls behind it, year after year.", "orbite de la Lune":"Moon's orbit", "Soleil":"Sun", "Terre":"Earth", "100 000 km":"100,000 km", "1 000 km":"1,000 km", "0,5 UA":"0.5 AU", "Chargement des trajectoires…":"Loading trajectories…", "Les maquettes du groupe choisi sont posées côte à côte à leur taille réelle, à côté d'une silhouette humaine de 1,75 m.":"The models of the chosen group stand side by side at their real size, next to a 1.75 m human figure.", "À la même échelle":"To the same scale", "Équipements du véhicule":"Spacecraft equipment", "Tous les observatoires côte à côte, en taille réelle":"All observatories side by side, at real size", "Terre, orbite initiale et Lune à l'échelle.":"Earth, initial orbit and Moon to scale.", "XMM-Newton ne vise qu'entre 70° et 110° du Soleil, pour garder les miroirs à l'ombre et les panneaux face au Soleil : une bande d'environ 40° de large, qui fait le tour du ciel en un an (XMM-Newton Users Handbook). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"XMM-Newton only points between 70° and 110° from the Sun, to keep the mirrors in shade and the arrays facing the Sun: a band about 40° wide, which sweeps round the whole sky in a year (XMM-Newton Users Handbook). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "XMM-Newton First Light: X-Rays from the LMC (APOD, 11 février 2000)":"XMM-Newton First Light: X-Rays from the LMC (APOD, 11 February 2000)", "m de long":"m long", "58 coques emboîtées (8 dessinées)":"58 nested shells (8 drawn)", "Ø 70 à 30,6 cm · 60 cm de long":"Ø 70 to 30.6 cm · 60 cm long", "réseaux RGA":"RGA gratings", "(deux télescopes sur trois)":"(two telescopes out of three)", "rayons X":"X-rays", "focale 7,5 m":"focal length 7.5 m", "Schéma optique d'un télescope de XMM-Newton":"Optical diagram of an XMM-Newton telescope", "miroirs":"mirrors", "tube":"tube", "plan focal":"focal plane", "apogée ≈ 114 000 km":"apogee ≈ 114,000 km", "un tour en 48 h":"one orbit in 48 h", "XMM-Newton factsheet":"XMM-Newton factsheet", "The Telescopes of XMM-Newton":"The Telescopes of XMM-Newton", "EPIC (caméras pn, MOS1 et MOS2)":"EPIC (pn, MOS1 and MOS2 cameras)", "RGS1 et RGS2, premier ordre":"RGS1 and RGS2, first order", "0,5–1 keV en rouge, 1–2 keV en vert, 2–12 keV en bleu":"0.5–1 keV in red, 1–2 keV in green, 2–12 keV in blue", "M101, galaxie du Moulinet":"M101, Pinwheel Galaxy", "flux (photons/s/cm²/Å)":"flux (photons/s/cm²/Å)", "XMM-Newton Science Archive (ESA), miroir du HEASARC":"XMM-Newton Science Archive (ESA), HEASARC mirror", "Temps de pose (pn)":"Exposure time (pn)", "image du ciel du pipeline, découpée, étirement asinh pour le site":"pipeline sky image, cropped, asinh stretch for the site", "spectre « fluxed » du pipeline (rgsfluxer), 1 000 intervalles de 0,036 Å, de 6 à 38 Å tracés":"pipeline fluxed spectrum (rgsfluxer), 1,000 bins of 0.036 Å, 6 to 38 Å plotted", "non indiqué":"not given", "Photomètre":"Photometer", "lame correctrice, 0,95 m":"corrector plate, 0.95 m", "miroir sphérique, 1,4 m":"spherical mirror, 1.4 m", "plan focal courbe":"curved focal plane", "42 CCD, Ø ≈ 0,39 m":"42 CCDs, Ø ≈ 0.39 m", "lumière des étoiles":"starlight", "focale 1,40 m · f/1,47":"focal length 1.40 m · f/1.47", "lame au centre de courbure : ≈ 2,8 m (déduit)":"plate at the centre of curvature: ≈ 2.8 m (derived)", "Schéma optique du photomètre de Kepler":"Optical diagram of the Kepler photometer", "Trimestre":"Quarter", "temps depuis le début du trimestre (jours)":"time since start of quarter (days)", "PDCSAP_FLUX du pipeline SOC, longue cadence (29,4 min), points de qualité 0":"SOC pipeline PDCSAP_FLUX, long cadence (29.4 min), quality-0 points", "division par la médiane, aucun lissage":"divided by the median, no smoothing", "s'est éloigné jusqu'à ≈ 1,1 UA de la Terre en 2018.":"drifted to ≈ 1.1 AU from the Earth by 2018.", "Kepler, dossier de presse du lancement (février 2009)":"Kepler, launch press kit (February 2009)", "photomètre":"photometer", "m de haut":"m tall", "Caméras":"Cameras", "lentilles":"lenses", "Écran conique":"Conical screen", "Terre, orbite nominale et Lune à l'échelle.":"Earth, nominal orbit and Moon to scale.", "apogée ≈ 373 000 km":"apogee ≈ 373,000 km", "un tour en 13,7 jours":"one orbit in 13.7 days", "pupille de 10,5 cm":"10.5 cm entrance pupil", "premier groupe":"first group", "second groupe":"second group", "CCD, 63 mm":"CCDs, 63 mm", "capot":"hood", "lumière du ciel, jusqu'à 12° de l'axe":"light from the sky, up to 12° off axis", "focale ≈ 147 mm (f/1,4)":"focal length ≈ 147 mm (f/1.4)", "Schéma optique d'une caméra de TESS":"Optical diagram of a TESS camera", "Secteur":"Sector", "PDCSAP_FLUX du pipeline SPOC, cadence de 2 min, points de qualité 0":"SPOC pipeline PDCSAP_FLUX, 2-min cadence, quality-0 points", "division par la médiane, moyenne par paquets de 5 points (10 min)":"divided by the median, averaged in groups of 5 points (10 min)", "temps depuis le début du secteur (jours)":"time since start of sector (days)", "TESS, fiche de mission (2015)":"TESS, mission fact sheet (2015)", "GLAST Observatory Renamed for Fermi, Reveals Entire Gamma-Ray Sky (26 août 2008)":"GLAST Observatory Renamed for Fermi, Reveals Entire Gamma-Ray Sky (26 August 2008)", "LIGO, Virgo, Fermi-GBM et INTEGRAL":"LIGO, Virgo, Fermi-GBM and INTEGRAL", "Fermi GBM, description de l'instrument":"Fermi GBM, instrument description", "Fermi Gamma-ray Space Telescope, fiche de mission":"Fermi Gamma-ray Space Telescope, mission fact sheet", "Bandes":"Bands", "8,0 µm en rouge, 4,5 µm en vert, 3,6 µm en bleu":"8.0 µm in red, 4.5 µm in green, 3.6 µm in blue", "M51, galaxie du Tourbillon":"M51, the Whirlpool Galaxy", "découpes des mosaïques SEIP, étirement asinh par bande, superposées pour le site":"cutouts of the SEIP mosaics, asinh stretch per band, combined for the site", "découpe de la mosaïque SEIP, étirement asinh pour le site":"cutout of the SEIP mosaic, asinh stretch for the site", "Catalogue":"Catalogue", "Sources":"Sources", "Sursauts":"Bursts", "4FGL-DR4, 14 ans de données du LAT":"4FGL-DR4, 14 years of LAT data", "sursauts gamma du GBM":"GBM gamma-ray bursts", "T90 : durée pendant laquelle arrivent 90 % des photons du sursaut":"T90: the time over which 90% of the burst's photons arrive", "nombre de sursauts":"number of bursts", "latitude galactique (°)":"Galactic latitude (°)", "longitude galactique (°), centre de la Galaxie au milieu":"Galactic longitude (°), centre of the Galaxy in the middle", "durée T90, en puissance de dix de secondes (0 = 1 s, 1 = 10 s, 2 = 100 s)":"T90 duration, as a power of ten of seconds (0 = 1 s, 1 = 10 s, 2 = 100 s)", "Champ":"Field", "Rayons gamma":"Gamma rays", "Gamma":"Gamma", "sans miroir":"no mirror", "Domaine":"Range", "m d'envergure":"m span", "Fermi ne vise pas de cible : en mode relevé, il balaie le ciel entier en deux orbites, environ trois heures. Seule la Terre, sous le satellite, masque une partie du ciel (Fermi Cicerone). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Fermi does not point at targets: in survey mode, it sweeps the whole sky in two orbits, about three hours. Only the Earth, below the spacecraft, hides part of the sky (Fermi Cicerone). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "Altitude":"Altitude", "≈ 565 km au lancement (valeur du jour ci-dessus)":"≈ 565 km at launch (today's value above)", "96,5 min":"96.5 min", "25,6°":"25.6°", "Précession de l'orbite":"Orbit precession", "53,4 jours":"53.4 days", "Anomalie de l'Atlantique Sud":"South Atlantic Anomaly", "≈ 15 % du temps d'observation perdu":"≈ 15% of observing time lost", "photon gamma":"gamma-ray photon", "bouclier de scintillateurs":"scintillator shield", "trajectographe : 18 plans de silicium":"tracker: 18 silicon planes", "tungstène dans les 16 premiers":"tungsten in the first 16", "calorimètre : 8 couches":"calorimeter: 8 layers", "de 12 cristaux de CsI":"of 12 CsI crystals", "conversion en paire":"pair conversion", "Une des 16 tours, en coupe ; schéma de principe":"One of the 16 towers, in section; schematic", "Principe du LAT de Fermi : une tour en coupe":"Principle of Fermi's LAT: one tower in section", "Télescope de grande surface (LAT)":"Large Area Telescope (LAT)", "ΔE/E ≈ 4 % à 5 GeV · 2 % à 196 GeV":"ΔE/E ≈ 4% at 5 GeV · 2% at 196 GeV", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.", "15 à 25 (mode SED)":"15 to 25 (SED mode)", "64 à 128 (SL, LL) · ≈ 600 (SH, LH)":"64 to 128 (SL, LL) · ≈ 600 (SH, LH)", "1,8″ à 5,1″":"1.8″ to 5.1″", "2,55″ (24 µm) · 9,98″ (70 µm) · 16–18″ (160 µm)":"2.55″ (24 µm) · 9.98″ (70 µm) · 16–18″ (160 µm)", "Toute la mission, vue du nord de l'écliptique":"The whole mission, seen from north of the ecliptic", "Distance à la Terre à la fin":"Distance from the Earth at the end", "Éloignement moyen":"Average drift", "Distance au Soleil":"Distance from the Sun", "sens du mouvement":"direction of motion", "0,5 UA (75 millions de km)":"0.5 AU (75 million km)", "UA de la Terre":"AU from the Earth", "tourne autour du Soleil":"orbits the Sun", "dans le sillage de la Terre,":"in the Earth's wake,", "s'éloigne de ≈ 0,12 UA par an.":"drifting away by ≈ 0.12 AU a year.", "Schéma de principe, vu du nord":"Schematic, seen from north", "de l'écliptique.":"of the ecliptic.", "Le Soleil est au centre, le cercle en pointillé est l'orbite de la Terre. Le repère tourne avec la Terre, qui reste donc fixe à droite : la courbe montre comment l'observatoire prend du retard sur elle, année après année. Positions réelles (éphémérides JPL Horizons), une tous les dix jours, distances à l'échelle.":"The Sun is at the centre, the dashed circle is the Earth's orbit. The frame turns with the Earth, which therefore stays fixed on the right: the curve shows how the observatory falls behind it, year after year. Real positions (JPL Horizons ephemerides), one every ten days, distances to scale.", "Spitzer ne visait qu'entre 82,5° et 120° du Soleil, pour garder le télescope à l'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).":"Spitzer only pointed between 82.5° and 120° from the Sun, to keep the telescope in the shade of the solar array: about a third of the sky at any one time, the whole sky in six months (Spitzer Telescope Handbook; Werner et al. 2006).", "Chambre des instruments":"Instrument chamber", "Secondaire, 0,12 m":"Secondary, 0.12 m", "Miroir primaire, 0,85 m":"Primary mirror, 0.85 m", "Schéma optique de Spitzer, à l'échelle":"Spitzer optical diagram, to scale", "Orbite autour du Soleil, dans le sillage de la Terre":"Orbit around the Sun, trailing the Earth", "Ensemble cryogénique (CTA)":"Cryogenic telescope assembly (CTA)", "Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1":"Werner et al. 2004, The Spitzer Space Telescope Mission, ApJS 154, 1", "Rayons X":"X-rays", "UV et visible":"UV and visible", "Infrarouge":"Infrared", "Astrométrie":"Astrometry", "UV, visible":"UV, visible", "Astrom.":"Astrom.", "Plan focal":"Focal plane", "Encombrement":"Size", "Masse au lancement":"Launch mass", "Lancement":"Launch", "m de long":"m long", "m de haut":"m tall", "m de diamètre":"m across",
   "Cliquer une pièce dans la vue 3D ou dans la liste. Le curseur « Éclater » les écarte pour voir comment elles s'assemblent.":"Click a part in the 3D view or in the list. The “Explode” slider pulls them apart to show how they fit together.",
   "Les pièces principales de l'observatoire.":"The main parts of the observatory.", "Voir le trajet de la lumière":"See the light path",
   "Vue 3D indisponible":"3D view unavailable", "Ce navigateur n'a pas pu ouvrir WebGL. Les fiches et les instruments restent consultables.":"This browser could not start WebGL. The overviews and instrument pages still work.",
@@ -5270,7 +5435,7 @@ var EN_RULES = [
   [/ Détecteurs et espaces entre eux à l'échelle\./g, " Detectors and the gaps between them are to scale."],
   [/^centré vers /, "centred near "], [/^transmet au-delà de /, "passes beyond "], [/, filtre large/, ", wide filter"], [/, filtre à bande moyenne/, ", medium-band filter"], [/, filtre étroit/, ", narrow filter"],
   [/, filtre passe-haut/, ", long-pass filter"], [/, filtre de coronographe/, ", coronagraph filter"], [/, élément dispersif/, ", dispersing element"], [/, bande photométrique/, ", photometric band"],
-  [/^minute (\d+) sur (\d+), au soleil$/, "minute $1 of $2, in sunlight"], [/^minute (\d+) sur (\d+), dans l'ombre$/, "minute $1 of $2, in shadow"], [/^caméra (\d), CCD (\d)$/, "camera $1, CCD $2"], [/^OM, filtre (\w+) \(≈ (\d+) nm\)$/, "OM, $1 filter (≈ $2 nm)"], [/^images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×([\d,]+) pour le site$/, function(m, a){ return "PPS images of the three cameras summed per band, logarithmic stretch, enlarged ×" + a.replace(",", ".") + " for the site"; }], [/^photomètre, module (\d+), sortie (\d+)$/, "photometer, module $1, output $2"], [/^(.+) \(KIC (\d+)\)$/, "$1 (KIC $2)"], [/^(\d[\d ]*) tracés$/, "$1 plotted"], [/^(.+) \(TIC (\d+)\)$/, "$1 (TIC $2)"], [/^≈ (\d+) km d'altitude$/, "≈ $1 km altitude"], [/^Un tour toutes les ([\d,]+) min\.$/, function(_, a){ return "One orbit every " + a.replace(",", ".") + " min."; }], [/^Où est (.+) en ce moment$/, "Where $1 is right now"], [/^Position de (.+) au-dessus de la Terre et trace de son orbite$/, "$1's position over the Earth and its ground track"], [/^Orbite de (.+) autour de la Terre, à l'échelle$/, "$1's orbit around the Earth, to scale"],
+  [/^minute (\d+) sur (\d+), au soleil$/, "minute $1 of $2, in sunlight"], [/^minute (\d+) sur (\d+), dans l'ombre$/, "minute $1 of $2, in shadow"], [/^Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau\. (\d+) observatoires?, (\d+) instruments? affichés\.$/, function(m, a, b){ return 'Each instrument carries the colour and symbol of its type, on every figure and in the table. ' + a + ' observator' + (a > 1 ? 'ies' : 'y') + ', ' + b + ' instrument' + (b > 1 ? 's' : '') + ' shown.'; }], [/^Agrandissement : (.+)$/, "Enlargement: $1"], [/^≈ ([\d  ]+) km · ([\d,]+) (h|jours|min)$/, function(m, a, b, u){ return '≈ ' + a.replace(/[  ]/g, ',') + ' km · ' + b.replace(',', '.') + ' ' + (u === 'jours' ? 'days' : u); }], [/^(Orbite basse|Orbite terrestre très elliptique|Autour de L2|Autour du Soleil|Observatoire généraliste|Relevé du ciel|Exoplanètes par transits|Sursauts et ciel variable|Rayons gamma|Rayons X|UV et visible|Infrarouge|Astrométrie) : (.+)$/, function(m, a, b){ return (EN_UI[a] || a) + ': ' + b; }], [/^caméra (\d), CCD (\d)$/, "camera $1, CCD $2"], [/^OM, filtre (\w+) \(≈ (\d+) nm\)$/, "OM, $1 filter (≈ $2 nm)"], [/^images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×([\d,]+) pour le site$/, function(m, a){ return "PPS images of the three cameras summed per band, logarithmic stretch, enlarged ×" + a.replace(",", ".") + " for the site"; }], [/^photomètre, module (\d+), sortie (\d+)$/, "photometer, module $1, output $2"], [/^(.+) \(KIC (\d+)\)$/, "$1 (KIC $2)"], [/^(\d[\d ]*) tracés$/, "$1 plotted"], [/^(.+) \(TIC (\d+)\)$/, "$1 (TIC $2)"], [/^≈ (\d+) km d'altitude$/, "≈ $1 km altitude"], [/^Un tour toutes les ([\d,]+) min\.$/, function(_, a){ return "One orbit every " + a.replace(",", ".") + " min."; }], [/^Où est (.+) en ce moment$/, "Where $1 is right now"], [/^Position de (.+) au-dessus de la Terre et trace de son orbite$/, "$1's position over the Earth and its ground track"], [/^Orbite de (.+) autour de la Terre, à l'échelle$/, "$1's orbit around the Earth, to scale"],
   [/^(\S+) : ([\d,.  ]+) observations depuis (\S+)$/, "$1: $2 observations since $3"], [/^jour (\d+) \(([\d.,]+) an\)$/, function(_, d, y){ return "day " + d + " (" + y.replace(",", ".") + " yr)"; }], [/^(\d{4}-\d\d-\d\d) au (\d{4}-\d\d-\d\d)$/, "$1 to $2"],
   [/^Chargement de (.+)$/, "Loading $1"], [/^La maquette de (.+) n'a pas pu être chargée$/, "The $1 model could not be loaded"],
   [/^Le fichier 3D est introuvable ou la connexion a été interrompue \((.+)\)\. La fiche et les instruments restent consultables\.$/, "The 3D file is missing or the connection dropped ($1). The overview and instrument pages still work."],
@@ -6176,16 +6341,17 @@ function renderPanel(){
   if (S.mode === 'compare'){
     pt.innerHTML = '<div class="ptl" role="tablist" aria-label="Contenu du panneau"><button class="ptab" role="tab" aria-selected="true">À la même échelle</button></div>';
     var maxM = 6.5, maxK = 11110;
-    h = '<h2>Tous les observatoires, une seule échelle</h2><p class="desc">Les maquettes sont posées côte à côte à leur taille réelle. Le bouclier de Webb couvre à peu près un court de tennis ; Euclid tiendrait dans une chambre.</p>' +
+    var CL = cmpList();
+    h = '<h2>À la même échelle</h2>' + cmpSelector() + '<p class="desc">Les maquettes du groupe choisi sont posées côte à côte à leur taille réelle, à côté d\'une silhouette humaine de 1,75 m.</p>' +
         '<button class="cta" data-go="comparer-instruments">Comparer les instruments<small>Couverture spectrale, champs de vue et tableau de tous les instruments sur les mêmes axes.</small></button>' +
         '<table class="cmp-table"><thead><tr><th>Observatoire</th><th>Miroir</th><th>Masse au lancement</th></tr></thead><tbody>' +
-        TELESCOPES.map(function(x){
+        CL.map(function(x){
           return '<tr data-go="' + x.id + '"><td>' + esc(x.short) + '</td>' +
             '<td>' + (x.cmp.mirror == null ? '<span class="na">sans miroir</span>' : '<div class="barcell"><i style="width:' + Math.round(x.cmp.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(x.cmp.mirror).replace('.',',')) + ' m' + (x.cmp.lens ? ' <small>lentilles</small>' : '') + '</div>') + '</td>' +
             '<td><div class="barcell"><i class="alt" style="width:' + Math.round(x.cmp.mass/maxK*54) + 'px"></i>' + (x.cmp.approx ? '≈ ' : '') + fr(x.cmp.mass) + ' kg</div></td></tr>';
         }).join('') + '</tbody></table>' +
         '<div class="spec-section"><div class="spec-section-title">Encombrement</div>' +
-        TELESCOPES.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
+        CL.map(function(x){ return '<div class="spec-row"><div class="k">' + esc(x.short) + '</div><div class="v">' + esc(x.cmp.dim) + '</div></div>'; }).join('') + '</div>' +
         '<p class="source-note">Pour Gaia, la valeur de miroir est le grand côté de ses deux miroirs rectangulaires (1,45 × 0,50 m). Cliquer une maquette ou une ligne ouvre sa fiche.</p>';
     pb.innerHTML = h; pb.scrollTop = 0; return;
   }
@@ -6218,7 +6384,8 @@ function renderPanel(){
 
 function renderHud(){
   var t = tele(S.id);
-  if (S.mode === 'compare'){ $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = 'Tous les observatoires côte à côte, en taille réelle'; $('t-src').textContent = ''; }
+  if (S.mode === 'compare'){ var cg = OBS_CMP.g === 'all' ? null : cmpGroups(OBS_CMP.by).filter(function(x){ return x.id === OBS_CMP.g; })[0];
+    $('t-name').textContent = 'À la même échelle'; $('t-sub').textContent = cg ? cg.label + (OBS_LANG === 'en' ? ': ' : ' : ') + cg.list.map(function(t){ return t.short; }).join(', ') : 'Tous les observatoires côte à côte, en taille réelle'; $('t-src').textContent = ''; }
   else { $('t-name').textContent = t.name; $('t-sub').textContent = t.sub; $('t-src').textContent = t.src; }
 }
 
@@ -6246,7 +6413,7 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
@@ -6263,16 +6430,25 @@ $('inst-page').addEventListener('click', function(e){
     var fs = $('fsec'); if (fs) fs.innerHTML = InstrumentsUI.filterPanel(S.id, S.instSel, S.filterIdx);
     return;
   }
+  if (cmpClick(el)){ renderInst(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); $('inst-pills').innerHTML = InstrumentsUI.pills(S.mode === 'compare' ? 'comparer' : S.id); edgeScroll($('inst-pills').querySelector('.trow')); var fp = $('inst-pills').querySelector('.trow .pill'); if (fp) fp.focus(); return; }
   if (el.hasAttribute('data-tele')){ location.hash = el.getAttribute('data-tele') + '-instruments'; return; }
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
+/* sélecteur de comparaison (critère, groupe, type d'instrument) : état partagé OBS_CMP (data-tele.js) */
+function cmpClick(el){
+  if (el.hasAttribute('data-cmpby')){ var b = el.getAttribute('data-cmpby'); if (OBS_CMP.by !== b){ OBS_CMP.by = b; OBS_CMP.g = cmpGroups(b)[0].id; } return true; }
+  if (el.hasAttribute('data-cmpg')){ OBS_CMP.g = el.getAttribute('data-cmpg'); return true; }
+  if (el.hasAttribute('data-itype')){ OBS_CMP.type = el.getAttribute('data-itype') || null; return true; }
+  return false;
+}
 /* ---------- navigation ---------- */
 document.addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
+  var el = e.target.closest ? e.target.closest('#b-lang,#b-theme,[data-dom],[data-cmpby],[data-cmpg],[data-go],[data-ptab],[data-open-optique],[data-inst-open],[data-part]') : null;
   if (!el || $('inst-page').contains(el)) return;
   if (el.id === 'b-lang'){ try { localStorage.setItem('obs-lang', OBS_LANG === 'en' ? 'fr' : 'en'); } catch(x){} location.hash = (OBS_LANG === 'en' ? 'fr-' : 'en-') + (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''); location.reload(); return; }
+  if (cmpClick(el)){ renderPanel(); renderHud(); if (S.mode === 'compare') show3D(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
@@ -6778,7 +6954,8 @@ scene.add(cmp.group);
 function resetRoot(M){ M.root.position.set(0,0,0); M.root.rotation.set(0,0,0); M.root.updateMatrixWorld(true); setExplode(M, 0); }
 
 function layoutCompare(){
-  var order = TELESCOPES.filter(function(t){ return models[t.id]; }).sort(function(a, b){ return a.compare.order - b.compare.order; }).map(function(t){ return t.id; }), gap = 3.4, portrait = camera.aspect < 0.95;
+  var order = cmpList().filter(function(t){ return models[t.id]; }).map(function(t){ return t.id; }), gap = 3.4, portrait = camera.aspect < 0.95;
+  cmp.items.forEach(function(it){ if (order.indexOf(it.M.t.id) < 0 && it.M.root.parent === cmp.group) cmp.group.remove(it.M.root); });
   cmp.items = order.map(function(id){
     var M = models[id]; resetRoot(M);
     M.meshes.forEach(function(o){ var m = o.material; if (m.userData.c0) m.color.copy(m.userData.c0); if (m.userData.em0){ m.emissive.copy(m.userData.em0); m.emissiveIntensity = m.userData.ei0; } });
@@ -6843,12 +7020,12 @@ show3D = function(changed){
   $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
   $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode));
   if (cmpMode){
-    var done = 0, total = TELESCOPES.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
-    var need = TELESCOPES.filter(function(t){ return !models[t.id]; });
+    var CLT = cmpList(), done = 0, total = CLT.reduce(function(a,t){ return a + t.bytes; }, 0), got = {};
+    var need = CLT.filter(function(t){ return !models[t.id]; });
     if (need.length) loaderUI('load', 'Chargement des maquettes', 0, total);
-    Promise.all(TELESCOPES.map(function(t){
+    Promise.all(CLT.map(function(t){
       return loadModel(t, function(a){ got[t.id] = a; }).then(function(M){ got[t.id] = t.bytes; return M; });
-    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; TELESCOPES.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des maquettes', s, total); if (TELESCOPES.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
+    }).concat([new Promise(function(ok){ (function tick(){ if (token !== loadToken) return ok(); var s = 0; CLT.forEach(function(t){ s += models[t.id] ? t.bytes : (got[t.id]||0); }); if (need.length && !$('loader').hidden) loaderUI('load', 'Chargement des maquettes', s, total); if (CLT.every(function(t){ return models[t.id]; })) ok(); else setTimeout(tick, 120); })(); })])).then(function(){
       if (token !== loadToken) return;
       if (current){ scene.remove(current.root); current = null; }
       cmp.group.visible = true; layoutCompare(); loaderUI('off'); $('cmp-labels').hidden = false;
