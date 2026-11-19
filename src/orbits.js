@@ -38,7 +38,7 @@ var Orbits = (function(){
              'Ses premières images publiques sont attendues début 2027.'],
       noTraj:'La trajectoire réelle de Roman s\'affichera ici dès que les éphémérides de JPL Horizons seront récupérées par la mise à jour quotidienne des données du site. En attendant, la carte du ciel observable montre déjà la partie du ciel qu\'il peut viser.' },
     xmm:{ belts:true, heoCap:'Terre, orbite et orbite de la Lune à la même échelle. Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe, vu du nord de l\'écliptique.',
-      sum:'XMM-Newton parcourt en 48 heures une orbite très allongée. Au lancement, elle allait d\'environ 7 000 à 114 000 km d\'altitude, inclinée de 40° (ESA) ; elle s\'est déformée depuis, comme le montre la trajectoire réelle ci-dessus.',
+      sum:'XMM-Newton parcourt en 48 heures une orbite très allongée. Au lancement, elle allait d\'environ 7 000 à 114 000 km d\'altitude, inclinée de 40° (ESA) ; elle s\'est déformée depuis, comme le montre la trajectoire réelle.',
       notes:['Les instruments n\'observent qu\'au-dessus de 46 000 km, loin des ceintures de radiations : jusqu\'à environ 40 heures d\'affilée par orbite (Users Handbook).',
              'Une orbite aussi longue permet de suivre une source sans interruption pendant presque deux jours, ce qui compte pour les étoiles variables et les sources qui scintillent.',
              'Trois stations au sol, à Perth, Kourou et Santiago, suivent le satellite le long de son orbite (ESA).'] },

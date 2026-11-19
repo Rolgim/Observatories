@@ -1485,7 +1485,7 @@
    ]
   ],
   "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0104260101",
-  "caption": "Dans l'ultraviolet proche (filtre UVW1), le petit télescope OM voit surtout les étoiles jeunes et chaudes, qui dessinent les bras de la galaxie. Il observe en même temps que les caméras X, sur le même champ.",
+  "caption": "Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
   "credit": "ESA, XMM-Newton",
   "fetched": "2026-11-19"
  },
@@ -1538,7 +1538,7 @@
    ]
   ],
   "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0412180101",
-  "caption": "Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons.",
+  "caption": "Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons. Les lignes sombres sont les espaces entre les CCD des caméras.",
   "credit": "ESA, XMM-Newton",
   "fetched": "2026-11-19"
  }

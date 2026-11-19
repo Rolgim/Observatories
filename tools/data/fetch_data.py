@@ -1060,7 +1060,7 @@ def xmm_epic(key, obsid="0412180101", ra=350.8500, dec=58.8150, size_arcmin=10.0
                     extra=[["Bandes", "0,5–1 keV en rouge, 1–2 keV en vert, 2–12 keV en bleu"], ["Échelle", fr(pix, 1) + "″ par pixel, " + fr(size_arcmin) + "′ de côté"],
                            ["Temps de pose (pn)", fr(expo) + " s"], ["Traitement", "images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×" + fr(600 / rgb.shape[0], 1) + " pour le site"]])
     return dict(type="image", file=fname, width=600, height=600, title="Le reste de supernova Cassiopée A, EPIC", meta=meta, url=XMM_XSA.format(o=obsid),
-                caption="Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons.",
+                caption="Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons. Les lignes sombres sont les espaces entre les CCD des caméras.",
                 credit="ESA, XMM-Newton", fetched=TODAY)
 
 def xmm_rgs(key, obsid="0510780601"):
@@ -1113,7 +1113,7 @@ def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, 
     meta = xmm_meta(h, obsid, "OM, filtre " + filt + " (≈ 291 nm)", f, extra=[["Cible", "M101, galaxie du Moulinet"], ["Échelle", fr(pix, 2) + "″ par pixel, " + fr(cut.shape[1] * pix / 60, 1) + "′ de côté"],
                                                                               ["Temps de pose", "≈ " + fr(score) + " s"], ["Traitement", "image du ciel du pipeline, découpée, étirement asinh pour le site"]])
     return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title="La galaxie du Moulinet (M101), OM en ultraviolet", meta=meta, url=XMM_XSA.format(o=obsid),
-                caption="Dans l'ultraviolet proche (filtre UVW1), le petit télescope OM voit surtout les étoiles jeunes et chaudes, qui dessinent les bras de la galaxie. Il observe en même temps que les caméras X, sur le même champ.",
+                caption="Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
                 credit="ESA, XMM-Newton", fetched=TODAY)
 
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
