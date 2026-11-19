@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Sonde SCIFLEET (ESA) : cherche dans l'application les chemins de la maquette XMM-Newton (vue Marmoset, téléchargements). N'écrit rien dans le dépôt."""
-import re, requests
+"""Sonde SCIFLEET (ESA) : contextes « download », « mview », « models » dans le code, et vignette XMM-Newton (déposée dans _out)."""
+import os, re, requests
 B = "https://scifleet.esa.int/"
+OUT = os.path.join(os.path.dirname(__file__), "_out"); os.makedirs(OUT, exist_ok=True)
 js = requests.get(B + "assets/index.313b998d.js", timeout=120).text
-print("taille du code", len(js))
-for m in re.finditer(r'xmm|XMM', js):
-    print("…", js[max(0, m.start() - 160):m.end() + 160].replace("\n", " "))
-paths = sorted(set(re.findall(r'["\'`]([^"\'`\s]{3,200}\.(?:mview|fbx|obj|blend|zip|glb|gltf|3ds|stl|png|jpg|json))["\'`]', js)))
-print("\n== chemins de fichiers", len(paths))
-for p in paths[:150]: print("  ", p)
-for p in sorted(set(re.findall(r'["\'`](https?://[^"\'`\s]+)["\'`]', js)))[:80]: print("  url", p)
+seen = 0
+for kw in ("mview", "download", "Download", "models/", "/3d", "fbx", "FBX", "blend", "marmoset", "xmm_newton\"", "XMM-Newton", "xmm_newton:"):
+    for m in list(re.finditer(re.escape(kw), js))[:6]:
+        print("[" + kw + "]", js[max(0, m.start() - 220):m.end() + 220].replace("\n", " ")); seen += 1
+for f in ("assets/xmm_newton.49baba6b.png", "assets/xmm_newton.2294fe1c.png"):
+    r = requests.get(B + f, timeout=60); print(f, r.status_code, len(r.content))
+    if r.ok: open(os.path.join(OUT, f.split("/")[-1]), "wb").write(r.content)
