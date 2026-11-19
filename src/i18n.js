@@ -37,7 +37,7 @@ var OBS_T = function(s){ return s; }, OBS_I18N = { real:function(m){ return m; }
   });
   Object.keys(EN_OPTICS).forEach(function(tid){
     var e = EN_OPTICS[tid], t = Optics.TEXT[tid];
-    t.title = e.title; t.scale = e.scale; t.steps = e.steps; t.specs = e.specs;
+    t.title = e.title; t.scale = e.scale; t.steps = e.steps; t.specs = e.specs; if (e.legend != null) t.legend = e.legend;
     Optics.LINK3D[tid].forEach(function(l, i){ l[1] = e.links[i]; });
     var fp = Optics.FP[tid]; fp.note = e.fp.note; fp.groups.forEach(function(g, i){ if (e.fp.labs[i]) g.lab = e.fp.labs[i]; });
     if (fp.key && e.fp.key) fp.key.forEach(function(k, i){ k[1] = e.fp.key[i]; });

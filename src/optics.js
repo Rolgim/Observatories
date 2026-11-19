@@ -129,13 +129,13 @@ var Optics = (function(){
     /* Fermi, LAT : pas de miroir. Coupe schématique d'une tour (Atwood et al. 2009) : 18 plans de silicium, tungstène dans les 16 premiers
        (12 fins, 4 épais), calorimètre de 8 couches de cristaux de CsI. Nombres exacts, épaisseurs et espacements non à l'échelle. */
     fermi: function(){
-      var W = 560, H = 380, x0 = 170, x1 = 390, yt = 54, s = '';
+      var W = 560, H = 380, x0 = 90, x1 = 310, yt = 54, s = '';
       s += G('lat', '<rect x="'+(x0-12)+'" y="'+(yt-14)+'" width="'+(x1-x0+24)+'" height="'+(H-yt-26)+'" fill="none" stroke="'+SOFT+'" stroke-width="5"/>');
       var py = [];
       for (var i=0;i<18;i++){ var y = yt + 8 + i*9.5; py.push(y); s += L(x0, y, x1, y, DET, 1.6); if (i < 16) s += L(x0, y - 2.5, x1, y - 2.5, INK, i < 12 ? 1 : 2.6); }
       var yc = yt + 8 + 18*9.5 + 10;
       for (var j=0;j<8;j++) for (var k=0;k<12;k++){ var cw = (x1-x0)/12; s += '<rect x="'+f(x0 + k*cw + 0.6)+'" y="'+f(yc + j*11)+'" width="'+f(cw - 1.2)+'" height="9.5" fill="#C9A100" fill-opacity="'+(j%2 ? 0.55 : 0.8)+'"/>'; }
-      var xg = 262, yconv = py[3] - 2.5;
+      var xg = 182, yconv = py[3] - 2.5;
       s += P([[xg - 40, 6], [xg, yconv]], RAY, 1.6) + '<path d="M'+(xg - 40)+' 6 l2 9 l6 -6 z" fill="'+RAY+'"/>';
       s += P([[xg, yconv], [xg - 36, yc + 30]], '#2F6FDB', 1.3) + P([[xg, yconv], [xg + 46, yc + 30]], '#D6457A', 1.3);
       for (var m=0;m<6;m++){ var a = -0.9 + m*0.36; s += L(xg + (m - 2.5)*10, yc + 34, xg + (m - 2.5)*10 + Math.sin(a)*22, yc + 70, '#C9A100', 1); }
@@ -143,7 +143,7 @@ var Optics = (function(){
       s += T(xg - 36, 14, 'photon gamma', 'end', true) + T(x1 + 18, py[0] + 4, 'bouclier de scintillateurs', null) + T(x1 + 18, py[6] + 4, 'trajectographe : 18 plans de silicium', null, true) + T(x1 + 18, py[6] + 18, 'tungstène dans les 16 premiers', null);
       s += T(x1 + 18, yc + 34, 'calorimètre : 8 couches', null, true) + T(x1 + 18, yc + 48, 'de 12 cristaux de CsI', null);
       s += T(xg + 8, yconv - 6, 'conversion en paire', null) + T(xg - 40, yc + 24, 'e⁻', 'end', true) + T(xg + 50, yc + 24, 'e⁺', null, true);
-      s += T(x0 - 20, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
+      s += T(x0 - 12, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
       return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
     },
     /* Roman : ouverture (2,4 m) et obstruction centrale (30,3 %) publiées ; aucune prescription publique. Écart primaire–secondaire
@@ -231,7 +231,7 @@ var Optics = (function(){
              'Un combineur de faisceaux superpose les deux images, et deux derniers miroirs plans les conduisent sur le même plan focal.',
              'Mesurer en même temps des étoiles vues dans deux directions très écartées est ce qui permet d\'obtenir des parallaxes absolues.'],
       specs:[['Combinaison','2 anastigmats à trois miroirs'],['Miroirs primaires','1,45 × 0,50 m chacun'],['Longueur focale','35 m'],['Angle de base','106,5°'],['Miroirs','10 au total, en carbure de silicium']] },
-    fermi:{ title:'Pas de miroir : un télescope à conversion de paires', scale:'Schéma de principe d\'une tour du LAT : le nombre de plans de silicium, de feuilles de tungstène et de couches du calorimètre est exact (Atwood et al. 2009) ; épaisseurs, espacements et trajectoires ne sont pas à l\'échelle.',
+    fermi:{ legend:' Le photon gamma est tracé en orange, l\'électron en bleu, le positon en rose, les plans de silicium en bleu et les feuilles de tungstène en noir.', title:'Pas de miroir : un télescope à conversion de paires', scale:'Schéma de principe d\'une tour du LAT : le nombre de plans de silicium, de feuilles de tungstène et de couches du calorimètre est exact (Atwood et al. 2009) ; épaisseurs, espacements et trajectoires ne sont pas à l\'échelle.',
       steps:['Un photon gamma traverse sans réagir le bouclier de scintillateurs, qui, lui, s\'allume au passage des particules chargées du rayonnement cosmique : ces événements sont rejetés.',
              'Dans le trajectographe, le photon finit par se convertir dans une feuille de tungstène en un électron et un positon : c\'est la création de paires, possible au-delà de quelques MeV.',
              'Les plans de silicium enregistrent le passage de la paire, plan après plan. En remontant les deux traces, on retrouve la direction d\'arrivée du photon.',
@@ -337,7 +337,7 @@ var Optics = (function(){
     var t = TEXT[tid]; focus = part || null;
     return '<div class="inst-head"><div class="inst-h"><div class="inst-name">Trajet de la lumière</div><div class="inst-full">'+name+' : du ciel au détecteur</div></div><p class="inst-sum">'+t.title+'. '+t.steps[0]+'</p></div>' +
       '<div class="inst-cols">' +
-      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+(focus && LINK3D[tid].some(function(l){ return l[0] === focus; }) ? '<div class="cap hl-cap">Surligné : '+LINK3D[tid].filter(function(l){ return l[0] === focus; })[0][1]+', la pièce choisie dans la maquette.</div>' : '')+'<div class="cap">'+t.scale+' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip'+(focus === l[0] ? ' on' : '')+'" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
+      '<div class="isec"><h4>Schéma optique</h4>'+FIG[tid]()+(focus && LINK3D[tid].some(function(l){ return l[0] === focus; }) ? '<div class="cap hl-cap">Surligné : '+LINK3D[tid].filter(function(l){ return l[0] === focus; })[0][1]+', la pièce choisie dans la maquette.</div>' : '')+'<div class="cap">'+t.scale+(t.legend != null ? t.legend : ' Les rayons sont tracés en orange, les miroirs en trait épais, les détecteurs en bleu.')+'</div><div class="chips" style="margin-top:12px"><span class="cap" style="margin:0 6px 0 0;align-self:center">Voir dans la maquette 3D :</span>'+LINK3D[tid].map(function(l){ return '<button class="chip'+(focus === l[0] ? ' on' : '')+'" data-jump3d="'+tid+':'+l[0]+'">'+l[1]+'</button>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>Étape par étape</h4><ol class="notes">'+t.steps.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ol></div>' +
       '<div class="isec"><h4>Combinaison optique</h4><div class="stable">'+t.specs.map(function(r){ return '<div class="srow"><div class="k">'+r[0]+'</div><div class="v">'+r[1].split(' · ').join('<br>')+'</div></div>'; }).join('')+'</div></div>' +
       '<div class="isec"><h4>'+(tid==='gaia' ? 'Plan focal, à l\'échelle' : 'Détecteurs, à l\'échelle')+'</h4>'+focal(tid)+'</div>' +
