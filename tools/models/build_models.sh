@@ -65,10 +65,11 @@ node -e "require('$W/seg_lib.js').segment('$W/tmp/kepler_w.glb','$W/tmp/kepler_s
 $GT quantize $W/tmp/kepler_seg.glb $OUT/kepler.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 # ---------- XMM-Newton : maquette de l'ESA (service SPICE, misc/cosmo/xmm.obj + alb.png), convertie en GLB par trimesh
 # attendu dans $DL : xmm/xmm.obj, xmm/xmm.mtl, xmm/alb.png (tools/probe/fetch_xmm_model.py les récupère depuis la CI)
-python3 -c "import trimesh; trimesh.load('$DL/xmm/xmm.obj', force='mesh', process=False).export('$W/tmp/xmm_raw.glb')"
+python3 -c "import trimesh; trimesh.load('$DL/xmm/xmm.obj', force='mesh', process=False).export('$W/tmp/xmm_raw.glb', include_normals=True)"   # sans normales, toute la maquette s'éclaire comme une surface plate
 $GT weld $W/tmp/xmm_raw.glb $W/tmp/xmm_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/xmm_w.glb','$W/tmp/xmm_seg.glb',require('$W/xmm_cls.js')).then(s=>console.log('xmm',JSON.stringify(s)))"
-$GT resize $W/tmp/xmm_seg.glb $W/tmp/xmm_rs.glb --width 2048 --height 2048 >/dev/null
+NODE_PATH=$(npm root -g) node $W/split_mats.mjs $W/tmp/xmm_seg.glb $W/tmp/xmm_split.glb   # un matériau par pièce, réglé dans src/looks.js
+$GT resize $W/tmp/xmm_split.glb $W/tmp/xmm_rs.glb --width 2048 --height 2048 >/dev/null
 $GT webp $W/tmp/xmm_rs.glb $W/tmp/xmm_wp.glb >/dev/null
 $GT quantize $W/tmp/xmm_wp.glb $OUT/xmm.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
 ls -la $OUT

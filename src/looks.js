@@ -23,8 +23,13 @@ var LOOKS = {
   },
   /* TESS (maquette NASA) : les matériaux « reflector » et « foil_silver » portent une carte de normales à la place de leur couleur
      (d'où un violet irisé) : couleur retirée, carte gardée comme relief ; couvertures argentées et antenne gris clair mats */
-  /* XMM-Newton (maquette ESA, un seul matériau texturé) : le métal par défaut de glTF (1) la rendait blanche comme un miroir */
-  xmm: function(m){ m.metalness = 0.15; m.roughness = 0.6; m.color.setHex(0xFFFFFF); if (m.userData.envK == null) m.userData.envK = 0.6; },
+  /* XMM-Newton (maquette ESA, une texture partagée ; un matériau par pièce, voir tools/models/split_mats.mjs). Teintes d'après la vue
+     de l'ESA (SCIFLEET) : couverture isolante noire et brillante sur le tube et les modules, cellules solaires gris-olive sombre,
+     grilles dorées des miroirs. La couleur multiplie la texture, qui garde les détails. */
+  xmm: function(m, n){
+    var L = { svm:[0x2A2A2C, 0.3, 0.38, 0.5], tube:[0x202022, 0.3, 0.4, 0.5], fpa:[0x2A2A2C, 0.3, 0.38, 0.5], om:[0x4A4A4C, 0.2, 0.5, 0.4], solar:[0x4C4A3C, 0.05, 0.6, 0.25], mirrors:[0xB8964A, 0.55, 0.4, 0.6] }[n] || [0x2A2A2C, 0.3, 0.4, 0.5];
+    m.color.setHex(L[0]); m.metalness = L[1]; m.roughness = L[2]; m.userData.envK = L[3];
+  },
   tess: function(m, n, THREE){
     if (/reflector|foil_silver/.test(n) && m.map){ m.normalMap = m.map; m.map = null; if (THREE.LinearEncoding != null) m.normalMap.encoding = THREE.LinearEncoding; m.normalScale.set(0.4, 0.4); m.needsUpdate = true; }
     if (/foil_silver/.test(n)){ m.color.setHex(0xB9BDC2); m.metalness = 0.55; m.roughness = 0.5; }
