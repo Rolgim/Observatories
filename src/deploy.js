@@ -1,5 +1,9 @@
 /* =================================================================
-   DÉPLOIEMENT DE WEBB (F3)
+   DÉPLOIEMENTS (F3) : un moteur commun, une configuration par observatoire.
+   DEPLOY[id] = { STEPS, set(M, v), value(), last, note:[fr, en], title:[fr, en] } pour chaque
+   observatoire dont l'entrée du registre porte deploy:true.
+
+   WEBB
    La maquette NASA est livrée déployée et n'est pas articulée. On replie ses pièces par
    déformation des sommets, en mètres et dans le repère de la maquette (y vers le télescope,
    z le long du bouclier, x en travers) :
@@ -12,8 +16,22 @@
 ================================================================= */
 var DEPLOY = (function(){
   var PI = Math.PI, rad = PI/180;
+  var M3 = THREE.Matrix3, V3 = THREE.Vector3;
+  function ease(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
+  /* Chaque triangle bouge d'un bloc : les décisions (quelle pièce mobile, quel côté d'une charnière) se prennent sur son
+     centre d, puis la même transformation s'applique à ses sommets. Sinon les triangles à cheval sur une charnière
+     s'étirent et traversent le reste de la maquette. P = [d, sommet] ; n = normale du sommet. */
+  function rx(P, n, cy, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, y, z;
+    for (i=0;i<P.length;i++){ y = P[i].y - cy; z = P[i].z - cz; P[i].y = cy + y*c - z*s; P[i].z = cz + y*s + z*c; }
+    y = n.y; z = n.z; n.y = y*c - z*s; n.z = y*s + z*c; }
+  function ry(P, n, cx, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, x, z;
+    for (i=0;i<P.length;i++){ x = P[i].x - cx; z = P[i].z - cz; P[i].x = cx + x*c + z*s; P[i].z = cz - x*s + z*c; }
+    x = n.x; z = n.z; n.x = x*c + z*s; n.z = -x*s + z*c; }
+  function each(P, f){ for (var i=0;i<P.length;i++) f(P[i]); }
+
+  /* ================= Webb ================= */
   /* étapes : [date FR, date EN, titre FR, titre EN, texte FR, texte EN, clé d'étape géométrique ou null] */
-  var STEPS = [
+  var STEPS_J = [
     ['25 déc. 2021', '25 Dec 2021', 'Lancement, tout est replié', 'Launch, everything folded', 'Webb tient replié sous la coiffe d\'Ariane 5, de 5,4 m de diamètre.', 'Webb fits folded inside the 5.4 m Ariane 5 fairing.', null],
     ['25 déc., +29 min', '25 Dec, +29 min', 'Panneau solaire', 'Solar array', 'Le panneau solaire s\'ouvre juste après la séparation du lanceur.', 'The solar array opens just after separation from the launcher.', 'solar'],
     ['26 déc.', '26 Dec', 'Antenne grand gain', 'High-gain antenna', 'L\'antenne qui transmet les données vers la Terre se déploie.', 'The antenna that sends data to Earth swings out.', 'hga'],
@@ -28,29 +46,13 @@ var DEPLOY = (function(){
     ['8 janv.', '8 Jan', 'Aile tribord : déploiement terminé', 'Starboard wing: deployment complete', 'Le miroir de 6,5 m est complet. Restent l\'alignement des 18 segments et le refroidissement.', 'The 6.5 m mirror is complete. Aligning the 18 segments and cooling down remain.', 'wingS'],
     ['24 janv.', '24 Jan', 'Arrivée autour de L2', 'Arrival around L2', 'Une dernière poussée place Webb sur son orbite autour de L2, à 1,5 million de km.', 'A final burn puts Webb on its orbit around L2, 1.5 million km away.', null]
   ];
-  var KEYS = {}; STEPS.forEach(function(s, i){ if (s[6]) KEYS[s[6]] = i; });
-  function stage(v, k){ var i = KEYS[k]; return Math.max(0, Math.min(1, v - (i - 1))); }
-  function ease(t){ return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2)/2; }
-
   /* repères (repère de la maquette, mètres) */
   var BUS_TOP = -3.47, CORE = -3.45, PAL_F = 3.4, PAL_A = -2.6, PAL_Y = -3.6, MB = 1.05, TOWER = 1.0,   /* tour : 1,22 m en réalité ; 1,0 m ici, sinon le télescope abaissé entre dans le module de la maquette */
       WING_X = 1.71, WING_Z = 0.6, SEC_H = [0, -1.75, 2.0], SEC_FOLD = { secondary_2:[4.62, 1.91], secondary_7:[5.6, 2.25] }, SEC_M = [0.9, 8.4], FLAP_H = [-9.16, -1.5];
   var UPPER = { primary:1, secondary:1, aos:1, isim:1 };
 
-  var M3 = THREE.Matrix3, V3 = THREE.Vector3;
-  /* Chaque triangle bouge d'un bloc : les décisions (quelle pièce mobile, quel côté d'une charnière) se prennent sur son
-     centre d, puis la même transformation s'applique à ses sommets. Sinon les triangles à cheval sur une charnière
-     s'étirent et traversent le reste de la maquette. P = [d, sommet] ; n = normale du sommet. */
-  function rx(P, n, cy, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, y, z;
-    for (i=0;i<P.length;i++){ y = P[i].y - cy; z = P[i].z - cz; P[i].y = cy + y*c - z*s; P[i].z = cz + y*s + z*c; }
-    y = n.y; z = n.z; n.y = y*c - z*s; n.z = y*s + z*c; }
-  function ry(P, n, cx, cz, a){ var c = Math.cos(a), s = Math.sin(a), i, x, z;
-    for (i=0;i<P.length;i++){ x = P[i].x - cx; z = P[i].z - cz; P[i].x = cx + x*c + z*s; P[i].z = cz - x*s + z*c; }
-    x = n.x; z = n.z; n.x = x*c + z*s; n.z = -x*s + z*c; }
-  function each(P, f){ for (var i=0;i<P.length;i++) f(P[i]); }
-
   /* déforme un triangle (P en repère maquette) pour l'état g (chaque étape de 0 = replié à 1 = déployée) */
-  function deform(part, name, P, n, g){
+  function deformJ(part, name, P, n, g){
     var d = P[0];
     if (part === 'sunshield' || part === 'flap'){
       if (part === 'flap' && g.flap < 1) rx(P, n, FLAP_H[1], FLAP_H[0], -(1 - g.flap)*100*rad);
@@ -98,7 +100,6 @@ var DEPLOY = (function(){
     if (part === 'tower' && g.tower < 1) each(P, function(q){ if (q.y > CORE) q.y = CORE + (q.y - CORE)*(1 - 0.95*(1 - g.tower)); });
   }
 
-  var store = null;
   /* les attributs glTF peuvent être entrelacés (position et normale dans un même tampon) : on passe par getX/setX */
   var NORM = { Int8Array:127, Uint8Array:255, Int16Array:32767, Uint16Array:65535 };
   function copy(at){
@@ -111,13 +112,18 @@ var DEPLOY = (function(){
   function own(geo, name){ var at = geo.attributes[name]; if (!at) return null; var f = new THREE.BufferAttribute(copy(at), at.itemSize); geo.setAttribute(name, f); return f; }
   function dirty(at){ if (at.isInterleavedBufferAttribute) at.data.needsUpdate = true; else at.needsUpdate = true; }
   /* mémorise les sommets d'origine et les passages repère local ↔ repère maquette (pièces à l'état éclaté 0) */
+  /* moteur : cfg = { STEPS, parts (pièces déformées), deform(part, name, P, n, g) } */
+  function make(cfg){
+  var STEPS = cfg.STEPS, store = null, KEYS = {};
+  STEPS.forEach(function(s, i){ if (s[6]) KEYS[s[6]] = i; });
+  function stage(v, k){ var i = KEYS[k]; return Math.max(0, Math.min(1, v - (i - 1))); }
   function prepare(M){
     if (store && store.M === M) return store;
     var inv = new THREE.Matrix4().copy(M.root.matrixWorld).invert(), seen = new Set(), list = [];
     M.root.updateMatrixWorld(true);
     M.meshes.forEach(function(o){
       if (o.userData.interior || !o.geometry || !o.geometry.attributes.position) return;
-      var k = o.userData.part; if (!(k === 'sunshield' || k === 'flap' || k === 'solar' || k === 'hga' || k === 'tower' || UPPER[k])) return;
+      var k = o.userData.part; if (!cfg.parts[k]) return;
       if (seen.has(o.geometry)) o.geometry = o.geometry.clone(); seen.add(o.geometry);
       if (o.userData.base) o.position.copy(o.userData.base); o.updateMatrixWorld(true);
       var m = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), mi = new THREE.Matrix4().copy(m).invert();
@@ -144,7 +150,7 @@ var DEPLOY = (function(){
           /* grand triangle (bande de plus de 1,5 m, bords du bouclier) : décision par sommet, il se plie comme une toile */
           p.copy(c3[i]); if (big) d.copy(p); else d.copy(c3[0]).add(c3[1]).add(c3[2]).multiplyScalar(1/3);
           if (nor) n.set(e.n0[j], e.n0[j+1], e.n0[j+2]).applyMatrix3(e.nm); else n.set(0, 1, 0);
-          deform(e.part, e.name, P, n, g);
+          cfg.deform(e.part, e.name, P, n, g);
           p.applyMatrix4(e.mi); pos.setXYZ(t + i, p.x, p.y, p.z);
           if (nor){ n.applyMatrix3(e.nmi).normalize(); nor.setXYZ(t + i, n.x, n.y, n.z); }
         }
@@ -154,5 +160,50 @@ var DEPLOY = (function(){
     });
   }
   function value(){ return store ? store.v : STEPS.length - 1; }
-  return { STEPS:STEPS, set:set, value:value, last:STEPS.length - 1 };
+  return { STEPS:STEPS, set:set, value:value, last:STEPS.length - 1, note:cfg.note, title:cfg.title };
+  }
+
+  /* ================= Gaia =================
+     Pare-soleil livré à plat (disque de 1,75 à 5,1 m de rayon, y ≈ −1,5 m), avec les panneaux solaires de sa face inférieure.
+     Pour le lancement, ses 12 panneaux rectangulaires sont relevés le long du satellite, les 12 sections triangulaires
+     repliées entre eux. Ici : charnière tangentielle au bord du module de service (rayon RH), panneaux d'une largeur W gardés
+     rigides, sections intermédiaires rentrées en plis. Dates : ESA et Astronomy (lancement, séparation à 42 min, pare-soleil
+     ouvert à 88 min en une dizaine de minutes), ESA (arrivée en orbite autour de L2). Forme repliée schématique. */
+  var STEPS_G = [
+    ['19 déc. 2013', '19 Dec 2013', 'Lancement, pare-soleil replié', 'Launch, sunshield folded', 'Gaia part de Kourou sur une Soyouz-Fregat. Ses panneaux sont relevés le long du satellite pour tenir sous la coiffe.', 'Gaia lifts off from Kourou on a Soyuz-Fregat. Its panels are raised along the spacecraft to fit inside the fairing.', null],
+    ['19 déc., +42 min', '19 Dec, +42 min', 'Séparation', 'Separation', 'L\'étage Fregat libère Gaia.', 'The Fregat upper stage releases Gaia.', null],
+    ['19 déc., +88 min', '19 Dec, +88 min', 'Pare-soleil ouvert', 'Sunshield open', 'Le pare-soleil s\'ouvre seul en une dizaine de minutes : 12 panneaux rectangulaires et 12 sections triangulaires. Il protège les télescopes du Soleil et porte une partie des panneaux solaires.', 'The sunshield opens by itself in about ten minutes: 12 rectangular panels and 12 triangular sections. It shades the telescopes from the Sun and carries part of the solar panels.', 'shield'],
+    ['8 janv. 2014', '8 Jan 2014', 'Arrivée autour de L2', 'Arrival around L2', 'Gaia rejoint son orbite autour de L2, à 1,5 million de km. Commence la mise en service.', 'Gaia reaches its orbit around L2, 1.5 million km away. Commissioning begins.', null]
+  ];
+  var RH = 1.9, YS = -1.5, W = 0.95, NP = 12;
+  function deformG(part, name, P, n, g){
+    if (g.shield >= 1) return;
+    var f = 1 - g.shield, a = f*90*rad;
+    for (var i=0;i<P.length;i++){
+      var q = P[i], r = Math.hypot(q.x, q.z);
+      if (r <= RH) continue;
+      var phi = Math.atan2(q.z, q.x), step = 2*PI/NP, k = Math.round(phi/step), c = k*step, dp = phi - c;
+      var u = r*Math.cos(dp), t = r*Math.sin(dp), at = Math.abs(t), sg = t < 0 ? -1 : 1, inward = 0;
+      if (at > W/2){ inward = Math.min(0.2, (at - W/2)*0.4)*f; t = sg*(W/2 + (at - W/2)*(1 - 0.9*f)); }   /* plis rentrés vers l'intérieur */
+      var sR = Math.max(0, u - RH), dy = q.y - YS;
+      inward *= Math.min(1, sR/0.6);   /* pas de pli contre la charnière : il traverserait l'antenne, sous le module */
+      var R = RH + sR*Math.cos(a) - dy*Math.sin(a) - inward, Y = YS + sR*Math.sin(a) + dy*Math.cos(a);
+      var cx = Math.cos(c), cz = Math.sin(c);
+      q.x = cx*R - cz*t; q.z = cz*R + cx*t; q.y = Y;
+    }
+    /* normale : tourne avec le panneau (rotation autour de la tangente du panneau le plus proche) */
+    var ph = Math.atan2(P[0].z, P[0].x), cc = Math.round(ph/(2*PI/NP))*(2*PI/NP), ex = Math.cos(cc), ez = Math.sin(cc);
+    var nr = n.x*ex + n.z*ez, nt = -n.x*ez + n.z*ex, ny = n.y, ca = Math.cos(a), sa = Math.sin(a);
+    var nr2 = nr*ca - ny*sa, ny2 = nr*sa + ny*ca;
+    n.x = ex*nr2 - ez*nt; n.z = ez*nr2 + ex*nt; n.y = ny2;
+  }
+
+  return {
+    jwst: make({ STEPS:STEPS_J, deform:deformJ, parts:{ sunshield:1, flap:1, solar:1, hga:1, tower:1, primary:1, secondary:1, aos:1, isim:1 },
+      note:['Dates : NASA. Formes repliées schématiques.', 'Dates: NASA. Folded shapes are schematic.'],
+      title:['Rejouer le déploiement de Webb, du lancement à l\'arrivée autour de L2', 'Replay Webb\'s deployment, from launch to arrival around L2'] }),
+    gaia: make({ STEPS:STEPS_G, deform:deformG, parts:{ sunshield:1, solar:1 },
+      note:['Dates : ESA. Forme repliée schématique.', 'Dates: ESA. Folded shape is schematic.'],
+      title:['Rejouer l\'ouverture du pare-soleil de Gaia, du lancement à l\'arrivée autour de L2', 'Replay the opening of Gaia\'s sunshield, from launch to arrival around L2'] })
+  };
 })();

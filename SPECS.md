@@ -15,7 +15,7 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 ## 2. Ce que fait le site
 
 - **Cinq observatoires** : Hubble, JWST, Euclid, Gaia, Roman. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (38 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes, comparaison des tailles à l'échelle.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables (38 au total), vue éclatée, éclairage « Soleil réel », Terre sous Hubble, vue en coupe avec intérieurs reconstruits, déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
 - **Mission et données**, une page par observatoire :
   - mission et traitements (déroulé daté, exploitation, chaîne de traitement, publications des données) ;
@@ -134,7 +134,10 @@ Produits affichés :
 
 - F1. Système Terre–Lune–L2 à l'échelle avec trajectoires réelles (JPL Horizons, mises à jour chaque jour, Roman compris) ; position de Hubble en direct (TLE CelesTrak, SGP4 dans le navigateur).
 - F2. Loi de balayage de Gaia simulée. Reste : point 15.
-- F3. Déploiement de Webb en 13 étapes (`src/deploy.js`), repliement par déformation de la maquette, contrôlé par `tools/deploy-check.js`. Formes repliées schématiques, dit sous le curseur.
+- F3. Déploiements (`src/deploy.js`, un moteur commun, une configuration par observatoire marqué `deploy:true` dans le registre), repliement par déformation de la maquette, contrôlé par `tools/deploy-check.js [pas] [observatoire]` et par `tools/smoke.js`. Formes repliées schématiques, dit sous le curseur.
+  - Webb : 13 étapes, du lancement (25 décembre 2021) à l'arrivée autour de L2 (24 janvier 2022) ; dates NASA.
+  - Gaia (19 novembre) : 4 étapes, lancement (19 décembre 2013), séparation (+42 min), pare-soleil ouvert (+88 min, une dizaine de minutes ; 12 panneaux rectangulaires et 12 sections triangulaires), arrivée autour de L2 (8 janvier 2014) ; dates ESA et Astronomy. Repliement : panneaux relevés le long du satellite autour d'une charnière au bord du module de service, sections triangulaires rentrées en plis. Contact signalé le long de la charnière (anneau autour de l'antenne), attendu.
+  - Roman : à décider. Étapes datées connues (panneaux solaires +1 h 23, antenne le 31 août, couvercle le 1er septembre 2026), mais la maquette est la conception de 2015 et le repliement des panneaux n'est pas documenté.
 - F4. Ciel observable à une date choisie, contraintes d'angle solaire sourcées pour les cinq observatoires.
 - Cartes des pointés réels de Hubble et de JWST (MAST) et de l'avancée du relevé d'Euclid (DR1). Restes : points 16 et 17.
 

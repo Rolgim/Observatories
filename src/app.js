@@ -5,7 +5,6 @@
 'use strict';
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-var DEP_ID = (TELESCOPES.filter(function(t){ return t.deploy; })[0] || {}).id;   /* maquette animée par deploy.js */
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
 function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 
@@ -680,14 +679,16 @@ function applyCut(){
 }
 $('b-cut').addEventListener('click', function(){ S.cut = !S.cut; this.setAttribute('aria-pressed', String(S.cut)); applyCut(); });
 /* déploiement de Webb (F3) : curseur d'étapes, la maquette se replie et se déplie */
-var dep = { on:false, play:null };
+/* chaque observatoire marqué deploy:true dans le registre a sa configuration dans DEPLOY[id] (deploy.js) */
+var dep = { on:false, play:null, id:null };
+function DEP(){ return window.DEPLOY && dep.id ? DEPLOY[dep.id] : null; }
 function depShow(v){
-  if (!current || !current.t.deploy || !window.DEPLOY) return;
-  v = Math.max(0, Math.min(DEPLOY.last, v)); DEPLOY.set(current, v); $('dep-range').value = v;
-  var i = Math.ceil(v - 0.02), st = DEPLOY.STEPS[i], en = OBS_LANG === 'en';
+  var D = DEP(); if (!D || !current || current.t.id !== dep.id) return;
+  v = Math.max(0, Math.min(D.last, v)); D.set(current, v); $('dep-range').value = v;
+  var i = Math.ceil(v - 0.02), st = D.STEPS[i], en = OBS_LANG === 'en';
   $('dep-date').textContent = en ? st[1] : st[0]; $('dep-title').textContent = en ? st[3] : st[2]; $('dep-text').textContent = en ? st[5] : st[4];
-  $('dep-prev').disabled = v <= 0; $('dep-next').disabled = v >= DEPLOY.last;
-  var folded = v < DEPLOY.last; $('explode').disabled = folded; $('explode').parentNode.style.opacity = folded ? 0.4 : 1;
+  $('dep-prev').disabled = v <= 0; $('dep-next').disabled = v >= D.last;
+  var folded = v < D.last; $('explode').disabled = folded; $('explode').parentNode.style.opacity = folded ? 0.4 : 1;
   if (folded){ S.explodeGoal = S.explode = 0; $('explode').value = 0; setExplode(current, 0); }
   touch();
 }
@@ -695,8 +696,10 @@ function depStop(){ if (dep.play){ cancelAnimationFrame(dep.play); dep.play = nu
 function depToggle(on){
   depStop(); dep.on = on; $('dep').hidden = !on; $('stage').classList.toggle('dep-on', on); $('b-dep').setAttribute('aria-pressed', String(on));
   if (!S.part) C.gtgt.set(0, on && !depMQ.matches ? -2.4 : 0, 0);   /* remonte la maquette au-dessus du panneau (bureau) */
-  if (!window.DEPLOY) return;
-  if (on) depShow(0); else if (models[DEP_ID] && DEPLOY.value() !== DEPLOY.last) DEPLOY.set(models[DEP_ID], DEPLOY.last);
+  /* en quittant : la maquette repliée reprend sa forme déployée */
+  var D = DEP(); if (!on && D && models[dep.id] && D.value() !== D.last) D.set(models[dep.id], D.last);
+  dep.id = on ? S.id : null; D = DEP();
+  if (on && D){ var en = OBS_LANG === 'en'; $('dep-range').max = D.last; $('dep-note').textContent = en ? D.note[1] : D.note[0]; depShow(0); }
   if (!on){ $('explode').disabled = false; $('explode').parentNode.style.opacity = 1; }
   depPlace();
 }
@@ -706,13 +709,14 @@ function depPlace(){ var d = $('dep'), st = $('stage'); if (depMQ.matches){ if (
 if (depMQ.addEventListener) depMQ.addEventListener('change', depPlace); else depMQ.addListener(depPlace);
 $('b-dep').addEventListener('click', function(){ depToggle(!dep.on); });
 $('dep-range').addEventListener('input', function(){ depStop(); depShow(+this.value); });
-$('dep-prev').addEventListener('click', function(){ depStop(); depShow(Math.ceil(DEPLOY.value() - 0.001) - 1); });
-$('dep-next').addEventListener('click', function(){ depStop(); depShow(Math.floor(DEPLOY.value() + 0.001) + 1); });
+$('dep-prev').addEventListener('click', function(){ depStop(); depShow(Math.ceil(DEP().value() - 0.001) - 1); });
+$('dep-next').addEventListener('click', function(){ depStop(); depShow(Math.floor(DEP().value() + 0.001) + 1); });
 $('dep-play').addEventListener('click', function(){
   if (dep.play){ depStop(); return; }
-  var v0 = DEPLOY.value() >= DEPLOY.last ? 0 : DEPLOY.value(), t0 = performance.now(), dur = REDUCED ? 0 : 1600;   /* 1,6 s par étape */
+  var D = DEP(); if (!D) return;
+  var v0 = D.value() >= D.last ? 0 : D.value(), t0 = performance.now(), dur = REDUCED ? 0 : 1600;   /* 1,6 s par étape */
   this.textContent = OBS_T('Pause');
-  (function step(now){ var v = v0 + (now - t0)/(dur || 1); depShow(Math.min(v, DEPLOY.last)); if (v < DEPLOY.last && dur) dep.play = requestAnimationFrame(step); else { dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); if (!dur) depShow(DEPLOY.last); } })(t0);
+  (function step(now){ var v = v0 + (now - t0)/(dur || 1); depShow(Math.min(v, D.last)); if (v < D.last && dur) dep.play = requestAnimationFrame(step); else { dep.play = null; $('dep-play').textContent = OBS_T('Rejouer'); if (!dur) depShow(D.last); } })(t0);
 });
 $('b-reset').addEventListener('click', function(){ if (S.part) selectPart(null); S.explodeGoal = 0; $('explode').value = 0; frame(false); C.gaz += Math.round((C.az - C.gaz)/(2*Math.PI))*2*Math.PI; });
 $('b-spin').setAttribute('aria-pressed', String(S.spin));
@@ -782,7 +786,8 @@ show3D = function(changed){
   /* comparaison : seuls Recadrer reste ; Éclater, Soleil réel, Coupe et Rotation sont retirés */
   $('explode').parentNode.hidden = cmpMode; document.querySelector('#toolbar .tool-sep').hidden = cmpMode; $('b-sun').hidden = cmpMode; $('b-cut').hidden = cmpMode;
   /* la coupe ne s'applique qu'à une maquette seule : bouton inactif en comparaison, état conservé pour le retour */
-  var noDep = cmpMode || !tele(S.id).deploy; $('b-dep').hidden = noDep; if (dep.on && noDep) depToggle(false);
+  var noDep = cmpMode || !tele(S.id).deploy; $('b-dep').hidden = noDep; if (dep.on && (noDep || dep.id !== S.id)) depToggle(false);
+  if (!noDep && window.DEPLOY && DEPLOY[S.id]){ var dt = DEPLOY[S.id].title[OBS_LANG === 'en' ? 1 : 0]; $('b-dep').title = dt; }
   $('b-spin').hidden = cmpMode;   /* la comparaison ne tourne jamais : bouton retiré */
   $('b-cut').setAttribute('aria-pressed', String(!!S.cut && !cmpMode));
   if (cmpMode){

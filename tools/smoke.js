@@ -44,6 +44,13 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     return m.length ? t.id + ' : ' + m.join(', ') : '';
   }).filter(Boolean));
   miss.forEach(m => fail('registre, il manque ' + m));
+  // ---- déploiements : chaque observatoire marqué deploy:true se replie puis se redéploie sans erreur
+  for (const id of await pg.evaluate(() => TELESCOPES.filter(t => t.deploy).map(t => t.id))){
+    await go(pg, id); await loaded(pg);
+    const r = await pg.evaluate(() => { document.getElementById('b-dep').click(); const D = DEPLOY[window.__obs.current.t.id], ok = !document.getElementById('dep').hidden && D.value() === 0;
+      document.getElementById('dep-next').click(); document.getElementById('b-dep').click(); return ok && D.value() === D.last; });
+    if (!r) fail('déploiement de ' + id);
+  }
   for (const t of TELES){
     await go(pg, t); await loaded(pg); await pg.waitForTimeout(1200);
     const r = await pg.evaluate(() => { const o = window.__obs, M = o.current, seen = {}; for (let y = 110; y < 770; y += 22) for (let x = 30; x < 950; x += 22){ const h = o.pick(x, y); if (h) seen[h.part] = 1; }

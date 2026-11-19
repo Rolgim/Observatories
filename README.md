@@ -4,7 +4,7 @@
 
 Visualisation 3D de cinq télescopes spatiaux (Hubble, JWST, Euclid, Gaia, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb pas à pas, comparaison des tailles à l'échelle.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
@@ -29,7 +29,7 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | `src/optics.js`, `src/orbits.js` | trajet de la lumière et plans focaux ; orbites, ciel observable, pointés |
 | `src/inst-render.js` | rendu des pages « Mission et données » et de la comparaison des instruments |
 | `src/app.js` | application 3D et panneau latéral ; ne contient rien de propre à un observatoire |
-| `src/looks.js`, `src/interior.js`, `src/deploy.js` | rendu des matériaux par maquette ; intérieurs de la vue en coupe ; déploiement de Webb |
+| `src/looks.js`, `src/interior.js`, `src/deploy.js` | rendu des matériaux par maquette ; intérieurs de la vue en coupe ; déploiements (Webb, Gaia) |
 | `src/en/`, `src/i18n.js`, `src/lang.js` | version anglaise : textes anglais et leur application |
 | `src/glossary.js` | définitions affichées au survol des termes techniques |
 | `data/` | données réelles (observations, trajectoires, pointés, TLE de Hubble) ; produites par les scripts de `tools/data/`, ne pas modifier à la main |
@@ -37,7 +37,7 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | `tools/probe/` | sondes qui montrent ce qu'expose une archive, sans rien écrire dans le dépôt |
 | `tools/models/` | conversion, allègement et redécoupage des maquettes ; **procédure d'ajout d'un observatoire** dans son `README.md` |
 | `tools/smoke.js`, `tools/a11y.js` | tests dans un vrai navigateur (Playwright) : parcours du site, registre complet, traduction ; accessibilité WCAG 2.1 A et AA (axe-core) |
-| `tools/shot.js`, `tools/i18n-scan.js`, `tools/deploy-check.js` | captures d'écran ; textes non traduits ; collisions pendant le déploiement de Webb |
+| `tools/shot.js`, `tools/i18n-scan.js`, `tools/deploy-check.js` | captures d'écran ; textes non traduits ; collisions pendant un déploiement |
 | `SPECS.md` | spécifications : état, évolutions livrées et à venir |
 
 Après une modification dans `src/`, relancer `node build.js` et commiter `index.html` avec les sources : le workflow « Tests » vérifie que les deux correspondent.

@@ -34,6 +34,7 @@ Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (ren
 1. Maquette : convertir et redécouper (ci-dessus), déposer `models/<id>.glb`. Licence claire obligatoire (exigence G1).
 2. `src/data-tele.js` : une entrée avec `id`, noms, `file`, `axis`, `size`, `view`, `sun`, `orbit` (`leo` ou `l2`), `cmp`, `parts`, `sections` et les champs de registre décrits en tête du fichier (`color`, `highlight`, `footprint`, `optical`, `compare`, éventuellement `ended`).
 3. `src/looks.js` : réglage des matériaux si la maquette rend mal sous l'éclairage du site (facultatif).
+4. `src/deploy.js` : si l'observatoire s'est déployé en vol, `deploy:true` dans le registre et une configuration dans `DEPLOY[id]` (étapes datées, pièces déformées, fonction de repliement) ; contrôle par `tools/deploy-check.js 0.25 <id>` (facultatif).
 4. `src/interior.js` : éléments internes pour la vue en coupe et, si besoin, plans de coupe propres (`CUT`) (facultatif).
 5. Textes et données : `INST_DATA` (`src/data-inst.js`), `MISSION` (`src/data-mission.js`), `TEXT`, `FP` et `LINK3D` (`src/optics.js`), `TEXT` (`src/orbits.js`) ; pages d'instruments propres à l'observatoire dans `src/inst-render.js` si un instrument a besoin d'une figure particulière.
 6. Anglais : `EN_TELE`, `EN_INST`, `EN_OPTICS`, `EN_ORBITS`, et les chaînes d'interface nouvelles dans `src/en/ui.js`.

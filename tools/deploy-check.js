@@ -1,13 +1,13 @@
-/* Contrôle physique du déploiement de Webb (src/deploy.js).
-   Usage : VENDOR=… node tools/deploy-check.js [pas]   (pas du curseur, 0.25 par défaut)
+/* Contrôle physique d'un déploiement (src/deploy.js).
+   Usage : VENDOR=… node tools/deploy-check.js [pas] [observatoire]   (pas du curseur, 0.25 par défaut ; jwst par défaut)
    Pour chaque état du curseur, la surface de chaque pièce est échantillonnée dans une grille de voxels (6 cm) :
    - interpénétrations : voxels partagés par deux groupes de pièces, en plus de ceux déjà partagés une fois déployé ;
    - pièces flottantes : maillage qui, déployé, touche d'autres maillages et n'en touche plus aucun (voisinage de 12 cm).
    Seuils : un recouvrement de moins de 40 voxels (ligne de contact) n'est pas signalé. Sortie : texte, code 1 si un défaut est trouvé. */
 const { execFileSync } = require('child_process'), path = require('path');
-const step = +(process.argv[2] || 0.25);
-const page = '(' + function(step){
-  var o = window.__obs, M = o.current, D = window.DEPLOY, THREE_ = THREE;
+const step = +(process.argv[2] || 0.25), TID = process.argv[3] || 'jwst';
+const page = '(' + function(step, tid){
+  var o = window.__obs, M = o.current, D = window.DEPLOY[tid], THREE_ = THREE;
   var GRP = { sunshield:'bouclier', flap:'bouclier', primary:'miroir', isim:'instruments', aos:'instruments', secondary:'secondaire', bus:'module', solar:'solaire', hga:'antenne', tower:'tour' };
   var V1 = 0.06, V2 = 0.12, a = new THREE_.Vector3(), b = new THREE_.Vector3(), c = new THREE_.Vector3(), p = new THREE_.Vector3();
   var meshes = M.meshes.filter(function(m){ return !m.userData.interior && m.geometry && m.geometry.attributes.position; });
@@ -53,8 +53,8 @@ const page = '(' + function(step){
   }
   D.set(M, D.last);
   return out.join('\n') || 'aucun défaut';
-} + ')(' + step + ')';
-const steps = [{ go:'jwst', wait:1 }, { sel:'#b-dep', ms:300 }, { eval:page }];
+} + ')(' + step + ', "' + TID + '")';
+const steps = [{ go:TID, wait:1 }, { sel:'#b-dep', ms:300 }, { eval:page }];
 const res = execFileSync('node', [path.join(__dirname, 'shot.js'), JSON.stringify(steps)], { env:process.env, encoding:'utf8', maxBuffer:1e8, timeout:900000 });
 const m = /^eval (.*)$/m.exec(res), txt = m ? JSON.parse(m[1]) : res;
 console.log(txt);

@@ -9,7 +9,7 @@
      optical    pièces qui ouvrent la page « Trajet de la lumière »
      compare    order (rang dans « Comparer »), rot (rotation de la maquette dans la vue côte à côte),
                 fp [rangée, rang] dans la figure des plans focaux
-     ended      mission terminée ; deploy : animation de déploiement (deploy.js)
+     ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
 ================================================================= */
 var TELESCOPES = [
   {
@@ -235,7 +235,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true,
+    compare:{ order:4, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
