@@ -40,7 +40,8 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
   // ---- registre : chaque observatoire a tout ce que le site attend (procédure d'ajout, tools/models/README.md)
   await go(pg, TELES[0]); await loaded(pg);
   const miss = await pg.evaluate(() => TELESCOPES.map(t => {
-    const m = ['color', 'highlight', 'footprint', 'optical', 'compare', 'orbit', 'cmp', 'parts', 'sections'].filter(k => !t[k]);
+    const m = ['color', 'highlight', 'footprint', 'optical', 'compare', 'orbit', 'domain', 'cmp', 'parts', 'sections'].filter(k => !t[k]);
+    if (t.domain && !DOMAINS.some(d => d.id === t.domain)) m.push('domain inconnu de DOMAINS');
     if (!INST_DATA[t.id]) m.push('INST_DATA'); if (!MISSION[t.id]) m.push('MISSION');
     if (!Optics.TEXT[t.id] || !Optics.FP[t.id] || !Optics.LINK3D[t.id]) m.push('Optics'); if (!Orbits.TEXT[t.id]) m.push('Orbits');
     if (!EN_TELE[t.id]) m.push('EN_TELE'); if (!EN_INST[t.id]) m.push('EN_INST'); if (!EN_OPTICS[t.id]) m.push('EN_OPTICS'); if (!EN_ORBITS[t.id]) m.push('EN_ORBITS');

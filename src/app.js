@@ -134,9 +134,14 @@ function missionHtml(t){
 }
 window.OBS_MISSION = function(tid){ return missionHtml(tele(tid)); };
 function renderTabs(){
-  var h = TELESCOPES.map(function(t){
-    return '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
-  }).join('');
+  /* onglets groupés par domaine spectral (DOMAINS, teleGroups dans data-tele.js) ; le nom du groupe est écrit au-dessus de son premier onglet */
+  var h = '';
+  teleGroups().forEach(function(g){
+    g.list.forEach(function(t, i){
+      h += '<button class="tab' + (i === 0 ? ' g0' : '') + '" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '"' + (g.label ? ' title="' + esc(g.label) + '"' : '') + '>' +
+           (i === 0 ? domTag(g) : '') + esc(t.short) + '<small>' + t.year + '</small></button>';
+    });
+  });
   h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button>';
   $('tabs').innerHTML = h;
   /* réglages, à part des onglets : globe + langue proposée, puis thème */

@@ -11,10 +11,11 @@
                 fp [rangée, rang] dans la figure des plans focaux
      orbit      leo (orbite basse), heo (orbite terrestre très elliptique) ou l2
      ended      mission terminée ; deploy : animation de déploiement, configurée dans DEPLOY[id] (deploy.js)
+     domain     groupe de l'en-tête, parmi DOMAINS (en fin de fichier) : domaine spectral principal
 ================================================================= */
 var TELESCOPES = [
   {
-    id:'hubble', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
+    id:'hubble', domain:'uv', name:'Hubble Space Telescope', short:'Hubble', year:'1990',
     agency:'NASA / ESA', launch:'Lancé le 24 avril 1990, navette Discovery (STS-31)',
     sub:'Orbite basse terrestre, ultraviolet, visible, proche infrarouge',
     src:'Maquette : NASA VTAD, via Gaia Sky',
@@ -86,7 +87,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'chandra', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
+    id:'chandra', domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
     agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
     sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -151,7 +152,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'gaia', name:'Gaia', short:'Gaia', year:'2013',
+    id:'gaia', domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
     src:'Maquette : Toni Sagristà, Gaia Sky',
@@ -217,7 +218,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'jwst', name:'James Webb Space Telescope', short:'JWST', year:'2021',
+    id:'jwst', domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
     src:'Maquette : NASA 3D Resources (domaine public)',
@@ -293,7 +294,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'euclid', name:'Euclid', short:'Euclid', year:'2023',
+    id:'euclid', domain:'ir', name:'Euclid', short:'Euclid', year:'2023',
     agency:'ESA (avec la NASA)', launch:'Lancé le 1ᵉʳ juillet 2023, Falcon 9, Cap Canaveral',
     sub:'Point de Lagrange L2, visible et proche infrarouge',
     src:'Maquette : ESA SciFleet, via Gaia Sky',
@@ -358,7 +359,7 @@ var TELESCOPES = [
     ]
   },
   {
-    id:'roman', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
+    id:'roman', domain:'ir', name:'Nancy Grace Roman Space Telescope', short:'Roman', year:'2026',
     agency:'NASA (avec l\'ESA, la JAXA et le CNES)', launch:'Lancé le 30 août 2026, Falcon Heavy, Kennedy',
     sub:'Point de Lagrange L2, proche infrarouge grand champ',
     src:'Maquette : NASA 3D Resources (conception de 2015)',
@@ -427,3 +428,21 @@ var TELESCOPES = [
     ]
   }
 ];
+
+/* groupes de l'en-tête, par domaine spectral principal, des courtes aux grandes longueurs d'onde ; l'astrométrie à part */
+var DOMAINS = [
+  { id:'x', label:'Rayons X', short:'Rayons X' },
+  { id:'uv', label:'UV et visible', short:'UV, visible' },
+  { id:'ir', label:'Infrarouge', short:'Infrarouge' },
+  { id:'astro', label:'Astrométrie', short:'Astrom.' }
+];
+/* observatoires regroupés pour les en-têtes : [{ label, short, list }] ; un observatoire sans domaine connu va dans un dernier groupe sans nom */
+function teleGroups(){
+  var T = window.OBS_T || function(x){ return x; };
+  var g = DOMAINS.map(function(d){ return { label:T(d.label), short:T(d.short), list:TELESCOPES.filter(function(t){ return t.domain === d.id; }) }; }).filter(function(x){ return x.list.length; });
+  var rest = TELESCOPES.filter(function(t){ return !DOMAINS.some(function(d){ return d.id === t.domain; }); });
+  if (rest.length) g.push({ label:'', short:'', list:rest });
+  return g;
+}
+/* étiquette de groupe au-dessus du premier onglet : version longue, et courte pour le téléphone */
+function domTag(g){ return g.label ? '<span class="dom" aria-hidden="true"><span class="dl">' + g.label + '</span><span class="ds">' + g.short + '</span></span>' : ''; }

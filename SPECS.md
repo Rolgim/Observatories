@@ -34,7 +34,7 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 ### Priorité 1 : nouveaux observatoires
 
 1. **Chandra : reste** [F] : pas de déploiement (panneaux solaires et porte à l'orbite, peu documentés).
-2. **Navigation au-delà de six observatoires** [G3] : les onglets d'en-tête ne suffiront plus. Proposition : regroupement par domaine spectral (rayons X, visible et ultraviolet, infrarouge, astrométrie), avec un menu sur téléphone. À faire au plus tard avec le septième observatoire.
+2. *Fait le 19 novembre.* **Navigation** [G3] : onglets groupés par domaine spectral (rayons X, UV et visible, infrarouge, astrométrie), nom du groupe au-dessus de son premier onglet, nom court sur téléphone ; mêmes groupes dans l'en-tête de « Mission et données ». Champ `domain` du registre, liste `DOMAINS`. Au-delà de huit observatoires environ, la rangée défile sur téléphone : prévoir alors un menu par groupe.
 3. Suite possible : XMM-Newton, Planck, Herschel (si la licence des maquettes ESA le permet), Spitzer, TESS, PLATO.
 
 ### Priorité 2 : contenu encore approximatif
@@ -70,10 +70,9 @@ Classé par priorité proposée. Entre crochets : le lot concerné (section 5).
 
 1. **Licence du dépôt** (code et textes) : à choisir (par exemple MIT pour le code, CC BY 4.0 pour les textes).
 2. **Serveur** : si une archive l'impose pour les requêtes en direct (E3), accepte-t-on un petit serveur intermédiaire, ou le site reste-t-il strictement statique ?
-3. **Navigation** (G3) : regroupement par domaine spectral, par agence, ou par époque ?
-4. **Ordre des prochains observatoires** : après Chandra, lesquels (Spitzer, Planck, Kepler, TESS, XMM-Newton) ?
+3. **Ordre des prochains observatoires** : après Chandra, lesquels (Spitzer, Planck, Kepler, TESS, XMM-Newton) ?
 
-Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre).
+Décidé : lots D, E, F en premier (12 novembre) ; français et anglais (12 novembre) ; Roman comme premier ajout (16 novembre) ; registre avant Chandra, puis Chandra (19 novembre) ; navigation par domaine spectral (19 novembre).
 
 ## 5. Lots : exigences et état
 
@@ -149,7 +148,7 @@ Produits affichés :
 - G1. Un observatoire n'est ajouté qu'avec une maquette de licence claire, un redécoupage vérifié, une fiche et des instruments sourcés.
 - G2. Procédure d'ajout documentée (`tools/models/README.md`). **Livré le 19 novembre**, avec le registre : `TELESCOPES` porte couleur, chiffre clé, encombrement, pièces optiques, place et orientation dans « Comparer », place dans la figure des plans focaux, fin de mission, déploiement ; matériaux dans `src/looks.js` ; `tools/smoke.js` liste ce qui manque à une entrée.
 - Chandra (19 novembre) : maquette NASA 3D Resources (0,8 Mo) redécoupée en six pièces (porte, module, miroirs HRMA, banc optique, module scientifique ISIM, panneaux solaires), fiche, ACIS, HRC, HETG et LETG avec axe spectral étendu aux rayons X (keV), schéma Wolter I à l'échelle, plans focaux ACIS et HRC-I, mission et traitements (niveaux 0 à 3, CSC 2.1), orbite très elliptique (Horizons, objet −151, schéma d'orbite à l'échelle). Le registre a suffi, sauf pour un nouveau type d'orbite (« heo ») ajouté au schéma d'orbite de l'application. Observations réelles de l'archive CDA. Vue en coupe : quatre paires de miroirs à l'échelle, réseau HETG à 8,6 m du foyer, ACIS et HRC sur la table de translation, six roues de réaction, deux centrales inertielles, trois batteries et l'enregistreur (Weisskopf et al. 2000 et 2005, Canizares et al. 2005) ; trois plans de coupe (avant, tube, module d'instruments). Les intérieurs peuvent désormais être décrits dans le repère du fichier glTF (`frame = 'file'`).
-- G3. Navigation au-delà de six ou sept observatoires. **À faire** (point 2).
+- G3. Navigation au-delà de six observatoires. **Livré le 19 novembre** (point 2) : groupes par domaine spectral.
 
 **Acceptation.** Ajouter un observatoire ne demande aucune modification de `app.js` : remplie.
 

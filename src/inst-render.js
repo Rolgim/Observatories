@@ -363,7 +363,11 @@ var InstrumentsUI = (function(){
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
     return s;
   }
-  function pillsFor(cur){ return ORDER.map(function(t){ return '<button class="pill'+(t===cur?' on':'')+'" data-tele="'+t+'">'+NAMES[t]+'</button>'; }).join('') + '<button class="pill'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button>'; }
+  /* mêmes groupes par domaine spectral que l'en-tête de la vue 3D */
+  function pillsFor(cur){
+    return teleGroups().map(function(g){ return g.list.map(function(t, i){
+      return '<button class="pill'+(i===0?' g0':'')+(t.id===cur?' on':'')+'" data-tele="'+t.id+'"'+(g.label?' title="'+esc(g.label)+'"':'')+'>'+(i===0?domTag(g):'')+NAMES[t.id]+'</button>'; }).join(''); }).join('') +
+      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button>'; }
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
