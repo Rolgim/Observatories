@@ -87,6 +87,67 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'cgro', mission:['general'], domain:'gamma', name:'Compton Gamma Ray Observatory', short:'Compton', year:'1991',
+    agency:'NASA, avec des partenaires européens pour COMPTEL', launch:'Lancé le 5 avril 1991, navette Atlantis (STS-37)',
+    sub:'Orbite basse, rayons gamma (1991–2000)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/cgro.glb', bytes:168588, axis:'z', size:21.3,
+    view:{ az:-2.4, el:0.35, dist:1.15 }, sun:[0.3,0.9,0.3], orbit:'leo', leo:{ alt:450, per:93 },
+    hero:{ num:'≈ 16', unit:'t', label:'le plus lourd observatoire astronomique de son temps' },
+    cmp:{ tag:'21 m', dim:'9 m de long, 21 m d\'envergure', mirror:null, mass:16000, approx:true, len:21.3 },
+    color:'#7A5230', highlight:['Domaine','20 keV – 30','GeV'], footprint:['21','m d\'envergure'], optical:['egret','comptel','osse','batse'],
+    compare:{ order:2, rot:[0, 0, 0], fp:null }, ended:true,
+    desc:"Deuxième des grands observatoires de la NASA, après Hubble, Compton couvrait le ciel gamma de 20 keV à 30 GeV avec quatre instruments complémentaires. BATSE a détecté environ 2 700 sursauts gamma, répartis uniformément sur le ciel : ils venaient donc de très loin, au-delà de notre Galaxie. EGRET a découvert que les noyaux actifs de galaxies dont le jet pointe vers nous, les blazars, brillent en rayons gamma. Après la panne d'un gyroscope, la NASA l'a fait rentrer dans l'atmosphère en juin 2000, au-dessus du Pacifique.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources). Elle n'est pas en mètres : elle est mise à l'échelle sur l'envergure publiée des panneaux, 21,3 m ; ses proportions sont approximatives. Elle a été redécoupée ici en sept ensembles d'après ses matériaux, dont les noms désignent les instruments.",
+    checked:'2026-11-20',
+    refs:{
+      msl:{ t:'Mission and Spacecraft Library, GRO', p:'NASA JPL', u:'https://space.jpl.nasa.gov/msl/QuickLooks/groQL.html' },
+      cossc:{ t:'Compton Gamma-Ray Observatory', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/cgro/cgro.html' },
+      ins:{ t:'CGRO, mission overview (caractéristiques des instruments)', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html' },
+      epo:{ t:'The Compton Gamma Ray Observatory instruments', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/cgro/epo/vu/overview/gro/instrmnt/instrmnt.html' },
+      wiki:{ t:'Compton Gamma Ray Observatory', p:'Wikipédia (en anglais)', u:'https://en.wikipedia.org/wiki/Compton_Gamma_Ray_Observatory' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','4,6 × 9,1 m · panneaux de 21,3 m d\'envergure','msl'],
+        ['Masse','≈ 16 t : 15,6 t, 16,3 t ou 17 t selon les sources',['msl','wiki','epo']],
+        ['Puissance','4 500 W en début de vie','msl'],
+        ['Lancement','5 avril 1991, navette Atlantis (STS-37) ; libéré le 7 avril','msl'] ]},
+      { title:'Instruments', rows:[
+        ['BATSE','8 modules aux coins · 20 keV à 1 MeV · tout le ciel','ins'],
+        ['OSSE','4 détecteurs orientables · 0,05 à 10 MeV · champ de 3,8° × 11,4°','ins'],
+        ['COMPTEL','télescope Compton · 0,8 à 30 MeV · ≈ 1 sr','ins'],
+        ['EGRET','chambre à étincelles · 30 MeV à 10 GeV · ≈ 0,6 sr','ins'] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','≈ 450 km, circulaire · inclinaison 28,5°','msl'],
+        ['Relèvements','1993 et 1997, par ses propres moteurs','wiki'],
+        ['Fin','gyroscope en panne en décembre 1999 ; rentrée contrôlée le 4 juin 2000, au-dessus du Pacifique',['wiki','cossc']] ]}
+    ],
+    parts:[
+      { key:'batse', name:'Détecteurs de sursauts (BATSE)', explode:[0,1,0,0.4],
+        desc:"Huit modules, un à chaque coin du satellite, tournés dans des directions différentes. Chacun associe un grand détecteur et un détecteur spectroscopique ; en comparant leurs signaux, BATSE localise un sursaut à quelques degrés près, sur tout le ciel que la Terre ne cache pas.",
+        facts:[["20 keV à 1 MeV", "ins"], ["Tout le ciel non caché par la Terre", "ins"], ["≈ 3° pour un sursaut intense", "ins"], ["≈ 2 700 sursauts détectés", "wiki"]] },
+      { key:'osse', name:'Spectromètre OSSE', explode:[-1,1,0,0.6],
+        desc:"Quatre grands scintillateurs, chacun dans un collimateur et monté sur un pivot, qui visent une petite région du ciel. OSSE a fait le relevé le plus complet de la région du centre galactique.",
+        facts:[["0,05 à 10 MeV", "ins"], ["Champ de 3,8° × 11,4°", "ins"], ["2 013 cm² à 0,2 MeV", "ins"]] },
+      { key:'comptel', name:'Télescope Compton (COMPTEL)', explode:[0,1,0,0.8],
+        desc:"Deux étages de détecteurs l'un au-dessus de l'autre : le photon gamma rebondit sur un électron dans le premier (effet Compton) et s'arrête dans le second. Les deux mesures donnent un cercle de directions possibles sur le ciel. COMPTEL a cartographié l'aluminium 26 radioactif dans la Galaxie.",
+        facts:[["0,8 à 30 MeV", "ins"], ["Champ d'≈ 1 sr", "ins"], ["Carte du ciel de l'aluminium 26", "wiki"]] },
+      { key:'egret', name:'Télescope EGRET', explode:[1,1,0,0.8],
+        desc:"Une chambre à étincelles : le photon gamma s'y transforme en paire électron–positon, dont les traces révèlent la direction. Un calorimètre, en dessous, mesure l'énergie. Le LAT de Fermi applique le même principe.",
+        facts:[["30 MeV à 10 GeV", "ins"], ["1 200 cm² à 100 MeV", "ins"], ["271 sources dans son premier relevé", "wiki"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.4],
+        desc:"La structure allongée qui porte les quatre instruments, l'énergie, le pointage et la propulsion.",
+        facts:[["9,1 m de long", "msl"], ["Conçu pour 2,25 ans, avec 8 ans d'ergols", "msl"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[0,0,1,0.6],
+        desc:"Deux ailes, de part et d'autre du module.",
+        facts:[["21,3 m d'envergure", "msl"], ["4 500 W en début de vie", "msl"]] },
+      { key:'hga', name:'Antenne grand gain', explode:[0,-1,0,0.8],
+        desc:"Au bout d'un long mât, sous le module, l'antenne qui transmettait les données.",
+        facts:[] }
+    ]
+  },
+  {
     id:'chandra', mission:['general'], domain:'x', name:'Chandra X-ray Observatory', short:'Chandra', year:'1999',
     agency:'NASA, exploité par le Smithsonian Astrophysical Observatory', launch:'Lancé le 23 juillet 1999, navette spatiale Columbia',
     sub:'Orbite terrestre très elliptique, rayons X (depuis 1999)',
@@ -96,7 +157,7 @@ var TELESCOPES = [
     hero:{ num:'0,5', unit:'″', label:'la netteté de ses images X (largeur à mi-hauteur)' },
     cmp:{ tag:'13,8 m', dim:'13,8 m de long, 19,5 m d\'envergure', mirror:1.2, mass:4800, len:13.8 },
     color:'#C2367A', highlight:['Focale','10','m'], footprint:['13,8','m de long'], optical:['hrma','oba','isim'],
-    compare:{ order:2, rot:[0, 0.5, -Math.PI/2], fp:[1, 1] },   /* ouverture vers le haut */
+    compare:{ order:3, rot:[0, 0.5, -Math.PI/2], fp:[1, 1] },   /* ouverture vers le haut */
     desc:"Les rayons X ne se réfléchissent que s'ils frôlent une surface. Chandra les concentre donc avec quatre paires de miroirs en forme de tubes emboîtés, qu'ils effleurent sous un angle très faible, puis les envoie 10 m plus loin sur ses détecteurs. Il observe depuis 1999 le gaz à des millions de degrés : restes de supernovae, amas de galaxies, matière autour des trous noirs. Son orbite très allongée l'emmène à plus du tiers de la distance de la Lune, loin des ceintures de radiations.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en six ensembles d'après sa géométrie et ses matériaux ; elle contient les quatre coquilles du miroir.",
     checked:'2026-11-19',
@@ -161,7 +222,7 @@ var TELESCOPES = [
     hero:{ num:'3 × 58', unit:'', label:'miroirs emboîtés, dans trois télescopes X' },
     cmp:{ tag:'10 m', dim:'10 m de long, 16 m d\'envergure', mirror:0.7, mass:3800, len:10 },
     color:'#2E7FA8', highlight:['Miroirs','3 × 58',''], footprint:['10','m de long'], optical:['mirrors','tube','fpa'],
-    compare:{ order:3, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },
+    compare:{ order:4, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },
     desc:"XMM-Newton a trois télescopes X côte à côte, chacun fait de 58 miroirs emboîtés en forme de tubes, que les rayons X effleurent. Ils recueillent beaucoup de lumière : c'est l'observatoire X idéal pour les spectres et les objets faibles, quand Chandra est celui des images les plus nettes. Un petit télescope optique et ultraviolet observe en même temps le même champ.",
     sourceNote:"Maquette de l'ESA, distribuée par le service SPICE de l'ESA pour le logiciel Cosmographia (aucune licence n'y est précisée ; créditée ici à l'ESA). Elle est redécoupée en six ensembles d'après sa géométrie, et mise à l'échelle sur l'envergure publiée de 16 m. Les miroirs ne sont visibles que par leurs ouvertures.",
     checked:'2026-11-19',
@@ -210,6 +271,115 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'integral', mission:['general'], domain:'gamma', name:'International Gamma-Ray Astrophysics Laboratory', short:'INTEGRAL', year:'2002',
+    agency:'ESA, avec la Russie et les États-Unis ; spectromètre SPI sous maîtrise d\'œuvre du CNES', launch:'Lancé le 17 octobre 2002, Proton, Baïkonour',
+    sub:'Orbite terrestre très elliptique, rayons gamma et X (2002–2025)',
+    src:'Maquette : ESA, SCIFLEET',
+    file:'models/integral.glb', bytes:1353116, axis:'x', size:16,
+    view:{ az:-2.6, el:0.3, dist:1.3 }, sun:[0.2,0.4,-0.9], orbit:'heo', heo:{ rp:15371, ra:159371, apo:'≈ 153 000 km', per:'72 h', note:'Terre, orbite de 2024 et Lune à l\'échelle.' },
+    hero:{ num:'22', unit:'ans', label:'d\'observations du ciel gamma, de 2002 à 2025' },
+    cmp:{ tag:'16 m', dim:'5 m de haut, 16 m d\'envergure', mirror:null, mass:4000, len:16 },
+    color:'#245C9E', highlight:['Domaine','3 keV – 10','MeV'], footprint:['16','m d\'envergure'], optical:['spi','ibis','jemx'],
+    compare:{ order:6, rot:[0, 0, 0], fp:null }, ended:true,
+    desc:"INTEGRAL observait le ciel en rayons gamma et X durs avec quatre instruments pointés dans la même direction. Ni miroir ni lentille à ces énergies : SPI et IBIS, comme les deux JEM-X, reconstruisent l'image du ciel à partir de l'ombre d'un masque codé. SPI, construit sous la maîtrise d'œuvre du CNES, mesurait très finement l'énergie des raies gamma ; IBIS localisait les sources à quelques minutes d'arc. Il a observé pendant 22 ans, jusqu'au 28 février 2025.",
+    sourceNote:"Maquette de l'ESA (SCIFLEET), libre d'utilisation selon les conditions de l'ESA. Ses unités sont des pouces : elle est mise à l'échelle sur l'envergure publiée de 16 m. Elle a été redécoupée ici en six ensembles d'après sa géométrie ; la structure du module de charge utile est rattachée au module de service.",
+    checked:'2026-11-20',
+    refs:{
+      fs:{ t:'INTEGRAL fact sheet', p:'ESA', u:'https://sci.esa.int/web/integral/-/47360-fact-sheet' },
+      end:{ t:'Mission accomplished for Integral, ESA\'s gamma-ray telescope (28 février 2025)', p:'ESA', u:'https://www.esa.int/Science_Exploration/Space_Science/Integral/Mission_accomplished_for_Integral_ESA_s_gamma-ray_telescope' },
+      cnes:{ t:'INTEGRAL en détails', p:'CNES', u:'https://cnes.fr/projets/integral/en-details' },
+      isdc:{ t:'Introduction to the INTEGRAL Off-line Scientific Analysis, caractéristiques des instruments', p:'ISDC, Université de Genève', u:'https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html' },
+      heasarc:{ t:'INTEGRAL, mission overview', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/integral.html' },
+      sf:{ t:'SCIFLEET, maquettes des missions scientifiques', p:'ESA', u:'https://scifleet.esa.int/' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','5 m de haut · Ø 3,7 m · 16 m d\'envergure, panneaux déployés','fs'], ['Masse au lancement','≈ 4 t','fs'],
+        ['Lancement','17 octobre 2002, Proton, Baïkonour',['fs','heasarc']],
+        ['Contribution française','SPI, sous maîtrise d\'œuvre du CNES','cnes'] ]},
+      { title:'Instruments', rows:[
+        ['SPI','spectromètre · 20 keV à 8 MeV · 19 détecteurs au germanium à 85 K',['isdc','heasarc']],
+        ['IBIS','imageur · 15 keV à 10 MeV · 16 384 détecteurs CdTe et 4 096 CsI · 12′','isdc'],
+        ['JEM-X','deux moniteurs X · 3 à 35 keV · 3′',['isdc','heasarc']],
+        ['OMC','caméra optique, filtre V · champ de 5° × 5°',['isdc','heasarc']] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','72 h · 9 000 × 153 000 km au départ · inclinaison 51,6°','fs'],
+        ['Opérations','contrôle à l\'ESOC (Darmstadt) ; opérations scientifiques à l\'ESAC ; données à l\'ISDC (Genève)','fs'],
+        ['Fin','observations arrêtées le 28 février 2025, après 2 886 orbites ; rentrée prévue début 2029','end'] ]}
+    ],
+    parts:[
+      { key:'spi', name:'Spectromètre (SPI)', explode:[0,1,1,0.8],
+        desc:"Un masque codé au sommet du cylindre, et au fond une caméra de 19 détecteurs au germanium refroidis à 85 K, entourés d'un bouclier actif qui rejette les particules. SPI mesure l'énergie des photons gamma avec une grande finesse : de quoi séparer les raies émises par les noyaux radioactifs, ou celle de l'annihilation des positons.",
+        facts:[["20 keV à 8 MeV", "isdc"], ["19 détecteurs au germanium, 85 K", "isdc"], ["2,3 keV de résolution à 1,3 MeV", "isdc"], ["Maîtrise d'œuvre du CNES", "cnes"]] },
+      { key:'ibis', name:'Imageur (IBIS)', explode:[0,1,-1,0.8],
+        desc:"Le grand caisson : un masque codé au sommet, deux plans de détecteurs au fond. ISGRI, en tellurure de cadmium, voit les énergies basses ; PICsIT, en iodure de césium, les plus hautes. Il localise les sources à quelques minutes d'arc.",
+        facts:[["15 keV à 10 MeV", "isdc"], ["16 384 CdTe et 4 096 CsI", "isdc"], ["Résolution de 12′", "isdc"], ["Champ de 9° entièrement codé", "isdc"]] },
+      { key:'jemx', name:'Moniteurs X (JEM-X)', explode:[0,1,0,1.0],
+        desc:"Deux petits télescopes à masque codé, dont les masques ronds sont visibles au sommet. Ils voient les mêmes sources en rayons X plus mous, de 3 à 35 keV, à des énergies où IBIS ne descend pas.",
+        facts:[["3 à 35 keV", "isdc"], ["Résolution de 3′", "isdc"]] },
+      { key:'omc', name:'Caméra optique (OMC)', explode:[-1,1,0,0.6],
+        desc:"Une petite caméra CCD derrière une optique à lentilles et un filtre V : elle suit l'éclat visible des sources que regardent les instruments gamma.",
+        facts:[["Champ de 5° × 5°", "isdc"], ["Filtre V", "isdc"]] },
+      { key:'svm', name:'Module de service et structure', explode:[0,-1,0,0.6],
+        desc:"Le module du bas porte les réservoirs, l'énergie et les communications. Au-dessus, la structure du module de charge utile relie les quatre instruments.",
+        facts:[["≈ 4 t au lancement", "fs"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[1,0,0,0.6],
+        desc:"Deux ailes de panneaux, de part et d'autre du module de service.",
+        facts:[["16 m d'envergure", "fs"]] }
+    ]
+  },
+  {
+    id:'wmap', mission:['survey'], domain:'mw', name:'Wilkinson Microwave Anisotropy Probe', short:'WMAP', year:'2001',
+    agency:'NASA (Goddard), avec l\'université de Princeton', launch:'Lancé le 30 juin 2001, Delta II, Cap Canaveral',
+    sub:'Point de Lagrange L2, fond diffus cosmologique (2001–2010)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/wmap.glb', bytes:1329400, axis:'y', size:3.6,
+    view:{ az:0.7, el:0.3, dist:1.8 }, sun:[0,-1,0.05], orbit:'l2',
+    hero:{ num:'13,77', unit:'milliards d\'années', label:'l\'âge de l\'Univers mesuré, à un demi pour cent près' },
+    cmp:{ tag:'5,1 m', dim:'3,6 m de haut, Ø 5,1 m', mirror:1.5, mass:840, len:5.1 },
+    color:'#C77D2E', highlight:['Fréquences','23 à 94','GHz'], footprint:['5,1','m de diamètre'], optical:['optics','fpa'],
+    compare:{ order:5, rot:[0, 0, 0], fp:null }, ended:true,
+    desc:"WMAP a cartographié tout le ciel dans cinq bandes de micro-ondes, de 23 à 94 GHz, pour mesurer les variations de température du fond diffus cosmologique, de l'ordre du millionième de degré. Ses deux télescopes, dos à dos, regardaient en même temps deux points du ciel très éloignés l'un de l'autre et ne mesuraient que leur différence. En neuf ans, il a fixé l'âge de l'Univers à 13,77 milliards d'années et sa composition : environ 5 % de matière ordinaire, 25 % de matière noire et 70 % d'énergie noire.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), allégée ici. Elle n'est pas en mètres : elle est mise à l'échelle sur la hauteur publiée de 3,6 m, et son écran solaire mesure alors ≈ 4,8 m pour 5,1 m publiés. Elle a été redécoupée en cinq ensembles d'après ses matériaux.",
+    checked:'2026-11-20',
+    refs:{
+      nasa:{ t:'WMAP overview', p:'NASA Science', u:'https://science.nasa.gov/mission/wmap/wmap-overview/' },
+      wiki:{ t:'Wilkinson Microwave Anisotropy Probe', p:'Wikipédia (en anglais)', u:'https://en.wikipedia.org/wiki/Wilkinson_Microwave_Anisotropy_Probe' },
+      lambda:{ t:'WMAP, Data Release 5 (neuf ans)', p:'LAMBDA, NASA Goddard', u:'https://lambda.gsfc.nasa.gov/product/wmap/current/index.html' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','3,6 m de haut · Ø 5,1 m','wiki'], ['Masse','840 kg au lancement · ≈ 830 kg selon la NASA',['wiki','nasa']], ['Puissance','419 W','wiki'],
+        ['Lancement','30 juin 2001, Delta II 7425, Cap Canaveral',['nasa','wiki']] ]},
+      { title:'Instrument', rows:[
+        ['Télescopes','deux grégoriens dos à dos · primaires de 1,4 × 1,6 m',['nasa','wiki']],
+        ['Récepteurs','20 cornets, 10 de chaque côté, et autant de radiomètres différentiels','wiki'],
+        ['Bandes','K 23 · Ka 33 · Q 41 · V 61 · W 94 GHz','wiki'],
+        ['Résolution','de 52,8′ (K) à 13,2′ (W)','wiki'] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','autour de L2, atteint le 1er octobre 2001','wiki'],
+        ['Fin','données jusqu\'au 19 août 2010 ; éteint le 20 octobre 2010, sur une orbite autour du Soleil',['nasa','wiki']],
+        ['Mission','prévue pour 27 mois, menée 9 ans','nasa'] ]}
+    ],
+    parts:[
+      { key:'optics', name:'Télescopes', explode:[0,1,0,0.6],
+        desc:"Deux télescopes grégoriens dos à dos : chacun a un grand miroir primaire de 1,4 × 1,6 m et un secondaire, qui renvoient le rayonnement vers les cornets au centre. Ils voient en même temps deux directions du ciel ; seule la différence entre les deux est mesurée, ce qui annule la plupart des effets de l'instrument.",
+        facts:[["Primaires de 1,4 × 1,6 m", "nasa"], ["Deux télescopes grégoriens dos à dos", "wiki"]] },
+      { key:'fpa', name:'Cornets et radiomètres', explode:[0,1,0,0.3],
+        desc:"Entre les deux télescopes, les 20 cornets, 10 par côté, guident le rayonnement vers les radiomètres. Leur nombre augmente avec la fréquence : 2 en bande K, 8 en bande W, la plus fine.",
+        facts:[["20 cornets", "wiki"], ["Bande W : 8 radiomètres, 13,2′", "wiki"]] },
+      { key:'rad', name:'Radiateurs passifs et structure', explode:[0,0,1,0.4],
+        desc:"Les grands panneaux blancs rayonnent vers l'espace la chaleur de l'instrument, refroidi sans aucun liquide cryogénique, et la structure en tube relie l'instrument au module de service.",
+        facts:[] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.4],
+        desc:"Le module hexagonal porte l'électronique, les roues de réaction, la propulsion et les communications.",
+        facts:[["419 W", "wiki"]] },
+      { key:'solar', name:'Écran solaire et panneaux', explode:[0,-1,0,0.6],
+        desc:"Le grand disque tourné vers le Soleil porte les panneaux solaires et garde l'instrument à l'ombre. WMAP tournait sur lui-même en gardant l'écran face au Soleil, pour balayer le ciel.",
+        facts:[["Ø 5,1 m", "wiki"]] }
+    ]
+  },
+  {
     id:'spitzer', mission:['general'], domain:'ir', name:'Spitzer Space Telescope', short:'Spitzer', year:'2003',
     agency:'NASA (JPL, Caltech)', launch:'Lancé le 25 août 2003, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, infrarouge (2003–2020)',
@@ -220,7 +390,7 @@ var TELESCOPES = [
     hero:{ num:'5,6', unit:'K', label:'la température du télescope pendant la mission froide' },
     cmp:{ tag:'4,5 m', dim:'4,5 m de haut, Ø 2,1 m', mirror:0.85, mass:861, len:4.5 },
     color:'#B03A2E', highlight:['Miroir primaire','0,85','m'], footprint:['4,5','m de haut'], optical:['tele','cta'],
-    compare:{ order:4, rot:[0, 0, 0], fp:[1, 2] }, ended:true,
+    compare:{ order:7, rot:[0, 0, 0], fp:[1, 2] }, ended:true,
     desc:"Pour voir l'infrarouge, un télescope doit être plus froid que ce qu'il regarde. Spitzer emportait de l'hélium liquide qui a tenu son télescope de 85 cm à 5,6 K pendant près de six ans. Au lieu de tourner autour de la Terre, il suivait la Terre autour du Soleil, en s'en éloignant peu à peu : loin de sa chaleur, il se refroidissait aussi en rayonnant vers l'espace. Après l'épuisement de l'hélium en 2009, deux de ses caméras ont continué de fonctionner jusqu'en 2020.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), en mètres. Elle a été redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux ; le miroir primaire et le support du secondaire sont visibles par l'ouverture du tube.",
     checked:'2026-11-19',
@@ -282,7 +452,7 @@ var TELESCOPES = [
     hero:{ num:'20', unit:'%', label:'du ciel vu à chaque instant par le LAT' },
     cmp:{ tag:'15 m', dim:'2,9 m de haut, 15 m d\'envergure', mirror:null, mass:4303, len:15 },
     color:'#4C3A99', highlight:['Domaine','20 MeV – 300','GeV'], footprint:['15','m d\'envergure'], optical:['lat'],
-    compare:{ order:5, rot:[0, 0, 0], fp:null },
+    compare:{ order:9, rot:[0, 0, 0], fp:null },
     desc:"Les rayons gamma sont trop énergétiques pour être réfléchis par un miroir. Le LAT, l'instrument principal de Fermi, les attrape autrement : chaque photon se transforme dans une feuille de tungstène en une paire électron–positon, dont des plans de silicium suivent la trace et dont un calorimètre mesure l'énergie. Il voit un cinquième du ciel à la fois et le balaie en entier toutes les trois heures. Son second instrument, le GBM, guette les sursauts gamma dans toutes les directions.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), allégée et redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux. Elle n'est pas en mètres : elle est mise à l'échelle sur l'envergure publiée de 15 m ; ses proportions sont approximatives (le LAT y mesure ≈ 1,6 m de côté, contre 1,8 m en réalité).",
     checked:'2026-11-19',
@@ -326,6 +496,66 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'swift', mission:['transient'], domain:'gamma', name:'Neil Gehrels Swift Observatory', short:'Swift', year:'2004',
+    agency:'NASA, avec l\'Italie et le Royaume-Uni ; opérations à Penn State', launch:'Lancé le 20 novembre 2004, Delta II, Cap Canaveral',
+    sub:'Orbite basse, sursauts gamma, rayons X et ultraviolet (2004–2026)',
+    src:'Maquette : NASA 3D Resources (domaine public)',
+    file:'models/swift.glb', bytes:1137756, axis:'y', size:5.6,
+    view:{ az:-2.5, el:0.3, dist:1.6 }, sun:[0.2,0.55,-0.8], orbit:'leo', leo:{ alt:590, per:96.6 },
+    hero:{ num:'≈ 1', unit:'min', label:'pour pivoter tout entier vers un sursaut gamma qu\'il vient de détecter' },
+    cmp:{ tag:'5,6 m', dim:'5,6 × 5,4 m', mirror:0.3, mass:1470, len:5.6 },
+    color:'#E39B17', highlight:['Sursauts gamma','> 2 000',''], footprint:['5,6','m de long'], optical:['bat','xrt','uvot'],
+    compare:{ order:8, rot:[0, 0, 0], fp:null }, ended:true,
+    desc:"Un sursaut gamma ne dure que quelques secondes. Swift était fait pour les attraper : son télescope à masque codé, BAT, surveillait un sixième du ciel ; dès qu'il voyait un sursaut, le satellite pivotait tout seul, en une minute environ, pour pointer ses deux autres télescopes, en rayons X et en ultraviolet, sur la lueur rémanente. Prévu pour deux ans, il a observé près de 22 ans et plus de 2 000 sursauts, avant de retomber dans l'atmosphère le 4 novembre 2026.",
+    sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources). Elle n'est pas en mètres : elle est mise à l'échelle sur la longueur publiée de 5,6 m. Ses proportions sont approximatives : les panneaux solaires y paraissent plus étendus que les 5,4 m publiés. Elle a été redécoupée ici en six ensembles d'après sa géométrie et ses matériaux.",
+    checked:'2026-11-20',
+    refs:{
+      g04:{ t:'Gehrels et al. 2004, The Swift Gamma-Ray Burst Mission, ApJ 611, 1005', p:'arXiv', u:'https://arxiv.org/abs/astro-ph/0405233' },
+      bat:{ t:'BAT Instrument Description', p:'NASA Goddard, Swift', u:'https://swift.gsfc.nasa.gov/about_swift/bat_desc.html' },
+      xrt:{ t:'XRT Instrument Description', p:'NASA Goddard, Swift', u:'https://swift.gsfc.nasa.gov/about_swift/xrt_desc.html' },
+      uvot:{ t:'The Swift Technical Handbook, Overview of UVOT', p:'NASA Goddard, Swift', u:'https://swift.gsfc.nasa.gov/proposals/tech_appd/swiftta_v17/node39.html' },
+      end:{ t:'NASA\'s Swift Mission Ends (23 octobre 2026)', p:'NASA Science', u:'https://science.nasa.gov/missions/swift/nasas-swift-mission-ends/' },
+      reent:{ t:'NASA\'s Swift Observatory Re-Entered Atmosphere (4 novembre 2026)', p:'NASA Science', u:'https://science.nasa.gov/blogs/swift/2026/11/02/nasas-swift-observatory-to-re-enter-atmosphere/' },
+      wiki:{ t:'Neil Gehrels Swift Observatory', p:'Wikipédia (en anglais)', u:'https://en.wikipedia.org/wiki/Neil_Gehrels_Swift_Observatory' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','5,6 × 5,4 m','wiki'], ['Masse','≈ 1 450 kg (prévision) · 1 470 kg au lancement',['g04','wiki']], ['Puissance','1 040 W','wiki'],
+        ['Construction','plateforme de Spectrum Astro','wiki'],
+        ['Lancement','20 novembre 2004, Delta II 7320, Cap Canaveral',['wiki','end']] ]},
+      { title:'Instruments', rows:[
+        ['BAT','masque codé de 2,7 m², 1 m au-dessus de 32 768 détecteurs CZT · 15 à 150 keV · 1,4 sr','bat'],
+        ['XRT','télescope Wolter I de 3,5 m de focale · 0,2 à 10 keV · champ de 23,6′','xrt'],
+        ['UVOT','Ritchey-Chrétien de 30 cm, f/12,7 · 170 à 600 nm · champ de 17′','uvot'],
+        ['Réaction','pivotement autonome vers le sursaut en une minute environ','end'] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','585 × 604 km au départ · inclinaison 20,6° · 96,6 min','wiki'],
+        ['Pointage','jusqu\'à 75 cibles indépendantes par jour','end'],
+        ['Gyroscopes','deux sur quatre perdus ; pointage sur deux gyroscopes depuis avril 2024','wiki'],
+        ['Fin','dernière observation le 20 octobre 2026 ; rentré dans l\'atmosphère le 4 novembre 2026, au-dessus de Sumatra',['end','reent']] ]}
+    ],
+    parts:[
+      { key:'bat', name:'Télescope d\'alerte (BAT)', explode:[0,1,-1,0.8],
+        desc:"Un télescope sans miroir : un masque d'environ 54 000 petites tuiles de plomb, posé 1 m au-dessus d'un plan de détecteurs. Une source projette l'ombre du masque, décalée selon sa direction ; en comparant cette ombre au motif du masque, BAT retrouve la position d'un sursaut à quelques minutes d'arc près, en une vingtaine de secondes.",
+        facts:[["Masque de 2,7 m², ≈ 54 000 tuiles de plomb", "bat"], ["32 768 détecteurs CZT de 4 × 4 × 2 mm", "bat"], ["Champ de 1,4 sr, 100° × 60°", "bat"], ["15 à 150 keV", "bat"]] },
+      { key:'xrt', name:'Télescope X (XRT)', explode:[0,1,1,0.8],
+        desc:"Un télescope à incidence rasante, avec des miroirs de rechange de la mission JET-X, et une caméra CCD au foyer, 3,5 m plus loin. Il précise la position du sursaut à quelques secondes d'arc et suit le déclin de sa lueur en rayons X.",
+        facts:[["Wolter I, focale de 3,5 m", "xrt"], ["110 cm² à 1,5 keV", "xrt"], ["CCD de 600 × 600 px, 2,36″", "xrt"], ["0,2 à 10 keV", "xrt"]] },
+      { key:'uvot', name:'Télescope ultraviolet et visible (UVOT)', explode:[0,1,1,1.2],
+        desc:"Un télescope de 30 cm, aligné sur le XRT, qui compte les photons un à un avec un détecteur à intensificateur. Il donne la position du sursaut à mieux qu'une seconde d'arc, et ses couleurs, à travers une roue de filtres et deux grismes.",
+        facts:[["30 cm, f/12,7", "uvot"], ["170 à 600 nm", "uvot"], ["Champ de 17′ × 17′", "uvot"], ["Plus de 1,5 million d'images", "end"]] },
+      { key:'shade', name:'Écrans des télescopes', explode:[0,1,1,0.4],
+        desc:"Les panneaux qui entourent l'ouverture du XRT et de l'UVOT, au-dessus du plateau des instruments.",
+        facts:[["Ouvertures du XRT et de l'UVOT, côte à côte", "g04"]] },
+      { key:'bus', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"La plateforme de Spectrum Astro : énergie, ordinateur, roues de réaction et gyroscopes. Elle sait faire pivoter tout l'observatoire de 50° en moins de 75 s, sans attendre d'ordre du sol.",
+        facts:[["50° en moins de 75 s", "g04"], ["1 040 W", "wiki"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[1,0,0,0.6],
+        desc:"Deux ailes, de part et d'autre du module de service.",
+        facts:[["Envergure publiée : 5,4 m", "wiki"]] }
+    ]
+  },
+  {
     id:'gaia', mission:['survey'], domain:'astro', name:'Gaia', short:'Gaia', year:'2013',
     agency:'ESA', launch:'Lancé le 19 décembre 2013, Soyouz-Frégate, Kourou',
     sub:'Point de Lagrange L2 (2014–2025), astrométrie en lumière visible',
@@ -335,7 +565,7 @@ var TELESCOPES = [
     hero:{ num:'106', unit:'CCD', label:'un plan focal de près d\'un milliard de pixels' },
     cmp:{ tag:'Ø ≈ 10 m', dim:'Ø ≈ 10 m (pare-soleil)', mirror:1.45, mass:2030, len:10.2 },
     color:'#9A52D6', highlight:['Plan focal','106','CCD'], footprint:['≈ 10','m de diamètre'], optical:['torus','focal','tent'],
-    compare:{ order:7, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
+    compare:{ order:13, rot:[0.5, 0, 0], fp:[0, 0] }, ended:true, deploy:true,
     desc:"Gaia a mesuré la position, la distance et le mouvement de près de deux milliards d'étoiles. Le satellite tournait sur lui-même en six heures : ses deux télescopes, qui visent deux directions séparées de 106,5°, balayaient ainsi tout le ciel. Les observations ont pris fin en janvier 2025.",
     sourceNote:"Maquette créée par Toni Sagristà pour Gaia Sky, le logiciel de visualisation de la mission. Les pièces correspondent aux objets nommés du fichier d'origine.",
     checked:'2026-11-13',
@@ -392,6 +622,108 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'herschel', mission:['general'], domain:'ir', name:'Herschel Space Observatory', short:'Herschel', year:'2009',
+    agency:'ESA, avec la NASA ; instruments de consortiums européens', launch:'Lancé le 14 mai 2009, Ariane 5, Kourou, avec Planck',
+    sub:'Point de Lagrange L2, infrarouge lointain et submillimétrique (2009–2013)',
+    src:'Maquette : ESA, SCIFLEET',
+    file:'models/herschel.glb', bytes:581068, axis:'y', size:7.5,
+    view:{ az:0.5, el:0.25, dist:2.0 }, sun:[0,0.1,-1], orbit:'l2',
+    hero:{ num:'3,5', unit:'m', label:'de miroir : le plus grand télescope infrarouge spatial jusqu\'à Webb' },
+    cmp:{ tag:'7,5 m', dim:'7,5 m de haut, 4 m de large', mirror:3.5, mass:3400, len:7.5 },
+    color:'#A33B5E', highlight:['Miroir primaire','3,5','m'], footprint:['7,5','m de haut'], optical:['tele','cryo'],
+    compare:{ order:11, rot:[0, 0, 0], fp:[1, 3] }, ended:true,
+    desc:"Herschel observait l'infrarouge lointain et le domaine submillimétrique, de 55 à 672 µm : la lumière de la poussière froide où naissent les étoiles, et des galaxies lointaines qui en forment beaucoup. Avec son miroir de 3,5 m, en carbure de silicium, c'était le plus grand télescope infrarouge spatial jamais construit, jusqu'à Webb. Ses trois instruments baignaient dans l'hélium liquide d'un cryostat ; quand il s'est épuisé, en avril 2013, la mission s'est arrêtée.",
+    sourceNote:"Maquette de l'ESA (SCIFLEET), libre d'utilisation selon les conditions de l'ESA. Elle est mise à l'échelle sur la hauteur publiée de 7,5 m ; son miroir y mesure bien 3,5 m. Elle a été redécoupée ici en quatre ensembles d'après sa géométrie.",
+    checked:'2026-11-20',
+    refs:{
+      fs:{ t:'Herschel fact sheet', p:'ESA', u:'https://sci.esa.int/web/herschel/47356-fact-sheet' },
+      vs:{ t:'Herschel, vital stats', p:'ESA', u:'https://www.esa.int/Our_Activities/Space_Science/Herschel/Vital_stats' },
+      pil:{ t:'Pilbratt et al. 2010, Herschel Space Observatory, A&A 518, L1', p:'arXiv', u:'https://arxiv.org/abs/1005.5331' },
+      sf:{ t:'SCIFLEET, maquettes des missions scientifiques', p:'ESA', u:'https://scifleet.esa.int/' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','7,5 m de haut · 4 × 4 m de section','fs'], ['Masse','3,4 t au lancement, dont 335 kg d\'hélium',['fs','pil']],
+        ['Puissance','1 200 W, dont 506 W pour les instruments','pil'],
+        ['Lancement','14 mai 2009, Ariane 5 ECA, Kourou, avec Planck','fs'] ]},
+      { title:'Télescope et instruments', rows:[
+        ['Télescope','Cassegrain · primaire de 3,5 m en 12 segments de carbure de silicium · ≈ 85 K','pil'],
+        ['Cryostat','2 367 L d\'hélium superfluide','pil'],
+        ['HIFI','spectromètre hétérodyne · 157–212 et 240–625 µm · R ≈ 10⁶','pil'],
+        ['PACS','photomètre 60–210 µm · spectromètre 55–210 µm','pil'],
+        ['SPIRE','photomètre à 250, 350 et 500 µm · spectromètre 194–671 µm','pil'] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','autour de L2, à ≈ 1,5 million de km · période ≈ 178 jours','fs'],
+        ['Opérations','ESOC (Darmstadt) ; centre scientifique à l\'ESAC ; centre de la NASA à l\'IPAC (Caltech)','fs'],
+        ['Fin','dernière observation le 29 avril 2013, hélium épuisé','fs'] ]}
+    ],
+    parts:[
+      { key:'tele', name:'Télescope', explode:[0,1,0,0.8],
+        desc:"Un Cassegrain : le primaire de 3,5 m, fait de 12 segments de carbure de silicium brasés, et un petit secondaire au bout d'un trépied. Il n'était pas refroidi par l'hélium : à l'ombre du pare-soleil, il descendait par rayonnement vers 85 K.",
+        facts:[["Primaire de 3,5 m, 12 segments", "pil"], ["Télescope de 315 kg", "vs"], ["≈ 85 K", "pil"], ["Système à f/8,7", "pil"]] },
+      { key:'cryo', name:'Cryostat et instruments', explode:[0,0,1,0.6],
+        desc:"Un grand réservoir d'hélium superfluide, sous le télescope. Au-dessus, sur un banc optique refroidi, les parties froides des trois instruments : HIFI, PACS et SPIRE.",
+        facts:[["2 367 L d'hélium", "pil"], ["Trois instruments : HIFI, PACS, SPIRE", "fs"]] },
+      { key:'shade', name:'Pare-soleil et panneaux solaires', explode:[0,0,-1,0.8],
+        desc:"Un écran tourné vers le Soleil, qui garde à l'ombre le télescope et le cryostat ; sa partie basse porte les cellules solaires.",
+        facts:[["≈ 12 m² de panneaux", "vs"]] },
+      { key:'svm', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"Le module octogonal du bas porte l'électronique chaude des instruments, sur quatre de ses huit panneaux, ainsi que l'énergie, le pointage et les communications.",
+        facts:[["Électronique chaude sur 4 des 8 panneaux", "pil"], ["130 kbit/s de données scientifiques au plus", "pil"]] }
+    ]
+  },
+  {
+    id:'planck', mission:['survey'], domain:'mw', name:'Planck', short:'Planck', year:'2009',
+    agency:'ESA ; HFI dirigé par l\'IAS (Orsay, France), LFI par l\'Italie', launch:'Lancé le 14 mai 2009, Ariane 5, Kourou, avec Herschel',
+    sub:'Point de Lagrange L2, fond diffus cosmologique (2009–2013)',
+    src:'Maquette : ESA, SCIFLEET',
+    file:'models/planck.glb', bytes:527168, axis:'y', size:4.2,
+    view:{ az:0.6, el:0.3, dist:2.0 }, sun:[0,-1,0.05], orbit:'l2',
+    hero:{ num:'0,1', unit:'K', label:'la température des bolomètres de l\'instrument HFI' },
+    cmp:{ tag:'4,2 m', dim:'4,2 m de haut, Ø 4,2 m', mirror:1.5, mass:1950, len:4.2 },
+    color:'#5C9E3B', highlight:['Fréquences','30 à 857','GHz'], footprint:['4,2','m de haut'], optical:['tele','vgroove'],
+    compare:{ order:12, rot:[0, 0, 0], fp:null }, ended:true,
+    desc:"Planck a cartographié tout le ciel en micro-ondes, dans neuf bandes de 30 à 857 GHz, pour mesurer les infimes variations de température du fond diffus cosmologique, la lumière émise 380 000 ans après le Big Bang. Ses détecteurs les plus sensibles, les bolomètres de l'instrument HFI, conçu sous la direction de l'Institut d'astrophysique spatiale d'Orsay, étaient refroidis à 0,1 K. Ses cartes ont fixé l'âge, la composition et la géométrie de l'Univers.",
+    sourceNote:"Maquette de l'ESA (SCIFLEET), libre d'utilisation selon les conditions de l'ESA. Elle est mise à l'échelle sur la hauteur publiée de 4,2 m. Elle a été redécoupée ici en quatre ensembles d'après sa géométrie.",
+    checked:'2026-11-20',
+    refs:{
+      fs:{ t:'Planck fact sheet', p:'ESA', u:'https://sci.esa.int/web/planck/-/47365-fact-sheet' },
+      vs:{ t:'Planck, vital stats', p:'ESA', u:'https://m.esa.int/Our_Activities/Space_Science/Planck/Vital_stats' },
+      pla:{ t:'The Planck mission (Planck Legacy Archive)', p:'ESA', u:'https://wiki.cosmos.esa.int/planckpla/index.php/The_Planck_mission' },
+      p18:{ t:'Planck Collaboration 2020, Planck 2018 results. I. Overview, A&A 641, A1, tableau 4', p:'A&A', u:'https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/T4.html' },
+      cool:{ t:'Planck, cooling system', p:'ESA', u:'https://sci.esa.int/web/planck/45498-cooling-system' },
+      sf:{ t:'SCIFLEET, maquettes des missions scientifiques', p:'ESA', u:'https://scifleet.esa.int/' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','4,2 m de haut · Ø 4,2 m','fs'], ['Masse','≈ 1,9 t au lancement','fs'], ['Panneaux solaires','13 m²','vs'],
+        ['Lancement','14 mai 2009, Ariane 5 ECA, Kourou, avec Herschel','fs'] ]},
+      { title:'Télescope et instruments', rows:[
+        ['Télescope','primaire de 1,9 × 1,5 m, ouverture projetée de 1,5 m','fs'],
+        ['LFI','22 récepteurs radio à 20 K · 30, 44 et 70 GHz',['fs','p18']],
+        ['HFI','52 bolomètres à 0,1 K · 100 à 857 GHz',['fs','p18']],
+        ['Résolution','de 32′ à 30 GHz à 4,2′ à 857 GHz','p18'] ]},
+      { title:'Orbite et fin', rows:[
+        ['Orbite','autour de L2, amplitude moyenne ≈ 400 000 km','fs'],
+        ['Balayage','rotation d\'un tour par minute ; au moins 95 % du ciel en 15 mois',['vs']],
+        ['Fin','HFI : relevé achevé le 14 janvier 2012 ; LFI : 3 octobre 2013 ; dernier ordre le 23 octobre 2013',['pla','fs']] ]}
+    ],
+    parts:[
+      { key:'tele', name:'Télescope et plan focal', explode:[0,1,0,0.8],
+        desc:"Un télescope hors d'axe : un primaire elliptique de 1,9 × 1,5 m et un secondaire, dans un baffle noir qui arrête la lumière parasite. Au foyer, les cornets des deux instruments recueillent le rayonnement.",
+        facts:[["Primaire de 1,9 × 1,5 m", "fs"], ["Télescope et plan focal : 205 kg", "vs"]] },
+      { key:'vgroove', name:'Écrans en V', explode:[0,1,0,0.4],
+        desc:"Trois écrans coniques réfléchissants, écartés de 5° l'un de l'autre, rayonnent la chaleur vers l'espace froid : de 300 K au module de service, la température tombe vers 45 K au dernier écran. Le télescope, au-dessus, reste vers 50 K.",
+        facts:[["Trois écrans, 5° d'ouverture entre deux voisins", "cool"], ["≈ 45 K au plus haut", "cool"], ["Télescope vers 50 K", "cool"]] },
+      { key:'svm', name:'Module de service', explode:[0,-1,0,0.6],
+        desc:"Le module octogonal porte l'électronique, les communications et les compresseurs de la chaîne de refroidissement : un refroidisseur à hydrogène (20 K), un étage à 4 K, puis une dilution d'hélium 3 dans l'hélium 4 qui amène les bolomètres de HFI à 0,1 K.",
+        facts:[["LFI à 20 K, HFI à 4 K puis 0,1 K", "cool"], ["Trois étages de refroidissement actif", "cool"]] },
+      { key:'solar', name:'Panneau solaire', explode:[0,-1,0,0.4],
+        desc:"Un disque tourné vers le Soleil, sous le satellite : il fournit l'énergie et garde tout le reste à l'ombre. Planck tournait autour de l'axe du disque, une fois par minute.",
+        facts:[["13 m²", "vs"], ["Un tour par minute", "vs"]] }
+    ]
+  },
+  {
     id:'kepler', mission:['transit'], domain:'uv', name:'Kepler Space Telescope', short:'Kepler', year:'2009',
     agency:'NASA (Ames, JPL), construit par Ball Aerospace', launch:'Lancé le 7 mars 2009, Delta II, Cap Canaveral',
     sub:'Orbite autour du Soleil, dans le sillage de la Terre, recherche d\'exoplanètes (2009–2018)',
@@ -402,7 +734,7 @@ var TELESCOPES = [
     hero:{ num:'4', unit:'ans', label:'à fixer le même champ du ciel, entre le Cygne et la Lyre' },
     cmp:{ tag:'4,7 m', dim:'4,7 m de haut, Ø 2,7 m', mirror:0.95, mass:1052, len:4.7 },
     color:'#6A8D2F', highlight:['Champ','115','deg²'], footprint:['4,7','m de haut'], optical:['phot'],
-    compare:{ order:6, rot:[0, 0, 0], fp:[0, 1] }, ended:true,
+    compare:{ order:10, rot:[0, 0, 0], fp:[0, 1] }, ended:true,
     desc:"Kepler a fixé pendant quatre ans le même coin du ciel, entre le Cygne et la Lyre, en mesurant toutes les demi-heures l'éclat de plus de 100 000 étoiles. Quand une planète passe devant son étoile, l'éclat baisse un peu : c'est ainsi qu'il a découvert plus de 2 600 planètes et montré que la plupart des étoiles en ont. Son télescope de Schmidt, de 0,95 m, projetait un champ de 115 deg² sur 42 CCD.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources, version A), en mètres : 4,7 m de haut sans l'antenne, comme dans le dossier de presse. Elle a été redécoupée ici en quatre ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-19',
@@ -454,7 +786,7 @@ var TELESCOPES = [
     hero:{ num:'24° × 96°', unit:'', label:'la bande de ciel vue d\'un coup par ses quatre caméras' },
     cmp:{ tag:'3,9 m', dim:'3,9 × 1,2 × 1,5 m, déployé', mirror:0.105, lens:true, mass:325, len:3.9 },
     color:'#1F7A8C', highlight:['Champ','24° × 96°',''], footprint:['3,9','m, déployé'], optical:['cams'],
-    compare:{ order:8, rot:[0, 0.4, 0], fp:[0, 2] },
+    compare:{ order:14, rot:[0, 0.4, 0], fp:[0, 2] },
     desc:"TESS cherche des planètes autour des étoiles proches et brillantes, en guettant la petite baisse d'éclat qui se produit quand une planète passe devant son étoile. Ses quatre caméras, de petits objectifs de 10,5 cm, couvrent ensemble une bande de 24° sur 96° du ciel, qu'elles fixent pendant 27 jours avant de passer à la suivante. Son orbite très allongée, réglée sur celle de la Lune, l'emmène presque jusqu'à elle.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources, version B), redécoupée ici en cinq ensembles d'après sa géométrie et ses matériaux. Elle n'est pas en mètres : elle est mise à l'échelle sur la longueur déployée publiée de 3,9 m. Le grand écran conique autour des caméras vient de la maquette ; les documents de la mission décrivent surtout un capot sur chaque objectif.",
     checked:'2026-11-19',
@@ -502,6 +834,56 @@ var TELESCOPES = [
     ]
   },
   {
+    id:'cheops', mission:['transit'], domain:'uv', name:'CHaracterising ExOPlanet Satellite', short:'CHEOPS', year:'2019',
+    agency:'ESA et la Suisse, avec dix autres pays européens dont la France', launch:'Lancé le 18 décembre 2019, Soyouz-Frégate, Kourou',
+    sub:'Orbite basse héliosynchrone, photométrie d\'étoiles à planètes (depuis 2019)',
+    src:'Maquette : ESA, SCIFLEET',
+    file:'models/cheops.glb', bytes:360528, axis:'y', size:1.55,
+    view:{ az:-2.3, el:0.35, dist:2.4 }, sun:[-0.95,0.2,0.2], orbit:'leo', leo:{ alt:700, per:98.7 },
+    hero:{ num:'15,5', unit:'ppm', label:'de précision sur l\'éclat d\'une étoile brillante, en 6 heures' },
+    cmp:{ tag:'1,5 m', dim:'un peu plus de 1,5 m de haut', mirror:0.32, mass:280, approx:true, len:1.5 },
+    color:'#3BA7C4', highlight:['Miroir primaire','0,32','m'], footprint:['1,5','m de haut'], optical:['tele'],
+    compare:{ order:15, rot:[0, 0, 0], fp:[0, 3] },
+    desc:"CHEOPS ne cherche pas de nouvelles planètes : il mesure avec une extrême précision l'éclat d'étoiles brillantes dont on sait déjà qu'elles en ont, pour voir la planète passer devant et en déduire sa taille. Son petit télescope de 32 cm forme volontairement une image floue de l'étoile, étalée sur des centaines de pixels, pour que la mesure soit stable. C'est la première « petite » mission de l'ESA, menée avec la Suisse.",
+    sourceNote:"Maquette de l'ESA (SCIFLEET), libre d'utilisation selon les conditions de l'ESA, en millimètres. Le fichier des matériaux n'est pas distribué : les textures ont été rattachées aux matériaux d'après leurs coordonnées. Elle a été redécoupée ici en trois ensembles.",
+    checked:'2026-11-20',
+    refs:{
+      benz:{ t:'Benz et al. 2021, The CHEOPS mission, Experimental Astronomy 51, 109', p:'arXiv', u:'https://arxiv.org/abs/2009.11633' },
+      nut:{ t:'CHEOPS in a nutshell', p:'ESA', u:'https://www.cosmos.esa.int/web/cheops/cheops-in-a-nutshell' },
+      ext:{ t:'CHEOPS Space Mission extended (11 juin 2026)', p:'Université de Berne', u:'https://mediarelations.unibe.ch/media_releases/2026/media_releases_2026/cheops_space_mission_extended/index_eng.html' },
+      cnes:{ t:'CHEOPS', p:'CNES', u:'https://cnes.fr/en/projects/cheops' },
+      sf:{ t:'SCIFLEET, maquettes des missions scientifiques', p:'ESA', u:'https://scifleet.esa.int/' }
+    },
+    sections:[
+      { title:'Véhicule', rows:[
+        ['Dimensions','un peu plus de 1,5 m de haut','benz'], ['Masse au lancement','≈ 275 kg (≈ 280 selon l\'ESA)',['benz','nut']],
+        ['Énergie','panneaux de ≈ 2,5 m², un peu moins de 200 W en moyenne','benz'],
+        ['Lancement','18 décembre 2019, Soyouz-Frégate, Kourou',['benz','nut']] ]},
+      { title:'Télescope', rows:[
+        ['Optique','Ritchey-Chrétien dans l\'axe · primaire de 320 mm','benz'],
+        ['Focale','2 681 mm à 750 nm · f/8,4','benz'],
+        ['Détecteur','un CCD de 1024 × 1024 px de 13 µm · 1″ par pixel','benz'],
+        ['Domaine','0,4 à 1,1 µm','benz'],
+        ['Précision','15,5 ppm en 6 h pour 6 ≤ V ≤ 9 (mesuré en vol)','benz'] ]},
+      { title:'Orbite et exploitation', rows:[
+        ['Orbite','héliosynchrone aube–crépuscule · 700 km · 98,7 min','benz'],
+        ['Visée','dans un cône de 60° autour de la direction opposée au Soleil','benz'],
+        ['Opérations','contrôle à l\'INTA (Torrejón, Espagne) ; centre scientifique à l\'Université de Genève','benz'],
+        ['Mission','prolongée jusqu\'à fin 2029','ext'] ]}
+    ],
+    parts:[
+      { key:'tele', name:'Télescope', explode:[1,0,0,0.6],
+        desc:"Un Ritchey-Chrétien de 32 cm, couché dans la plateforme, avec un long baffle qui arrête la lumière parasite de la Terre. Sur la maquette, son couvercle est ouvert et rabattu sur le côté. L'image de l'étoile est volontairement défocalisée sur un rayon d'environ 16 pixels.",
+        facts:[["Primaire de 320 mm", "benz"], ["Focale de 2 681 mm, f/8,4", "benz"], ["CCD de 1024 × 1024 px, à 233 K puis 228 K", "benz"], ["Tache défocalisée : 90 % de l'énergie dans 16 px de rayon", "benz"]] },
+      { key:'solar', name:'Panneaux solaires', explode:[-1,0,0,0.4],
+        desc:"Des panneaux sur trois côtés, qui font aussi écran : CHEOPS garde le Soleil derrière lui et vise dans un cône de 60° autour de la direction opposée.",
+        facts:[["≈ 2,5 m²", "benz"], ["Un peu moins de 200 W en moyenne", "benz"]] },
+      { key:'bus', name:'Plateforme', explode:[0,-1,0,0.5],
+        desc:"La plateforme d'Airbus Defence and Space porte l'électronique, le pointage et la propulsion. Elle tient la visée à environ 1″ près.",
+        facts:[["Pointage ≈ 1″ rms en recette", "benz"], ["Réservoir d'hydrazine de 30 L", "benz"]] }
+    ]
+  },
+  {
     id:'jwst', mission:['general'], domain:'ir', name:'James Webb Space Telescope', short:'JWST', year:'2021',
     agency:'NASA / ESA / ASC', launch:'Lancé le 25 décembre 2021, Ariane 5, Kourou',
     sub:'Point de Lagrange L2, infrarouge proche et moyen',
@@ -511,7 +893,7 @@ var TELESCOPES = [
     hero:{ num:'6,5', unit:'m', label:'miroir primaire, 18 segments dorés' },
     cmp:{ tag:'21,2 × 14,2 m', dim:'21,2 × 14,2 m (bouclier)', mirror:6.5, mass:6200, approx:true, len:21.2 },
     color:'#DB5A14', highlight:['Miroir primaire','6,5','m'], footprint:['21,2 × 14,2','m'], optical:['primary','secondary','aos','isim'],
-    compare:{ order:9, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
+    compare:{ order:16, rot:[0, 0.35, 0], fp:[2, 0] }, deploy:true,
     desc:"Conçu pour l'infrarouge, Webb doit rester très froid pour ne pas être ébloui par sa propre chaleur. Un bouclier à cinq couches, grand comme un court de tennis, coupe l'observatoire en deux : un côté chaud tourné vers le Soleil, et un côté froid à environ −233 °C où se trouvent le miroir et les instruments.",
     sourceNote:"Maquette officielle publiée par la NASA (NASA 3D Resources). Les pièces sont identifiées à partir des matériaux du fichier et de leur position ; la teinte rosée de la face inférieure du bouclier est celle du revêtement réel au silicium dopé.",
     checked:'2026-11-13',
@@ -587,7 +969,7 @@ var TELESCOPES = [
     hero:{ num:'1,2', unit:'m', label:'télescope à très grand champ' },
     cmp:{ tag:'4,8 m', dim:'4,8 m de haut, Ø 3,74 m', mirror:1.2, mass:1988, len:4.8 },
     color:'#0F987A', highlight:['Miroir primaire','1,2','m'], footprint:['4,7','m de haut'], optical:['baffle','instr'],
-    compare:{ order:10, rot:[0, -1.05, 0], fp:[1, 0] },
+    compare:{ order:17, rot:[0, -1.05, 0], fp:[1, 0] },
     desc:"Euclid cartographie un tiers du ciel pour comprendre l'énergie noire et la matière noire. Son télescope voit en une seule pose un champ plus de deux fois grand comme la pleine Lune, avec une netteté proche de celle de Hubble. Il mesure la forme et la distance de milliards de galaxies.",
     sourceNote:"Maquette de l'équipe SciFleet de l'ESA, distribuée avec Gaia Sky. Le fichier d'origine est un seul bloc : il a été redécoupé ici en six ensembles d'après leur géométrie.",
     checked:'2026-11-13',
@@ -652,7 +1034,7 @@ var TELESCOPES = [
     hero:{ num:'0,28', unit:'deg²', label:'un champ au moins 100 fois plus grand que celui de Hubble' },
     cmp:{ tag:'12,7 m', dim:'12,7 m de long, 4,4 m de large, déployé', mirror:2.4, mass:10500, approx:true, len:11.3 },   /* masse avec ergols : prévision de 2021, la NASA ne publie que la masse à sec */
     color:'#B8860B', highlight:['Miroir primaire','2,4','m'], footprint:['12,7','m de long'], optical:['ota','instr'],
-    compare:{ order:11, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
+    compare:{ order:18, rot:[0, 0.5, -Math.PI/2], fp:[0, 1] },   /* ouverture vers le haut, comme Hubble */
     desc:"Roman a le même miroir de 2,4 m que Hubble, mais un champ au moins cent fois plus grand. Lancé le 30 août 2026 vers L2, il doit cartographier la matière noire, mesurer l'expansion de l'Univers avec des milliers de supernovae et trouver des milliers d'exoplanètes par microlentille vers le centre de la Galaxie. Ses premières images publiques sont attendues début 2027.",
     sourceNote:"Maquette de la NASA (dépôt NASA 3D Resources), qui représente la conception de 2015 (« AFTA ») : le télescope lancé en diffère par plusieurs détails, notamment son couvercle d'ouverture souple et son barillet hexagonal. Elle est mise à l'échelle sur le miroir primaire de 2,4 m et a été redécoupée ici en sept ensembles d'après sa géométrie et ses matériaux.",
     checked:'2026-11-16',
@@ -719,6 +1101,7 @@ var DOMAINS = [
   { id:'x', label:'Rayons X', short:'Rayons X' },
   { id:'uv', label:'UV et visible', short:'UV, visible' },
   { id:'ir', label:'Infrarouge', short:'Infrarouge' },
+  { id:'mw', label:'Micro-ondes', short:'Micro-ondes' },
   { id:'astro', label:'Astrométrie', short:'Astrom.' }
 ];
 /* observatoires regroupés pour les en-têtes : [{ label, short, list }] ; un observatoire sans domaine connu va dans un dernier groupe sans nom */

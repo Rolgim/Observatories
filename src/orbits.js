@@ -52,6 +52,45 @@ var Orbits = (function(){
       notes:['En mode relevé, l\'axe du LAT est incliné d\'environ 50° vers le nord pendant une orbite, puis vers le sud pendant la suivante : en deux orbites, environ trois heures, tout le ciel est couvert.',
              'La Terre, très brillante en rayons gamma à cause des rayons cosmiques qui frappent son atmosphère, est évitée : les photons venant de plus de 90° du zénith sont écartés.',
              'Le satellite traverse régulièrement l\'anomalie de l\'Atlantique Sud, où les particules piégées sont si nombreuses qu\'il faut couper les instruments : environ 15 % du temps est perdu.'] },
+    swift:{ leo:{ r:6966, per:96.6, gone:'Swift est rentré dans l\'atmosphère le 4 novembre 2026, au-dessus du nord de Sumatra (NASA). L\'orbite ci-dessus est celle du début de la mission.',
+        rows:[['Altitude','585 × 604 km au départ ; sous 275 km à la dernière observation'],['Période','96,6 min au départ'],['Inclinaison','20,6°'],['Fin','rentré dans l\'atmosphère le 4 novembre 2026']] },
+      sum:'Swift tournait au départ à environ 600 km d\'altitude, en 96,6 minutes, sur une orbite peu inclinée, à 20,6° de l\'équateur. Le frottement de la haute atmosphère l\'a fait descendre peu à peu, jusqu\'à sa rentrée en novembre 2026.',
+      notes:['Une orbite peu inclinée passe loin des régions polaires, où abondent les particules piégées ; il reste l\'anomalie de l\'Atlantique Sud, où les instruments s\'arrêtent.',
+             'Sur une orbite basse, la Terre masque la moitié du ciel : Swift enchaînait des poses de quelques dizaines de minutes sur plusieurs cibles à chaque tour, jusqu\'à 75 par jour.',
+             'L\'activité du Soleil, au plus haut vers 2024–2025, a gonflé la haute atmosphère et accéléré la chute : Swift était sous 275 km à sa dernière observation, le 20 octobre 2026.',
+             'Le remorqueur robotique de Katalyst, lancé en juillet 2026 pour remonter l\'orbite, n\'a pas pu faire le rendez-vous.'] },
+    integral:{ belts:true, heoCap:'Terre, orbite et orbite de la Lune à la même échelle. Une orbite de 2024, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe, vu du nord de l\'écliptique.',
+      sum:'INTEGRAL parcourait une orbite très allongée autour de la Terre : au lancement, 72 heures, de 9 000 à 153 000 km d\'altitude, inclinée de 51,6° (ESA). Une manœuvre de 2015 l\'a modifiée pour préparer une rentrée contrôlée, prévue début 2029.',
+      notes:['Loin de la Terre, au-dessus des ceintures de radiations, les instruments pouvaient observer longtemps sans interruption ; ils s\'arrêtaient à chaque passage près du périgée.',
+             'Le satellite était suivi depuis la station de Kiruna, en Suède, et piloté depuis l\'ESOC, à Darmstadt (ESA).',
+             'Les observations se sont arrêtées le 28 février 2025, après 2 886 orbites ; l\'ESA suit le satellite jusqu\'à sa rentrée.'],
+      noTraj:'La trajectoire réelle d\'INTEGRAL s\'affichera ici dès que les éphémérides de JPL Horizons auront été récupérées par la mise à jour des données du site.' },
+    cheops:{ leo:{ r:7079, per:98.7, rows:[['Altitude','700 km (valeur du jour ci-dessus)'],['Période','98,7 min'],['Orbite','héliosynchrone, aube–crépuscule (nœud ascendant à 6 h)'],['Visée','dans un cône de 60° autour de la direction opposée au Soleil']] },
+      sum:'CHEOPS tourne à 700 km d\'altitude, en 98,7 minutes, sur une orbite héliosynchrone qui suit la limite du jour et de la nuit : ses panneaux restent toujours au soleil.',
+      notes:['L\'orbite aube–crépuscule garde le Soleil d\'un même côté : les panneaux solaires, sur trois faces, font écran au télescope.',
+             'À chaque tour, la Terre peut masquer l\'étoile visée, et la lumière qu\'elle diffuse varie : les courbes de lumière de CHEOPS ont des trous réguliers.',
+             'Le télescope ne vise que dans un cône de 60° autour de la direction opposée au Soleil, pour garder le CCD froid (Benz et al. 2021).'] },
+    herschel:{ sum:'Herschel tournait autour du point de Lagrange L2, à 1,5 million de km de la Terre, sur une grande orbite d\'environ 700 000 km d\'amplitude parcourue en 178 jours environ.',
+      notes:['À L2, le Soleil, la Terre et la Lune restent du même côté : le pare-soleil les masquait ensemble et gardait le télescope vers 85 K.',
+             'L\'éloignement de la Terre évite sa chaleur et permet de longues observations, sans interruption à chaque orbite.',
+             'Herschel et Planck ont été lancés ensemble, puis se sont séparés vers des orbites différentes autour de L2.'],
+      noTraj:'La trajectoire réelle de Herschel s\'affichera ici dès que les éphémérides de JPL Horizons auront été récupérées par la mise à jour des données du site.' },
+    planck:{ sum:'Planck tournait autour de L2, à 1,5 million de km de la Terre, sur une orbite d\'environ 400 000 km d\'amplitude. Il tournait sur lui-même, l\'axe pointé à l\'opposé du Soleil.',
+      notes:['Le panneau solaire, sous le satellite, faisait face au Soleil et gardait à l\'ombre les écrans en V et le télescope.',
+             'En tournant d\'un tour par minute, chaque détecteur parcourait un grand cercle du ciel ; l\'axe de rotation avançait par petits pas pour suivre le Soleil.',
+             'Au moins 95 % du ciel était couvert en deux périodes d\'observation, en 15 mois (ESA).'],
+      noTraj:'La trajectoire réelle de Planck s\'affichera ici dès que les éphémérides de JPL Horizons auront été récupérées par la mise à jour des données du site.' },
+    wmap:{ sum:'WMAP tournait autour du point de Lagrange L2, à 1,5 million de km de la Terre : il y est arrivé le 1er octobre 2001, trois mois après son lancement.',
+      notes:['Loin de la Terre et de la Lune, ses télescopes ne voyaient jamais ces sources de chaleur, qui auraient brouillé des mesures au millionième de degré.',
+             'Le satellite tournait sur lui-même et son axe décrivait un cône autour de la direction du Soleil : les deux faisceaux couvraient une grande partie du ciel chaque jour.',
+             'Après la fin des observations, en 2010, il a été placé sur une orbite autour du Soleil.'],
+      noTraj:'La trajectoire réelle de WMAP s\'affichera ici dès que les éphémérides de JPL Horizons auront été récupérées par la mise à jour des données du site.' },
+    cgro:{ leo:{ r:6821, per:93, gone:'Compton est rentré dans l\'atmosphère le 4 juin 2000, au-dessus du Pacifique, au terme d\'une rentrée contrôlée (NASA). L\'orbite ci-dessus est celle du lancement.',
+        rows:[['Altitude','≈ 450 km au lancement ; relevée en 1993 et 1997'],['Inclinaison','28,5°'],['Fin','rentrée contrôlée le 4 juin 2000']] },
+      sum:'Compton tournait vers 450 km d\'altitude, sur une orbite inclinée de 28,5°, comme Hubble. Le frottement de la haute atmosphère le faisait descendre : il a remonté son orbite deux fois avec ses propres moteurs.',
+      notes:['En 1993, l\'orbite était descendue à 340 km ; une série de poussées l\'a remontée à 450 km, puis à 515 km en 1997.',
+             'Après la panne d\'un gyroscope, en décembre 1999, la NASA a préféré le faire rentrer de façon contrôlée : avec ses 16 tonnes environ, des débris auraient pu atteindre le sol.',
+             'Sur une orbite basse, la Terre masque la moitié du ciel ; BATSE, qui surveillait tout le ciel, voyait donc à chaque instant le ciel non caché par la Terre.'] },
     tess:{ belts:false, heoCap:'Terre, orbite et orbite de la Lune à la même échelle. Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe, vu du nord de l\'écliptique.',
       sum:'TESS parcourt une orbite très allongée de 13,7 jours, exactement la moitié du mois lunaire : il passe au plus près à environ 108 000 km de la Terre et s\'en éloigne jusqu\'à 373 000 km, presque la distance de la Lune.',
       notes:['La résonance 2:1 avec la Lune compense en partie l\'effet de son attraction : l\'orbite reste stable sans grosse dépense d\'ergols.',
@@ -81,6 +120,8 @@ var Orbits = (function(){
     roman:{ lo:54, hi:126, cap:'Roman peut viser entre 54° et 126° du Soleil, en tournant librement autour de la direction du Soleil (NASA Goddard, Observatory Technical Overview).' },
     xmm:{ lo:70, hi:110, cap:'XMM-Newton ne vise qu\'entre 70° et 110° du Soleil, pour garder les miroirs à l\'ombre et les panneaux face au Soleil : une bande d\'environ 40° de large, qui fait le tour du ciel en un an (XMM-Newton Users Handbook).' },
     fermi:{ lo:0, hi:180, cap:'Fermi ne vise pas de cible : en mode relevé, il balaie le ciel entier en deux orbites, environ trois heures. Seule la Terre, sous le satellite, masque une partie du ciel (Fermi Cicerone).' },
+    swift:{ lo:46, hi:180, cap:'Swift ne visait pas à moins de 46° du Soleil ; la Lune (23°) et le bord de la Terre (28°) ajoutaient des exclusions, non représentées (Swift Technical Handbook, contraintes de pointage).' },
+    cheops:{ lo:120, hi:180, cap:'CHEOPS ne vise que dans un cône de 60° autour de la direction opposée au Soleil, soit à plus de 120° du Soleil (Benz et al. 2021). La Terre, sous le satellite, masque aussi une partie du ciel à chaque tour, non représentée.' },
     spitzer:{ lo:82.5, hi:120, cap:'Spitzer ne visait qu\'entre 82,5° et 120° du Soleil, pour garder le télescope à l\'ombre du panneau solaire : environ un tiers du ciel à un instant donné, le ciel entier en six mois (Spitzer Telescope Handbook ; Werner et al. 2006).' },
     gaia:{ lo:45, hi:135, cap:'Gaia ne vise pas : il tourne sur lui-même, l\'axe incliné à 45° du Soleil. Le cercle balayé reste donc entre 45° et 135° du Soleil ; la précession de l\'axe, en 63 jours, promène ce cercle dans toute la bande (calculé à partir de l\'angle de 45°).' }
   };
@@ -152,7 +193,8 @@ var Orbits = (function(){
     var ctl = '<div class="orb-ctl"><button class="chip" data-orb-play>Pause</button><span class="orb-read" data-orb-read></span></div>';
     if (T_ORBIT[tid] === 'leo'){
       s += '<div class="isec"><h4>Une orbite, vue de dessus</h4>'+cv('leo', 560, 380, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">Terre et orbite à l\'échelle. Le mouvement est calculé à partir de la période ; la durée de l\'ombre est celle du cas où le Soleil est dans le plan de l\'orbite, le plus défavorable.</div></div>';
-      s += '<div class="isec"><h4>Où est '+name+' en ce moment</h4>'+cv('track', 560, 300, 'Position de '+name+' au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
+      if (t.leo.gone) s += '<div class="isec"><h4>Fin de l\'orbite</h4><p class="cap">'+t.leo.gone+'</p></div>';
+      else s += '<div class="isec"><h4>Où est '+name+' en ce moment</h4>'+cv('track', 560, 300, 'Position de '+name+' au-dessus de la Terre et trace de son orbite')+'<div class="orb-ctl"><span class="orb-read" data-track-read>Chargement des éléments orbitaux…</span></div><div data-track-stats></div><div class="cap">Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l\'orbite à venir ; pointillé : celle qui vient de s\'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.</div></div>';
       s += '<div class="isec"><h4>Paramètres</h4>'+rows(t.leo.rows)+'</div>';
     } else if (T_ORBIT[tid] === 'heo'){
       s += '<div class="isec"><h4>Une orbite, vue du nord de l\'écliptique</h4>'+cv('heo', 560, 400, 'Orbite de '+name+' autour de la Terre, à l\'échelle')+ctl+'<div class="cap">'+(t.heoCap || 'Terre et orbite à la même échelle (l\'orbite de la Lune, à 384 400 km, sort du cadre). Dernière orbite complète, positions réelles (éphémérides JPL Horizons) dans un repère géocentrique fixe. Le cercle grisé autour de la Terre marque, à titre indicatif, la région des ceintures de radiations où les observations s\'arrêtent.')+'</div></div>';
@@ -270,7 +312,7 @@ var Orbits = (function(){
       if (my !== run) return;
       body = j && j.bodies && j.bodies[tid];
       var st = root.querySelector('[data-orb-stats]');
-      if (!body){ st.innerHTML = '<div class="cap">La trajectoire n\'a pas pu être chargée.</div>'; return; }
+      if (!body){ st.innerHTML = '<div class="cap">'+(TEXT[tid].noTraj || 'La trajectoire n\'a pas pu être chargée.')+'</div>'; return; }
       var n = body.x.length, dmin = 1e9, dmax = 0, imin = 0, imax = 0;
       for (var i=0;i<n;i++){ var d = Math.hypot(body.x[i], body.y[i], body.z[i]); if (d < dmin){ dmin = d; imin = i; } if (d > dmax){ dmax = d; imax = i; } }
       st.innerHTML = rows([['Période couverte', date(body.jd0)+' au '+date(body.jd0 + (n-1)*body.step_days)], ['Distance au centre de la Terre', 'de '+fr(dmin*1000)+' à '+fr(dmax*1000)+' km'], ['Altitude au plus près', '≈ '+fr(dmin*1000 - 6371)+' km'], ['Source', 'JPL Horizons, objet '+body.horizons_id+', récupéré le '+j.fetched.split('-').reverse().join('/')]]);

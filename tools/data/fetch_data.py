@@ -1116,6 +1116,59 @@ def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, 
                 caption="Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
                 credit="ESA, XMM-Newton", fetched=TODAY)
 
+# ---------- WMAP et Planck : cartes HEALPix du ciel entier, projetées en Mollweide (coordonnées galactiques) ----------
+def healpix_map(key, urls, name, title, caption, credit, page, scale=1e6, unit="µK", lim=None):
+    """Télécharge la première carte HEALPix disponible, la dégrade à nside 256 et la projette en Mollweide, couleurs divergentes."""
+    import healpy as hp
+    from astropy.io import fits
+    from PIL import Image
+    local = None
+    for u in urls:
+        try:
+            local = os.path.join(TMP, u.split("/")[-1])
+            if not os.path.exists(local):
+                r = requests.get(u, timeout=1200, stream=True); r.raise_for_status()
+                with open(local, "wb") as fh:
+                    for ch in r.iter_content(1 << 20): fh.write(ch)
+            src = u; break
+        except Exception as e:
+            print("   échec", u, repr(e)[:150]); local = None
+    if not local:
+        raise RuntimeError("aucune carte téléchargée")
+    m = hp.read_map(local, field=0, verbose=False) if "verbose" in hp.read_map.__code__.co_varnames else hp.read_map(local, field=0)
+    nside0 = hp.get_nside(m); m = hp.ud_grade(m, 256)
+    W, H = 1200, 600
+    y, x = np.mgrid[0:H, 0:W]; X = (x + 0.5) / W * 4 - 2; Y = 1 - (y + 0.5) / H * 2            # Mollweide : x ∈ [−2, 2], y ∈ [−1, 1]
+    ok = X**2 / 4 + Y**2 <= 1
+    th = np.arcsin(np.clip(Y, -1, 1)); lat = np.arcsin(np.clip((2 * th + np.sin(2 * th)) / np.pi, -1, 1))
+    lon = np.pi * X / (2 * np.cos(th) + 1e-12)                                                        # longitude, centre de la Galaxie au milieu, croissante vers la gauche
+    ok &= np.abs(lon) <= np.pi
+    pix = hp.ang2pix(256, np.pi / 2 - lat[ok], (-lon[ok]) % (2 * np.pi))
+    v = m[pix] * scale; v[~np.isfinite(v)] = 0
+    L = lim or float(np.percentile(np.abs(v), 99))
+    t = np.clip(v / L, -1, 1)
+    def cmap(t):  # bleu – blanc – rouge
+        r = np.where(t < 0, 1 + t * 0.85, 1.0); g = 1 - np.abs(t) * 0.8; b = np.where(t > 0, 1 - t * 0.85, 1.0); return np.stack([r, g, b], -1)
+    img = np.full((H, W, 3), 255, np.uint8); img[ok] = (cmap(t) * 255).astype(np.uint8)
+    im = Image.fromarray(img, "RGB")
+    fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+    meta = [["Archive", page], ["Carte", src.split("/")[-1]], ["Résolution d'origine", "HEALPix nside " + str(nside0) + ", dégradée à 256 pour le site"],
+            ["Projection", "Mollweide, coordonnées galactiques, centre de la Galaxie au milieu"], ["Couleurs", "bleu : plus froid, rouge : plus chaud ; échelle ± " + fr(L) + " " + unit]]
+    return dict(type="image", file=fname, width=W, height=H, title=title, meta=meta, url=src, caption=caption, credit=credit, fetched=TODAY)
+
+def wmap_rad(key):
+    return healpix_map(key, ["https://lambda.gsfc.nasa.gov/data/map/dr5/dfp/ilc/wmap_ilc_9yr_v5.fits"], "WMAP",
+        "Le fond diffus cosmologique, carte ILC de WMAP (neuf ans)",
+        "Les variations de température du rayonnement émis 380 000 ans après le Big Bang, de l'ordre de cent millionièmes de degré. Cette carte combine les cinq bandes de WMAP pour retirer au mieux l'émission de la Galaxie ; il en reste des traces le long de son plan, au milieu.",
+        "NASA, équipe scientifique de WMAP", "LAMBDA (NASA Goddard)", scale=1e3, unit="µK")
+
+def planck_hfi(key):
+    base = "https://irsa.ipac.caltech.edu/data/Planck/release_3/all-sky-maps/maps/component-maps/cmb/"
+    return healpix_map(key, [base + "COM_CMB_IQU-smica_2048_R3.00_full.fits", base + "COM_CMB_IQU-commander_2048_R3.00_full.fits"], "Planck",
+        "Le fond diffus cosmologique, carte SMICA de Planck (2018)",
+        "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. La bande du plan de la Galaxie, où l'émission ne peut être retirée parfaitement, a été remplie par le traitement.",
+        "ESA, collaboration Planck", "IRSA (NASA/IPAC), Planck Legacy Archive", scale=1e6, unit="µK")
+
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {
     "hubble/wfc3": lambda k: mast_image(k, "HST", ["WFC3/UVIS", "WFC3/IR"], *M83, name="La galaxie spirale M83", expect="M83", about="Une région de la galaxie spirale M83."),
@@ -1140,6 +1193,7 @@ RECIPES = {
     "xmm/epic": xmm_epic,
     "xmm/rgs": xmm_rgs,
     "xmm/om": xmm_om,
+    "wmap/rad": wmap_rad, "planck/hfi": planck_hfi,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,

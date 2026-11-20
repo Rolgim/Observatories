@@ -72,4 +72,26 @@ NODE_PATH=$(npm root -g) node $W/split_mats.mjs $W/tmp/xmm_seg.glb $W/tmp/xmm_sp
 $GT resize $W/tmp/xmm_split.glb $W/tmp/xmm_rs.glb --width 2048 --height 2048 >/dev/null
 $GT webp $W/tmp/xmm_rs.glb $W/tmp/xmm_wp.glb >/dev/null
 $GT quantize $W/tmp/xmm_wp.glb $OUT/xmm.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+# ---------- Swift, Compton, WMAP : maquettes NASA (Draco), unités des maquettes, redécoupées
+# attendus dans $DL : swift/swift.glb (« Swift.glb »), cgro/cgro.glb (« Gamma Ray Observatory.glb »), wmap/wmap.glb (« Wilkinson Microwave Anisotropy Probe (WMAP).glb »)
+for m in swift cgro wmap; do
+  $GT copy $DL/$m/$m.glb $W/tmp/${m}_dec.glb >/dev/null; $GT weld $W/tmp/${m}_dec.glb $W/tmp/${m}_w.glb >/dev/null
+  node -e "require('$W/seg_lib.js').segment('$W/tmp/${m}_w.glb','$W/tmp/${m}_seg.glb',require('$W/${m}_cls.js')).then(s=>console.log('$m',JSON.stringify(s)))"
+done
+$GT quantize $W/tmp/swift_seg.glb $OUT/swift.glb --quantize-position 14 --quantize-normal 10 >/dev/null 2>&1
+$GT quantize $W/tmp/cgro_seg.glb $OUT/cgro.glb --quantize-position 14 --quantize-normal 10 >/dev/null 2>&1
+(cd $W && node slim.mjs $W/tmp/wmap_seg.glb $OUT/wmap.glb 0.2 0.003)
+# ---------- INTEGRAL, Herschel, Planck, CHEOPS : maquettes ESA SCIFLEET (OBJ + textures, sans .mtl)
+# attendus dans $DL/<id>/ : <id>.obj et le dossier tex/ dézippé (tools/probe/fetch_scifleet_models.py) ; .mtl écrits ici
+python3 $W/obj2glb.py $DL/planck/planck.obj $W/tmp/planck_raw.glb "*=$DL/planck/tex/textures/PLANK_Material30_AlbedoTransparency1.png"
+python3 $W/obj2glb.py $DL/integral/integral.obj $W/tmp/integral_raw.glb "*=$DL/integral/tex/integral_textures/4K/T_integral_02_BaseColor.png"
+(cd $DL/herschel && printf "newmtl bandage8\nmap_Kd tex/textures/HERSCHEL_bandage8_AlbedoTransparency2.png\nnewmtl 02___Default\nmap_Kd tex/textures/herschelpanel1.png\n" > herschel.mtl && python3 -c "import trimesh; trimesh.load('herschel.obj', force='scene', process=False, group_material=True).export('$W/tmp/herschel_raw.glb', include_normals=True)")
+(cd $DL/cheops && T=tex/cheops_textures/Cheops- && printf "newmtl blinn3SG\nmap_Kd ${T}MappedTexture2.jpg\nnewmtl initialShadingGroup\nmap_Kd ${T}MappedTexture1.jpg\nnewmtl blinn1SG1\nmap_Kd ${T}MappedTexture1.jpg\nnewmtl blinn1SG\nmap_Kd ${T}MappedTexture1.jpg\nnewmtl lambert2SG\nmap_Kd ${T}SolarPanels_FrontBackSides.jpg\nnewmtl lambert4SG\nmap_Kd ${T}MappedTexture2.jpg\nnewmtl lambert5SG\nmap_Kd ${T}MappedTexture3.jpg\nnewmtl lambert3SG\nmap_Kd ${T}MappedTexture1.jpg\nnewmtl lambert7SG\nmap_Kd ${T}MappedTexture4.jpg\n" > CHEOPS_LP_01.mtl && python3 -c "import trimesh; trimesh.load('cheops.obj', force='scene', process=False, group_material=True).export('$W/tmp/cheops_raw.glb', include_normals=True)")
+for m in planck integral herschel cheops; do
+  $GT weld $W/tmp/${m}_raw.glb $W/tmp/${m}_w.glb >/dev/null
+  node -e "require('$W/seg_lib.js').segment('$W/tmp/${m}_w.glb','$W/tmp/${m}_seg.glb',require('$W/${m}_cls.js')).then(s=>console.log('$m',JSON.stringify(s)))"
+  S=2048; [ $m = cheops ] && S=1024
+  $GT resize $W/tmp/${m}_seg.glb $W/tmp/${m}_rs.glb --width $S --height $S >/dev/null; $GT webp $W/tmp/${m}_rs.glb $W/tmp/${m}_wp.glb >/dev/null
+  $GT quantize $W/tmp/${m}_wp.glb $OUT/$m.glb --quantize-position 14 --quantize-normal 10 --quantize-texcoord 12 >/dev/null 2>&1
+done
 ls -la $OUT

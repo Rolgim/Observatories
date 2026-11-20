@@ -15,6 +15,10 @@ Les fichiers `models/*.glb` du site sont produits ici à partir des maquettes d'
 | XMM-Newton | ESA, service SPICE, `XMM/misc/cosmo/xmm.obj` (un maillage, une texture de 4096², aucune licence indiquée) | conversion OBJ → GLB (trimesh, avec les normales), soudure, redécoupage en six ensembles (`xmm_cls.js` : miroirs, OM, module de service, panneaux, tube, plan focal), un matériau par pièce (`split_mats.mjs`, teintes de la vue SCIFLEET de l'ESA réglées dans `looks.js`), texture ramenée à 2048² en WebP, quantification ; mise à l'échelle par le site sur l'envergure de 16 m. |
 | Kepler | NASA 3D Resources, « Kepler (A) » (GLB, en mètres) | soudure, redécoupage en quatre ensembles (`kepler_cls.js` : photomètre, panneaux solaires, module, antenne), quantification ; gardée à l'échelle native. |
 | TESS | NASA 3D Resources, « Transiting Exoplanet Survey Satellite (TESS) (B) » (GLB Draco, unités arbitraires) | décodage Draco, soudure, redécoupage en cinq ensembles (`tess_cls.js` : caméras, écran conique, module, antenne, panneaux), quantification ; mise à l'échelle par le site sur la longueur déployée publiée (3,9 m). Deux matériaux portent une carte de normales comme couleur : corrigé au chargement (`looks.js`). |
+| Swift | NASA 3D Resources, « Swift » (GLB Draco, unités de la maquette) | décodage Draco, soudure, redécoupage en six ensembles (`swift_cls.js` : BAT, XRT, UVOT, écrans, module, panneaux), quantification ; mise à l'échelle par le site sur la longueur publiée de 5,6 m. |
+| Compton (CGRO) | NASA 3D Resources, « Gamma Ray Observatory » (GLB Draco, matériaux nommés d'après les instruments) | décodage Draco, soudure, redécoupage en sept ensembles (`cgro_cls.js`), quantification ; mise à l'échelle sur l'envergure de 21,3 m. |
+| WMAP | NASA 3D Resources, « Wilkinson Microwave Anisotropy Probe (WMAP) » (GLB Draco, 335 000 sommets) | décodage Draco, soudure, redécoupage en cinq ensembles (`wmap_cls.js`, qui écarte une face doublée de l'écran solaire), puis `slim.mjs` à 0,2 (≈ 1,3 Mo au lieu de 4,1) ; mise à l'échelle sur la hauteur de 3,6 m. |
+| INTEGRAL, Herschel, Planck, CHEOPS | ESA, SCIFLEET (`https://scifleet.esa.int/downloads/<id>/<id>.obj` et `<id>_textures.zip`, « free to download and use under these terms and conditions », conditions de l'ESA) ; `tools/probe/fetch_scifleet_models.py` les récupère depuis la CI | le .mtl n'est pas distribué : un .mtl est écrit à la main (une texture de couleur par matériau ; pour CHEOPS, textures rattachées d'après la part des coordonnées de texture qui tombe sur une zone peinte), conversion OBJ → GLB par trimesh (avec les normales) ou `obj2glb.py`, soudure, redécoupage (`integral_cls.js`, `herschel_cls.js`, `planck_cls.js`, `cheops_cls.js`), textures 2048² (1024² pour CHEOPS) en WebP, quantification. |
 
 ## Redécoupage en pièces
 
@@ -26,7 +30,7 @@ Les fichiers d'origine sont découpés par texture ou d'un seul bloc, pas par pi
 
 Le site retrouve ensuite les pièces par le nom des nœuds (`key` ou `nodes` dans `src/data-tele.js`).
 
-Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (rendu logiciel six vues, coloré par classe), `cls_view.js`, `euclid_cls.py`.
+Outils de mise au point : `dump.js` (liste des îlots en JSON), `render.py` (rendu logiciel six vues, coloré par classe), `cls_view.js`, `euclid_cls.py`, `view.js` (six vues dans Chromium, texturées ou colorées par pièce : `node view.js in.glb out.png cls`). Un classifieur qui renvoie `null` écarte l'îlot.
 
 ## Points d'attention
 

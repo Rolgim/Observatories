@@ -340,6 +340,252 @@ var MISSION = {
       ['depuis 2018','since 2018',['Un secteur par mois','One sector a month'],"Les données de chaque secteur sont publiées à l'archive MAST, sans période réservée.","The data of each sector are released at the MAST archive, with no proprietary period.",'winn',false]
     ]
   },
+  swift: {
+    checked:'2026-11-20',
+    refs:{
+      ta:{ t:'The Swift Technical Handbook, Mission Overview', p:'NASA Goddard, Swift', u:'https://swift.gsfc.nasa.gov/proposals/tech_appd/swiftta_v17/node7.html' },
+      arch:{ t:'Swift Archive', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/swift/archive/' },
+      uk:{ t:'UK Swift Science Data Centre', p:'Université de Leicester', u:'https://www.swift.ac.uk/' }
+    },
+    intro:["Swift est une mission de la NASA, construite et exploitée avec l'Italie et le Royaume-Uni. Le centre des opérations, à Penn State, programmait les observations : jusqu'à 75 cibles par jour, et des demandes urgentes envoyées en quelques minutes. Toutes les données étaient publiques dès leur traitement.",
+           "Swift is a NASA mission, built and operated with Italy and the United Kingdom. The operations centre, at Penn State, scheduled the observations: up to 75 targets a day, and urgent requests uplinked within minutes. All data were public as soon as they were processed."],
+    phases:[
+      ['20 nov. 2004','20 Nov 2004','Lancement','Launch',"Une Delta II le place en orbite basse, vers 600 km, inclinée de 20,6°. Il est prévu pour deux ans.","A Delta II puts it in low orbit, around 600 km, inclined at 20.6°. It is designed for two years.",['wiki','end']],
+      ['9 mai 2005','9 May 2005','Premier sursaut court localisé','First short burst pinned down',"GRB 050509B dure 0,03 s ; le XRT en capte 11 photons X. C'est la première lueur rémanente observée d'un sursaut court.","GRB 050509B lasts 0.03 s; the XRT catches 11 X-ray photons from it. It is the first afterglow ever seen from a short burst.",'end'],
+      ['23 avril 2009','23 April 2009','GRB 090423','GRB 090423',"Un sursaut dont la lumière a voyagé environ 13 milliards d'années : l'explosion d'une étoile dans l'Univers très jeune.","A burst whose light travelled about 13 billion years: the explosion of a star in the very young Universe.",'wiki'],
+      ['17 août 2017','17 Aug 2017','La kilonova de GW170817','The kilonova of GW170817',"L'UVOT observe en ultraviolet la kilonova née de la fusion de deux étoiles à neutrons, repérée par ses ondes gravitationnelles.","The UVOT observes in the ultraviolet the kilonova born from the merger of two neutron stars, spotted through its gravitational waves.",'wiki'],
+      ['2018','2018','Il devient Neil Gehrels Swift','It becomes Neil Gehrels Swift',"La mission prend le nom de son responsable scientifique, mort en 2017.","The mission is renamed after its principal investigator, who died in 2017.",'end'],
+      ['9 oct. 2022','9 Oct 2022','GRB 221009A','GRB 221009A',"L'un des sursauts les plus proches et les plus brillants jamais vus.","One of the closest and brightest bursts ever seen.",'wiki'],
+      ['mars–avril 2024','Mar–Apr 2024','Deux gyroscopes','Two gyroscopes',"Un deuxième gyroscope sur quatre tombe en panne ; un nouveau logiciel permet de pointer avec deux seulement, et les observations reprennent.","A second gyroscope out of four fails; new software allows pointing with only two, and observations resume.",'wiki'],
+      ['2025–2026','2025–2026','Tentative de sauvetage','Rescue attempt',"Freinée par la haute atmosphère, gonflée par l'activité du Soleil, l'orbite baisse. La NASA confie à Katalyst un remorqueur robotique, lancé le 3 juillet 2026 ; le 19 août, il renonce au rendez-vous à cause d'un problème de contrôle d'attitude.","Dragged by the upper atmosphere, swollen by solar activity, the orbit decays. NASA hires Katalyst for a robotic tug, launched on 3 July 2026; on 19 August it gives up the rendezvous because of an attitude-control problem.",'wiki'],
+      ['20 oct. 2026','20 Oct 2026','Dernière observation','Last observation',"Sous 275 km d'altitude, Swift fait sa dernière observation. Bilan : plus de 2 000 sursauts gamma, plus de 1 400 supernovae, environ 7 000 articles.","Below 275 km, Swift makes its last observation. Tally: over 2,000 gamma-ray bursts, more than 1,400 supernovae, about 7,000 papers.",'end'],
+      ['4 nov. 2026','4 Nov 2026','Rentrée','Re-entry',"Swift rentre dans l'atmosphère au-dessus du nord de Sumatra, en Indonésie, presque 22 ans après son lancement.","Swift re-enters the atmosphere over northern Sumatra, Indonesia, almost 22 years after launch.",'reent']
+    ],
+    ops:[
+      ['Programme','Programme','NASA (Goddard), avec l\'Italie et le Royaume-Uni','NASA (Goddard), with Italy and the United Kingdom','g04'],
+      ['Opérations','Operations','centre des opérations de mission à Penn State','Mission Operations Center at Penn State','g04'],
+      ['Programmation','Scheduling','jusqu\'à 75 cibles indépendantes par jour','up to 75 independent targets a day','end'],
+      ['Alertes','Alerts','position d\'un sursaut transmise au sol en ≈ 15 s','burst position relayed to the ground in ≈ 15 s','ta'],
+      ['Archive','Archive','HEASARC ; copies en Italie et au Royaume-Uni','HEASARC; copies in Italy and the United Kingdom','arch']
+    ],
+    chain:{
+      intro:["Deux circuits : les alertes, envoyées dans les secondes qui suivent un sursaut pour que d'autres télescopes se tournent vers lui, et les données complètes, transmises au sol plusieurs fois par jour puis traitées et archivées.",
+             "Two paths: the alerts, sent within seconds of a burst so that other telescopes can turn to it, and the full data, downlinked several times a day, then processed and archived."],
+      steps:[
+        { lv:'Alerte', n:['Alerte immédiate','Immediate alert'], x:['La position calculée à bord par BAT, puis celles du XRT et de l\'UVOT, sont relayées par satellite et diffusées par le réseau GCN.','The position computed on board by BAT, then those of the XRT and UVOT, are relayed by satellite and broadcast through the GCN network.'], r:'ta' },
+        { lv:'Niveau 1', n:['Données brutes','Raw data'], x:['La télémétrie de chaque instrument, convertie en fichiers FITS.','The telemetry of each instrument, converted into FITS files.'], r:'arch' },
+        { lv:'Niveau 2', n:['Données étalonnées','Calibrated data'], x:['Événements nettoyés et images étalonnées, par instrument.','Cleaned events and calibrated images, for each instrument.'], sw:'HEASoft', r:'arch' },
+        { lv:'Niveau 3', n:['Produits','Products'], x:['Images, spectres et courbes de lumière standard ; au Royaume-Uni, courbes de lumière X de chaque sursaut produites automatiquement.','Standard images, spectra and light curves; in the UK, X-ray light curves of every burst produced automatically.'], sw:'HEASoft', r:['arch','uk'] }
+      ]
+    },
+    rel:[
+      ['2004–2026','2004–2026',['Au fil de l\'eau','As they come'],"Les données de chaque observation sont publiques dès leur traitement, sans période réservée.","Each observation's data are public as soon as they are processed, with no reserved period.",['g04','arch'],false]
+    ]
+  },
+  integral: {
+    checked:'2026-11-20',
+    refs:{
+      isdc:{ t:'INTEGRAL Science Data Centre', p:'Université de Genève', u:'https://www.isdc.unige.ch/integral/' },
+      ligo:{ t:'Gravitational Waves and Gamma-Rays from a Binary Neutron Star Merger: GW170817 and GRB 170817A', p:'LIGO, Virgo, Fermi-GBM et INTEGRAL', u:'https://ligo.org/wp-content/uploads/2024/07/GW170817GRB.pdf' }
+    },
+    intro:["INTEGRAL est une mission de l'ESA, lancée par une fusée russe Proton, avec une participation des États-Unis. Elle était pilotée depuis l'ESOC, à Darmstadt ; le centre des opérations scientifiques, à l'ESAC, préparait les observations, choisies par appel à propositions, et l'ISDC, à Genève, traitait et archivait les données.",
+           "INTEGRAL is an ESA mission, launched by a Russian Proton rocket, with participation from the United States. It was flown from ESOC, in Darmstadt; the science operations centre, at ESAC, prepared the observations, selected through calls for proposals, and the ISDC, in Geneva, processed and archived the data."],
+    phases:[
+      ['17 oct. 2002','17 Oct 2002','Lancement','Launch',"Une fusée Proton, depuis Baïkonour, le place sur une orbite de 72 heures, entre 9 000 et 153 000 km d'altitude.","A Proton rocket, from Baikonur, puts it into a 72-hour orbit, between 9,000 and 153,000 km altitude.",['fs','heasarc']],
+      ['2015','2015','Manœuvre pour la rentrée','Manoeuvre for re-entry',"Une poussée des quatre moteurs modifie l'orbite pour que le satellite rentre dans l'atmosphère de façon contrôlée, en 2029.","A burn of the four thrusters changes the orbit so that the spacecraft will re-enter the atmosphere in a controlled way, in 2029.",'end'],
+      ['17 août 2017','17 Aug 2017','GW170817','GW170817',"Avec Fermi, INTEGRAL détecte le sursaut gamma court qui accompagne les ondes gravitationnelles de la fusion de deux étoiles à neutrons.","With Fermi, INTEGRAL detects the short gamma-ray burst that accompanies the gravitational waves from the merger of two neutron stars.",'ligo'],
+      ['28 févr. 2025','28 Feb 2025','Fin des observations','End of observations',"Après 22 ans et 2 886 orbites, INTEGRAL arrête d'observer. L'ESA le suit jusqu'à sa rentrée, prévue début 2029.","After 22 years and 2,886 orbits, INTEGRAL stops observing. ESA monitors it until its re-entry, expected in early 2029.",'end']
+    ],
+    ops:[
+      ['Agence','Agency','ESA, avec la Russie et les États-Unis','ESA, with Russia and the United States','fs'],
+      ['Contrôle','Control','ESOC (Darmstadt) ; station de Kiruna','ESOC (Darmstadt); Kiruna station','fs'],
+      ['Opérations scientifiques','Science operations','ISOC, à l\'ESAC (Madrid)','ISOC, at ESAC (Madrid)','fs'],
+      ['Données','Data','ISDC, Université de Genève','ISDC, University of Geneva','fs'],
+      ['Contribution du CNES','CNES contribution','maîtrise d\'œuvre du spectromètre SPI','prime contractor for the SPI spectrometer','cnes']
+    ],
+    chain:{
+      intro:["L'ISDC les traitait en deux temps : un traitement rapide pour repérer les événements soudains, puis le traitement complet, avec le logiciel OSA.",
+             "The ISDC processed them in two stages: a quick pass to spot sudden events, then the full processing, with the OSA software."],
+      steps:[
+        { lv:'Télémétrie', n:['Données brutes','Raw data'], x:['Paquets de chaque instrument, reçus en continu par les stations au sol.','Packets from each instrument, received continuously by the ground stations.'], r:'fs' },
+        { lv:'IBAS', n:['Alertes','Alerts'], x:['Système d\'alerte de l\'ISDC : position d\'un sursaut gamma diffusée en quelques secondes.','The ISDC alert system: a gamma-ray burst position broadcast within seconds.'], r:'isdc' },
+        { lv:'OSA', n:['Analyse','Analysis'], x:['Images, spectres et courbes de lumière par pointé, à partir de la réponse de chaque masque codé.','Images, spectra and light curves per pointing, from the response of each coded mask.'], sw:'OSA', r:'isdc' },
+        { lv:'Archive', n:['Archive','Archive'], x:['Données rangées par révolution et par pointé, publiques après la période réservée.','Data filed by revolution and pointing, public after the reserved period.'], r:'isdc' }
+      ]
+    },
+    rel:[
+      ['2002–2025','2002–2025',['Par observation','By observation'],"Les données sont publiées à l'ISDC et copiées au HEASARC.","The data are released at the ISDC and mirrored at HEASARC.",['isdc','heasarc'],false]
+    ]
+  },
+  cheops: {
+    checked:'2026-11-20',
+    refs:{
+      unige:{ t:'CHEOPS Science Operations Centre', p:'Université de Genève', u:'https://cheops.unige.ch/' }
+    },
+    intro:["CHEOPS est la première mission de classe S, « petite », de l'ESA, menée avec la Suisse : l'Université de Berne a dirigé le consortium qui a construit l'instrument, avec dix autres pays. 80 % du temps d'observation revient à l'équipe scientifique de la mission, 20 % à des observateurs invités choisis par l'ESA.",
+           "CHEOPS is ESA's first S-class, 'small', mission, run with Switzerland: the University of Bern led the consortium that built the instrument, with ten other countries. 80% of the observing time goes to the mission's science team, 20% to guest observers selected by ESA."],
+    phases:[
+      ['18 déc. 2019','18 Dec 2019','Lancement','Launch',"Un Soyouz-Frégate, depuis Kourou, le place sur une orbite héliosynchrone à 700 km.","A Soyuz-Fregat, from Kourou, puts it into a Sun-synchronous orbit at 700 km.",'benz'],
+      ['2020','2020','Recette en orbite','In-orbit commissioning',"La précision mesurée dépasse l'exigence : 15,5 ppm en 6 heures sur les étoiles brillantes, pour 20 ppm demandés.","The measured precision beats the requirement: 15.5 ppm in 6 hours on bright stars, against 20 ppm required.",'benz'],
+      ['2023','2023','Première prolongation','First extension',"L'ESA prolonge la mission de trois ans.","ESA extends the mission by three years.",'ext'],
+      ['juin 2026','June 2026','Prolongée jusqu\'en 2029','Extended to 2029',"Nouvelle prolongation jusqu'à fin 2029. Parmi les résultats : la première planète déformée détectée, WASP-103 b, en forme de ballon de rugby.","A further extension to the end of 2029. Among the results: the first deformed exoplanet detected, WASP-103 b, shaped like a rugby ball.",'ext']
+    ],
+    ops:[
+      ['Agence','Agency','ESA, avec la Suisse','ESA, with Switzerland','nut'],
+      ['Contrôle','Control','INTA, Torrejón de Ardoz (Espagne)','INTA, Torrejón de Ardoz (Spain)','benz'],
+      ['Centre scientifique','Science centre','Université de Genève','University of Geneva','benz'],
+      ['Temps d\'observation','Observing time','80 % équipe de la mission, 20 % observateurs invités','80% mission team, 20% guest observers','benz'],
+      ['Contribution française','French contribution','méthodes de traitement des données brutes (LAM, avec le soutien du CNES)','raw-data processing methods (LAM, with CNES support)','cnes']
+    ],
+    chain:{
+      intro:["Les données descendent chaque jour vers les stations espagnoles, au moins 1 Gbit par jour. Le centre scientifique de Genève les traite automatiquement, jusqu'aux courbes de lumière.",
+             "The data come down every day to the Spanish stations, at least 1 Gbit a day. The science centre in Geneva processes them automatically, up to light curves."],
+      steps:[
+        { lv:'Bord', n:['Poses additionnées','Co-added exposures'], x:['Les poses de moins de 30 s environ sont additionnées à bord sur 60 s au plus.','Exposures shorter than about 30 s are co-added on board over at most 60 s.'], r:'benz' },
+        { lv:'Sol', n:['Réception','Reception'], x:['Stations de Torrejón et de Villafranca.','Torrejón and Villafranca stations.'], r:'benz' },
+        { lv:'DRP', n:['Réduction','Reduction'], x:['Étalonnage, correction du fond et de la lumière parasite, photométrie d\'ouverture.','Calibration, background and stray-light correction, aperture photometry.'], sw:'Université de Genève', r:['benz','unige'] },
+        { lv:'Archive', n:['Archive','Archive'], x:['Courbes de lumière et images, publiques après la période réservée.','Light curves and images, public after the reserved period.'], r:'unige' }
+      ]
+    },
+    rel:[
+      ['depuis 2020','since 2020',['Par visite','By visit'],"Les données de chaque visite sont publiées à l'archive de la mission, après la période réservée.","Each visit's data are released at the mission archive, after the reserved period.",'unige',false]
+    ]
+  },
+  herschel: {
+    checked:'2026-11-20',
+    refs:{
+      hsa:{ t:'Herschel Science Archive', p:'ESA, ESAC', u:'https://archives.esac.esa.int/hsa/whsa/' },
+      close:{ t:'Herschel closes its eyes on the Universe (29 avril 2013)', p:'ESA', u:'https://esa.int/Newsroom/Press_Releases/Herschel_closes_its_eyes_on_the_Universe' }
+    },
+    intro:["Herschel est une mission de l'ESA ; ses trois instruments ont été construits par des consortiums de laboratoires européens, avec une participation de la NASA. Le temps d'observation était ouvert à tous par appel à propositions, avec une part garantie aux équipes des instruments.",
+           "Herschel is an ESA mission; its three instruments were built by consortia of European laboratories, with participation from NASA. Observing time was open to all through calls for proposals, with a guaranteed share for the instrument teams."],
+    phases:[
+      ['14 mai 2009','14 May 2009','Lancement','Launch',"Une Ariane 5 lance Herschel et Planck ensemble vers le point L2.","An Ariane 5 launches Herschel and Planck together towards L2.",'fs'],
+      ['2010','2010','Premiers résultats','First results',"Un volume spécial de la revue Astronomy & Astrophysics (518) rassemble les premiers résultats, dont la présentation de la mission.","A special volume of Astronomy & Astrophysics (518) gathers the first results, including the description of the mission.",'pil'],
+      ['2009–2013','2009–2013','Observations','Observations',"Environ 20 000 heures d'observations scientifiques étaient prévues ; un tiers environ revenait aux équipes des instruments.","About 20,000 hours of science observations were planned; about a third went to the instrument teams.",'pil'],
+      ['29 avril 2013','29 April 2013','Fin de l\'hélium','Helium runs out',"L'hélium liquide est épuisé : les instruments se réchauffent et les observations s'arrêtent. Le satellite est ensuite placé sur une orbite autour du Soleil.","The liquid helium is exhausted: the instruments warm up and observations stop. The spacecraft is then put on an orbit around the Sun.",['fs','close']]
+    ],
+    ops:[
+      ['Agence','Agency','ESA, avec la NASA','ESA, with NASA','fs'],
+      ['Contrôle','Control','ESOC (Darmstadt) ; stations de New Norcia et Cebreros','ESOC (Darmstadt); New Norcia and Cebreros stations','fs'],
+      ['Centre scientifique','Science centre','Herschel Science Centre, ESAC','Herschel Science Centre, ESAC','fs'],
+      ['Instruments','Instruments','PACS : MPE (Garching) ; SPIRE : RAL (Royaume-Uni) ; HIFI : SRON (Pays-Bas)','PACS: MPE (Garching); SPIRE: RAL (UK); HIFI: SRON (Netherlands)','fs']
+    ],
+    chain:{
+      intro:["Les données étaient traitées par le logiciel HIPE, mis au point par l'ESA et les consortiums des instruments, en niveaux successifs, jusqu'à des cartes et des cubes spectraux prêts pour la science.",
+             "The data were processed by the HIPE software, developed by ESA and the instrument consortia, in successive levels, up to science-ready maps and spectral cubes."],
+      steps:[
+        { lv:'Niveau 0', n:['Données brutes','Raw data'], x:['Télémétrie des instruments, rangée par observation.','Instrument telemetry, filed by observation.'], r:'hsa' },
+        { lv:'Niveau 1', n:['Étalonnage','Calibration'], x:['Signaux étalonnés et datés, pointage associé.','Calibrated, time-stamped signals, with the associated pointing.'], sw:'HIPE', r:'hsa' },
+        { lv:'Niveau 2', n:['Produits','Products'], x:['Cartes, cubes et spectres de chaque observation.','Maps, cubes and spectra of each observation.'], sw:'HIPE', r:'hsa' },
+        { lv:'Niveau 2,5 et 3', n:['Produits combinés','Combined products'], x:['Cartes assemblées de plusieurs observations et catalogues de sources.','Maps assembled from several observations and source catalogues.'], r:'hsa' }
+      ]
+    },
+    rel:[
+      ['2009–2017','2009–2017',['Par observation','By observation'],"Toutes les observations sont publiques à l'archive, retraitées à la fin de la mission.","All observations are public in the archive, reprocessed at the end of the mission.",'hsa',false]
+    ]
+  },
+  planck: {
+    checked:'2026-11-20',
+    refs:{
+      pla2:{ t:'Planck Legacy Archive', p:'ESA, ESAC', u:'https://pla.esac.esa.int/' },
+      last:{ t:'Last command sent to ESA\'s Planck space telescope (23 octobre 2013)', p:'ESA', u:'https://www.esa.int/Newsroom/Press_Releases/Last_command_sent_to_ESA_s_Planck_space_telescope' }
+    },
+    intro:["Planck est une mission de l'ESA. Ses deux instruments ont été construits par des consortiums dirigés depuis la France (HFI, Institut d'astrophysique spatiale, Orsay) et l'Italie (LFI, Bologne), qui ont aussi traité les données dans leurs propres centres. Le relevé du ciel suivait un programme fixé à l'avance, sans appel à propositions.",
+           "Planck is an ESA mission. Its two instruments were built by consortia led from France (HFI, Institut d'astrophysique spatiale, Orsay) and Italy (LFI, Bologna), which also processed the data in their own centres. The sky survey followed a fixed plan, with no call for proposals."],
+    phases:[
+      ['14 mai 2009','14 May 2009','Lancement','Launch',"Lancé avec Herschel par une Ariane 5, vers le point L2.","Launched with Herschel by an Ariane 5, towards L2.",'fs'],
+      ['3 juillet 2009','3 July 2009','0,1 K','0.1 K',"Les bolomètres de HFI atteignent leur température de travail, 100 millikelvins.","The HFI bolometers reach their operating temperature, 100 millikelvin.",'pla'],
+      ['14 janv. 2012','14 Jan 2012','Fin du relevé de HFI','End of the HFI survey',"HFI a couvert le ciel environ cinq fois ; LFI continue seul.","HFI has covered the sky about five times; LFI carries on alone.",'pla'],
+      ['23 oct. 2013','23 Oct 2013','Dernier ordre','Last command',"LFI s'est arrêté le 3 octobre ; le dernier ordre éteint le satellite, placé sur une orbite autour du Soleil.","LFI stopped on 3 October; the last command switches the spacecraft off, placed on an orbit around the Sun.",['pla','last']],
+      ['2013, 2015, 2018','2013, 2015, 2018','Publications des cartes','Map releases',"Trois publications successives des cartes et des résultats cosmologiques ; la dernière, en 2018, fait référence.","Three successive releases of the maps and cosmological results; the last one, in 2018, is the reference.",'p18']
+    ],
+    ops:[
+      ['Agence','Agency','ESA','ESA','fs'],
+      ['Contrôle','Control','ESOC (Darmstadt) ; station de New Norcia, Cebreros en secours','ESOC (Darmstadt); New Norcia station, Cebreros as backup','fs'],
+      ['HFI','HFI','IAS (Orsay), J.-L. Puget','IAS (Orsay), J.-L. Puget','fs'],
+      ['LFI','LFI','ITeSRE (Bologne), N. Mandolesi','ITeSRE (Bologna), N. Mandolesi','fs'],
+      ['Archive','Archive','Planck Legacy Archive (ESAC)','Planck Legacy Archive (ESAC)','pla2']
+    ],
+    chain:{
+      intro:["Chaque instrument avait son centre de traitement. Des données temporelles de chaque détecteur, ils ont tiré des cartes par fréquence, puis la carte du fond diffus en retirant les émissions de la Galaxie, et enfin les paramètres cosmologiques.",
+             "Each instrument had its own processing centre. From the time-ordered data of each detector, they built maps per frequency, then the map of the cosmic microwave background by removing the Galaxy's emission, and finally the cosmological parameters."],
+      steps:[
+        { lv:'TOI', n:['Données temporelles','Time-ordered data'], x:['Le signal de chaque détecteur, échantillonné le long du balayage.','The signal of each detector, sampled along the scan.'], r:'fs' },
+        { lv:'Cartes', n:['Cartes par fréquence','Frequency maps'], x:['Étalonnage sur le dipôle du fond diffus, projection sur le ciel.','Calibration on the CMB dipole, projection onto the sky.'], r:'p18' },
+        { lv:'Séparation', n:['Séparation des composantes','Component separation'], x:['Plusieurs méthodes isolent le fond diffus des émissions de la Galaxie.','Several methods isolate the CMB from the Galaxy\'s emission.'], r:'p18' },
+        { lv:'Cosmologie', n:['Paramètres','Parameters'], x:['Spectre de puissance et paramètres du modèle cosmologique.','Power spectrum and parameters of the cosmological model.'], r:'p18' }
+      ]
+    },
+    rel:[
+      ['2013','2013',['Première publication','First release'],"Cartes de la mission nominale et premiers résultats cosmologiques.","Nominal-mission maps and first cosmological results.",'pla2',false],
+      ['2018','2018',['Publication finale','Final release'],"Cartes et résultats définitifs de la mission.","Final maps and results of the mission.",'p18',false]
+    ]
+  },
+  cgro: {
+    checked:'2026-11-20',
+    refs:{
+      cossc:{ t:'Compton Gamma-Ray Observatory', p:'HEASARC (NASA)', u:'https://heasarc.gsfc.nasa.gov/docs/cgro/cgro.html' }
+    },
+    intro:["Compton est le deuxième des quatre grands observatoires de la NASA, après Hubble et avant Chandra et Spitzer. Il a été déposé en orbite par une navette, à environ 450 km. Après une période de relevé réservée aux équipes, le temps d'observation a été ouvert à tous par appel à propositions.",
+           "Compton is the second of NASA's four Great Observatories, after Hubble and before Chandra and Spitzer. A Shuttle released it in orbit, at about 450 km. After a survey period reserved for the teams, observing time was opened to all through calls for proposals."],
+    phases:[
+      ['5–7 avril 1991','5–7 April 1991','Lancement','Launch',"La navette Atlantis (STS-37) emporte Compton et le libère deux jours plus tard.","Space Shuttle Atlantis (STS-37) carries Compton and releases it two days later.",['msl','wiki']],
+      ['1991–1992','1991–1992','Relevé du ciel','Sky survey',"Premier relevé du ciel ; EGRET y trouve 271 sources au-dessus de 100 MeV, dont 170 non identifiées.","First sky survey; EGRET finds 271 sources above 100 MeV in it, 170 of them unidentified.",'wiki'],
+      ['1993 et 1997','1993 and 1997','Relèvements d\'orbite','Orbit reboosts',"Ses propres moteurs remontent l'orbite, de 340 à 450 km puis de 440 à 515 km.","Its own engines raise the orbit, from 340 to 450 km, then from 440 to 515 km.",'wiki'],
+      ['déc. 1999','Dec 1999','Un gyroscope tombe en panne','A gyroscope fails',"La NASA choisit une rentrée contrôlée plutôt que d'attendre une rentrée au hasard.","NASA chooses a controlled re-entry rather than waiting for an uncontrolled one.",'wiki'],
+      ['4 juin 2000','4 June 2000','Rentrée','Re-entry',"Compton rentre dans l'atmosphère au-dessus du Pacifique.","Compton re-enters the atmosphere over the Pacific.",['wiki','cossc']]
+    ],
+    ops:[
+      ['Programme','Programme','NASA (Goddard)','NASA (Goddard)','cossc'],
+      ['Durée prévue','Planned lifetime','2,25 ans, ergols pour 8 ans','2.25 years, propellant for 8 years','msl'],
+      ['Données','Data','Compton Observatory Science Support Center, puis HEASARC','Compton Observatory Science Support Center, then HEASARC','cossc']
+    ],
+    chain:{
+      intro:["Chaque instrument avait son équipe et son traitement. Les données des quatre instruments sont aujourd'hui archivées au HEASARC, avec leurs catalogues.",
+             "Each instrument had its own team and processing. The data of the four instruments are now archived at HEASARC, with their catalogues."],
+      steps:[
+        { lv:'Télémétrie', n:['Données brutes','Raw data'], x:['Télémétrie de chaque instrument, reçue au sol.','Telemetry from each instrument, received on the ground.'], r:'cossc' },
+        { lv:'Équipes', n:['Traitement par instrument','Per-instrument processing'], x:['Chaque équipe d\'instrument étalonne et réduit ses données.','Each instrument team calibrates and reduces its data.'], r:'cossc' },
+        { lv:'Catalogues', n:['Catalogues','Catalogues'], x:['Sursauts de BATSE, sources d\'EGRET (3EG), cartes de COMPTEL.','BATSE bursts, EGRET sources (3EG), COMPTEL maps.'], r:'ins' },
+        { lv:'HEASARC', n:['Archive','Archive'], x:['Toutes les données et tous les catalogues, publics.','All data and catalogues, public.'], r:'cossc' }
+      ]
+    },
+    rel:[
+      ['1991–2000','1991–2000',['Catalogues','Catalogues'],"Catalogues des sursauts de BATSE et des sources d'EGRET, publics au HEASARC.","BATSE burst and EGRET source catalogues, public at HEASARC.",'cossc',false]
+    ]
+  },
+  wmap: {
+    checked:'2026-11-20',
+    refs:{},
+    intro:["WMAP est une mission de la NASA, construite au Goddard Space Flight Center avec l'université de Princeton. Elle porte le nom de David Wilkinson, membre de l'équipe, mort en 2002. Son relevé suivait un programme fixé à l'avance ; ses cartes ont été rendues publiques à chaque étape.",
+           "WMAP is a NASA mission, built at the Goddard Space Flight Center with Princeton University. It is named after David Wilkinson, a team member, who died in 2002. Its survey followed a fixed plan; its maps were made public at each stage."],
+    phases:[
+      ['30 juin 2001','30 June 2001','Lancement','Launch',"Une Delta II le lance depuis Cap Canaveral.","A Delta II launches it from Cape Canaveral.",['nasa','wiki']],
+      ['1er oct. 2001','1 Oct 2001','Arrivée à L2','Arrival at L2',"Après trois mois de trajet, WMAP commence son relevé du ciel.","After a three-month cruise, WMAP starts its sky survey.",['wiki','nasa']],
+      ['2003','2003','Premières cartes','First maps',"Les cartes de la première année donnent une première mesure précise de l'âge et de la composition de l'Univers.","The first-year maps give a first precise measurement of the age and composition of the Universe.",'nasa'],
+      ['19 août 2010','19 Aug 2010','Fin des observations','End of observations',"Après neuf ans, WMAP cesse de recueillir des données ; il est éteint le 20 octobre, sur une orbite autour du Soleil.","After nine years, WMAP stops collecting data; it is switched off on 20 October, on an orbit around the Sun.",['nasa','wiki']],
+      ['2012–2013','2012–2013','Résultats des neuf ans','Nine-year results',"Âge de l'Univers : 13,77 milliards d'années, à un demi pour cent près ; 5 % de matière ordinaire, 25 % de matière noire, 70 % d'énergie noire.","Age of the Universe: 13.77 billion years, to within half a percent; 5% ordinary matter, 25% dark matter, 70% dark energy.",'nasa']
+    ],
+    ops:[
+      ['Programme','Programme','NASA (Goddard), avec l\'université de Princeton','NASA (Goddard), with Princeton University','nasa'],
+      ['Durée prévue','Planned lifetime','27 mois, dont 24 d\'observation','27 months, 24 of them observing','nasa'],
+      ['Archive','Archive','LAMBDA (NASA Goddard)','LAMBDA (NASA Goddard)','lambda']
+    ],
+    chain:{
+      intro:["Le traitement a suivi les mêmes étapes à chaque publication, à 1, 3, 5, 7 et 9 ans : cartes par bande, retrait des avant-plans, puis spectre de puissance et paramètres cosmologiques.",
+             "Processing followed the same steps at each release, at 1, 3, 5, 7 and 9 years: maps per band, foreground removal, then power spectrum and cosmological parameters."],
+      steps:[
+        { lv:'Différences', n:['Données différentielles','Differential data'], x:['Différence de température entre les deux directions visées, pour chaque radiomètre.','Temperature difference between the two pointing directions, for each radiometer.'], r:'wiki' },
+        { lv:'Cartes', n:['Cartes par bande','Band maps'], x:['Reconstruction des cartes du ciel entier à partir des différences.','Reconstruction of whole-sky maps from the differences.'], r:'lambda' },
+        { lv:'Avant-plans', n:['Avant-plans','Foregrounds'], x:['Retrait de l\'émission de la Galaxie, grâce aux cinq bandes.','Removal of the Galaxy\'s emission, using the five bands.'], r:'lambda' },
+        { lv:'Cosmologie', n:['Paramètres','Parameters'], x:['Spectre de puissance et paramètres du modèle cosmologique.','Power spectrum and parameters of the cosmological model.'], r:['lambda','nasa'] }
+      ]
+    },
+    rel:[
+      ['2003–2012','2003–2012',['Cinq publications','Five releases'],"Cartes et résultats à 1, 3, 5, 7 et 9 ans d'observation, publics sur LAMBDA.","Maps and results after 1, 3, 5, 7 and 9 years of observation, public on LAMBDA.",'lambda',false]
+    ]
+  },
   xmm: {
     checked:'2026-11-19',
     refs:{

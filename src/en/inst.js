@@ -376,3 +376,167 @@ var EN_WORDS = {
 var EN_CODE = [["# produits du pipeline (PPS) d'une observation de Cassiopée A, depuis l'archive XSA","# pipeline products (PPS) of a Cassiopeia A observation, from the XSA archive"],["# un trimestre de longue cadence du pipeline Kepler, téléchargé depuis MAST","# one quarter of long-cadence data from the Kepler pipeline, downloaded from MAST"],["# courbes de lumière à 2 min du pipeline SPOC, téléchargées depuis MAST","# 2-min light curves from the SPOC pipeline, downloaded from MAST"],["# photons et pointage téléchargés depuis le LAT Data Server","# photons and pointing downloaded from the LAT Data Server"],["# un sursaut par ligne : nom, position, durée T90 (s), fluence","# one burst per row: name, position, T90 duration (s), fluence"],["# images des Spitzer Enhanced Imaging Products (IRAC et MIPS 24 µm)","# images from the Spitzer Enhanced Imaging Products (IRAC and MIPS 24 µm)"],["# catalogue de sources tiré des mêmes mosaïques","# source catalogue drawn from the same mosaics"],["# télécharge les données d'une observation","# downloads the data of one observation"],["# retraitement standard (nouvel evt2)","# standard reprocessing (new evt2)"],["# écrit dans ./mastDownload/","# written to ./mastDownload/"],["# exemple : champ quelconque","# example: any field"],["# exemple : Hubble Ultra Deep Field","# example: Hubble Ultra Deep Field"],
   ["# exemple : hôte d'exoplanète en transit","# example: host of a transiting exoplanet"],["# exemple : quasar brillant","# example: bright quasar"],["# exemple : amas SMACS 0723","# example: cluster SMACS 0723"],
   ["# ex. q1.mer_catalogue, …","# e.g. q1.mer_catalogue, …"],["# ≤ 2000 lignes ; launch_job_async au-delà","# ≤ 2000 rows; use launch_job_async beyond that"]];
+EN_INST.swift = {
+  summary:"Three telescopes working in relay. BAT, with its wide field, detects the gamma-ray burst and locates it to a few arcminutes; the spacecraft slews; the XRT, in X-rays, and the UVOT, in ultraviolet and visible light, refine the position and follow the afterglow. The positions reach the ground within seconds, so that other telescopes can take over.",
+  archives:[["HEASARC, Swift archive","All observations from the three instruments, public as soon as they are processed."],["UK Swift Science Data Centre","XRT light curves and spectra of bursts, the 2SXPS catalogue, online tools."],["MAST, UVOT images","UVOT images and catalogues."],["HEASoft","Analysis software for Swift data (batgrbproduct, xrtpipeline, uvotsource…)."]],
+  instruments:{
+    bat:{ kind:"Coded-mask hard X-ray telescope",
+      use:"Detecting gamma-ray bursts over a sixth of the sky, locating them in about twenty seconds and triggering the spacecraft slew; between bursts, surveying the sky in hard X-rays.",
+      summary:"No mirror, useless at these energies: a mask of randomly placed lead tiles, half open, casts its shadow onto a plane of cadmium zinc telluride detectors. The shift of the shadow gives the direction of the source.",
+      specs:[["Range","15 to 150 keV in imaging · response up to 500 keV"],["Field","1.4 sr half-coded, 100° × 60°"],["Mask","≈ 54,000 lead tiles of 5 × 5 × 1 mm · 2.7 m² · 1 m above the detectors"],["Detectors","32,768 CZT of 4 × 4 × 2 mm · 5,200 cm² · 256 modules"],["Localisation","1 to 4′ in about twenty seconds"],["Energy resolution","≈ 7 keV"]],
+      products:[["Events","each photon with its time, energy and the detector hit, around a trigger"],["Light curves, spectra","standard products for each burst (batgrbproduct)"],["157-month survey","catalogue of the sources of the hard X-ray sky"]],
+      example:{ title:"The quantities of a burst in the BAT catalogue", caption:"Typical columns of a burst catalogue; illustrative values.", text:
+"BURST        RA (°)    DEC (°)   ERROR (′)    T90 (s)   FLUENCE 15–150 keV (erg/cm²)\nGRB YYMMDDA  189.06    +28.98    3.0           0.07      9.5e-09\nGRB YYMMDDB  148.89    +18.15    2.1           10.3      5.9e-07\n\n→ T90: the time during which 90% of the photons arrive; the name gives the date of the burst (year, month, day)." },
+      code:{ title:"Swift burst catalogue (astroquery, HEASARC)" },
+      notes:["A coded mask does not form an image directly: the sky image is rebuilt by computation, comparing the recorded shadow with the known mask pattern.","BAT triggers on board, without the ground: this is what let Swift slew in about a minute."],
+      docs:["Barthelmy et al. 2005","BAT description"] },
+    xrt:{ kind:"Grazing-incidence X-ray telescope, CCD camera",
+      use:"Refining the position of a burst to a few arcseconds and following, for days, the decline of its X-ray afterglow.",
+      summary:"Wolter I mirrors, spares from the JET-X mission, focus X-rays onto a CCD camera cooled to about −100 °C, 3.5 m away. Each photon is recorded with its position, time and energy.",
+      specs:[["Range","0.2 to 10 keV"],["Optics","Wolter I (JET-X) · 3.5 m focal length"],["Effective area","110 cm² at 1.5 keV"],["Sharpness","18″ (half-energy) at 1.5 keV"],["Field","23.6′ × 23.6′"],["Detector","CCD-22 of 600 × 600 px of 40 µm, 2.36″"],["Energy resolution","≈ 140 eV at 6 keV at launch"]],
+      products:[["Event lists","photon-counting (images) and windowed timing (bright sources) modes"],["Burst light curves","produced automatically by the UK data centre"],["2SXPS","catalogue of X-ray sources across Swift's field"]],
+      example:{ title:"XRT light curve of an afterglow", caption:"Typical shape published by the data centre; illustrative values.", text:
+"T − T0 (s)    FLUX 0.3–10 keV (erg/cm²/s)\n   95         3.1e-09\n 1000         2.4e-11\n10000         4.0e-12\n\n→ the flux decays as a power law, often with a plateau between a few hundred and a few thousand seconds." },
+      code:{ title:"Processing an XRT observation (HEASoft)" },
+      notes:["When the source is very bright, several photons land on the same pixel during one readout and merge (pile-up): the camera then switches to windowed timing mode, one dimension only but read out very fast."],
+      docs:["XRT description"] },
+    uvot:{ kind:"Ultraviolet and visible telescope, photon counting",
+      use:"Finding the visible or ultraviolet counterpart of a burst, to better than an arcsecond; measuring its colour, and hence estimating its distance when ultraviolet light is absorbed on the way.",
+      summary:"A 30 cm Ritchey-Chrétien telescope, co-aligned with the XRT. Its detector, a microchannel plate in front of a CCD, counts photons one by one; a wheel holds ultraviolet and visible filters, a clear plate and two grisms.",
+      specs:[["Optics","modified Ritchey-Chrétien · 30 cm · f/12.7"],["Range","170 to 600 nm"],["Field","17′ × 17′"],["Detector","intensified CCD, 256 × 256 elements, 2,048 × 2,048 px after centroiding, 0.502″"],["Sharpness","≈ 2.5″ (FWHM)"],["Sensitivity","B ≈ 22.3 in white light in 1,000 s"]],
+      filtersTitle:"Filters (centre and FWHM, Poole et al. 2008)",
+      products:[["Images (sk)","sky images per filter, in celestial coordinates"],["Events","a mode that keeps each photon and its time, for the first minutes of a burst"],["UVOTSSC catalogue","sources from all the images"]],
+      notes:["Because the detector counts photons one by one, a bright source sometimes sends several during one readout, counted as one: photometry corrects for this coincidence loss."],
+      docs:["Swift Technical Handbook, UVOT","Poole et al. 2008"] }
+  }
+};
+EN_INST.integral = {
+  summary:"Four instruments aligned on the same direction. SPI, the spectrometer, and IBIS, the imager, cover gamma rays from 15 keV to 10 MeV; the two JEM-X units see X-rays from 3 to 35 keV and the OMC camera visible light. The three high-energy instruments form their image with a coded mask.",
+  archives:[["INTEGRAL Science Data Centre (ISDC)","Data centre, in Geneva: archive, OSA analysis software, catalogues."],["ESA, INTEGRAL archive","ESA archive at ESAC."],["HEASARC, INTEGRAL","Copy of the data and catalogues at NASA."]],
+  instruments:{
+    spi:{ kind:"Germanium gamma-ray spectrometer, coded mask",
+      use:"Measuring the energy of gamma-ray lines very finely: radioactive elements made by supernovae, such as aluminium-26 or titanium-44, and the 511 keV line of positron annihilation at the centre of the Galaxy.",
+      summary:"19 germanium detectors, cooled to 85 K, under a coded mask, all surrounded by an active shield that rejects particles and photons coming from the side. Its energy resolution is unmatched; its image, however, remains coarse, to 2.5°.",
+      specs:[["Range","20 keV to 8 MeV"],["Detectors","19 germanium crystals at 85 K · 500 cm²"],["Field","16° fully coded"],["Angular resolution","2.5° (point source)"],["Energy resolution","2.3 keV at 1.3 MeV"],["Prime contractor","CNES"]],
+      products:[["Events","each photon with its time, energy and the detector hit"],["Spectra","obtained by deconvolution with the mask response (OSA software)"]],
+      notes:["SPI's mask gives only a coarse image: SPI is built for spectroscopy, IBIS for imaging."],
+      docs:["Instrument characteristics (ISDC)"] },
+    ibis:{ kind:"Coded-mask gamma-ray imager",
+      use:"Locating and following sources of hard X-rays and gamma rays: black holes and neutron stars in the Galaxy, active galactic nuclei, gamma-ray bursts.",
+      summary:"A coded mask above two detector planes: ISGRI, 16,384 cadmium telluride crystals, for low energies; PICsIT, 4,096 caesium iodide crystals, for high energies. Photons that cross the first and stop in the second also give their direction through the Compton effect.",
+      specs:[["Range","15 keV to 10 MeV"],["ISGRI","16,384 CdTe · 2,600 cm²"],["PICsIT","4,096 CsI · 3,100 cm²"],["Field","9° fully coded"],["Angular resolution","12′"],["Energy resolution","9 keV at 100 keV"]],
+      products:[["Mosaic images","sky maps per energy band, assembled over many pointings"],["IBIS source catalogue","sources detected by ISGRI over the whole mission"]],
+      notes:["INTEGRAL observed in 'dithering' mode: small successive shifts of the pointing, which help separate sources from the background in a coded-mask image."],
+      docs:["Instrument characteristics (ISDC)"] },
+    jemx:{ kind:"Two coded-mask X-ray monitors",
+      use:"Seeing the same sources in softer X-rays, to extend their spectrum to low energies and follow their outbursts.",
+      summary:"Two identical units, each a coded mask above a microstrip gas proportional counter (xenon and methane).",
+      specs:[["Range","3 to 35 keV"],["Detector","microstrip counter, xenon and methane at 1.5 bar"],["Field","4.8° fully coded"],["Angular resolution","3′"],["Energy resolution","1.2 keV at 10 keV"]],
+      products:[["Images and spectra","per pointing, with the OSA software"]],
+      docs:["Instrument characteristics (ISDC)"] },
+    omc:{ kind:"Optical camera, V-band photometry",
+      use:"Measuring the visible brightness of the sources observed in gamma rays, at the same time: for variable stars, novae or active galactic nuclei.",
+      summary:"Lens optics in front of a CCD, with a V filter.",
+      specs:[["Range","V filter, 500 to 600 nm"],["Field","5° × 5°"],["Detector","CCD of 2,061 × 1,056 px, image area of 1,024 × 1,024 px"]],
+      products:[["Light curves","V magnitude of each monitored source"]],
+      docs:["Instrument characteristics (ISDC)"] }
+  }
+};
+EN_INST.cheops = {
+  summary:"A single instrument: a 32 cm telescope and a CCD. CHEOPS does not take images in the usual sense: for hours it measures the brightness of a star already known to host a planet, to see the planet pass and deduce its size.",
+  archives:[["CHEOPS Archive","The mission archive, at the University of Geneva: light curves and images."],["CHEOPS at ESA","The mission's science pages, guest observers programme."]],
+  instruments:{
+    phot:{ name:"CHEOPS", full:"CHEOPS Instrument System", kind:"Very high precision photometer",
+      use:"Measuring the radius of planets through the depth of their transit in front of bright stars, and following the eclipses and phase variations of hot giant planets.",
+      summary:"An on-axis 32 cm Ritchey-Chrétien telescope and a single frame-transfer CCD, held stable to a few thousandths of a degree. The star's image is deliberately defocused over hundreds of pixels so that the measurement does not depend on the defects of one pixel.",
+      specs:[["Optics","Ritchey-Chrétien · 320 mm primary · f/8.4"],["Detector","CCD47-20, 1024 × 1024 px of 13 µm · 1″ per pixel"],["Field","0.32°"],["Range","0.4 to 1.1 µm"],["CCD temperature","228 K, stable to 10 mK"],["Precision","15.5 ppm in 6 h (stars 6 ≤ V ≤ 9) · 75 ppm in 3 h (V ≤ 12)"]],
+      products:[["Imagettes","small images of 25 px radius around the star, at each exposure"],["Windows","images 200 px across, co-added on board over at most 60 s"],["Light curves","produced by the University of Geneva pipeline"]],
+      notes:["CHEOPS is in low orbit: the Earth regularly hides the star and the scattered light varies along the orbit. Its light curves therefore have periodic gaps, every 98.7 minutes."],
+      docs:["Benz et al. 2021"] }
+  }
+};
+EN_INST.herschel = {
+  summary:"Three instruments at the focus of the same telescope, inside the cryostat. HIFI splits the radiation into an extremely fine spectrum; PACS and SPIRE are both cameras and spectrometers, PACS at the shorter wavelengths, SPIRE at the longer ones.",
+  archives:[["Herschel Science Archive","ESA archive: all observations, public."],["IRSA, Herschel","Copy of the data and catalogues at IPAC (NASA)."]],
+  instruments:{
+    hifi:{ kind:"Heterodyne spectrometer",
+      use:"Measuring the velocity and composition of cold gas: lines of water, carbon monoxide and many molecules, in the clouds where stars are born and in comets.",
+      summary:"Like a radio receiver: the sky signal is mixed with that of a local oscillator, and the difference, at a lower frequency, is analysed by spectrometers. A single pixel on the sky, but a resolving power of about a million.",
+      specs:[["Range","157 to 212 µm and 240 to 625 µm"],["Resolving power","≈ 10⁶"],["Field","a single pixel on the sky"]],
+      products:[["Spectra","one spectrum per position and band, HIPE pipeline"]],
+      docs:["Pilbratt et al. 2010"] },
+    pacs:{ kind:"Camera and grating spectrometer",
+      use:"Imaging the warm dust of galaxies and star-forming regions, and getting spectra of gas lines from them.",
+      summary:"A bolometer camera that observes in two bands at once (70 or 100 µm, and 160 µm), and an integral-field spectrometer of 5 × 5 pixels.",
+      specs:[["Photometer","60–85 or 85–130 µm and 130–210 µm (bands centred at 70, 100 and 160 µm)"],["Spectrometer","55 to 210 µm · R ≈ 1,000 to 4,000 · 47″ × 47″ field"]],
+      products:[["Maps","images in each band, levels 2 and 2.5"],["Spectral cubes","spectra of each pixel of the field"]],
+      docs:["Pilbratt et al. 2010"] },
+    spire:{ kind:"Camera and Fourier-transform spectrometer",
+      use:"Mapping the cold dust, at a few tens of kelvin, in the clouds of our Galaxy and in distant galaxies forming many stars.",
+      summary:"A photometer that observes at 250, 350 and 500 µm at once, and a Fourier-transform spectrometer that covers the whole range in one go.",
+      specs:[["Photometer","250, 350 and 500 µm · 4′ × 8′ field"],["Spectrometer","194–324 and 316–671 µm · R ≈ 370 to 1,300 · 2.6′ field"]],
+      products:[["Maps","images in the three bands"],["Spectra","spectra of each spectrometer detector"]],
+      docs:["Pilbratt et al. 2010"] }
+  }
+};
+EN_INST.planck = {
+  summary:"Two instruments at the focus of the same telescope. LFI, with radio receivers, covers the low frequencies; HFI, with bolometers cooled to 0.1 K, the high ones. Together, nine bands from 30 to 857 GHz: enough to separate the cosmic microwave background from the Galaxy's emissions, which change with frequency.",
+  archives:[["Planck Legacy Archive","ESA archive: sky maps, catalogues, cosmological products."],["IRSA, Planck","Copy of the maps and catalogues at IPAC (NASA)."]],
+  instruments:{
+    lfi:{ kind:"Radiometers at 20 K",
+      use:"Mapping the sky at low frequencies, where the Galaxy's emissions dominate: radiation from electrons in the magnetic field and from ionised gas. Essential to remove them from the maps of the background.",
+      summary:"22 radio receivers with amplifiers, cooled to 20 K, which compare the sky with a reference load.",
+      specs:[["Frequencies","30, 44 and 70 GHz (centres 28.4, 44.1 and 70.4 GHz)"],["Detectors","22 radio receivers at 20 K"],["Resolution","32.3′, 27.9′ and 13.1′"]],
+      products:[["Maps","whole-sky maps per frequency, in intensity and polarisation"]],
+      docs:["Planck 2018 results. I"] },
+    hfi:{ kind:"Bolometers at 0.1 K",
+      use:"Measuring the cosmic microwave background where it is brightest, and the Galaxy's dust at the highest frequencies.",
+      summary:"52 bolometers, thermometers so sensitive that they measure the heating caused by the absorbed radiation, cooled to 0.1 K by a dilution of helium-3 in helium-4.",
+      specs:[["Frequencies","100, 143, 217, 353, 545 and 857 GHz"],["Detectors","52 bolometers at 0.1 K"],["Resolution","from 9.7′ at 100 GHz to 4.2′ at 857 GHz"],["End of survey","14 January 2012"]],
+      products:[["Maps","whole-sky maps per frequency"],["CMB map","separated from the foregrounds by several methods"]],
+      docs:["Planck 2018 results. I"] }
+  }
+};
+EN_INST.cgro = {
+  summary:"Four instruments sharing six decades of energy, from 20 keV to 30 GeV. BATSE watched the whole sky for bursts; OSSE, COMPTEL and EGRET each observed part of the sky, from the lowest energies to the highest.",
+  archives:[["HEASARC, CGRO archive","Data and catalogues of the four instruments."]],
+  instruments:{
+    batse:{ kind:"All-sky burst monitor",
+      use:"Detecting gamma-ray bursts over the whole sky and measuring their distribution: uniform, it showed that they come from very far away.",
+      summary:"Eight modules at the corners of the spacecraft, facing the eight faces of an octahedron; each carries a large detector and a spectroscopy detector.",
+      specs:[["Range","20 keV to 1 MeV"],["Field","whole sky not hidden by the Earth"],["Effective area","1,000 cm² at 30 keV, per module"],["Localisation","≈ 3° for a strong burst"],["Bursts","≈ 2,700 detected"]],
+      products:[["Burst catalogue","duration, fluence and position of each burst"]],
+      code:{ title:"BATSE burst catalogue (astroquery, HEASARC)" },
+      docs:["Instrument characteristics"] },
+    osse:{ kind:"Scintillation spectrometer",
+      use:"Measuring the gamma-ray spectrum of selected sources: the Galactic Centre, the positron annihilation line, active galactic nuclei.",
+      summary:"Four scintillators in collimators, which point at a 3.8° × 11.4° region and can pivot.",
+      specs:[["Range","0.05 to 10 MeV"],["Field","3.8° × 11.4° (FWHM)"],["Effective area","2,013 cm² at 0.2 MeV"],["Energy resolution","12% at 0.2 MeV · 4% at 5 MeV"]],
+      products:[["Spectra","spectra of each pointing"]],
+      docs:["Instrument characteristics"] },
+    comptel:{ kind:"Compton telescope",
+      use:"Mapping the gamma-ray sky from 1 to 30 MeV, in particular the aluminium-26 line, a tracer of recent massive stars in the Galaxy.",
+      summary:"Two stages of detectors: the photon scatters off an electron in the first (Compton effect) and is then absorbed in the second. The energies and positions measured in both give a circle of possible directions.",
+      specs:[["Range","0.8 to 30 MeV"],["Field","≈ 1 sr"],["Angular resolution","0.5° to 1° (90%)"],["Energy resolution","8.8% at 1.27 MeV"]],
+      products:[["Sky maps","per energy band and for the aluminium-26 line"]],
+      docs:["Instrument characteristics"] },
+    egret:{ kind:"Spark-chamber gamma-ray telescope",
+      use:"Mapping the high-energy gamma-ray sky: pulsars, the plane of the Galaxy, and active galactic nuclei whose jet points at us.",
+      summary:"A spark chamber where the photon converts into an electron–positron pair, whose tracks give the direction, above a calorimeter that measures the energy.",
+      specs:[["Range","30 MeV to 10 GeV"],["Effective area","1,200 cm² at 100 MeV"],["Field","≈ 0.6 sr"],["Energy resolution","≈ 20%"],["Sources","271 in its first survey above 100 MeV"]],
+      products:[["3EG catalogue","sources detected by EGRET"]],
+      docs:["Instrument characteristics"] }
+  }
+};
+EN_INST.wmap = {
+  summary:"A single instrument: two back-to-back telescopes feeding 20 horns and as many differential radiometers, spread over five bands from 23 to 94 GHz. Each radiometer measures the temperature difference between two points of the sky.",
+  archives:[["LAMBDA (NASA)","Sky maps, power spectra and cosmological parameters from the nine years."]],
+  instruments:{
+    rad:{ name:"Radiometers", full:"WMAP differential radiometers", kind:"Differential radiometers, five bands",
+      use:"Mapping the temperature variations and polarisation of the cosmic microwave background over the whole sky, and deducing the age, composition and geometry of the Universe.",
+      summary:"20 horns, 10 behind each telescope, feed radiometers that constantly compare the two pointing directions. The low bands are used mainly to remove the Galaxy's emission.",
+      specs:[["Bands","K 23 · Ka 33 · Q 41 · V 61 · W 94 GHz"],["Resolution","52.8′ (K), 39.6′ (Ka), 30.6′ (Q), 21′ (V), 13.2′ (W)"],["Radiometers","2 (K), 2 (Ka), 4 (Q), 4 (V), 8 (W)"],["Sensitivity","variations of a millionth of a degree"]],
+      products:[["Maps","whole sky per band, intensity and polarisation, nine years"],["ILC map","combination of the bands that isolates the CMB"],["Power spectrum","amplitude of the variations by angular size"]],
+      docs:["LAMBDA, WMAP data"] }
+  }
+};

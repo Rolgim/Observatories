@@ -18,7 +18,7 @@ const FRENCH = /[àâçéèêëîïôùûœ«»]|\b(le|la|les|des|du|de|et|un|un
   const miss = {};
   const grab = async () => Object.assign(miss, await pg.evaluate(() => window.__i18nMiss));
   const go = async h => { await pg.goto('http://localhost:' + PORT + '/index.html#' + h); await pg.waitForTimeout(400); };
-  for (const t of ['hubble', 'jwst', 'euclid', 'gaia']){
+  for (const t of (process.env.TELES || 'hubble jwst euclid gaia').split(' ')){
     await go(t); await pg.waitForFunction(() => document.getElementById('loader').hidden, null, { timeout: 120000 }).catch(() => {});
     await pg.click('[data-ptab="parts"]'); await pg.waitForTimeout(200);
     const np = await pg.locator('.part > button').count();

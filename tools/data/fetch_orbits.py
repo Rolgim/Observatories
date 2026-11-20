@@ -29,6 +29,11 @@ BODIES = {  # identifiants Horizons, période, pas
     # XMM-Newton : orbite terrestre très elliptique de ≈ 48 h ; identifiant cherché par son nom ; dernière orbite, repère géocentrique fixe
     "xmm": dict(id="?XMM", start=(TODAY - datetime.timedelta(days=3)).isoformat(), stop=TODAY.isoformat(), step="20m", name="XMM-Newton", inertial=True, alts=("XMM-Newton", "X-ray Multi-Mirror")),
     "kepler":  dict(id="-227", start="2009-03-08", stop="2018-11-15", step="10d", name="Kepler", helio=True),
+    # vague 1 : missions terminées autour de L2 (toute la mission) et INTEGRAL (une orbite de 2024, repère géocentrique fixe)
+    "herschel": dict(id="-486", start="2009-07-15", stop="2013-05-15", step="2d", name="Herschel Space Observatory"),
+    "planck":   dict(id="-489", start="2009-07-15", stop="2013-10-15", step="2d", name="Planck"),
+    "wmap":     dict(id="-165", start="2001-10-05", stop="2010-08-15", step="4d", name="Wilkinson Microwave Anisotropy Probe"),
+    "integral": dict(id="?INTEGRAL", start="2024-06-01", stop="2024-06-04", step="30m", name="INTEGRAL", inertial=True, alts=("INTEGRAL", "International Gamma-Ray Astrophysics Laboratory")),
 }
 
 def lookup(name, key="roman", alts=("Nancy Grace Roman", "Roman Space Telescope")):

@@ -99,6 +99,146 @@ refs:{ hz:'JPL Horizons ephemerides (object -680), measured on this site' },
       hga:{ name:'High-gain antenna', desc:"The steerable dish that sends the data every day to NASA, ESA and JAXA stations. Roman produces far more data than Hubble and Webb combined.", facts:["1.7 m dish, Ka and S bands", "Up to 500 Mbit/s", "≈ 1.4 TB per day"] }
     }
   },
+  swift:{
+    agency:'NASA, with Italy and the United Kingdom; operations at Penn State', launch:'Launched 20 November 2004, Delta II, Cape Canaveral',
+    sub:'Low Earth orbit, gamma-ray bursts, X-rays and ultraviolet (2004–2026)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'5.6 m', dim:'5.6 × 5.4 m' },
+    desc:"A gamma-ray burst lasts only a few seconds. Swift was built to catch them: its coded-mask telescope, BAT, watched a sixth of the sky; as soon as it saw a burst, the spacecraft swung round on its own, in about a minute, to point its two other telescopes, in X-rays and ultraviolet, at the fading afterglow. Designed for two years, it observed for almost 22 years and over 2,000 bursts, before falling back into the atmosphere on 4 November 2026.",
+    sourceNote:"NASA model (NASA 3D Resources repository). It is not in metres: it is scaled to the published length of 5.6 m. Its proportions are approximate: the solar arrays look wider in it than the published 5.4 m. It has been re-segmented here into six assemblies from its geometry and materials.",
+    refs:{ bat:'BAT Instrument Description', xrt:'XRT Instrument Description', uvot:'The Swift Technical Handbook, Overview of UVOT', end:'NASA\'s Swift Mission Ends (23 October 2026)', reent:'NASA\'s Swift Observatory Re-Entered Atmosphere (4 November 2026)', wiki:'Neil Gehrels Swift Observatory (Wikipedia)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','5.6 × 5.4 m'],['Mass','≈ 1,450 kg (planned) · 1,470 kg at launch'],['Power','1,040 W'],['Construction','Spectrum Astro bus'],['Launch','20 November 2004, Delta II 7320, Cape Canaveral']] },
+      { title:'Instruments', rows:[['BAT','2.7 m² coded mask, 1 m above 32,768 CZT detectors · 15 to 150 keV · 1.4 sr'],['XRT','Wolter I telescope of 3.5 m focal length · 0.2 to 10 keV · 23.6′ field'],['UVOT','30 cm Ritchey-Chrétien, f/12.7 · 170 to 600 nm · 17′ field'],['Response','autonomous slew to the burst in about a minute']] },
+      { title:'Orbit and end', rows:[['Orbit','585 × 604 km at the start · 20.6° inclination · 96.6 min'],['Pointing','up to 75 independent targets a day'],['Gyroscopes','two of four lost; pointing on two gyroscopes since April 2024'],['End','last observation on 20 October 2026; re-entered the atmosphere on 4 November 2026, over Sumatra']] }
+    ],
+    parts:{
+      bat:{ name:'Burst Alert Telescope (BAT)', desc:"A telescope without a mirror: a mask of about 54,000 small lead tiles, set 1 m above a plane of detectors. A source casts the mask's shadow, shifted according to its direction; by comparing that shadow with the mask pattern, BAT finds the position of a burst to within a few arcminutes, in about twenty seconds.", facts:["2.7 m² mask, ≈ 54,000 lead tiles","32,768 CZT detectors of 4 × 4 × 2 mm","1.4 sr field, 100° × 60°","15 to 150 keV"] },
+      xrt:{ name:'X-Ray Telescope (XRT)', desc:"A grazing-incidence telescope, with spare mirrors from the JET-X mission, and a CCD camera at the focus, 3.5 m away. It refines the burst position to a few arcseconds and follows the decline of its X-ray glow.", facts:["Wolter I, 3.5 m focal length","110 cm² at 1.5 keV","600 × 600 px CCD, 2.36″","0.2 to 10 keV"] },
+      uvot:{ name:'Ultraviolet/Optical Telescope (UVOT)', desc:"A 30 cm telescope, co-aligned with the XRT, that counts photons one by one with an intensified detector. It gives the burst position to better than an arcsecond, and its colours, through a filter wheel and two grisms.", facts:["30 cm, f/12.7","170 to 600 nm","17′ × 17′ field","Over 1.5 million images"] },
+      shade:{ name:'Telescope shields', desc:"The panels around the apertures of the XRT and UVOT, above the instrument platform.", facts:["XRT and UVOT apertures, side by side"] },
+      bus:{ name:'Spacecraft bus', desc:"The Spectrum Astro platform: power, computer, reaction wheels and gyroscopes. It can swing the whole observatory by 50° in under 75 s, without waiting for a command from the ground.", facts:["50° in under 75 s","1,040 W"] },
+      solar:{ name:'Solar arrays', desc:"Two wings, on either side of the spacecraft bus.", facts:["Published span: 5.4 m"] }
+    }
+  },
+  integral:{
+    agency:'ESA, with Russia and the United States; SPI spectrometer with CNES as prime contractor', launch:'Launched 17 October 2002, Proton, Baikonur',
+    sub:'Highly elliptical Earth orbit, gamma rays and X-rays (2002–2025)', src:'Model: ESA, SCIFLEET',
+    cmp:{ tag:'16 m', dim:'5 m tall, 16 m span' },
+    desc:"INTEGRAL observed the sky in gamma rays and hard X-rays with four instruments pointing in the same direction. No mirror or lens works at these energies: SPI and IBIS, like the two JEM-X units, rebuild the sky image from the shadow of a coded mask. SPI, built with CNES as prime contractor, measured the energy of gamma-ray lines very finely; IBIS located sources to a few arcminutes. It observed for 22 years, until 28 February 2025.",
+    sourceNote:"ESA model (SCIFLEET), free to use under ESA's terms. Its units are inches: it is scaled to the published 16 m span. It has been re-segmented here into six assemblies from its geometry; the payload module structure is grouped with the service module.",
+    refs:{ fs:'INTEGRAL fact sheet', end:'Mission accomplished for Integral, ESA\'s gamma-ray telescope (28 February 2025)', cnes:'INTEGRAL in detail (CNES)', isdc:'Introduction to the INTEGRAL Off-line Scientific Analysis, instrument characteristics', sf:'SCIFLEET, models of the science missions' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','5 m tall · Ø 3.7 m · 16 m span, arrays deployed'],['Launch mass','≈ 4 t'],['Launch','17 October 2002, Proton, Baikonur'],['French contribution','SPI, with CNES as prime contractor']] },
+      { title:'Instruments', rows:[['SPI','spectrometer · 20 keV to 8 MeV · 19 germanium detectors at 85 K'],['IBIS','imager · 15 keV to 10 MeV · 16,384 CdTe and 4,096 CsI detectors · 12′'],['JEM-X','two X-ray monitors · 3 to 35 keV · 3′'],['OMC','optical camera, V filter · 5° × 5° field']] },
+      { title:'Orbit and end', rows:[['Orbit','72 h · 9,000 × 153,000 km at the start · 51.6° inclination'],['Operations','control at ESOC (Darmstadt); science operations at ESAC; data at the ISDC (Geneva)'],['End','observations stopped on 28 February 2025, after 2,886 orbits; re-entry expected in early 2029']] }
+    ],
+    parts:{
+      spi:{ name:'Spectrometer (SPI)', desc:"A coded mask at the top of the cylinder, and at the bottom a camera of 19 germanium detectors cooled to 85 K, surrounded by an active shield that rejects particles. SPI measures the energy of gamma-ray photons very finely: enough to separate the lines emitted by radioactive nuclei, or the line from positron annihilation.", facts:["20 keV to 8 MeV","19 germanium detectors, 85 K","2.3 keV resolution at 1.3 MeV","CNES as prime contractor"] },
+      ibis:{ name:'Imager (IBIS)', desc:"The large box: a coded mask at the top, two detector planes at the bottom. ISGRI, made of cadmium telluride, sees the low energies; PICsIT, of caesium iodide, the highest. It locates sources to a few arcminutes.", facts:["15 keV to 10 MeV","16,384 CdTe and 4,096 CsI","12′ resolution","9° fully coded field"] },
+      jemx:{ name:'X-ray monitors (JEM-X)', desc:"Two small coded-mask telescopes, whose round masks can be seen at the top. They see the same sources in softer X-rays, from 3 to 35 keV, at energies IBIS cannot reach.", facts:["3 to 35 keV","3′ resolution"] },
+      omc:{ name:'Optical camera (OMC)', desc:"A small CCD camera behind lens optics and a V filter: it follows the visible brightness of the sources the gamma-ray instruments are watching.", facts:["5° × 5° field","V filter"] },
+      svm:{ name:'Service module and structure', desc:"The lower module carries the tanks, power and communications. Above it, the payload module structure holds the four instruments together.", facts:["≈ 4 t at launch"] },
+      solar:{ name:'Solar arrays', desc:"Two wings of panels, on either side of the service module.", facts:["16 m span"] }
+    }
+  },
+  cheops:{
+    agency:'ESA and Switzerland, with ten other European countries including France', launch:'Launched 18 December 2019, Soyuz-Fregat, Kourou',
+    sub:'Sun-synchronous low Earth orbit, photometry of planet-hosting stars (since 2019)', src:'Model: ESA, SCIFLEET',
+    cmp:{ tag:'1.5 m', dim:'just over 1.5 m tall' },
+    desc:"CHEOPS does not look for new planets: it measures with extreme precision the brightness of bright stars already known to host some, to see the planet pass in front and deduce its size. Its small 32 cm telescope deliberately forms a blurred image of the star, spread over hundreds of pixels, so that the measurement is stable. It is ESA's first 'small' mission, run with Switzerland.",
+    sourceNote:"ESA model (SCIFLEET), free to use under ESA's terms, in millimetres. The materials file is not distributed: the textures were matched to the materials from their coordinates. It has been re-segmented here into three assemblies.",
+    refs:{ nut:'CHEOPS in a nutshell', ext:'CHEOPS Space Mission extended (11 June 2026)', sf:'SCIFLEET, models of the science missions' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','just over 1.5 m tall'],['Launch mass','≈ 275 kg (≈ 280 according to ESA)'],['Power','≈ 2.5 m² arrays, just under 200 W on average'],['Launch','18 December 2019, Soyuz-Fregat, Kourou']] },
+      { title:'Telescope', rows:[['Optics','on-axis Ritchey-Chrétien · 320 mm primary'],['Focal length','2,681 mm at 750 nm · f/8.4'],['Detector','one CCD of 1024 × 1024 px of 13 µm · 1″ per pixel'],['Range','0.4 to 1.1 µm'],['Precision','15.5 ppm in 6 h for 6 ≤ V ≤ 9 (measured in flight)']] },
+      { title:'Orbit and operations', rows:[['Orbit','Sun-synchronous dawn–dusk · 700 km · 98.7 min'],['Pointing','within a 60° cone around the anti-Sun direction'],['Operations','control at INTA (Torrejón, Spain); science centre at the University of Geneva'],['Mission','extended to the end of 2029']] }
+    ],
+    parts:{
+      tele:{ name:'Telescope', desc:"A 32 cm Ritchey-Chrétien, lying inside the platform, with a long baffle that stops stray light from the Earth. In the model, its cover is open and folded to the side. The star's image is deliberately defocused over a radius of about 16 pixels.", facts:["320 mm primary","2,681 mm focal length, f/8.4","1024 × 1024 px CCD, at 233 K then 228 K","Defocused spot: 90% of the energy within a 16 px radius"] },
+      solar:{ name:'Solar arrays', desc:"Panels on three sides, which also act as a shield: CHEOPS keeps the Sun behind it and points within a 60° cone around the opposite direction.", facts:["≈ 2.5 m²","Just under 200 W on average"] },
+      bus:{ name:'Platform', desc:"The Airbus Defence and Space platform carries the electronics, pointing and propulsion. It holds the pointing to about 1″.", facts:["Pointing ≈ 1″ rms in commissioning","30 L hydrazine tank"] }
+    }
+  },
+  herschel:{
+    agency:'ESA, with NASA; instruments from European consortia', launch:'Launched 14 May 2009, Ariane 5, Kourou, with Planck',
+    sub:'Lagrange point L2, far infrared and submillimetre (2009–2013)', src:'Model: ESA, SCIFLEET',
+    cmp:{ tag:'7.5 m', dim:'7.5 m tall, 4 m wide' },
+    desc:"Herschel observed the far infrared and submillimetre range, from 55 to 672 µm: the light of the cold dust where stars are born, and of distant galaxies forming many of them. With its 3.5 m silicon carbide mirror, it was the largest space infrared telescope ever built, until Webb. Its three instruments sat in the liquid helium of a cryostat; when it ran out, in April 2013, the mission ended.",
+    sourceNote:"ESA model (SCIFLEET), free to use under ESA's terms. It is scaled to the published height of 7.5 m; its mirror then measures 3.5 m, as it should. It has been re-segmented here into four assemblies from its geometry.",
+    refs:{ fs:'Herschel fact sheet', vs:'Herschel, vital stats', sf:'SCIFLEET, models of the science missions' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','7.5 m tall · 4 × 4 m cross-section'],['Mass','3.4 t at launch, including 335 kg of helium'],['Power','1,200 W, 506 W of it for the instruments'],['Launch','14 May 2009, Ariane 5 ECA, Kourou, with Planck']] },
+      { title:'Telescope and instruments', rows:[['Telescope','Cassegrain · 3.5 m primary in 12 silicon carbide segments · ≈ 85 K'],['Cryostat','2,367 L of superfluid helium'],['HIFI','heterodyne spectrometer · 157–212 and 240–625 µm · R ≈ 10⁶'],['PACS','photometer 60–210 µm · spectrometer 55–210 µm'],['SPIRE','photometer at 250, 350 and 500 µm · spectrometer 194–671 µm']] },
+      { title:'Orbit and end', rows:[['Orbit','around L2, ≈ 1.5 million km away · period ≈ 178 days'],['Operations','ESOC (Darmstadt); science centre at ESAC; NASA centre at IPAC (Caltech)'],['End','last observation on 29 April 2013, helium exhausted']] }
+    ],
+    parts:{
+      tele:{ name:'Telescope', desc:"A Cassegrain: the 3.5 m primary, made of 12 brazed silicon carbide segments, and a small secondary at the end of a tripod. It was not cooled by the helium: in the shade of the sunshield, it cooled by radiation to about 85 K.", facts:["3.5 m primary, 12 segments","315 kg telescope","≈ 85 K","f/8.7 system"] },
+      cryo:{ name:'Cryostat and instruments', desc:"A large tank of superfluid helium, below the telescope. On top, on a cooled optical bench, the cold parts of the three instruments: HIFI, PACS and SPIRE.", facts:["2,367 L of helium","Three instruments: HIFI, PACS, SPIRE"] },
+      shade:{ name:'Sunshield and solar arrays', desc:"A screen facing the Sun, which keeps the telescope and the cryostat in shade; its lower part carries the solar cells.", facts:["≈ 12 m² of arrays"] },
+      svm:{ name:'Service module', desc:"The octagonal lower module carries the warm electronics of the instruments, on four of its eight panels, as well as power, pointing and communications.", facts:["Warm electronics on 4 of the 8 panels","130 kbit/s of science data at most"] }
+    }
+  },
+  planck:{
+    agency:'ESA; HFI led by the IAS (Orsay, France), LFI by Italy', launch:'Launched 14 May 2009, Ariane 5, Kourou, with Herschel',
+    sub:'Lagrange point L2, cosmic microwave background (2009–2013)', src:'Model: ESA, SCIFLEET',
+    cmp:{ tag:'4.2 m', dim:'4.2 m tall, Ø 4.2 m' },
+    desc:"Planck mapped the whole sky in microwaves, in nine bands from 30 to 857 GHz, to measure the tiny temperature variations of the cosmic microwave background, the light emitted 380,000 years after the Big Bang. Its most sensitive detectors, the bolometers of the HFI instrument, designed under the lead of the Institut d'astrophysique spatiale in Orsay, were cooled to 0.1 K. Its maps pinned down the age, composition and geometry of the Universe.",
+    sourceNote:"ESA model (SCIFLEET), free to use under ESA's terms. It is scaled to the published height of 4.2 m. It has been re-segmented here into four assemblies from its geometry.",
+    refs:{ fs:'Planck fact sheet', vs:'Planck, vital stats', pla:'The Planck mission (Planck Legacy Archive)', p18:'Planck Collaboration 2020, Planck 2018 results. I. Overview, A&A 641, A1, table 4', cool:'Planck, cooling system', sf:'SCIFLEET, models of the science missions' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','4.2 m tall · Ø 4.2 m'],['Mass','≈ 1.9 t at launch'],['Solar arrays','13 m²'],['Launch','14 May 2009, Ariane 5 ECA, Kourou, with Herschel']] },
+      { title:'Telescope and instruments', rows:[['Telescope','1.9 × 1.5 m primary, 1.5 m projected aperture'],['LFI','22 radio receivers at 20 K · 30, 44 and 70 GHz'],['HFI','52 bolometers at 0.1 K · 100 to 857 GHz'],['Resolution','from 32′ at 30 GHz to 4.2′ at 857 GHz']] },
+      { title:'Orbit and end', rows:[['Orbit','around L2, mean amplitude ≈ 400,000 km'],['Scanning','one turn per minute; at least 95% of the sky in 15 months'],['End','HFI: survey completed on 14 January 2012; LFI: 3 October 2013; last command on 23 October 2013']] }
+    ],
+    parts:{
+      tele:{ name:'Telescope and focal plane', desc:"An off-axis telescope: an elliptical 1.9 × 1.5 m primary and a secondary, inside a black baffle that stops stray light. At the focus, the horns of the two instruments collect the radiation.", facts:["1.9 × 1.5 m primary","Telescope and focal plane: 205 kg"] },
+      vgroove:{ name:'V-grooves', desc:"Three reflective conical shields, 5° apart from one another, radiate heat to cold space: from 300 K at the service module, the temperature falls to about 45 K at the last shield. The telescope, above, stays at about 50 K.", facts:["Three shields, 5° opening between neighbours","≈ 45 K at the top","Telescope at about 50 K"] },
+      svm:{ name:'Service module', desc:"The octagonal module carries the electronics, the communications and the compressors of the cooling chain: a hydrogen cooler (20 K), a 4 K stage, then a dilution of helium-3 in helium-4 that brings the HFI bolometers to 0.1 K.", facts:["LFI at 20 K, HFI at 4 K then 0.1 K","Three active cooling stages"] },
+      solar:{ name:'Solar array', desc:"A disc facing the Sun, below the spacecraft: it provides power and keeps everything else in shade. Planck rotated about the axis of the disc, once a minute.", facts:["13 m²","One turn per minute"] }
+    }
+  },
+  cgro:{
+    agency:'NASA, with European partners for COMPTEL', launch:'Launched 5 April 1991, Space Shuttle Atlantis (STS-37)',
+    sub:'Low Earth orbit, gamma rays (1991–2000)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'21 m', dim:'9 m long, 21 m span' },
+    desc:"The second of NASA's Great Observatories, after Hubble, Compton covered the gamma-ray sky from 20 keV to 30 GeV with four complementary instruments. BATSE detected about 2,700 gamma-ray bursts, spread uniformly over the sky: they therefore came from very far away, beyond our Galaxy. EGRET found that the active galactic nuclei whose jet points at us, the blazars, shine in gamma rays. After a gyroscope failed, NASA brought it down into the atmosphere in June 2000, over the Pacific.",
+    sourceNote:"NASA model (NASA 3D Resources repository). It is not in metres: it is scaled to the published span of the arrays, 21.3 m; its proportions are approximate. It has been re-segmented here into seven assemblies from its materials, whose names identify the instruments.",
+    refs:{ msl:'Mission and Spacecraft Library, GRO', ins:'CGRO, mission overview (instrument characteristics)', epo:'The Compton Gamma Ray Observatory instruments', wiki:'Compton Gamma Ray Observatory (Wikipedia)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','4.6 × 9.1 m · arrays spanning 21.3 m'],['Mass','≈ 16 t: 15.6 t, 16.3 t or 17 t depending on the source'],['Power','4,500 W at beginning of life'],['Launch','5 April 1991, Space Shuttle Atlantis (STS-37); released on 7 April']] },
+      { title:'Instruments', rows:[['BATSE','8 modules at the corners · 20 keV to 1 MeV · whole sky'],['OSSE','4 steerable detectors · 0.05 to 10 MeV · 3.8° × 11.4° field'],['COMPTEL','Compton telescope · 0.8 to 30 MeV · ≈ 1 sr'],['EGRET','spark chamber · 30 MeV to 10 GeV · ≈ 0.6 sr']] },
+      { title:'Orbit and end', rows:[['Orbit','≈ 450 km, circular · 28.5° inclination'],['Reboosts','1993 and 1997, with its own engines'],['End','gyroscope failure in December 1999; controlled re-entry on 4 June 2000, over the Pacific']] }
+    ],
+    parts:{
+      batse:{ name:'Burst detectors (BATSE)', desc:"Eight modules, one at each corner of the spacecraft, facing different directions. Each combines a large detector and a spectroscopy detector; by comparing their signals, BATSE locates a burst to within a few degrees, over the whole sky not hidden by the Earth.", facts:["20 keV to 1 MeV","Whole sky not hidden by the Earth","≈ 3° for a strong burst","≈ 2,700 bursts detected"] },
+      osse:{ name:'OSSE spectrometer', desc:"Four large scintillators, each in a collimator and mounted on a pivot, which point at a small region of the sky. OSSE made the most complete survey of the Galactic Centre region.", facts:["0.05 to 10 MeV","3.8° × 11.4° field","2,013 cm² at 0.2 MeV"] },
+      comptel:{ name:'Compton telescope (COMPTEL)', desc:"Two stages of detectors, one above the other: the gamma-ray photon bounces off an electron in the first (Compton effect) and stops in the second. The two measurements give a circle of possible directions on the sky. COMPTEL mapped radioactive aluminium-26 in the Galaxy.", facts:["0.8 to 30 MeV","≈ 1 sr field","Sky map of aluminium-26"] },
+      egret:{ name:'EGRET telescope', desc:"A spark chamber: the gamma-ray photon turns into an electron–positron pair there, whose tracks reveal the direction. A calorimeter below measures the energy. Fermi's LAT uses the same principle.", facts:["30 MeV to 10 GeV","1,200 cm² at 100 MeV","271 sources in its first survey"] },
+      bus:{ name:'Spacecraft bus', desc:"The elongated structure that carries the four instruments, power, pointing and propulsion.", facts:["9.1 m long","Designed for 2.25 years, with 8 years of propellant"] },
+      solar:{ name:'Solar arrays', desc:"Two wings, on either side of the bus.", facts:["21.3 m span","4,500 W at beginning of life"] },
+      hga:{ name:'High-gain antenna', desc:"At the end of a long boom, below the bus, the antenna that sent down the data.", facts:[] }
+    }
+  },
+  wmap:{
+    agency:'NASA (Goddard), with Princeton University', launch:'Launched 30 June 2001, Delta II, Cape Canaveral',
+    sub:'Lagrange point L2, cosmic microwave background (2001–2010)', src:'Model: NASA 3D Resources (public domain)',
+    cmp:{ tag:'5.1 m', dim:'3.6 m tall, Ø 5.1 m' },
+    desc:"WMAP mapped the whole sky in five microwave bands, from 23 to 94 GHz, to measure the temperature variations of the cosmic microwave background, of the order of a millionth of a degree. Its two telescopes, back to back, looked at two widely separated points of the sky at the same time and measured only their difference. In nine years, it pinned the age of the Universe at 13.77 billion years and its composition: about 5% ordinary matter, 25% dark matter and 70% dark energy.",
+    sourceNote:"NASA model (NASA 3D Resources repository), lightened here. It is not in metres: it is scaled to the published height of 3.6 m, and its sunshield then measures ≈ 4.8 m against a published 5.1 m. It has been re-segmented into five assemblies from its materials.",
+    refs:{ nasa:'WMAP overview', wiki:'Wilkinson Microwave Anisotropy Probe (Wikipedia)', lambda:'WMAP, Data Release 5 (nine years)' },
+    sections:[
+      { title:'Spacecraft', rows:[['Dimensions','3.6 m tall · Ø 5.1 m'],['Mass','840 kg at launch · ≈ 830 kg according to NASA'],['Power','419 W'],['Launch','30 June 2001, Delta II 7425, Cape Canaveral']] },
+      { title:'Instrument', rows:[['Telescopes','two back-to-back Gregorians · 1.4 × 1.6 m primaries'],['Receivers','20 horns, 10 on each side, and as many differential radiometers'],['Bands','K 23 · Ka 33 · Q 41 · V 61 · W 94 GHz'],['Resolution','from 52.8′ (K) to 13.2′ (W)']] },
+      { title:'Orbit and end', rows:[['Orbit','around L2, reached on 1 October 2001'],['End','data until 19 August 2010; switched off on 20 October 2010, on an orbit around the Sun'],['Mission','planned for 27 months, flown for 9 years']] }
+    ],
+    parts:{
+      optics:{ name:'Telescopes', desc:"Two Gregorian telescopes back to back: each has a large 1.4 × 1.6 m primary mirror and a secondary, which send the radiation to the horns in the centre. They see two sky directions at once; only the difference between them is measured, which cancels most instrumental effects.", facts:["1.4 × 1.6 m primaries","Two back-to-back Gregorian telescopes"] },
+      fpa:{ name:'Horns and radiometers', desc:"Between the two telescopes, the 20 horns, 10 per side, guide the radiation to the radiometers. Their number grows with frequency: 2 in K band, 8 in W band, the sharpest.", facts:["20 horns","W band: 8 radiometers, 13.2′"] },
+      rad:{ name:'Passive radiators and structure', desc:"The large white panels radiate the instrument's heat to space, with no cryogenic liquid at all, and the tubular structure links the instrument to the service module.", facts:[] },
+      bus:{ name:'Service module', desc:"The hexagonal module carries the electronics, reaction wheels, propulsion and communications.", facts:["419 W"] },
+      solar:{ name:'Sunshield and arrays', desc:"The large disc facing the Sun carries the solar arrays and keeps the instrument in shade. WMAP spun while keeping the shield towards the Sun, to sweep the sky.", facts:["Ø 5.1 m"] }
+    }
+  },
   kepler:{
     agency:'NASA (Ames, JPL), built by Ball Aerospace', launch:'Launched 7 March 2009, Delta II, Cape Canaveral',
     sub:'Orbit around the Sun, trailing the Earth, exoplanet search (2009–2018)', src:'Model: NASA 3D Resources (public domain)',

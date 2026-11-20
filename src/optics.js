@@ -146,6 +146,100 @@ var Optics = (function(){
       s += T(x0 - 12, H - 8, 'Une des 16 tours, en coupe ; schéma de principe', null);
       return svg(W, H, s, 'Principe du LAT de Fermi : une tour en coupe');
     },
+    /* Swift, BAT : masque codé en coupe (description de BAT, NASA Goddard) : masque 1 m au-dessus du plan de détecteurs de 1,2 m.
+       Largeur du masque indicative (2,7 m², coins coupés) ; 24 cases dessinées au lieu de ≈ 54 000 tuiles de 5 mm. Deux sources :
+       l'une à la verticale, l'autre à 25°, dont l'ombre est décalée de tan 25° × 1 m ≈ 0,47 m. */
+    swift: function(){
+      var W = 600, H = 330, k = 180, cx = 300, ym = 92, yd = ym + k, s = '', pat = '101100101110010011010110', n = pat.length, mw = 2.4, cw = mw/n;
+      function X(m){ return cx + m*k; }
+      var mask = '';
+      for (var i=0;i<n;i++) if (pat[i] === '0') mask += '<rect x="'+f(X(-mw/2 + i*cw))+'" y="'+(ym-4)+'" width="'+f(cw*k)+'" height="8" fill="'+INK+'"/>';
+      mask += L(X(-mw/2), ym, X(mw/2), ym, SOFT, 1);
+      s += G('bat', mask + '<rect x="'+f(X(-0.6))+'" y="'+yd+'" width="'+f(1.2*k)+'" height="10" fill="'+DET+'"/>');
+      [[0, RAY, 'source A, à la verticale'], [Math.tan(25*Math.PI/180), '#7A4FB5', 'source B, à 25°']].forEach(function(src, sI){
+        var sh = src[0], c = src[1], lay = '';
+        for (var i=0;i<n;i++){
+          if (pat[i] !== '1') continue;
+          var a = -mw/2 + i*cw, b = a + cw, a2 = Math.max(a - sh, -0.6), b2 = Math.min(b - sh, 0.6);
+          if (b2 <= a2) continue;
+          if (i % 3 === sI) s += P([[X(a + cw/2 + sh*0.45), ym - 0.45*k], [X(a + cw/2), ym], [X(a + cw/2 - sh), yd]], c, 1, '3 3');
+          lay += '<rect x="'+f(X(a2))+'" y="'+(yd + 14 + sI*10)+'" width="'+f((b2 - a2)*k)+'" height="7" fill="'+c+'"/>';
+        }
+        s += lay;
+        s += T(sI ? X(0.62) : X(-0.62), ym - 0.45*k + 4, src[2], sI ? null : 'end', true);
+      });
+      s += T(X(mw/2) + 6, ym + 4, 'masque', null, true) + T(X(mw/2) + 6, ym + 18, 'tuiles de plomb', null);
+      s += T(X(0.6) + 8, yd + 9, 'détecteurs CZT', null, true);
+      s += T(X(0.6) + 8, yd + 21, 'ombre de A', null) + T(X(0.6) + 8, yd + 31, 'ombre de B', null);
+      s += L(X(-mw/2) - 16, ym, X(-mw/2) - 16, yd, MID, 1) + T(X(-mw/2) - 20, (ym + yd)/2 + 4, '1 m', 'end');
+      s += dim(X(-0.6), X(0.6), H - 12, 'plan de détecteurs : 1,2 m');
+      return svg(W, H, s, 'Principe du masque codé de BAT, sur Swift');
+    },
+    /* INTEGRAL, IBIS : coupe de principe (ISDC) : masque codé, puis deux plans de détecteurs, ISGRI (CdTe, basses énergies) au-dessus de PICsIT (CsI).
+       Un photon de basse énergie s'arrête dans ISGRI ; un photon plus énergétique peut diffuser dans ISGRI et s'arrêter dans PICsIT (mode Compton). Pas à l'échelle. */
+    integral: function(){
+      var W = 560, H = 330, x0 = 90, x1 = 330, ym = 70, yi = 230, yp = 262, s = '', pat = '1011001011100100', n = pat.length, cw = (x1 - x0)/n, mask = '';
+      for (var i=0;i<n;i++) if (pat[i] === '0') mask += '<rect x="'+f(x0 + i*cw)+'" y="'+(ym-4)+'" width="'+f(cw)+'" height="8" fill="'+INK+'"/>';
+      s += G('ibis', mask + L(x0, ym, x1, ym, SOFT, 1) + '<rect x="'+x0+'" y="'+yi+'" width="'+(x1-x0)+'" height="10" fill="'+DET+'"/>' + '<rect x="'+x0+'" y="'+yp+'" width="'+(x1-x0)+'" height="18" fill="#C9A100" fill-opacity="0.8"/>');
+      s += P([[x0 + 2.5*cw, 14], [x0 + 2.5*cw, yi + 5]], RAY, 1.4) + '<circle cx="'+f(x0 + 2.5*cw)+'" cy="'+(yi + 5)+'" r="3" fill="'+INK+'"/>';
+      var xc = x0 + 8.5*cw; s += P([[xc - 30, 14], [xc, yi + 5], [xc + 34, yp + 9]], '#7A4FB5', 1.4) + '<circle cx="'+f(xc)+'" cy="'+(yi + 5)+'" r="3" fill="'+INK+'"/><circle cx="'+f(xc + 34)+'" cy="'+(yp + 9)+'" r="3" fill="'+INK+'"/>';
+      s += T(x0 + 2.5*cw + 6, 24, 'photon de basse énergie', null) + T(xc - 26, 24, 'photon de haute énergie', 'end');
+      s += T(x1 + 12, ym + 4, 'masque codé', null, true) + T(x1 + 12, yi + 9, 'ISGRI : 16 384 CdTe', null, true) + T(x1 + 12, yp + 13, 'PICsIT : 4 096 CsI', null, true);
+      s += T(xc + 40, yp - 4, 'diffusion Compton', null);
+      s += T(x0, H - 10, 'Coupe de principe d\'IBIS ; pas à l\'échelle', null);
+      return svg(W, H, s, 'Principe de l\'imageur IBIS d\'INTEGRAL');
+    },
+    /* CHEOPS : Ritchey-Chrétien dans l'axe (Benz et al. 2021) : primaire de 320 mm, focale effective 2 681 mm (f/8,4). La focale du primaire
+       et l'écart des miroirs ne sont pas publiés : géométrie de principe (primaire à f/1,25 supposé). Détecteur placé un peu en arrière du foyer :
+       l'image de l'étoile est défocalisée (90 % de l'énergie dans 16 px de rayon). */
+    cheops: function(){
+      return twoMirror({ z0:-0.62, z1:0.32, half:0.24, R:0.8, r1:0.16, hole:0.035, r2:0.03, d:0.329, rays:[0.15, 0.08], focus:[0.15, 0], dLabel:'écart de principe', k1:'tele', k2:'tele',
+        label:'Schéma optique de CHEOPS, de principe',
+        tube:[[-0.6,0.19],[-0.02,0.19]],
+        after:function(X, Y){
+          return G('tele', L(X(0.2), Y(0.03), X(0.2), Y(-0.03), DET, 4)) +
+            T(X(0.02)+6, Y(0.16)-4, 'primaire, 320 mm', null, true) + T(X(-0.329), Y(0.03)-10, 'secondaire', 'middle', true) +
+            T(X(0.2)+8, Y(0)+4, 'CCD, un peu', null, true) + T(X(0.2)+8, Y(0)+18, 'après le foyer :', null) + T(X(0.2)+8, Y(0)+31, 'image floue', null);
+        } });
+    },
+    /* Herschel : Cassegrain (Pilbratt et al. 2010 ; fiche ESA) : primaire de 3,5 m à f/0,5 (foyer à 1,75 m), secondaire de 0,3 m, système à f/8,7.
+       Écart des miroirs déduit (≈ 1,6 m) en plaçant le foyer à 1 m derrière le primaire : il redonne bien un secondaire de 0,3 m. Trou central indicatif. */
+    herschel: function(){
+      return twoMirror({ z0:-2.4, z1:1.6, half:1.95, R:3.5, r1:1.75, hole:0.15, r2:0.15, d:1.6, rays:[1.7, 0.9], focus:[1.0, 0], dLabel:'≈ 1,6 m (déduit)', k1:'tele', k2:'tele',
+        label:'Schéma optique de Herschel',
+        after:function(X, Y){
+          return G('cryo', '<rect x="'+f(X(0.15))+'" y="'+f(Y(0.9))+'" width="'+f(X(1.55)-X(0.15))+'" height="'+f(Y(-0.9)-Y(0.9))+'" fill="none" stroke="'+SOFT+'" stroke-dasharray="4 3"/>' + L(X(1.0), Y(0.08), X(1.0), Y(-0.08), DET, 4)) +
+            T(X(0.05)+8, Y(1.75)-4, 'primaire, 3,5 m', null, true) + T(X(-1.6), Y(0.15)-10, 'secondaire, 0,3 m', 'middle', true) +
+            T(X(1.0)+8, Y(0.6), 'cryostat :', null, true) + T(X(1.0)+8, Y(0.6)+14, 'HIFI, PACS, SPIRE', null);
+        } });
+    },
+    /* Planck et WMAP : télescopes grégoriens hors d'axe. Seules les tailles des primaires sont publiées dans nos sources : courbes et positions de principe. */
+    planck: function(){ return offGreg({ k:'tele', prim:'primaire, 1,9 × 1,5 m', feeds:'cornets de LFI et HFI', label:'Schéma de principe du télescope de Planck', extra:'vgroove' }); },
+    wmap: function(){
+      var W = 600, H = 300, s = '', cx = 300, cy = 170;
+      [1, -1].forEach(function(sg){
+        s += G('optics', '<path d="M'+(cx + sg*210)+' '+(cy - 110)+' Q'+(cx + sg*250)+' '+(cy - 10)+' '+(cx + sg*200)+' '+(cy + 70)+'" fill="none" stroke="'+INK+'" stroke-width="4"/>' +
+          '<path d="M'+(cx + sg*90)+' '+(cy - 120)+' Q'+(cx + sg*70)+' '+(cy - 90)+' '+(cx + sg*92)+' '+(cy - 60)+'" fill="none" stroke="'+INK+'" stroke-width="4"/>');
+        [-70, -20, 30].forEach(function(h, i){ var xa = cx + sg*(300), xp = cx + sg*(226 + i*4), yp = cy + h; s += P([[xa, yp], [xp, yp], [cx + sg*82, cy - 92], [cx + sg*18, cy + 10]], RAY, 1.1); });
+      });
+      s += G('fpa', '<rect x="'+(cx - 22)+'" y="'+(cy - 4)+'" width="44" height="40" fill="none" stroke="'+DET+'" stroke-width="2"/>');
+      s += T(cx + 214, cy - 118, 'primaire, 1,4 × 1,6 m', 'middle', true) + T(cx - 214, cy - 118, 'primaire', 'middle', true) + T(cx + 96, cy - 128, 'secondaire', null) + T(cx, cy + 56, 'cornets et radiomètres', 'middle', true);
+      s += T(cx + 296, cy - 76, 'ciel, côté A', 'end') + T(cx - 296, cy - 76, 'ciel, côté B', null);
+      s += T(12, H - 10, 'Deux grégoriens hors d\'axe, dos à dos ; schéma de principe', null);
+      return svg(W, H, s, 'Schéma de principe des télescopes de WMAP');
+    },
+    /* Compton, COMPTEL : deux étages de détecteurs ; le photon diffuse dans le premier et s'arrête dans le second (HEASARC). Pas à l'échelle. */
+    cgro: function(){
+      var W = 560, H = 320, x0 = 120, x1 = 330, y1 = 110, y2 = 240, s = '';
+      s += G('comptel', '<rect x="'+x0+'" y="'+y1+'" width="'+(x1-x0)+'" height="16" fill="'+DET+'" fill-opacity="0.7"/><rect x="'+x0+'" y="'+y2+'" width="'+(x1-x0)+'" height="22" fill="#C9A100" fill-opacity="0.85"/>');
+      var xa = 200, xb = 268; s += P([[xa - 40, 16], [xa, y1 + 8], [xb, y2 + 11]], RAY, 1.4) + '<circle cx="'+xa+'" cy="'+(y1 + 8)+'" r="3" fill="'+INK+'"/><circle cx="'+xb+'" cy="'+(y2 + 11)+'" r="3" fill="'+INK+'"/>';
+      s += '<ellipse cx="'+(xa - 40)+'" cy="18" rx="46" ry="8" fill="none" stroke="'+MID+'" stroke-dasharray="3 3"/>';
+      s += T(xa - 92, 14, 'photon gamma', 'end', true) + T(xa - 40 + 52, 22, 'cercle des directions possibles', null);
+      s += T(x1 + 12, y1 + 12, 'premier étage : le photon diffuse', null, true) + T(x1 + 12, y1 + 26, 'sur un électron (effet Compton)', null);
+      s += T(x1 + 12, y2 + 14, 'second étage : il s\'arrête', null, true) + T(x1 + 12, y2 + 28, 'et dépose le reste de son énergie', null);
+      s += T(12, H - 10, 'Principe de COMPTEL ; pas à l\'échelle', null);
+      return svg(W, H, s, 'Principe du télescope Compton COMPTEL');
+    },
     /* XMM-Newton : un des trois télescopes, en coupe (The Telescopes of XMM-Newton, ESA) : 58 coques Wolter I de 70 à 30,6 cm de diamètre,
        60 cm de long, focale 7,5 m. Échelle radiale dilatée ×4 pour voir les coques ; 8 coques sur 58 dessinées. Réseaux RGA et caméra RGS :
        position de principe. */
@@ -275,7 +369,7 @@ var Optics = (function(){
 
   /* correspondance entre les éléments optiques et les pièces cliquables de la maquette */
   var LINK3D = { hubble:[['aft','miroir primaire et instruments'],['ota','miroir secondaire']], jwst:[['primary','miroir primaire'],['secondary','miroir secondaire'],['aos','optique arrière'],['isim','module d\'instruments']],
-                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], tess:[['cams','caméras']], kepler:[['phot','photomètre']], xmm:[['mirrors','miroirs'],['tube','tube'],['fpa','plan focal']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
+                 euclid:[['baffle','télescope'],['instr','VIS et NISP']], gaia:[['torus','banc optique'],['focal','plan focal'],['tent','ouvertures de visée']], chandra:[['hrma','miroirs'],['oba','banc optique'],['isim','module des instruments']], fermi:[['lat','LAT']], swift:[['bat','BAT'],['xrt','XRT'],['uvot','UVOT']], integral:[['spi','SPI'],['ibis','IBIS'],['jemx','JEM-X']], cheops:[['tele','télescope']], herschel:[['tele','télescope'],['cryo','cryostat et instruments']], planck:[['tele','télescope et plan focal'],['vgroove','écrans en V']], wmap:[['optics','télescopes'],['fpa','cornets et radiomètres']], cgro:[['comptel','COMPTEL'],['egret','EGRET'],['osse','OSSE'],['batse','BATSE']], tess:[['cams','caméras']], kepler:[['phot','photomètre']], xmm:[['mirrors','miroirs'],['tube','tube'],['fpa','plan focal']], spitzer:[['tele','télescope'],['cta','chambre des instruments']], roman:[['ota','télescope'],['instr','WFI et coronographe']] };
   var TEXT = {
     hubble:{ title:'Un Ritchey-Chrétien à deux miroirs', scale:'Figure à l\'échelle : diamètres, écart entre les miroirs et position du foyer sont exacts. La silhouette du tube, en pointillé, est indicative.',
       steps:['La lumière entre par l\'avant du tube et parcourt presque toute sa longueur jusqu\'au miroir primaire, concave, de 2,4 m.',
@@ -325,6 +419,48 @@ var Optics = (function(){
              'Les plans de silicium enregistrent le passage de la paire, plan après plan. En remontant les deux traces, on retrouve la direction d\'arrivée du photon.',
              'La paire s\'arrête dans le calorimètre, des cristaux d\'iodure de césium, en une gerbe de particules dont la lumière donne l\'énergie du photon.'],
       specs:[['Principe','conversion de paires, sans optique'],['Tours','16, en carré de 4 × 4'],['Trajectographe','18 plans x–y de silicium par tour'],['Convertisseur','tungstène, dans les 16 premiers plans'],['Calorimètre','96 cristaux de CsI(Tl) par tour, 8,6 longueurs de radiation'],['Domaine','20 MeV à plus de 300 GeV'],['Champ','2,4 sr à 1 GeV']] },
+    swift:{ legend:' Les trajets de la source A sont tracés en orange, ceux de la source B en violet ; les tuiles de plomb en noir, les détecteurs en bleu.', title:'Pas de miroir : un masque codé', scale:'Coupe de principe de BAT. À l\'échelle : écart de 1 m entre le masque et les détecteurs, largeur du plan de détecteurs (1,2 m). La largeur du masque est indicative, et ses ≈ 54 000 tuiles de 5 mm sont figurées par 24 cases.',
+      steps:['Les rayons X durs traversent les miroirs sans se réfléchir. BAT n\'en a donc pas : un masque, fait de tuiles de plomb disposées au hasard, à moitié ouvert, est tendu 1 m au-dessus des détecteurs.',
+             'Une source projette sur les détecteurs l\'ombre du masque. Pour une source à la verticale, l\'ombre tombe juste dessous ; pour une source inclinée, elle est décalée, d\'environ 47 cm pour 25°.',
+             'Les 32 768 détecteurs de tellurure de cadmium-zinc comptent les photons. En cherchant quel décalage du motif du masque explique le mieux ce qu\'ils reçoivent, l\'ordinateur de bord retrouve la direction du sursaut, à quelques minutes d\'arc près.',
+             'Il commande alors au satellite de pivoter : en une minute environ, le XRT et l\'UVOT, deux télescopes classiques alignés entre eux, visent le sursaut et précisent sa position.'],
+      specs:[['Principe','masque codé, sans optique'],['Masque','≈ 54 000 tuiles de plomb de 5 × 5 × 1 mm, 2,7 m²'],['Écart masque–détecteurs','1 m'],['Détecteurs','32 768 CZT, 5 200 cm²'],['Champ','1,4 sr, 100° × 60°'],['XRT','Wolter I, focale de 3,5 m'],['UVOT','Ritchey-Chrétien de 30 cm, f/12,7']] },
+    integral:{ legend:' Le photon de basse énergie est tracé en orange, celui de haute énergie en violet ; le masque en noir, ISGRI en bleu, PICsIT en jaune.', title:'Des masques codés, sans miroir', scale:'Coupe de principe d\'IBIS ; ni les dimensions ni le nombre d\'éléments du masque ne sont à l\'échelle.',
+      steps:['À ces énergies, aucun miroir ne réfléchit la lumière. SPI, IBIS et les deux JEM-X ont chacun un masque codé, posé au-dessus de leurs détecteurs.',
+             'Chaque source projette l\'ombre du masque, décalée selon sa direction ; en comparant les ombres enregistrées au motif du masque, le logiciel reconstruit l\'image du ciel.',
+             'Dans IBIS, un photon de basse énergie s\'arrête dans le premier plan, ISGRI ; un photon plus énergétique peut y diffuser puis s\'arrêter dans le second, PICsIT.',
+             'Les quatre instruments visent la même direction : la caméra OMC suit en même temps la lumière visible.'],
+      specs:[['Principe','masques codés'],['SPI','20 keV à 8 MeV · champ de 16° · 2,5°'],['IBIS','15 keV à 10 MeV · champ de 9° · 12′'],['JEM-X','3 à 35 keV · champ de 4,8° · 3′'],['OMC','filtre V · champ de 5° × 5°']] },
+    cheops:{ title:'Un Ritchey-Chrétien qui fait exprès d\'être flou', scale:'Schéma de principe : seuls le diamètre du primaire et la focale résultante sont publiés (Benz et al. 2021). L\'écart entre les miroirs et la courbure du primaire sont supposés.',
+      steps:['La lumière de l\'étoile entre par le baffle, long, qui arrête la lumière diffusée par la Terre.',
+             'Le primaire de 320 mm la renvoie vers le secondaire, qui la fait converger à travers le trou du primaire.',
+             'Le CCD est placé un peu à l\'écart du foyer : l\'image de l\'étoile est une tache floue d\'environ 16 pixels de rayon.',
+             'Étalée sur des centaines de pixels, la mesure ne dépend presque plus des défauts d\'un pixel ou des petits tremblements du pointage : c\'est ce qui permet d\'atteindre quelques millionièmes de précision.'],
+      specs:[['Combinaison','Ritchey-Chrétien dans l\'axe'],['Primaire','320 mm'],['Focale résultante','2 681 mm · f/8,4'],['Échelle','1″ par pixel de 13 µm'],['Champ','0,32°'],['Tache défocalisée','90 % de l\'énergie dans 16 px de rayon']] },
+    herschel:{ title:'Un Cassegrain de 3,5 m, très ouvert', scale:'Diamètres du primaire (3,5 m) et du secondaire (0,3 m), rapport f/0,5 du primaire et f/8,7 du système : publiés (Pilbratt et al. 2010, fiche de l\'ESA). L\'écart des miroirs (≈ 1,6 m) et la position du foyer sont déduits ; le trou central et le cryostat, en pointillé, sont indicatifs.',
+      steps:['Le rayonnement infrarouge lointain est réfléchi par le primaire de 3,5 m, très creux (f/0,5) : son foyer n\'est qu\'à 1,75 m.',
+             'Le secondaire de 0,3 m, tenu par un trépied, le renvoie à travers le trou du primaire vers le haut du cryostat.',
+             'Là, sur un banc optique refroidi par l\'hélium, des miroirs répartissent le champ entre HIFI, PACS et SPIRE.',
+             'Le télescope, lui, n\'est pas dans le cryostat : à l\'ombre du pare-soleil, il se refroidit vers 85 K en rayonnant vers l\'espace.'],
+      specs:[['Combinaison','Cassegrain'],['Primaire','3,5 m, 12 segments de carbure de silicium · f/0,5'],['Secondaire','0,3 m'],['Système','f/8,7 · focale ≈ 28,5 m (déduite)'],['Température','≈ 85 K'],['Domaine','55 à 672 µm']] },
+    planck:{ title:'Un grégorien hors d\'axe, sans obstruction', scale:'Schéma de principe : la taille du primaire est publiée (1,9 × 1,5 m, fiche de l\'ESA), ni ses courbures ni les positions des miroirs.',
+      steps:['Le rayonnement micro-onde est réfléchi par le primaire elliptique, puis par le secondaire, tous deux décalés de l\'axe : rien ne fait obstacle au faisceau.',
+             'Il converge vers le plan focal, où des cornets le guident vers les détecteurs : 22 récepteurs radio de LFI, 52 bolomètres de HFI.',
+             'Le télescope reste vers 50 K grâce aux trois écrans en V qui le séparent du module de service, à 300 K.',
+             'Planck tourne d\'un tour par minute : chaque détecteur décrit un grand cercle sur le ciel, et l\'axe avance pas à pas pour couvrir peu à peu tout le ciel.'],
+      specs:[['Combinaison','grégorien hors d\'axe'],['Primaire','1,9 × 1,5 m · ouverture projetée 1,5 m'],['Télescope','≈ 50 K'],['LFI','30, 44, 70 GHz · 20 K'],['HFI','100 à 857 GHz · 0,1 K'],['Résolution','32′ à 4,2′']] },
+    wmap:{ title:'Deux télescopes dos à dos', scale:'Schéma de principe : la taille des primaires est publiée (1,4 × 1,6 m), ni leurs courbures ni les positions des miroirs.',
+      steps:['Deux télescopes grégoriens hors d\'axe regardent dans deux directions opposées.',
+             'Chaque primaire de 1,4 × 1,6 m renvoie le rayonnement vers un secondaire, puis vers les cornets au centre de l\'instrument.',
+             'Chaque radiomètre reçoit les deux faisceaux et ne mesure que leur différence de température : les dérives de l\'instrument s\'annulent.',
+             'WMAP tourne sur lui-même en gardant le Soleil derrière son écran : les deux faisceaux balaient le ciel, et les différences se recoupent pour former une carte.'],
+      specs:[['Combinaison','deux grégoriens hors d\'axe, dos à dos'],['Primaires','1,4 × 1,6 m'],['Cornets','20, 10 par télescope'],['Bandes','23 à 94 GHz'],['Résolution','52,8′ à 13,2′']] },
+    cgro:{ legend:' Le photon gamma est tracé en orange ; le premier étage en bleu, le second en jaune.', title:'Pas de miroir : quatre façons de piéger les gamma', scale:'Schéma de principe de COMPTEL, pas à l\'échelle.',
+      steps:['BATSE compte les photons dans huit scintillateurs tournés dans des directions différentes : leurs taux comparés donnent la direction d\'un sursaut.',
+             'OSSE vise une petite région du ciel à travers des collimateurs, qui limitent le champ à 3,8° × 11,4°.',
+             'COMPTEL suit un photon qui diffuse sur un électron dans un premier étage puis s\'arrête dans un second : les énergies et positions mesurées donnent un cercle de directions possibles sur le ciel ; plusieurs cercles se croisent sur la source.',
+             'EGRET, comme le LAT de Fermi, transforme le photon en paire électron–positon dans une chambre à étincelles : les traces donnent la direction, un calorimètre l\'énergie.'],
+      specs:[['BATSE','20 keV à 1 MeV · tout le ciel'],['OSSE','0,05 à 10 MeV · 3,8° × 11,4°'],['COMPTEL','0,8 à 30 MeV · ≈ 1 sr'],['EGRET','30 MeV à 10 GeV · ≈ 0,6 sr']] },
     spitzer:{ title:'Un Ritchey-Chrétien en béryllium, refroidi à l\'hélium', scale:'Figure à l\'échelle, d\'après la prescription du Spitzer Telescope Handbook (tableau 3.3) : courbure et diamètre du primaire, trou central, diamètre et position du secondaire, position du foyer. La chambre des instruments, en pointillé, est indicative.',
       steps:['La lumière infrarouge descend dans le tube jusqu\'au miroir primaire, concave, de 85 cm, très ouvert (f/1,2).',
              'Le primaire la renvoie vers le secondaire, convexe, de 12 cm, placé 89 cm plus haut ; un mécanisme peut le déplacer pour la mise au point.',
@@ -353,6 +489,17 @@ var Optics = (function(){
     list.forEach(function(p){ x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); });
     return { cells:list.map(function(p){ return { x:p[0]-x0, y:y1-p[1], w:w, h:h, c:color }; }), w:x1-x0+w, h:y1-y0+h, lab:lab };
   }
+  /* télescope grégorien hors d'axe, de principe (Planck) : primaire concave en bas à gauche, secondaire elliptique, foyer en bas */
+  function offGreg(o){
+    var W = 560, H = 320, s = '';
+    s += G(o.k, '<path d="M60 250 Q150 300 250 240" fill="none" stroke="'+INK+'" stroke-width="4"/><path d="M330 70 Q370 110 350 160" fill="none" stroke="'+INK+'" stroke-width="4"/>');
+    [[90, 262], [150, 272], [215, 255]].forEach(function(p, i){ s += P([[p[0], 20], [p[0], p[1]], [344 - i*2, 96 + i*26], [200, 170]], RAY, 1.1); });
+    s += G(o.k, '<rect x="186" y="164" width="40" height="24" fill="none" stroke="'+DET+'" stroke-width="2"/>');
+    if (o.extra) s += G(o.extra, L(40, 300, 520, 300, SOFT, 3) + T(520, 294, 'écrans en V', 'end'));
+    s += T(150, 296, o.prim, 'middle', true) + T(360, 64, 'secondaire', null, true) + T(232, 182, o.feeds, null, true) + T(70, 16, 'ciel', null);
+    s += T(12, H - 4, 'Grégorien hors d\'axe ; schéma de principe', null);
+    return svg(W, H, s, o.label);
+  }
   /* WFI : centres des 18 détecteurs dans le plan focal, en mm (GalSim, sca_positions_20210204.txt, d'après le projet Roman) */
   var WFI_MM = [[-22.14,12.15],[-22.29,-37.03],[-22.44,-82.06],[-66.42,20.90],[-66.92,-28.28],[-67.42,-73.06],[-110.70,42.20],[-111.48,-6.98],[-112.64,-51.06],
                 [22.14,12.15],[22.29,-37.03],[22.44,-82.06],[66.42,20.90],[66.92,-28.28],[67.42,-73.06],[110.70,42.20],[111.48,-6.98],[112.64,-51.06]];
@@ -379,6 +526,21 @@ var Optics = (function(){
     /* Fermi : le LAT vu de dessus, 16 tours de 4 × 4 détecteurs au silicium de 8,95 cm (Atwood et al. 2009) ; un détecteur NaI du GBM (Ø 12,7 cm) */
     fermi:{ groups:[ grid(4,4,358,358,16,16,'#4C3A99',['LAT, vu de dessus','16 tours, chacune de 4 × 4 détecteurs au silicium de 8,95 cm']), grid(1,1,127,127,0,0,'#C9A100',['GBM, un détecteur NaI','Ø 12,7 cm (dessiné carré)']) ],
              note:'Le LAT n\'a pas de plan focal : chaque tour suit la trace des particules. Taille des plans de silicium à l\'échelle (4 × 8,95 cm de côté) ; espaces entre tours indicatifs. Le GBM compte douze détecteurs NaI et deux BGO répartis autour du satellite.' },
+    /* Swift : plan de détecteurs de BAT, 1,2 × 0,6 m (32 768 CZT) ; CCD du XRT, 600 × 600 px de 40 µm (24 mm) ; descriptions des instruments, NASA Goddard */
+    swift:{ groups:[ grid(1,1,1200,600,0,0,'#E39B17',['BAT','plan de 32 768 détecteurs CZT, 1,2 × 0,6 m']), grid(1,1,24,24,0,0,'#C2571A',['XRT','CCD de 600 × 600 px, 40 µm']) ],
+             note:'BAT n\'a pas de plan focal : son plan de détecteurs reçoit l\'ombre du masque codé. À la même échelle, le CCD du XRT n\'est qu\'un point : 24 mm de côté. Le détecteur de l\'UVOT, à intensificateur, n\'est pas dessiné.' },
+    /* INTEGRAL (ISDC) : surfaces des plans de détecteurs d'IBIS, dessinés carrés de même surface (ISGRI 2 600 cm², PICsIT 3 100 cm²) ; SPI 500 cm² */
+    integral:{ groups:[ grid(1,1,510,510,0,0,'#245C9E',['IBIS / ISGRI','16 384 CdTe, 2 600 cm²']), grid(1,1,557,557,0,0,'#7FB3E0',['IBIS / PICsIT','4 096 CsI, 3 100 cm²']), grid(1,1,224,224,0,0,'#C9A100',['SPI','19 détecteurs au germanium, 500 cm²']) ],
+             note:'Plans de détecteurs dessinés comme des carrés de même surface (caractéristiques de l\'ISDC) : leur forme réelle n\'est pas représentée. Les deux plans d\'IBIS sont superposés dans l\'instrument, ISGRI au-dessus de PICsIT.' },
+    /* CHEOPS (Benz et al. 2021) : un CCD de 1024 × 1024 px de 13 µm, soit 13,3 mm */
+    cheops:{ groups:[ grid(1,1,13.3,13.3,0,0,'#3BA7C4',['CHEOPS','CCD de 1024 × 1024 px, 13 µm']) ],
+             note:'Un seul CCD de 13,3 mm de côté. Seules de petites fenêtres autour de l\'étoile visée, de 200 px de diamètre, sont lues et transmises.' },
+    /* Herschel : champs projetés au foyer ; focale ≈ 28,5 m déduite de f/8,7 et de l'ouverture effective de 3,28 m (Pilbratt et al. 2010), soit 1′ ≈ 8,3 mm */
+    herschel:{ groups:[ grid(1,1,33.2,66.4,0,0,'#7D2A47',['SPIRE, photomètre','champ de 4′ × 8′']), grid(1,1,6.5,6.5,0,0,'#D06A86',['PACS, spectromètre','champ de 47″ × 47″']) ],
+             note:'Champs projetés sur le foyer du télescope, d\'après la focale déduite de f/8,7 (≈ 28,5 m, soit 1′ ≈ 8,3 mm). Les matrices de bolomètres réelles sont plus petites, derrière leurs propres optiques ; HIFI n\'a qu\'un pixel sur le ciel.' },
+    planck:{ groups:[], note:'Pas de mosaïque de détecteurs : le plan focal de Planck porte des cornets, chacun relié à un détecteur, 22 récepteurs pour LFI et 52 bolomètres pour HFI (fiche de l\'ESA). Leur disposition n\'est pas représentée.' },
+    wmap:{ groups:[], note:'Pas de mosaïque de détecteurs : 20 cornets, 10 derrière chaque télescope, relient le rayonnement à autant de radiomètres. Leur disposition n\'est pas représentée.' },
+    cgro:{ groups:[], note:'Aucun des quatre instruments n\'a de plan focal : BATSE, OSSE, COMPTEL et EGRET détectent les photons gamma directement, sans optique. Leurs tailles de détecteurs ne sont pas représentées ici.' },
     /* Spitzer : champs des instruments projetés sur le foyer du télescope (focale 10,2 m : 1′ ≈ 2,967 mm), Spitzer Telescope Handbook */
     spitzer:{ groups:[ grid(2,1,15.46,15.46,1.5,0,'#2F6FDB',['IRAC','deux champs de 5,2′, quatre matrices de 256 × 256 px']), grid(1,1,16.0,16.0,0,0,'#9A52D6',['MIPS 24 µm','5,4′, 128 × 128 px']),
                        grid(1,1,15.4,7.7,0,0,'#C77DDB',['MIPS 70 µm','5,2′ × 2,6′, 32 × 32 px']), grid(1,1,1.57,15.8,0,0,'#6B3FA0',['MIPS 160 µm','0,53′ × 5,33′']), grid(1,1,0.52,8.3,0,0,'#0F987A',['IRS, fente LL','10,6″ × 168″']) ],
@@ -394,6 +556,7 @@ var Optics = (function(){
   };
   function focal(tid){
     var d = FP[tid], W = 560, gap = 34, tw = 0, th = 0;
+    if (!d.groups.length) return '<div class="cap">'+d.note+'</div>';   /* pas de plan focal à dessiner (radiomètres, détecteurs sans image) */
     d.groups.forEach(function(g){ tw += g.w; th = Math.max(th, g.h); }); tw += gap*(d.groups.length-1);
     var k = Math.min((W-24)/tw, 2.6), H = Math.round(th*k + 78), x = (W - tw*k)/2, s = '';
     d.groups.forEach(function(g){

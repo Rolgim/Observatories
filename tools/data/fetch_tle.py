@@ -3,7 +3,7 @@ Hubble (NORAD 20580) et Fermi (NORAD 33053). Le site les propage lui-même (SGP4
 Lancé chaque jour par le workflow « Données réelles » : un TLE vieillit de quelques kilomètres par jour.
 Écrit data/<observatoire>-tle.json ; un satellite qui échoue garde son fichier précédent."""
 import datetime, json, os, sys, requests
-SATS = {"hubble": 20580, "fermi": 33053}
+SATS = {"hubble": 20580, "fermi": 33053, "cheops": 44874}
 failed = []
 for key, norad in SATS.items():
     url = f"https://celestrak.org/NORAD/elements/gp.php?CATNR={norad}&FORMAT=TLE"

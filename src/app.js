@@ -88,7 +88,7 @@ function orbitSvg(t){
     '<text x="290" y="59" text-anchor="end" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + ' à L2</text>' +
     '<text x="290" y="75" text-anchor="end" fill="#3A4147" font-size="11" ' + F + '>1,5 million de km</text>' +
     '<text x="170" y="116" text-anchor="middle" fill="#667077" font-size="11" ' + F + '>' +
-      (gone ? 'Position occupée de 2014 à 2025. Terre, Lune et L2 à l\'échelle.' : 'Terre, Lune et L2 à l\'échelle. Toujours à l\'opposé du Soleil.') + '</text></svg>';
+      (gone ? 'Position occupée de ' + ((/\((\d{4})–(\d{4})\)/.exec(t.sub) || [0, '?', '?']).slice(1).join(' à ')) + '. Terre, Lune et L2 à l\'échelle.' : 'Terre, Lune et L2 à l\'échelle. Toujours à l\'opposé du Soleil.') + '</text></svg>';
 }
 
 function lines(v){ return esc(v).split(' · ').join('<br>'); }

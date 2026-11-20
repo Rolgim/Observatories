@@ -44,7 +44,8 @@ async function segment(src, dst, classify){
     const cls = new Map(); for (const [r, c] of p.comp) cls.set(r, classify(c, p.node, p.mat ? p.mat.getName() : ''));
     for (let t = 0; t < p.T; t += 3) {
       const tri = [p.ia?p.ia[t]:t, p.ia?p.ia[t+1]:t+1, p.ia?p.ia[t+2]:t+2];
-      const k = cls.get(p.find(tri[0])); const key = k + '|' + (p.mat ? p.mat.getName() : '');
+      const k = cls.get(p.find(tri[0])); if (k === null) continue;   /* classe nulle : îlot écarté (faces cachées en double, par exemple) */
+      const key = k + '|' + (p.mat ? p.mat.getName() : '');
       let bk = buckets.get(key); if (!bk) { bk = { cls:k, mat:p.mat, pos:[], nor:[], uv:[], idx:[], local:new Map() }; buckets.set(key, bk); }
       for (const vi of tri) { const lk = prims.indexOf(p) + ':' + vi; let li = bk.local.get(lk);
         if (li === undefined) { li = bk.pos.length/3; bk.local.set(lk, li); bk.pos.push(...p.W[vi]); bk.nor.push(...p.Nn[vi]); bk.uv.push(...p.U[vi]); }

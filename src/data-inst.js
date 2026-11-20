@@ -829,6 +829,411 @@ var INST_DATA = (function(){
         docs:[ {l:"Meegan et al. 2009",u:"https://arxiv.org/abs/0908.0450"}, {l:"Instrument GBM",u:"https://fermi.gsfc.nasa.gov/science/instruments/gbm.html"} ] }
     ]
   },
+  swift: {
+    checked:'2026-11-20',
+    refs:{
+      g04:{ t:"Gehrels et al. 2004, The Swift Gamma-Ray Burst Mission, ApJ 611, 1005", p:"arXiv", u:"https://arxiv.org/abs/astro-ph/0405233" },
+      bar:{ t:"Barthelmy et al. 2005, The Burst Alert Telescope (BAT) on the Swift MIDEX mission, Space Sci. Rev. 120, 143", p:"arXiv", u:"https://arxiv.org/abs/astro-ph/0507410" },
+      bat:{ t:"BAT Instrument Description", p:"NASA Goddard, Swift", u:"https://swift.gsfc.nasa.gov/about_swift/bat_desc.html" },
+      xrt:{ t:"XRT Instrument Description", p:"NASA Goddard, Swift", u:"https://swift.gsfc.nasa.gov/about_swift/xrt_desc.html" },
+      uvot:{ t:"The Swift Technical Handbook, Overview of UVOT", p:"NASA Goddard, Swift", u:"https://swift.gsfc.nasa.gov/proposals/tech_appd/swiftta_v17/node39.html" },
+      poole:{ t:"Poole et al. 2008, Photometric calibration of the Swift ultraviolet/optical telescope, MNRAS 383, 627", p:"arXiv", u:"https://arxiv.org/abs/0708.2259" },
+      end:{ t:"NASA's Swift Mission Ends (23 octobre 2026)", p:"NASA Science", u:"https://science.nasa.gov/missions/swift/nasas-swift-mission-ends/" }
+    },
+    axis: { min:3e-6, max:1.0 },
+    summary: "Trois télescopes qui travaillent à la chaîne. BAT, à grand champ, détecte le sursaut gamma et le localise à quelques minutes d'arc ; le satellite pivote ; le XRT, en rayons X, et l'UVOT, en ultraviolet et visible, précisent la position et suivent la lueur rémanente. Les positions partent vers le sol en quelques secondes, pour que d'autres télescopes prennent le relais.",
+    archives: [
+      { label:"HEASARC, archive de Swift", url:"https://heasarc.gsfc.nasa.gov/docs/swift/archive/", desc:"Toutes les observations des trois instruments, publiques dès leur traitement." },
+      { label:"UK Swift Science Data Centre", url:"https://www.swift.ac.uk/", desc:"Courbes de lumière et spectres XRT des sursauts, catalogue 2SXPS, outils en ligne." },
+      { label:"MAST, images UVOT", url:"https://archive.stsci.edu/missions-and-data/swift-uvot", desc:"Images et catalogues de l'UVOT." },
+      { label:"HEASoft", url:"https://heasarc.gsfc.nasa.gov/docs/software/heasoft/", desc:"Logiciels d'analyse des données de Swift (batgrbproduct, xrtpipeline, uvotsource…)." }
+    ],
+    instruments: [
+      { id:"bat", type:"burst", name:"BAT", full:"Burst Alert Telescope", kind:"Télescope à masque codé, rayons X durs", color:"#E39B17",
+        bands:[ {l:"BAT",lo:8.2656e-6,hi:8.2656e-5} ],
+        use:"Détecter les sursauts gamma sur un sixième du ciel, les localiser en une vingtaine de secondes et déclencher le pivotement du satellite ; entre deux sursauts, faire le relevé du ciel en rayons X durs.",
+        summary:"Pas de miroir, inutile à ces énergies : un masque de tuiles de plomb disposées au hasard, à moitié ouvert, projette son ombre sur un plan de détecteurs en tellurure de cadmium-zinc. Le décalage de l'ombre donne la direction de la source.",
+        specs:[
+          ["Domaine", "15 à 150 keV en imagerie · réponse jusqu'à 500 keV", "bat"],
+          ["Champ", "1,4 sr à moitié codé, 100° × 60°", "bat"],
+          ["Masque", "≈ 54 000 tuiles de plomb de 5 × 5 × 1 mm · 2,7 m² · 1 m au-dessus des détecteurs", "bat"],
+          ["Détecteurs", "32 768 CZT de 4 × 4 × 2 mm · 5 200 cm² · 256 modules", "bat"],
+          ["Localisation", "1 à 4′ en une vingtaine de secondes", "bar"],
+          ["Résolution en énergie", "≈ 7 keV", "bar"]
+        ],
+        products:[
+          ["Événements","chaque photon avec son instant, son énergie et le détecteur touché, autour d'un déclenchement"],
+          ["Courbes de lumière, spectres","produits standard de chaque sursaut (batgrbproduct)"],
+          ["Relevé des 157 mois","catalogue des sources du ciel en rayons X durs"]
+        ],
+        example:{ real:false, title:"Les grandeurs d'un sursaut dans le catalogue BAT", caption:"Colonnes typiques d'un catalogue de sursauts ; valeurs illustratives.", text:
+"SURSAUT      RA (°)    DEC (°)   ERREUR (′)   T90 (s)   FLUENCE 15–150 keV (erg/cm²)\n" +
+"GRB AAMMJJA  189.06    +28.98    3,0           0,07      9,5e-09\n" +
+"GRB AAMMJJB  148.89    +18.15    2,1           10,3      5,9e-07\n" +
+"\n" +
+"→ T90 : durée pendant laquelle arrivent 90 % des photons ; le nom donne la date du sursaut (année, mois, jour)." },
+        code:{ title:"Catalogue des sursauts de Swift (astroquery, HEASARC)", text:
+"from astroquery.heasarc import Heasarc\n\n" +
+"# un sursaut par ligne, avec la durée et la fluence mesurées par BAT\n" +
+"t = Heasarc.query_tap(\"SELECT * FROM swiftgrb\").to_table()" },
+        notes:["Un masque codé ne fait pas d'image directement : l'image du ciel se reconstruit par calcul, en comparant l'ombre enregistrée au motif connu du masque.",
+               "BAT déclenche à bord, sans le sol : c'est ce qui permettait à Swift de pivoter en une minute environ."],
+        docs:[ {l:"Barthelmy et al. 2005",u:"https://arxiv.org/abs/astro-ph/0507410"}, {l:"Description de BAT",u:"https://swift.gsfc.nasa.gov/about_swift/bat_desc.html"} ] },
+
+      { id:"xrt", type:"specimager", name:"XRT", full:"X-Ray Telescope", kind:"Télescope X à incidence rasante, caméra CCD", color:"#C2571A",
+        bands:[ {l:"XRT",lo:1.2398e-4,hi:6.199e-3} ],
+        use:"Préciser à quelques secondes d'arc la position d'un sursaut et suivre, pendant des jours, le déclin de sa lueur rémanente en rayons X.",
+        summary:"Des miroirs de type Wolter I, de rechange de la mission JET-X, concentrent les rayons X sur une caméra CCD refroidie vers −100 °C, 3,5 m plus loin. Chaque photon est enregistré avec sa position, son instant et son énergie.",
+        specs:[
+          ["Domaine", "0,2 à 10 keV", "xrt"],
+          ["Optique", "Wolter I (JET-X) · focale de 3,5 m", "xrt"],
+          ["Surface efficace", "110 cm² à 1,5 keV", "xrt"],
+          ["Netteté", "18″ (demi-énergie) à 1,5 keV", "xrt"],
+          ["Champ", "23,6′ × 23,6′", "xrt"],
+          ["Détecteur", "CCD-22 de 600 × 600 px de 40 µm, 2,36″", "xrt"],
+          ["Résolution en énergie", "≈ 140 eV à 6 keV au lancement", "xrt"]
+        ],
+        fov:[ {l:'XRT', w:1416, h:1416} ],
+        products:[
+          ["Listes d'événements","modes photon-counting (images) et windowed timing (sources brillantes)"],
+          ["Courbes de lumière des sursauts","produites automatiquement par le centre de données britannique"],
+          ["2SXPS","catalogue des sources X de tout le champ de Swift"]
+        ],
+        example:{ real:false, title:"Courbe de lumière XRT d'une lueur rémanente", caption:"Forme typique publiée par le centre de données ; valeurs illustratives.", text:
+"T − T0 (s)    FLUX 0,3–10 keV (erg/cm²/s)\n" +
+"   95         3,1e-09\n" +
+" 1 000        2,4e-11\n" +
+"10 000        4,0e-12\n" +
+"\n" +
+"→ le flux décroît en loi de puissance, avec souvent un plateau entre quelques centaines et quelques milliers de secondes." },
+        code:{ title:"Traiter une observation XRT (HEASoft)", text:
+"# données de niveau 1 téléchargées depuis l'archive du HEASARC\n" +
+"xrtpipeline indir=00350184000 outdir=out steminputs=sw00350184000 \\\n" +
+"            srcra=OBJECT srcdec=OBJECT createexpomap=yes" },
+        notes:["Quand la source est très brillante, plusieurs photons tombent sur le même pixel pendant une lecture et se confondent (empilement) : on passe alors en mode windowed timing, une seule dimension mais lue très vite."],
+        docs:[ {l:"Description du XRT",u:"https://swift.gsfc.nasa.gov/about_swift/xrt_desc.html"} ] },
+
+      { id:"uvot", type:"imager", name:"UVOT", full:"Ultra-Violet/Optical Telescope", kind:"Télescope ultraviolet et visible, comptage de photons", color:"#7A4FB5",
+        bands:[ {l:"UVOT",lo:0.17,hi:0.60} ],
+        use:"Trouver la contrepartie visible ou ultraviolette d'un sursaut, à mieux qu'une seconde d'arc ; mesurer sa couleur, et donc estimer sa distance quand la lumière ultraviolette est absorbée en chemin.",
+        summary:"Un télescope Ritchey-Chrétien de 30 cm, aligné sur le XRT. Son détecteur, une galette de microcanaux devant un CCD, compte les photons un à un ; une roue porte des filtres ultraviolets et visibles, une lame claire et deux grismes.",
+        specs:[
+          ["Optique", "Ritchey-Chrétien modifié · 30 cm · f/12,7", "uvot"],
+          ["Domaine", "170 à 600 nm", "uvot"],
+          ["Champ", "17′ × 17′", "uvot"],
+          ["Détecteur", "CCD intensifié, 256 × 256 éléments, 2 048 × 2 048 px après centrage, 0,502″", "uvot"],
+          ["Netteté", "≈ 2,5″ (largeur à mi-hauteur)", "uvot"],
+          ["Sensibilité", "B ≈ 22,3 en lumière blanche en 1 000 s", "uvot"]
+        ],
+        fov:[ {l:'UVOT', w:1020, h:1020} ],
+        filtersTitle:"Filtres (centre et largeur à mi-hauteur, Poole et al. 2008)",
+        filters:[ R("UVW2",0.160,0.226,"B","≈ 193 nm"), R("UVM2",0.200,0.250,"B","≈ 225 nm"), R("UVW1",0.225,0.295,"B","≈ 260 nm"), R("U",0.307,0.386,"B","≈ 347 nm"), R("B",0.390,0.488,"B","≈ 439 nm"), R("V",0.508,0.585,"B","≈ 547 nm") ],
+        products:[
+          ["Images (sk)","images de ciel par filtre, en coordonnées célestes"],
+          ["Événements","mode qui garde chaque photon et son instant, pour les premières minutes d'un sursaut"],
+          ["Catalogue UVOTSSC","sources de toutes les images"]
+        ],
+        notes:["Comme le détecteur compte les photons un par un, une source brillante en envoie parfois plusieurs pendant une même lecture, comptés comme un seul : la photométrie corrige cette perte par coïncidence."],
+        docs:[ {l:"Swift Technical Handbook, UVOT",u:"https://swift.gsfc.nasa.gov/proposals/tech_appd/swiftta_v17/node39.html"}, {l:"Poole et al. 2008",u:"https://arxiv.org/abs/0708.2259"} ] }
+    ]
+  },
+  integral: {
+    checked:'2026-11-20',
+    refs:{
+      isdc:{ t:"Introduction to the INTEGRAL Off-line Scientific Analysis, caractéristiques des instruments", p:"ISDC, Université de Genève", u:"https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html" },
+      heasarc:{ t:"INTEGRAL, mission overview", p:"HEASARC (NASA)", u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/integral.html" },
+      fs:{ t:"INTEGRAL fact sheet", p:"ESA", u:"https://sci.esa.int/web/integral/-/47360-fact-sheet" },
+      cnes:{ t:"INTEGRAL en détails", p:"CNES", u:"https://cnes.fr/projets/integral/en-details" }
+    },
+    axis: { min:1e-7, max:1.0 },
+    summary: "Quatre instruments alignés sur la même direction. SPI, le spectromètre, et IBIS, l'imageur, couvrent les rayons gamma de 15 keV à 10 MeV ; les deux JEM-X voient les rayons X de 3 à 35 keV et la caméra OMC la lumière visible. Les trois instruments de haute énergie forment leur image avec un masque codé.",
+    archives: [
+      { label:"INTEGRAL Science Data Centre (ISDC)", url:"https://www.isdc.unige.ch/integral/", desc:"Centre des données, à Genève : archive, logiciel d'analyse OSA, catalogues." },
+      { label:"ESA, archive INTEGRAL", url:"https://www.cosmos.esa.int/web/integral", desc:"Archive de l'ESA à l'ESAC." },
+      { label:"HEASARC, INTEGRAL", url:"https://heasarc.gsfc.nasa.gov/docs/integral/integral.html", desc:"Copie des données et catalogues à la NASA." }
+    ],
+    instruments: [
+      { id:"spi", type:"spectro", name:"SPI", full:"Spectrometer on INTEGRAL", kind:"Spectromètre gamma au germanium, masque codé", color:"#245C9E",
+        bands:[ {l:"SPI",lo:1.5498e-7,hi:6.199e-5} ],
+        use:"Mesurer très finement l'énergie des raies gamma : éléments radioactifs fabriqués par les supernovae, comme l'aluminium 26 ou le titane 44, et la raie à 511 keV de l'annihilation des positons au centre de la Galaxie.",
+        summary:"19 détecteurs au germanium, refroidis à 85 K, sous un masque codé, le tout entouré d'un bouclier actif qui rejette les particules et les photons venus de côté. Sa résolution en énergie est sans égale ; son image, elle, reste grossière, à 2,5° près.",
+        specs:[
+          ["Domaine", "20 keV à 8 MeV", ["isdc","heasarc"]],
+          ["Détecteurs", "19 cristaux de germanium à 85 K · 500 cm²", "isdc"],
+          ["Champ", "16° entièrement codé", "isdc"],
+          ["Résolution angulaire", "2,5° (source ponctuelle)", "isdc"],
+          ["Résolution en énergie", "2,3 keV à 1,3 MeV", "isdc"],
+          ["Maîtrise d'œuvre", "CNES", "cnes"]
+        ],
+        products:[
+          ["Événements","chaque photon avec son instant, son énergie et le détecteur touché"],
+          ["Spectres","obtenus par déconvolution avec la réponse du masque (logiciel OSA)"]
+        ],
+        notes:["Le masque de SPI ne donne qu'une image grossière : SPI est fait pour la spectroscopie, IBIS pour l'imagerie."],
+        docs:[ {l:"Caractéristiques des instruments (ISDC)",u:"https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html"} ] },
+      { id:"ibis", type:"imager", name:"IBIS", full:"Imager on Board the INTEGRAL Satellite", kind:"Imageur gamma à masque codé", color:"#3D7FC8",
+        bands:[ {l:"IBIS",lo:1.2398e-7,hi:8.2656e-5} ],
+        use:"Localiser et suivre les sources de rayons X durs et gamma : trous noirs et étoiles à neutrons de la Galaxie, noyaux actifs de galaxies, sursauts gamma.",
+        summary:"Un masque codé au-dessus de deux plans de détecteurs : ISGRI, 16 384 cristaux de tellurure de cadmium, pour les énergies basses ; PICsIT, 4 096 cristaux d'iodure de césium, pour les hautes. Les photons qui traversent le premier et s'arrêtent dans le second donnent aussi leur direction par effet Compton.",
+        specs:[
+          ["Domaine", "15 keV à 10 MeV", ["isdc","heasarc"]],
+          ["ISGRI", "16 384 CdTe · 2 600 cm²", "isdc"],
+          ["PICsIT", "4 096 CsI · 3 100 cm²", "isdc"],
+          ["Champ", "9° entièrement codé", ["isdc","heasarc"]],
+          ["Résolution angulaire", "12′", "isdc"],
+          ["Résolution en énergie", "9 keV à 100 keV", "isdc"]
+        ],
+        products:[
+          ["Images en mosaïque","cartes du ciel par bande d'énergie, assemblées sur de nombreux pointés"],
+          ["Catalogue des sources IBIS","sources détectées par ISGRI sur toute la mission"]
+        ],
+        notes:["INTEGRAL observait en « dithering » : de petits décalages successifs du pointage, qui aident à séparer les sources du fond dans l'image d'un masque codé."],
+        docs:[ {l:"Caractéristiques des instruments (ISDC)",u:"https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html"} ] },
+      { id:"jemx", type:"imager", name:"JEM-X", full:"Joint European X-ray Monitor", kind:"Deux moniteurs X à masque codé", color:"#7FB3E0",
+        bands:[ {l:"JEM-X",lo:3.5424e-5,hi:4.1328e-4} ],
+        use:"Voir les mêmes sources en rayons X plus mous, pour prolonger leur spectre vers les basses énergies et suivre leurs éruptions.",
+        summary:"Deux unités identiques, chacune un masque codé au-dessus d'un compteur proportionnel à gaz (xénon et méthane) à micropistes.",
+        specs:[
+          ["Domaine", "3 à 35 keV", ["isdc","heasarc","fs"]],
+          ["Détecteur", "compteur à micropistes, xénon et méthane à 1,5 bar", "isdc"],
+          ["Champ", "4,8° entièrement codé", ["isdc","heasarc"]],
+          ["Résolution angulaire", "3′", ["isdc","heasarc"]],
+          ["Résolution en énergie", "1,2 keV à 10 keV", "isdc"]
+        ],
+        products:[ ["Images et spectres","par pointé, avec le logiciel OSA"] ],
+        docs:[ {l:"Caractéristiques des instruments (ISDC)",u:"https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html"} ] },
+      { id:"omc", type:"photometer", name:"OMC", full:"Optical Monitoring Camera", kind:"Caméra optique, photométrie en V", color:"#C9A100",
+        bands:[ {l:"OMC",lo:0.5,hi:0.6} ],
+        use:"Mesurer l'éclat visible des sources observées en gamma, au même moment : pour les étoiles variables, les novae ou les noyaux actifs de galaxies.",
+        summary:"Une optique à lentilles devant un CCD, avec un filtre V.",
+        specs:[
+          ["Domaine", "filtre V, 500 à 600 nm", "isdc"],
+          ["Champ", "5° × 5°", ["isdc","heasarc"]],
+          ["Détecteur", "CCD de 2 061 × 1 056 px, zone d'image de 1 024 × 1 024 px", "isdc"]
+        ],
+        products:[ ["Courbes de lumière","magnitude V de chaque source suivie"] ],
+        docs:[ {l:"Caractéristiques des instruments (ISDC)",u:"https://www.isdc.unige.ch/integral/download/osa/doc/11.0/osa_um_intro/node7.html"} ] }
+    ]
+  },
+  cheops: {
+    checked:'2026-11-20',
+    refs:{
+      benz:{ t:"Benz et al. 2021, The CHEOPS mission, Experimental Astronomy 51, 109", p:"arXiv", u:"https://arxiv.org/abs/2009.11633" },
+      nut:{ t:"CHEOPS in a nutshell", p:"ESA", u:"https://www.cosmos.esa.int/web/cheops/cheops-in-a-nutshell" },
+      cnes:{ t:"CHEOPS", p:"CNES", u:"https://cnes.fr/en/projects/cheops" }
+    },
+    axis: { min:0.3, max:1.2 },
+    summary: "Un seul instrument : un télescope de 32 cm et un CCD. CHEOPS ne fait pas d'images au sens habituel : il mesure, pendant des heures, l'éclat d'une étoile déjà connue pour avoir une planète, afin d'y voir passer celle-ci et d'en déduire sa taille.",
+    archives: [
+      { label:"CHEOPS Archive", url:"https://cheops.unige.ch/archive_browser/", desc:"Archive de la mission, à l'Université de Genève : courbes de lumière et images." },
+      { label:"CHEOPS à l'ESA", url:"https://www.cosmos.esa.int/web/cheops", desc:"Pages scientifiques de la mission, programme des observateurs invités." }
+    ],
+    instruments: [
+      { id:"phot", type:"photometer", name:"CHEOPS", full:"CHEOPS Instrument System", kind:"Photomètre de très haute précision", color:"#3BA7C4",
+        bands:[ {l:"CHEOPS",lo:0.4,hi:1.1} ],
+        use:"Mesurer le rayon des planètes en mesurant la profondeur de leur transit devant des étoiles brillantes, et suivre les éclipses et les variations de phase de planètes géantes chaudes.",
+        summary:"Un télescope Ritchey-Chrétien de 32 cm, dans l'axe, et un unique CCD à transfert de trame, tenu à quelques millièmes de degré près. L'image de l'étoile est volontairement défocalisée sur des centaines de pixels pour que la mesure ne dépende pas des défauts d'un pixel.",
+        specs:[
+          ["Optique", "Ritchey-Chrétien · primaire de 320 mm · f/8,4", "benz"],
+          ["Détecteur", "CCD47-20, 1024 × 1024 px de 13 µm · 1″ par pixel", "benz"],
+          ["Champ", "0,32°", "benz"],
+          ["Domaine", "0,4 à 1,1 µm", "benz"],
+          ["Température du CCD", "228 K, stable à 10 mK", "benz"],
+          ["Précision", "15,5 ppm en 6 h (étoiles 6 ≤ V ≤ 9) · 75 ppm en 3 h (V ≤ 12)", "benz"]
+        ],
+        fov:[ {l:'CHEOPS', w:1152, h:1152} ],
+        products:[
+          ["Imagettes","petites images de 25 px de rayon autour de l'étoile, à chaque pose"],
+          ["Fenêtres","images de 200 px de diamètre, additionnées à bord sur 60 s au plus"],
+          ["Courbes de lumière","produites par le pipeline de l'Université de Genève"]
+        ],
+        notes:["CHEOPS est en orbite basse : la Terre masque régulièrement l'étoile et la lumière diffusée varie le long de l'orbite. Les courbes de lumière ont donc des trous périodiques, toutes les 98,7 minutes."],
+        docs:[ {l:"Benz et al. 2021",u:"https://arxiv.org/abs/2009.11633"} ] }
+    ]
+  },
+  herschel: {
+    checked:'2026-11-20',
+    refs:{
+      pil:{ t:"Pilbratt et al. 2010, Herschel Space Observatory, A&A 518, L1", p:"arXiv", u:"https://arxiv.org/abs/1005.5331" },
+      fs:{ t:"Herschel fact sheet", p:"ESA", u:"https://sci.esa.int/web/herschel/47356-fact-sheet" }
+    },
+    axis: { min:40, max:800 },
+    summary: "Trois instruments au foyer du même télescope, dans le cryostat. HIFI décompose le rayonnement en un spectre d'une finesse extrême ; PACS et SPIRE sont à la fois caméras et spectromètres, PACS aux longueurs d'onde les plus courtes, SPIRE aux plus longues.",
+    archives: [
+      { label:"Herschel Science Archive", url:"https://archives.esac.esa.int/hsa/whsa/", desc:"Archive de l'ESA : toutes les observations, publiques." },
+      { label:"IRSA, Herschel", url:"https://irsa.ipac.caltech.edu/Missions/herschel.html", desc:"Copie des données et catalogues à l'IPAC (NASA)." }
+    ],
+    instruments: [
+      { id:"hifi", type:"spectro", name:"HIFI", full:"Heterodyne Instrument for the Far Infrared", kind:"Spectromètre hétérodyne", color:"#A33B5E",
+        bands:[ {l:"HIFI",lo:157,hi:212}, {l:"HIFI",lo:240,hi:625} ],
+        use:"Mesurer la vitesse et la composition du gaz froid : raies de l'eau, du monoxyde de carbone et de nombreuses molécules, dans les nuages où naissent les étoiles et dans les comètes.",
+        summary:"Comme un récepteur radio : le signal du ciel est mélangé à celui d'un oscillateur local, et la différence, à plus basse fréquence, est analysée par des spectromètres. Un seul pixel sur le ciel, mais un pouvoir de résolution d'environ un million.",
+        specs:[
+          ["Domaine", "157 à 212 µm et 240 à 625 µm", "pil"],
+          ["Pouvoir de résolution", "≈ 10⁶", "pil"],
+          ["Champ", "un seul pixel sur le ciel", "pil"]
+        ],
+        products:[ ["Spectres","un spectre par position et par bande, pipeline HIPE"] ],
+        docs:[ {l:"Pilbratt et al. 2010",u:"https://arxiv.org/abs/1005.5331"} ] },
+      { id:"pacs", type:"specimager", name:"PACS", full:"Photodetector Array Camera and Spectrometer", kind:"Caméra et spectromètre à réseau", color:"#D06A86",
+        bands:[ {l:"PACS",lo:55,hi:210} ],
+        use:"Photographier la poussière tiède des galaxies et des régions de formation d'étoiles, et en tirer des spectres de raies du gaz.",
+        summary:"Une caméra à bolomètres qui observe à la fois dans deux bandes (70 ou 100 µm, et 160 µm), et un spectromètre à intégrale de champ, de 5 × 5 pixels.",
+        specs:[
+          ["Photomètre", "60–85 ou 85–130 µm et 130–210 µm (bandes centrées à 70, 100 et 160 µm)", "pil"],
+          ["Spectromètre", "55 à 210 µm · R ≈ 1 000 à 4 000 · champ de 47″ × 47″", "pil"]
+        ],
+        products:[ ["Cartes","images dans chaque bande, niveaux 2 et 2,5"], ["Cubes spectraux","spectres de chaque pixel du champ"] ],
+        docs:[ {l:"Pilbratt et al. 2010",u:"https://arxiv.org/abs/1005.5331"} ] },
+      { id:"spire", type:"specimager", name:"SPIRE", full:"Spectral and Photometric Imaging Receiver", kind:"Caméra et spectromètre à transformée de Fourier", color:"#7D2A47",
+        bands:[ {l:"SPIRE",lo:194,hi:672} ],
+        use:"Cartographier la poussière froide, à quelques dizaines de kelvins, des nuages de notre Galaxie et des galaxies lointaines où naissent beaucoup d'étoiles.",
+        summary:"Un photomètre qui observe à la fois à 250, 350 et 500 µm, et un spectromètre à transformée de Fourier qui couvre tout le domaine d'un coup.",
+        specs:[
+          ["Photomètre", "250, 350 et 500 µm · champ de 4′ × 8′", "pil"],
+          ["Spectromètre", "194–324 et 316–671 µm · R ≈ 370 à 1 300 · champ de 2,6′", "pil"]
+        ],
+        fov:[ {l:'SPIRE', w:480, h:240} ],
+        products:[ ["Cartes","images dans les trois bandes"], ["Spectres","spectres de chaque détecteur du spectromètre"] ],
+        docs:[ {l:"Pilbratt et al. 2010",u:"https://arxiv.org/abs/1005.5331"} ] }
+    ]
+  },
+  planck: {
+    checked:'2026-11-20',
+    refs:{
+      fs:{ t:"Planck fact sheet", p:"ESA", u:"https://sci.esa.int/web/planck/-/47365-fact-sheet" },
+      p18:{ t:"Planck Collaboration 2020, Planck 2018 results. I. Overview, A&A 641, A1, tableau 4", p:"A&A", u:"https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/T4.html" },
+      cool:{ t:"Planck, cooling system", p:"ESA", u:"https://sci.esa.int/web/planck/45498-cooling-system" },
+      pla:{ t:"The Planck mission (Planck Legacy Archive)", p:"ESA", u:"https://wiki.cosmos.esa.int/planckpla/index.php/The_Planck_mission" }
+    },
+    axis: { min:200, max:20000 },
+    summary: "Deux instruments au foyer du même télescope. LFI, à récepteurs radio, couvre les fréquences basses ; HFI, à bolomètres refroidis à 0,1 K, les hautes. Ensemble, neuf bandes de 30 à 857 GHz : de quoi séparer le fond diffus cosmologique des émissions de la Galaxie, qui changent avec la fréquence.",
+    archives: [
+      { label:"Planck Legacy Archive", url:"https://pla.esac.esa.int/", desc:"Archive de l'ESA : cartes du ciel, catalogues, produits cosmologiques." },
+      { label:"IRSA, Planck", url:"https://irsa.ipac.caltech.edu/Missions/planck.html", desc:"Copie des cartes et catalogues à l'IPAC (NASA)." }
+    ],
+    instruments: [
+      { id:"lfi", type:"imager", name:"LFI", full:"Low Frequency Instrument", kind:"Radiomètres à 20 K", color:"#5C9E3B",
+        bands:[ {l:"LFI",lo:3893,hi:11103} ],
+        use:"Cartographier le ciel aux fréquences basses, où dominent les émissions de la Galaxie : rayonnement des électrons dans le champ magnétique et du gaz ionisé. Indispensable pour les retirer des cartes du fond diffus.",
+        summary:"22 récepteurs radio à amplificateurs, refroidis à 20 K, qui comparent le ciel à une charge de référence.",
+        specs:[
+          ["Fréquences", "30, 44 et 70 GHz (centres 28,4, 44,1 et 70,4 GHz)", "p18"],
+          ["Détecteurs", "22 récepteurs radio à 20 K", ["fs","cool"]],
+          ["Résolution", "32,3′, 27,9′ et 13,1′", "p18"]
+        ],
+        products:[ ["Cartes","cartes du ciel entier par fréquence, en intensité et en polarisation"] ],
+        docs:[ {l:"Planck 2018 results. I",u:"https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/T4.html"} ] },
+      { id:"hfi", type:"imager", name:"HFI", full:"High Frequency Instrument", kind:"Bolomètres à 0,1 K", color:"#2E6B1E",
+        bands:[ {l:"HFI",lo:300,hi:3612} ],
+        use:"Mesurer le fond diffus cosmologique là où il est le plus brillant, et la poussière de la Galaxie aux fréquences les plus hautes.",
+        summary:"52 bolomètres, des thermomètres si sensibles qu'ils mesurent l'échauffement causé par le rayonnement absorbé, refroidis à 0,1 K par une dilution d'hélium 3 dans l'hélium 4.",
+        specs:[
+          ["Fréquences", "100, 143, 217, 353, 545 et 857 GHz", "p18"],
+          ["Détecteurs", "52 bolomètres à 0,1 K", ["fs","cool"]],
+          ["Résolution", "de 9,7′ à 100 GHz à 4,2′ à 857 GHz", "p18"],
+          ["Fin du relevé", "14 janvier 2012", "pla"]
+        ],
+        products:[ ["Cartes","cartes du ciel entier par fréquence"], ["Carte du fond diffus","séparée des avant-plans par plusieurs méthodes"] ],
+        docs:[ {l:"Planck 2018 results. I",u:"https://www.aanda.org/articles/aa/full_html/2020/09/aa33880-18/T4.html"} ] }
+    ]
+  },
+  cgro: {
+    checked:'2026-11-20',
+    refs:{
+      ins:{ t:"CGRO, mission overview (caractéristiques des instruments)", p:"HEASARC (NASA)", u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html" },
+      cossc:{ t:"Compton Gamma-Ray Observatory", p:"HEASARC (NASA)", u:"https://heasarc.gsfc.nasa.gov/docs/cgro/cgro.html" },
+      wiki:{ t:"Compton Gamma Ray Observatory", p:"Wikipédia (en anglais)", u:"https://en.wikipedia.org/wiki/Compton_Gamma_Ray_Observatory" }
+    },
+    axis: { min:1e-10, max:1e-4 },
+    summary: "Quatre instruments qui se partagent six décennies d'énergie, de 20 keV à 30 GeV. BATSE surveillait tout le ciel pour les sursauts ; OSSE, COMPTEL et EGRET observaient chacun une partie du ciel, des énergies les plus basses aux plus hautes.",
+    archives: [
+      { label:"HEASARC, archive de CGRO", url:"https://heasarc.gsfc.nasa.gov/docs/cgro/archive/", desc:"Données et catalogues des quatre instruments." }
+    ],
+    instruments: [
+      { id:"batse", type:"burst", name:"BATSE", full:"Burst And Transient Source Experiment", kind:"Moniteur de sursauts sur tout le ciel", color:"#7A5230",
+        bands:[ {l:"BATSE",lo:1.2398e-6,hi:6.199e-5} ],
+        use:"Détecter les sursauts gamma sur tout le ciel et mesurer leur répartition : uniforme, elle a montré qu'ils viennent de très loin.",
+        summary:"Huit modules aux coins du satellite, tournés vers les huit faces d'un octaèdre ; chacun porte un grand détecteur et un détecteur spectroscopique.",
+        specs:[
+          ["Domaine", "20 keV à 1 MeV", ["ins","cossc"]],
+          ["Champ", "tout le ciel non caché par la Terre", "ins"],
+          ["Surface efficace", "1 000 cm² à 30 keV, par module", "ins"],
+          ["Localisation", "≈ 3° pour un sursaut intense", "ins"],
+          ["Sursauts", "≈ 2 700 détectés", "wiki"]
+        ],
+        products:[ ["Catalogue des sursauts","durée, fluence et position de chaque sursaut"] ],
+        code:{ title:"Catalogue des sursauts de BATSE (astroquery, HEASARC)", text:
+"from astroquery.heasarc import Heasarc\n\n" +
+"# un sursaut par ligne : position, durée T90, fluence\n" +
+"t = Heasarc.query_tap(\"SELECT * FROM batsegrb\").to_table()" },
+        docs:[ {l:"Caractéristiques des instruments",u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html"} ] },
+      { id:"osse", type:"spectro", name:"OSSE", full:"Oriented Scintillation Spectrometer Experiment", kind:"Spectromètre à scintillation", color:"#A7703F",
+        bands:[ {l:"OSSE",lo:1.2398e-7,hi:2.4797e-5} ],
+        use:"Mesurer le spectre gamma de sources choisies : centre de la Galaxie, raie d'annihilation des positons, noyaux actifs de galaxies.",
+        summary:"Quatre scintillateurs dans des collimateurs, qui visent une région de 3,8° × 11,4° et peuvent pivoter.",
+        specs:[
+          ["Domaine", "0,05 à 10 MeV", "ins"],
+          ["Champ", "3,8° × 11,4° (largeur à mi-hauteur)", "ins"],
+          ["Surface efficace", "2 013 cm² à 0,2 MeV", "ins"],
+          ["Résolution en énergie", "12 % à 0,2 MeV · 4 % à 5 MeV", "ins"]
+        ],
+        products:[ ["Spectres","spectres de chaque pointé"] ],
+        docs:[ {l:"Caractéristiques des instruments",u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html"} ] },
+      { id:"comptel", type:"imager", name:"COMPTEL", full:"Imaging Compton Telescope", kind:"Télescope Compton", color:"#C9A100",
+        bands:[ {l:"COMPTEL",lo:4.1328e-8,hi:1.5498e-6} ],
+        use:"Cartographier le ciel gamma de 1 à 30 MeV, en particulier la raie de l'aluminium 26, trace des étoiles massives récentes de la Galaxie.",
+        summary:"Deux étages de détecteurs : le photon diffuse sur un électron dans le premier (effet Compton) puis est absorbé dans le second. Énergies et positions mesurées dans les deux donnent un cercle de directions possibles.",
+        specs:[
+          ["Domaine", "0,8 à 30 MeV", "ins"],
+          ["Champ", "≈ 1 sr", "ins"],
+          ["Résolution angulaire", "0,5° à 1° (90 %)", "ins"],
+          ["Résolution en énergie", "8,8 % à 1,27 MeV", "ins"]
+        ],
+        products:[ ["Cartes du ciel","par bande d'énergie et pour la raie de l'aluminium 26"] ],
+        docs:[ {l:"Caractéristiques des instruments",u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html"} ] },
+      { id:"egret", type:"imager", name:"EGRET", full:"Energetic Gamma Ray Experiment Telescope", kind:"Télescope gamma à chambre à étincelles", color:"#5E3A1A",
+        bands:[ {l:"EGRET",lo:1.2398e-10,hi:4.1328e-8} ],
+        use:"Cartographier le ciel gamma de haute énergie : pulsars, plan de la Galaxie, et noyaux actifs de galaxies dont le jet pointe vers nous.",
+        summary:"Une chambre à étincelles où le photon se convertit en paire électron–positon, dont les traces donnent la direction, au-dessus d'un calorimètre qui mesure l'énergie.",
+        specs:[
+          ["Domaine", "30 MeV à 10 GeV", "ins"],
+          ["Surface efficace", "1 200 cm² à 100 MeV", "ins"],
+          ["Champ", "≈ 0,6 sr", "ins"],
+          ["Résolution en énergie", "≈ 20 %", "ins"],
+          ["Sources", "271 dans son premier relevé au-dessus de 100 MeV", "wiki"]
+        ],
+        products:[ ["Catalogue 3EG","sources détectées par EGRET"] ],
+        docs:[ {l:"Caractéristiques des instruments",u:"https://heasarc.gsfc.nasa.gov/docs/heasarc/missions/cgro.html"} ] }
+    ]
+  },
+  wmap: {
+    checked:'2026-11-20',
+    refs:{
+      nasa:{ t:"WMAP overview", p:"NASA Science", u:"https://science.nasa.gov/mission/wmap/wmap-overview/" },
+      wiki:{ t:"Wilkinson Microwave Anisotropy Probe", p:"Wikipédia (en anglais)", u:"https://en.wikipedia.org/wiki/Wilkinson_Microwave_Anisotropy_Probe" },
+      lambda:{ t:"WMAP, Data Release 5 (neuf ans)", p:"LAMBDA, NASA Goddard", u:"https://lambda.gsfc.nasa.gov/product/wmap/current/index.html" }
+    },
+    axis: { min:2000, max:20000 },
+    summary: "Un seul instrument : deux télescopes dos à dos qui alimentent 20 cornets et autant de radiomètres différentiels, répartis en cinq bandes de 23 à 94 GHz. Chaque radiomètre mesure la différence de température entre deux points du ciel.",
+    archives: [
+      { label:"LAMBDA (NASA)", url:"https://lambda.gsfc.nasa.gov/product/wmap/current/index.html", desc:"Cartes du ciel, spectres de puissance et paramètres cosmologiques des neuf ans." }
+    ],
+    instruments: [
+      { id:"rad", type:"imager", name:"Radiomètres", full:"Radiomètres différentiels de WMAP", kind:"Radiomètres différentiels, cinq bandes", color:"#C77D2E",
+        bands:[ {l:"WMAP",lo:3189,hi:13034} ],
+        use:"Cartographier les variations de température et la polarisation du fond diffus cosmologique sur tout le ciel, et en déduire l'âge, la composition et la géométrie de l'Univers.",
+        summary:"20 cornets, 10 derrière chaque télescope, alimentent des radiomètres qui comparent en permanence les deux directions visées. Les bandes basses servent surtout à retirer l'émission de la Galaxie.",
+        specs:[
+          ["Bandes", "K 23 · Ka 33 · Q 41 · V 61 · W 94 GHz", "wiki"],
+          ["Résolution", "52,8′ (K), 39,6′ (Ka), 30,6′ (Q), 21′ (V), 13,2′ (W)", "wiki"],
+          ["Radiomètres", "2 (K), 2 (Ka), 4 (Q), 4 (V), 8 (W)", "wiki"],
+          ["Sensibilité", "variations d'un millionième de degré", "nasa"]
+        ],
+        products:[ ["Cartes","ciel entier par bande, intensité et polarisation, neuf ans"], ["Carte ILC","combinaison des bandes qui isole le fond diffus"], ["Spectre de puissance","amplitude des variations selon leur taille angulaire"] ],
+        docs:[ {l:"LAMBDA, données de WMAP",u:"https://lambda.gsfc.nasa.gov/product/wmap/current/index.html"} ] }
+    ]
+  },
   kepler: {
     checked:'2026-11-19',
     refs:{
