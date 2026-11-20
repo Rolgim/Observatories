@@ -164,6 +164,10 @@ function edgeScroll(el){
   if (!el._edge){ el._edge = true; el.addEventListener('scroll', marks, { passive:true }); window.addEventListener('resize', marks); }
   marks();
 }
+function viewsHtml(top){
+  var c = S.mode === 'compare' && !S.fleet, f = !!S.fleet;
+  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
+}
 function renderTabs(){
   /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
   if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
@@ -171,9 +175,10 @@ function renderTabs(){
   domList(S.id).forEach(function(t){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare' && !S.fleet) + '">Comparer<small>tailles</small></button>';
-  h += '<button class="tab cmp" role="tab" data-go="flotte" aria-selected="' + !!S.fleet + '">Flotte<small>chronologie</small></button></div>';
+  h += '</div>';
   $('tabs').innerHTML = h;
+  /* vues d'ensemble, à part des onglets d'observatoires */
+  $('views').innerHTML = viewsHtml(true);
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
@@ -241,11 +246,11 @@ function renderHud(){
 
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
-  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
-  var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
+  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills + viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills + viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -265,13 +270,14 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-go],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-cmpsec],[data-go],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-fleet-sec')){ S.fleetSec = el.getAttribute('data-fleet-sec'); renderInst(); return; }
   if (FleetUI.click(el)){ renderInst(true); return; }
   if (el.getAttribute('data-tele') === 'flotte'){ location.hash = 'flotte'; return; }
+  if (el.hasAttribute('data-cmpsec')){ S.cmpSec = el.getAttribute('data-cmpsec') || null; renderInst(); return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){

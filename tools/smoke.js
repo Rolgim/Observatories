@@ -59,7 +59,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     await pg.click('[data-fleet-sec="who"]'); await pg.waitForTimeout(150);
     if (await pg.locator('.fl-who').count() !== ec) fail('flotte : « qui a fait quoi » incomplet');
     await pg.click('[data-fleet="ag:"]'); await pg.click('[data-fleet-sec="tl"]');
-    notes.push('flotte : ' + nb + ' observatoires, ' + ec + ' avec une contribution du CNES'); }
+    notes.push('flotte : ' + nb + ' observatoires, filtre par agence vérifié'); }
   // ---- intérieurs (priorité 1) : chaque élément cite sa source ; pas de bouton Coupe sans intérieur documenté
   for (const e of await pg.evaluate(() => { const out = []; Object.keys(INTERIOR.DATA).forEach(id => INTERIOR.DATA[id].forEach((x, i) => { if (!x.cite) out.push(id + ' n° ' + i + ' (' + (x.l || '').slice(0, 40) + ')'); })); return out; })) fail('intérieur sans source : ' + e);
   for (const id of ['gaia', 'jwst', 'chandra']){ await go(pg, id); await loaded(pg);
@@ -91,7 +91,7 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     await go(pg, 'accueil'); await go(pg, 'comparer'); await loaded(pg); await pg.waitForTimeout(800);
     const [n, want] = await pg.evaluate(() => [document.querySelectorAll('.cmp-label').length, cmpList().length]);
     if (n !== want) fail('comparaison ' + g + ' : ' + n + ' étiquettes pour ' + want + ' observatoires');
-    await go(pg, 'comparer-instruments'); await pg.waitForTimeout(900);
+    await go(pg, 'comparer-instruments'); await pg.waitForTimeout(500); await pg.click('[data-cmpsec="tableau"]'); await pg.waitForTimeout(400);
     const st = await pg.evaluate(() => ({ rows: document.querySelectorAll('.ctable tr[data-jump]').length, icons: document.querySelectorAll('.ctable .ticon').length, bad: document.getElementById('inst-main').innerHTML.match(/undefined|NaN|\[object/g) }));
     if (!st.rows || st.icons !== st.rows) fail('comparaison des instruments ' + g + ' : ' + st.rows + ' lignes, ' + st.icons + ' pictogrammes');
     if (st.bad) fail('comparaison des instruments ' + g + ' : texte suspect ' + st.bad.slice(0, 3).join(', '));
@@ -110,8 +110,13 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     }
     notes.push(t + ' : ' + ids.length + ' pages d\'instruments');
   }
-  await go(pg, 'comparer-instruments'); await pg.waitForTimeout(1200);
+  await go(pg, 'comparer-instruments'); await pg.waitForTimeout(600); await pg.click('[data-cmpsec="tableau"]'); await pg.waitForTimeout(600);
   if (await pg.evaluate(() => document.querySelectorAll('.ctable tr[data-jump]').length) < 15) fail('comparaison des instruments : tableau incomplet');
+  for (const sec of ['', 'spectre', 'champs', 'focal', 'orbites', 'tableau']){
+    await pg.click('[data-cmpsec="' + sec + '"]'); await pg.waitForTimeout(sec === 'orbites' ? 900 : 300);
+    const st = await pg.evaluate(() => ({ len: document.getElementById('inst-main').textContent.length, bad: document.getElementById('inst-main').innerHTML.match(/undefined|NaN|\[object/g) }));
+    if (st.len < 300 || st.bad) fail('comparer, sous-page ' + (sec || 'vue d\'ensemble') + (st.bad ? ' : texte suspect' : ' : presque vide'));
+  }
   const realCount = await pg.evaluate(() => Object.keys(window.OBS_DATA || {}).length);
   notes.push('observations réelles dans le manifeste : ' + realCount);
   // lien schéma -> maquette

@@ -356,53 +356,72 @@ var InstrumentsUI = (function(){
     return '<div class="fov">' + s + leg + '</div>';
   }
 
-  function compare(){
-    var LIST = cmpList().map(function(t){ return t.id; }), ty = OBS_CMP.type, ninst = 0;
-    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) ninst++; }); });
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Ce qui est comparable, sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<div>' + cmpSelector() + '</div></div>';
-    /* types d'instrument : légende et filtre (data-itype) */
-    var used = {}; LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; }); });
-    s += '<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
+  /* « Comparer » en sous-pages : vue d'ensemble, domaine spectral, champs de vue, plans focaux, orbites, tableau.
+     Le sélecteur de groupe (cmpSelector) est commun à toutes ; le filtre par type d'instrument, aux pages d'instruments. */
+  var CMP_SECS = [['', 'Vue d\'ensemble', 'Tailles, masses, orbites, missions'], ['spectre', 'Domaine spectral', 'Couverture de chaque instrument'], ['champs', 'Champs de vue', 'À la même échelle'],
+                  ['focal', 'Plans focaux', 'Détecteurs à la même échelle'], ['orbites', 'Orbites', 'Par famille d\'orbite'], ['tableau', 'Tableau', 'Tous les instruments du groupe']];
+  function typeChips(LIST){
+    var ty = OBS_CMP.type, used = {}, ninst = 0;
+    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; if (keepInst(it)) ninst++; }); });
+    return { n:ninst, html:'<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
       '<button class="chip" data-itype="" aria-pressed="' + !ty + '">Tous <small>' + Object.keys(used).reduce(function(a, k){ return a + used[k]; }, 0) + '</small></button>' +
       INST_TYPES.filter(function(x){ return used[x.id]; }).map(function(x){ return '<button class="chip" data-itype="' + x.id + '" aria-pressed="' + (ty === x.id) + '">' + typeIcon(x.id, 14) + ' ' + OBS_T(x.label) + ' <small>' + used[x.id] + '</small></button>'; }).join('') +
-      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>';
-    if (!ninst) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
-    var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage(LIST)+'</div>';
-    /* champs de vue : figure d'ensemble, puis agrandissement des champs cent fois plus petits que le plus grand */
-    var big = 0, small = [];
-    LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
-    LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
-    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
-      (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
-      '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
+      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>' };
+  }
+  function cmpOverview(LIST){
+    var maxM = 6.5, maxK = 17000;
+    var rows = LIST.map(function(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0], c = t.cmp, f = window.FLEET && FLEET[id];
+      return '<tr data-tele="' + id + '"><td class="o" style="--c:' + OBS[id] + '">' + NAMES[id] + '</td><td>' + (f ? f.life[0].slice(0, 4) + '–' + (f.life[1] ? f.life[1].slice(0, 4) : '') : t.year) + '</td>' +
+        '<td>' + (c.mirror == null ? '<span class="na">sans miroir</span>' : '<div class="barcell"><i style="width:' + Math.round(c.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(c.mirror).replace('.', ',')) + ' m</div>') + '</td>' +
+        '<td><div class="barcell"><i class="alt" style="width:' + Math.round(Math.min(c.mass, maxK)/maxK*54) + 'px"></i>' + (c.approx ? '≈ ' : '') + OBS_NUM(String(c.mass).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')) + ' kg</div></td>' +
+        '<td>' + esc(c.dim) + '</td><td>' + OBS_T((ORBIT_FAMILIES.filter(function(o){ return o.id === t.orbit; })[0] || {}).label || '') + '</td>' +
+        '<td>' + (t.mission || []).map(function(m){ return OBS_T((MISSION_TYPES.filter(function(x){ return x.id === m; })[0] || {}).label || m); }).join(', ') + '</td>' +
+        '<td>' + INST_DATA[id].instruments.length + '</td></tr>'; }).join('');
+    return '<div class="isec"><h4>Les observatoires du groupe</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Observations</th><th>Miroir</th><th>Masse au lancement</th><th>Encombrement</th><th>Orbite</th><th>Mission</th><th>Instruments</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="cap">Cliquer une ligne ouvre les instruments de l\'observatoire. Les maquettes sont posées côte à côte, à l\'échelle, dans la sous-page « Tailles en 3D ».</div></div>';
+  }
+  function compare(sec){
+    var LIST = cmpList().map(function(t){ return t.id; }), cur = CMP_SECS.filter(function(x){ return x[0] === (sec || ''); })[0] || CMP_SECS[0];
+    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
+      '<div>' + cmpSelector() + '</div></div>';
+    if (!sec) return s + cmpOverview(LIST);
+    if (sec === 'orbites') return s + Orbits.renderCompare(OBS, NAMES, LIST);
+    var tc = typeChips(LIST); s += tc.html;
+    if (!tc.n) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
+    if (sec === 'spectre') return s + '<div class="isec"><h4>Couverture spectrale</h4>' + cmpCoverage(LIST) + '</div>';
+    if (sec === 'focal') return s + (Optics.compareFocal(OBS, NAMES, LIST, keepInst) || '<p class="cap">Aucun plan focal à dessiner dans ce groupe.</p>');
+    if (sec === 'champs'){
+      var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
+      var big = 0, small = [];
+      LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
+      LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
+      return s + '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
+        (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
+        '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
+    }
     var rows = '';
     LIST.forEach(function(tid){
       var first = true;
       INST_DATA[tid].instruments.forEach(function(it){
         if (!keepInst(it)) return;
         var T = instType(it.type);
-        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'—')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
         first = false;
       });
     });
-    s += Optics.compareFocal(OBS, NAMES, LIST, keepInst);
-    s += Orbits.renderCompare(OBS, NAMES, LIST);
-    s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
+    return s + '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
-    return s;
   }
   /* même navigation que l'en-tête de la vue 3D : domaines spectraux, puis observatoires du domaine choisi */
   function pillsFor(cur){
     return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
       return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button><button class="pill cmp" data-tele="flotte">Flotte</button></div>'; }
-  function renderCompare(){
+      '</div>'; }
+  function renderCompare(sec){
     copyStore = [];
-    var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
-      cmpList().map(function(t){ return t.id; }).map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
-    return { pills:pillsFor('comparer'), nav:nav, main:compare(), sel:null };
+    var nav = CMP_SECS.map(function(x){ return '<button class="nav-i' + ((sec || '') === x[0] ? ' on' : '') + '" data-cmpsec="' + x[0] + '"><span class="n">' + x[1] + '</span><span class="k">' + x[2] + '</span></button>'; }).join('') +
+      '<button class="nav-i" data-go="comparer"><span class="n">Tailles en 3D</span><span class="k">Les maquettes côte à côte, à l\'échelle</span></button>';
+    return { pills:pillsFor('comparer'), nav:nav, main:compare(sec), sel:null };
   }
 
   function render(tid, sel, fidx){

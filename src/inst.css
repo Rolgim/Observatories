@@ -197,13 +197,13 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .fl-row{ cursor:pointer; }
 .fl-row:hover rect:first-child, .fl-row:focus rect:first-child{ fill:var(--sheet); }
 .fl-row:focus{ outline:2px solid var(--ink); outline-offset:-2px; }
-.fl-cnes{ fill:var(--ink); text-decoration:underline; }
 .fl-now{ stroke:var(--bad); } .fl-nowt{ fill:var(--bad); }
 .fl-who{ margin:14px 0; }
 .fl-who h4{ margin:0 0 4px; font-size:15px; }
 .fl-who h4 small{ font-weight:400; color:var(--mute); font-size:12px; margin-left:6px; }
 .fl-who .k small{ display:block; font-weight:400; color:var(--mute); font-size:11.5px; }
-.fl-who b.cnes{ background:var(--mark); color:var(--on-mark); padding:0 4px; }
 .linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
 .fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
 .fl-who .spec-row .v{ text-align:left; font-weight:400; }
+.views.in{ display:inline-flex; gap:6px; margin-left:12px; vertical-align:middle; }
+.views{ display:flex; gap:6px; }

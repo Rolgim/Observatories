@@ -265,6 +265,16 @@ ol.refs.pref li{ margin:0 0 2px; }
 .ms-st code{ display:inline-block; margin-top:5px; font-family:var(--f-code); font-size:11.5px; color:var(--ink); background:var(--sheet); border:1px solid var(--rule); padding:1px 6px; }
 .inst-mission{ max-width:52rem; }
 
+/* vues d'ensemble (Comparer, Flotte) : boutons à part des onglets d'observatoires */
+#views{ display:flex; flex:none; align-items:center; gap:6px; margin-left:14px; }
+.vbtn{ border:1.5px solid var(--ink); background:transparent; color:var(--ink); font:inherit; font-size:13.5px; font-weight:700; padding:6px 12px; cursor:pointer; }
+.vbtn:hover{ background:var(--sheet); }
+.vbtn[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
+@media (max-width: 860px){
+  #views{ margin:0; gap:6px; padding:5px var(--gr) 5px var(--gl); border-top:1px solid var(--rule); }
+  .vbtn{ font-size:12.5px; padding:3px 10px; }
+}
+
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
 .inst-top{ display:flex; align-items:stretch; padding-left:var(--gl); padding-right:var(--gr); border-bottom:2px solid var(--ink); flex-wrap:wrap; }
@@ -464,16 +474,16 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .fl-row{ cursor:pointer; }
 .fl-row:hover rect:first-child, .fl-row:focus rect:first-child{ fill:var(--sheet); }
 .fl-row:focus{ outline:2px solid var(--ink); outline-offset:-2px; }
-.fl-cnes{ fill:var(--ink); text-decoration:underline; }
 .fl-now{ stroke:var(--bad); } .fl-nowt{ fill:var(--bad); }
 .fl-who{ margin:14px 0; }
 .fl-who h4{ margin:0 0 4px; font-size:15px; }
 .fl-who h4 small{ font-weight:400; color:var(--mute); font-size:12px; margin-left:6px; }
 .fl-who .k small{ display:block; font-weight:400; color:var(--mute); font-size:11.5px; }
-.fl-who b.cnes{ background:var(--mark); color:var(--on-mark); padding:0 4px; }
 .linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
 .fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
 .fl-who .spec-row .v{ text-align:left; font-weight:400; }
+.views.in{ display:inline-flex; gap:6px; margin-left:12px; vertical-align:middle; }
+.views{ display:flex; gap:6px; }
 
 </style>
 </head>
@@ -484,6 +494,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
       <h1>Observatoires en orbite</h1>
     </div>
     <nav id="tabs" aria-label="Observatoire"></nav>
+    <nav id="views" aria-label="Vues d'ensemble"></nav>
     <div id="utils"></div>
   </header>
 
@@ -5773,53 +5784,72 @@ var InstrumentsUI = (function(){
     return '<div class="fov">' + s + leg + '</div>';
   }
 
-  function compare(){
-    var LIST = cmpList().map(function(t){ return t.id; }), ty = OBS_CMP.type, ninst = 0;
-    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) ninst++; }); });
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">Comparer les instruments</div><div class="inst-full">Ce qui est comparable, sur les mêmes axes. Cliquer un instrument ouvre sa fiche.</div></div>' +
-      '<div>' + cmpSelector() + '</div></div>';
-    /* types d'instrument : légende et filtre (data-itype) */
-    var used = {}; LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; }); });
-    s += '<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
+  /* « Comparer » en sous-pages : vue d'ensemble, domaine spectral, champs de vue, plans focaux, orbites, tableau.
+     Le sélecteur de groupe (cmpSelector) est commun à toutes ; le filtre par type d'instrument, aux pages d'instruments. */
+  var CMP_SECS = [['', 'Vue d\'ensemble', 'Tailles, masses, orbites, missions'], ['spectre', 'Domaine spectral', 'Couverture de chaque instrument'], ['champs', 'Champs de vue', 'À la même échelle'],
+                  ['focal', 'Plans focaux', 'Détecteurs à la même échelle'], ['orbites', 'Orbites', 'Par famille d\'orbite'], ['tableau', 'Tableau', 'Tous les instruments du groupe']];
+  function typeChips(LIST){
+    var ty = OBS_CMP.type, used = {}, ninst = 0;
+    LIST.forEach(function(t){ INST_DATA[t].instruments.forEach(function(it){ used[it.type] = (used[it.type] || 0) + 1; if (keepInst(it)) ninst++; }); });
+    return { n:ninst, html:'<div class="isec"><h4>Types d\'instrument</h4><div class="tkey" role="group" aria-label="Filtrer par type d\'instrument">' +
       '<button class="chip" data-itype="" aria-pressed="' + !ty + '">Tous <small>' + Object.keys(used).reduce(function(a, k){ return a + used[k]; }, 0) + '</small></button>' +
       INST_TYPES.filter(function(x){ return used[x.id]; }).map(function(x){ return '<button class="chip" data-itype="' + x.id + '" aria-pressed="' + (ty === x.id) + '">' + typeIcon(x.id, 14) + ' ' + OBS_T(x.label) + ' <small>' + used[x.id] + '</small></button>'; }).join('') +
-      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>';
-    if (!ninst) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
-    var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
-    s += '<div class="isec"><h4>Couverture spectrale</h4>'+cmpCoverage(LIST)+'</div>';
-    /* champs de vue : figure d'ensemble, puis agrandissement des champs cent fois plus petits que le plus grand */
-    var big = 0, small = [];
-    LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
-    LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
-    s += '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
-      (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
-      '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
+      '</div><div class="cap">Chaque instrument porte la couleur et le pictogramme de son type, sur toutes les figures et dans le tableau. ' + LIST.length + ' observatoire' + (LIST.length > 1 ? 's' : '') + ', ' + ninst + ' instrument' + (ninst > 1 ? 's' : '') + ' affichés.</div></div>' };
+  }
+  function cmpOverview(LIST){
+    var maxM = 6.5, maxK = 17000;
+    var rows = LIST.map(function(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0], c = t.cmp, f = window.FLEET && FLEET[id];
+      return '<tr data-tele="' + id + '"><td class="o" style="--c:' + OBS[id] + '">' + NAMES[id] + '</td><td>' + (f ? f.life[0].slice(0, 4) + '–' + (f.life[1] ? f.life[1].slice(0, 4) : '') : t.year) + '</td>' +
+        '<td>' + (c.mirror == null ? '<span class="na">sans miroir</span>' : '<div class="barcell"><i style="width:' + Math.round(c.mirror/maxM*54) + 'px"></i>' + OBS_NUM(String(c.mirror).replace('.', ',')) + ' m</div>') + '</td>' +
+        '<td><div class="barcell"><i class="alt" style="width:' + Math.round(Math.min(c.mass, maxK)/maxK*54) + 'px"></i>' + (c.approx ? '≈ ' : '') + OBS_NUM(String(c.mass).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')) + ' kg</div></td>' +
+        '<td>' + esc(c.dim) + '</td><td>' + OBS_T((ORBIT_FAMILIES.filter(function(o){ return o.id === t.orbit; })[0] || {}).label || '') + '</td>' +
+        '<td>' + (t.mission || []).map(function(m){ return OBS_T((MISSION_TYPES.filter(function(x){ return x.id === m; })[0] || {}).label || m); }).join(', ') + '</td>' +
+        '<td>' + INST_DATA[id].instruments.length + '</td></tr>'; }).join('');
+    return '<div class="isec"><h4>Les observatoires du groupe</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Observations</th><th>Miroir</th><th>Masse au lancement</th><th>Encombrement</th><th>Orbite</th><th>Mission</th><th>Instruments</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="cap">Cliquer une ligne ouvre les instruments de l\'observatoire. Les maquettes sont posées côte à côte, à l\'échelle, dans la sous-page « Tailles en 3D ».</div></div>';
+  }
+  function compare(sec){
+    var LIST = cmpList().map(function(t){ return t.id; }), cur = CMP_SECS.filter(function(x){ return x[0] === (sec || ''); })[0] || CMP_SECS[0];
+    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
+      '<div>' + cmpSelector() + '</div></div>';
+    if (!sec) return s + cmpOverview(LIST);
+    if (sec === 'orbites') return s + Orbits.renderCompare(OBS, NAMES, LIST);
+    var tc = typeChips(LIST); s += tc.html;
+    if (!tc.n) return s + '<p class="cap">Aucun instrument de ce type dans ce groupe.</p>';
+    if (sec === 'spectre') return s + '<div class="isec"><h4>Couverture spectrale</h4>' + cmpCoverage(LIST) + '</div>';
+    if (sec === 'focal') return s + (Optics.compareFocal(OBS, NAMES, LIST, keepInst) || '<p class="cap">Aucun plan focal à dessiner dans ce groupe.</p>');
+    if (sec === 'champs'){
+      var key = '<ul class="obs-key">' + LIST.map(function(t){ return '<li><i style="background:'+OBS[t]+'"></i>'+NAMES[t]+'</li>'; }).join('') + '</ul>';
+      var big = 0, small = [];
+      LIST.forEach(function(t){ var e = 0; INST_DATA[t].instruments.forEach(function(it){ if (keepInst(it)) (it.fov||[]).forEach(function(f){ e = Math.max(e, Math.abs(f.dx||0)*2 + f.w, f.h); }); }); big = Math.max(big, e); INST_DATA[t]._e = e; });
+      LIST.forEach(function(t){ if (INST_DATA[t]._e > 0 && INST_DATA[t]._e < big/30) small.push(t); });
+      return s + '<div class="isec"><h4>Champs de vue, à la même échelle</h4>'+key+'<div class="cmp-figs"><div><h5>Observatoires comparés</h5>'+cmpFov(LIST, big/40)+'</div>' +
+        (small.length ? '<div><h5>Agrandissement : '+small.map(function(t){ return NAMES[t]; }).join(', ')+'</h5>'+cmpFov(small, 0)+'</div>' : '') + '</div>' +
+        '<div class="cap">Champs à la même échelle ; pour les grands champs, la pleine Lune sert de repère.'+(small.length ? ' Les plus petits champs sont agrandis à droite.' : '')+' Le champ de Gaia est une valeur approchée.</div></div>';
+    }
     var rows = '';
     LIST.forEach(function(tid){
       var first = true;
       INST_DATA[tid].instruments.forEach(function(it){
         if (!keepInst(it)) return;
         var T = instType(it.type);
-        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'sans objet').split(' · ').join('<br>')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
+        rows += '<tr data-jump="'+tid+':'+it.id+'"'+(first?' class="first"':'')+'><td class="o" style="--c:'+OBS[tid]+'">'+(first?NAMES[tid]:'')+'</td><td class="n">'+esc(it.name)+'</td><td class="ty">'+typeIcon(it.type, 14)+' '+OBS_T(T.label)+'<small>'+esc(it.kind)+'</small></td><td>'+range(it)+'</td><td>'+bigFov(it)+'</td><td>'+esc((SAMP[tid]||{})[it.id]||'—')+'</td><td>'+esc((RES[tid]||{})[it.id]||'imagerie seule')+'</td></tr>';
         first = false;
       });
     });
-    s += Optics.compareFocal(OBS, NAMES, LIST, keepInst);
-    s += Orbits.renderCompare(OBS, NAMES, LIST);
-    s += '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
+    return s + '<div class="isec"><h4>Tableau comparatif</h4><div class="tablewrap"><table class="ctable"><thead><tr><th>Observatoire</th><th>Instrument</th><th>Type</th><th>Domaine spectral</th><th>Champ de vue</th><th>Échantillonnage par pixel</th><th>Résolution spectrale R</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       '<div class="cap">R = λ/Δλ. « Imagerie seule » : l\'instrument n\'a pas de mode spectroscopique.</div></div>';
-    return s;
   }
   /* même navigation que l'en-tête de la vue 3D : domaines spectraux, puis observatoires du domaine choisi */
   function pillsFor(cur){
     return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
       return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button><button class="pill cmp" data-tele="flotte">Flotte</button></div>'; }
-  function renderCompare(){
+      '</div>'; }
+  function renderCompare(sec){
     copyStore = [];
-    var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
-      cmpList().map(function(t){ return t.id; }).map(function(t){ return '<button class="nav-i" style="--c:'+OBS[t]+'" data-tele="'+t+'"><span class="n">'+NAMES[t]+'</span><span class="k">'+INST_DATA[t].instruments.map(function(i){ return i.name; }).join(', ')+'</span></button>'; }).join('');
-    return { pills:pillsFor('comparer'), nav:nav, main:compare(), sel:null };
+    var nav = CMP_SECS.map(function(x){ return '<button class="nav-i' + ((sec || '') === x[0] ? ' on' : '') + '" data-cmpsec="' + x[0] + '"><span class="n">' + x[1] + '</span><span class="k">' + x[2] + '</span></button>'; }).join('') +
+      '<button class="nav-i" data-go="comparer"><span class="n">Tailles en 3D</span><span class="k">Les maquettes côte à côte, à l\'échelle</span></button>';
+    return { pills:pillsFor('comparer'), nav:nav, main:compare(sec), sel:null };
   }
 
   function render(tid, sel, fidx){
@@ -5867,9 +5897,14 @@ var FleetUI = (function(){
       '<button class="chip" data-fleet="' + key + ':" aria-pressed="' + (!F[key]) + '">' + esc(T('Tous')) + '</button>' +
       opts.map(function(o){ return '<button class="chip" data-fleet="' + key + ':' + o[0] + '" aria-pressed="' + (F[key] === o[0]) + '">' + esc(T(o[1])) + '</button>'; }).join('') + '</div>';
   }
+  /* agences et partenaires nommés, du plus au moins présent */
+  function agencies(){
+    var n = {}; Object.keys(FLEET).forEach(function(id){ fleetAgencies(id).forEach(function(a){ if (a !== 'Partenaires') n[a] = (n[a] || 0) + 1; }); });
+    return Object.keys(n).sort(function(a, b){ return n[b] - n[a] || (a < b ? -1 : 1); }).map(function(a){ return [a, a]; });
+  }
   function filters(){
     return '<div class="fl-filters">' +
-      chips('ag', 'Agence', [['NASA','NASA'],['ESA','ESA'],['CNES','CNES']]) +
+      chips('ag', 'Agence', agencies()) +
       chips('st', 'État', [['on','En service'],['off','Terminés']]) +
       chips('dom', 'Domaine spectral', DOMAINS.map(function(d){ return [d.id, d.label]; })) +
       chips('orb', 'Orbite', ORBIT_FAMILIES.map(function(o){ return [o.id, o.label]; })) +
@@ -5883,17 +5918,17 @@ var FleetUI = (function(){
     for (var y = y0; y <= y1; y += 5){ s += '<line x1="' + X(y) + '" y1="' + (top - 6) + '" x2="' + X(y) + '" y2="' + (H - 22) + '" stroke="#C8CDD1" stroke-width="1"/><text x="' + X(y) + '" y="14" text-anchor="middle" font-size="11" fill="#3A4147">' + y + '</text>'; }
     s += '<line x1="' + X(now) + '" y1="' + (top - 6) + '" x2="' + X(now) + '" y2="' + (H - 22) + '" stroke-width="1.5" stroke-dasharray="3 3" class="fl-now"/><text x="' + X(now) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" class="fl-nowt">' + esc(T('aujourd\'hui')) + '</text>';
     L.forEach(function(t, i){
-      var f = FLEET[t.id], a = yr(f.life[0]), b = f.life[1] ? yr(f.life[1]) : now, yy = top + i*rh, on = !f.life[1], cn = fleetAgencies(t.id).indexOf('CNES') >= 0;
+      var f = FLEET[t.id], a = yr(f.life[0]), b = f.life[1] ? yr(f.life[1]) : now, yy = top + i*rh, on = !f.life[1];
       var tip = t.short + ' : ' + dfmt(f.life[0]) + ' – ' + (on ? T('en service') : dfmt(f.life[1]));
       s += '<g class="fl-row" data-go="' + t.id + '" tabindex="0" role="link" aria-label="' + esc(tip) + '"><title>' + esc(tip) + '</title>' +
         '<rect x="0" y="' + (yy - 2) + '" width="' + W + '" height="' + rh + '" fill="transparent"/>' +
         '<text x="' + (lw - 10) + '" y="' + (yy + 15) + '" text-anchor="end" font-size="12.5" font-weight="700" fill="#14171A">' + esc(t.short) + '</text>' +
         '<rect x="' + X(a) + '" y="' + (yy + 4) + '" width="' + Math.max(3, X(b) - X(a)) + '" height="14" fill="' + t.color + '"' + (on ? '' : ' fill-opacity="0.55"') + '/>' +
         (on ? '<path d="M' + X(b) + ' ' + (yy + 4) + ' l7 7 l-7 7 z" fill="' + t.color + '"/>' : '') +
-        (cn ? '<text x="' + (X(b) + (on ? 12 : 5)) + '" y="' + (yy + 15) + '" font-size="10.5" font-weight="700" class="fl-cnes">CNES</text>' : '') + '</g>';
+        '</g>';
     });
     return '<div class="svgwrap fl-tl"><svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' + esc(T('Frise chronologique des observatoires')) + '" font-family="Archivo, Arial, sans-serif">' + s + '</svg></div>' +
-      '<div class="cap">' + esc(T('Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s\'il est en service. « CNES » signale une contribution du CNES, détaillée plus bas. Cliquer une barre ouvre l\'observatoire en 3D.')) + '</div>';
+      '<div class="cap">' + esc(T('Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s\'il est en service. Cliquer une barre ouvre l\'observatoire en 3D.')) + '</div>';
   }
   function who(L){
     var nums = {}, n = 0, refs = {}, h = '';
@@ -5902,7 +5937,7 @@ var FleetUI = (function(){
       h += '<div class="fl-who"><h4><button class="linkish" data-go="' + t.id + '">' + esc(t.short) + '</button> <small>' + dfmt(f.life[0]) + ' – ' + (f.life[1] ? dfmt(f.life[1]) : esc(T('en service'))) + '</small></h4>' +
         f.who.map(function(w){
           var ks = [].concat(w[4]).filter(function(k){ return r[k]; }), mk = ks.map(function(k){ var id = t.id + ':' + k; if (!nums[id]){ nums[id] = ++n; refs[n] = r[k]; } return nums[id]; });
-          return '<div class="spec-row"><div class="k"><b' + (w[0] === 'CNES' ? ' class="cnes"' : '') + '>' + esc(T(w[0])) + '</b><small>' + esc(FLEET_ROLES[w[1]][en() ? 1 : 0]) + '</small></div><div class="v">' + esc(en() ? w[3] : w[2]) + (mk.length ? '<sup class="ref">' + mk.join(',') + '</sup>' : '') + '</div></div>';
+          return '<div class="spec-row"><div class="k"><b>' + esc(T(w[0])) + '</b><small>' + esc(FLEET_ROLES[w[1]][en() ? 1 : 0]) + '</small></div><div class="v">' + esc(en() ? w[3] : w[2]) + (mk.length ? '<sup class="ref">' + mk.join(',') + '</sup>' : '') + '</div></div>';
         }).join('') + '</div>';
     });
     var src = Object.keys(refs).map(function(k){ var x = refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(T(x.t)) + '</a> <span>' + esc(T(x.p)) + '</span></li>'; }).join('');
@@ -5912,7 +5947,7 @@ var FleetUI = (function(){
     var L = list(), all = TELESCOPES.filter(function(t){ return FLEET[t.id]; }).length;
     var nav = '<button class="nav-i' + (sec !== 'who' ? ' on' : '') + '" data-fleet-sec="tl"><span class="n">' + esc(T('Frise chronologique')) + '</span><span class="k">' + esc(T('Du lancement à la fin des observations')) + '</span></button>' +
       '<button class="nav-i' + (sec === 'who' ? ' on' : '') + '" data-fleet-sec="who"><span class="n">' + esc(T('Qui a fait quoi')) + '</span><span class="k">' + esc(T('Agences, instruments, données, lancement')) + '</span></button>';
-    var head = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + esc(T('Flotte')) + '</div><div class="inst-full">' + esc(T('Les observatoires de la NASA, de l\'ESA et du CNES présentés sur ce site')) + '</div></div>' +
+    var head = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + esc(T('Flotte')) + '</div><div class="inst-full">' + esc(T('Tous les observatoires présentés sur ce site')) + '</div></div>' +
       '<p class="inst-sum">' + esc(T('Chaque observatoire a sa fiche, sa maquette et ses données. Les filtres se combinent ; le nombre affiché est celui des observatoires retenus.')) + '</p></div>';
     var main = head + filters() + '<p class="fl-count">' + esc(T('Observatoires affichés')) + (en() ? ': ' : ' : ') + '<b>' + L.length + '</b> / ' + all + '</p>';
     if (!L.length) main += '<p class="cap">' + esc(T('Aucun observatoire ne correspond à ces filtres.')) + '</p>';
@@ -7257,7 +7292,10 @@ var EN_RULES = [
 ];
 /* vague 1 (Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton, WMAP) */
 Object.assign(EN_UI, {
-  "Flotte":"Fleet", "Domaine spectral":"Waveband", "chronologie":"timeline", "Agence":"Agency", "État":"Status", "Mission":"Mission", "En service":"In service", "Terminés":"Ended", "aujourd'hui":"today", "en service":"in service",
+  "Tailles, masses, orbites, missions":"Sizes, masses, orbits, missions", "Couverture de chaque instrument":"Coverage of each instrument", "À la même échelle":"To the same scale", "Plans focaux":"Focal planes", "Détecteurs à la même échelle":"Detectors to the same scale", "Orbites":"Orbits", "Par famille d'orbite":"By orbit family", "Tableau":"Table", "Tous les instruments du groupe":"All the instruments of the group", "Tailles en 3D":"Sizes in 3D", "Les maquettes côte à côte, à l'échelle":"The models side by side, to scale",
+  "Comparer : ce qui est comparable, sur les mêmes axes":"Compare: what is comparable, on the same axes", "Les observatoires du groupe":"The observatories of the group", "Observations":"Observations", "Instruments":"Instruments", "Aucun plan focal à dessiner dans ce groupe.":"No focal plane to draw in this group.", "Tous les observatoires présentés sur ce site":"All the observatories presented on this site",
+  "Cliquer une ligne ouvre les instruments de l'observatoire. Les maquettes sont posées côte à côte, à l'échelle, dans la sous-page « Tailles en 3D ».":"Clicking a row opens the observatory's instruments. The models are set side by side, to scale, in the 'Sizes in 3D' sub-page.", "Vues d'ensemble":"Overviews",
+  "Flotte":"Fleet", "chronologie":"timeline", "Agence":"Agency", "État":"Status", "Mission":"Mission", "En service":"In service", "Terminés":"Ended", "aujourd'hui":"today", "en service":"in service",
   "Frise chronologique des observatoires":"Timeline of the observatories", "Frise chronologique":"Timeline", "Du lancement à la fin des observations":"From launch to the end of observations", "Qui a fait quoi":"Who did what", "Agences, instruments, données, lancement":"Agencies, instruments, data, launch",
   "Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. « CNES » signale une contribution du CNES, détaillée plus bas. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid and arrowed if it is in service. 'CNES' marks a CNES contribution, detailed in 'Who did what'. Clicking a bar opens the observatory in 3D.",
   "Les observatoires de la NASA, de l'ESA et du CNES présentés sur ce site":"The NASA, ESA and CNES observatories presented on this site", "Chaque observatoire a sa fiche, sa maquette et ses données. Les filtres se combinent ; le nombre affiché est celui des observatoires retenus.":"Each observatory has its overview, its model and its data. Filters combine; the count shown is the number of observatories kept.",
@@ -8150,6 +8188,10 @@ function edgeScroll(el){
   if (!el._edge){ el._edge = true; el.addEventListener('scroll', marks, { passive:true }); window.addEventListener('resize', marks); }
   marks();
 }
+function viewsHtml(top){
+  var c = S.mode === 'compare' && !S.fleet, f = !!S.fleet;
+  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
+}
 function renderTabs(){
   /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
   if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
@@ -8157,9 +8199,10 @@ function renderTabs(){
   domList(S.id).forEach(function(t){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare' && !S.fleet) + '">Comparer<small>tailles</small></button>';
-  h += '<button class="tab cmp" role="tab" data-go="flotte" aria-selected="' + !!S.fleet + '">Flotte<small>chronologie</small></button></div>';
+  h += '</div>';
   $('tabs').innerHTML = h;
+  /* vues d'ensemble, à part des onglets d'observatoires */
+  $('views').innerHTML = viewsHtml(true);
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
   h = '';
@@ -8227,11 +8270,11 @@ function renderHud(){
 
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
-  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
-  var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
+  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills + viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills + viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -8251,13 +8294,14 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-go],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-cmpsec],[data-go],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
   if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
   if (el.hasAttribute('data-fleet-sec')){ S.fleetSec = el.getAttribute('data-fleet-sec'); renderInst(); return; }
   if (FleetUI.click(el)){ renderInst(true); return; }
   if (el.getAttribute('data-tele') === 'flotte'){ location.hash = 'flotte'; return; }
+  if (el.hasAttribute('data-cmpsec')){ S.cmpSec = el.getAttribute('data-cmpsec') || null; renderInst(); return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){
