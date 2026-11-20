@@ -1,0 +1,85 @@
+== tables swift 11 lignes ; colonnes table_name
+['swift2sxps']
+['swiftbalog']
+['swiftft']
+== tables integral 1 lignes ; colonnes table_name
+['integralao']
+== tables ibis 6 lignes ; colonnes table_name
+['ibiscat']
+['intibisag2']
+['intibisagn']
+== tables batse 7 lignes ; colonnes table_name
+['batse4b']
+['batsedaily']
+['batseeocat']
+== tables egret 2 lignes ; colonnes table_name
+['egret3']
+['egretdata']
+== tables comptel 1 lignes ; colonnes table_name
+['comptel']
+== tables osse 1 lignes ; colonnes table_name
+['osse']
+== tables wmap 3 lignes ; colonnes table_name
+['wmapcmbfps']
+['wmapitnpts']
+['wmapptsrc']
+== tables planck 5 lignes ; colonnes table_name
+['planckeszc']
+['planckgcc']
+['planckhzsc']
+== tables herschel 0 lignes ; colonnes table_name
+
+== tables cheops 0 lignes ; colonnes table_name
+
+== tables grb 25 lignes ; colonnes table_name
+['bat5bgrbsp']
+['batsegrb']
+['batsegrbsp']
+
+COLS swiftgrb 2 lignes ; colonnes DataLinkID, name, target_id, other_id, det_flag, slew_info, ra, dec, pos_err, lii, bii, pos_flag, pos_ref, start_time, stop_time, duration, trigger_time, trigger_ref, bat_detection, bat_dettype, bat_ra, bat_dec, bat_pos_err, bat_pos_ref, bat_theta, bat_phi, bat_imagesig, bat_t90, bat_t50, bat_start, bat_stop, bat_t100_start, bat_t100_stop, bat_fluence_model, bat_fluence, bat_fluence_err, bat_fluence1, bat_fluence1_err, bat_fluence2, bat_fluence2_err, bat_fluence3, bat_fluence3_err, bat_fluence4, bat_fluence4_err, bat_peak_time, bat_peak_model, bat_peak_flux, bat_peak_flux_err, bat_peak_flux1, bat_peak_flux1_err, bat_peak_flux2, bat_peak_flux2_err, bat_peak_flux3, bat_peak_flux3_err, bat_peak_flux4, bat_peak_flux4_err, bat_peakfluxp, bat_peakfluxp_err, bat_peakfluxp1, bat_peakfluxp1_err, bat_peakfluxp2, bat_peakfluxp2_err, bat_peakfluxp3, bat_peakfluxp3_err, bat_peakfluxp4, bat_peakfluxp4_err, bat_plsl, bat_plsl_err, bat_pl_chi2, bat_pl_dof, bat_ctslope, bat_ctslope_err, bat_ctslope_n_err, bat_ctezero, bat_ctezero_err, bat_ctezero_n_err, bat_ct_chi2, bat_ct_dof, bat_epeak, bat_epeak_ref, bat_eiso, bat_eiso1000, bat_eiso_alpha, bat_eiso_beta, bat_eiso_norm, bat_eiso_dur, bat_eiso_ref, bat_redshift, bat_hrd1, bat_hrd1_err, bat_hrd2, bat_hrd2_err, bat_comment, xrt_detection, xrt_ra, xrt_dec, xrt_pos_err, xrt_pos_ref, xrt_onsource, xrt_c100_rate, xrt_c100_start, xrt_c100_stop, xrt_c100_expo, xrt_c100_mode, xrt_e1_rate, xrt_e1_rate_err, xrt_e1_rate1, xrt_e1_rate
+
+COLS swiftbalog 2 lignes ; colonnes DataLinkID, name, orig_target_id, target_id, ra, dec, roll_angle, start_time, stop_time, orig_obs_segment, obs_segment, orig_obsid, obsid, exposure, ratecode, catnum, operation_mode, pointing_mode, filename, lii, bii, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['9582', 'GRB250805a', np.int32(1339848), np.int32(1339848), np.float64(24.15126), np.float64(-81.39314), np.float64(109.07891), np.float64(60892.5586574074), np.float64(60892.5738541667), np.int32(2), np.int32(2), '01339848002', '01339848002', np.float64(1313.0), '', np.int32(0), 'Survey', 'POINTING', 'sw01339848002bsvpbo2498g07a7.dph', np.float64(300.86781455), np.float64(-35.55333644), np.float
+['9583', 'GRB250805a', np.int32(1339848), np.int32(1339848), np.float64(24.15126), np.float64(-81.39314), np.float64(118.98753), np.float64(60892.498599537), np.float64(60892.5152199074), np.int32(2), np.int32(2), '01339848002', '01339848002', np.float64(1436.0), '1111', np.int32(0), 'Rates_Arr_1s', 'POINTING', 'sw01339848002brt1s.lc', np.float64(300.86781455), np.float64(-35.55333644), np.float64
+
+COLS swbat157m 2 lignes ; colonnes DataLinkID, source_number, name, ra, dec, lii, bii, snr, ctrpart_name, ctrpart_ra, ctrpart_dec, flux, flux_lower, flux_upper, spectral_index, spectral_index_lower, spectral_index_upper, chi_squared, redshift, log_lx, ctrpart_flag, ctrpart_class, source_type, root_filename, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(319), 'SWIFT J0601.9-8636', np.float64(91.4902), np.float64(-86.5992), np.float64(299.16411462), np.float64(-27.7482995), np.float64(14.6), 'ESO 005- G 004', np.float64(91.4235), np.float64(-86.6319), np.float64(2.767e-11), np.float64(2.454e-11), np.float64(3.092e-11), np.float64(1.57), np.float64(1.42), np.float64(1.72), np.float64(2.06), np.float64(0.0062), np.float64(42.38), np.i
+['2', np.int16(1768), 'SWIFT J0749.6-8633', np.float64(117.4046), np.float64(-86.5447), np.float64(299.2036523), np.float64(-26.21136017), np.float64(5.24), '2MASX J07504720-8632118', np.float64(117.6971), np.float64(-86.5367), np.float64(7.06e-12), np.float64(4.78e-12), np.float64(9.59e-12), np.float64(2.26), np.float64(1.8), np.float64(2.83), np.float64(0.63), np.float64(0.109), np.float64(43.94
+
+COLS swbat105m 2 lignes ; colonnes __row, source_number, name, ra, dec, lii, bii, snr, ctrpart_name, ctrpart_ra, ctrpart_dec, flux, flux_lower, flux_upper, spectral_index, spectral_index_lower, spectral_index_upper, chi_squared, redshift, log_lx, ctrpart_class, source_type, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(319), 'SWIFT J0601.9-8636', np.float64(91.46719561), np.float64(-86.6055185), np.float64(299.17141135), np.float64(-27.74858488), np.float64(14.39), 'ESO5-4', np.float64(91.4235), np.float64(-86.6319), np.float64(3.089e-11), np.float64(2.875e-11), np.float64(3.364e-11), np.float64(1.52), np.float64(1.32), np.float64(1.72), np.float64(1.4), np.float64(0.006), np.float64(42.4), np.int
+['2', np.int16(1444), 'SWIFT J1423.1-8548', np.float64(215.7768387), np.float64(-85.4865828), np.float64(304.83902871), np.float64(-22.95838246), np.float64(5.21), 'SWIFT J1423.1-8548', np.float64(215.7768), np.float64(-85.4866), np.float64(1.047e-11), np.float64(6.47e-12), np.float64(1.428e-11), np.float64(1.36), np.float64(0.62), np.float64(2.1), np.float64(0.5), masked, masked, np.int16(12), 'U
+
+COLS swift2sxps 2 lignes ; colonnes __row, source_number, name, ra, dec, lii, bii, error_radius, trackers_flag, off_axis, error_radius_ori, ctrpart_offset, ctrpart_offset_good, exposure, time, end_time, time_met, end_time_met, time_determine, end_time_determine, time_determine_met, end_time_determine_met, time_blind, end_time_blind, time_blind_met, end_time_blind_met, num_obs, num_blind_obs, num_determine_obs, best_detect_id, rate_fb_flag, rate_sb_flag, rate_mb_flag, rate_hb_flag, detect_flag, field_flag, det_fb_flag, det_sb_flag, det_mb_flag, det_hb_flag, optical_load, stray_flag, bright_flag, alias_flag, alias_list, count_rate_fb, count_rate_fb_pos_err, count_rate_fb_neg_err, hardness_ratio_1, hardness_ratio_1_pos_err, hardness_ratio_1_neg_err, hardness_ratio_2, hardness_ratio_2_pos_err, hardness_ratio_2_neg_err, count_rate_sb, count_rate_sb_pos_err, count_rate_sb_neg_err, count_rate_mb, count_rate_mb_pos_err, count_rate_mb_neg_err, count_rate_hb, count_rate_hb_pos_err, count_rate_hb_neg_err, count_fb, count_sb, count_mb, count_hb, bkgcnt_fb, bkgcnt_sb, bkgcnt_mb, bkgcnt_hb, ratecf_fb, ratecf_sb, ratecf_mb, ratecf_hb, count_rate_fb_upper, count_rate_sb_upper, count_rate_mb_upper, count_rate_hb_upper, pkrate_fb, pkrate_fb_pos_err, pkrate_fb_neg_err, pkrate_sb, pkrate_sb_pos_err, pkrate_sb_neg_err, pkrate_mb, pkrate_mb_pos_err, pkrate_mb_neg_err, pkrate_hb, pkrate_hb_pos_err, pkrate_hb_neg_err, nh, prbcnst_snap_fb, prbcnst_snap_sb, prbcnst_snap_mb, prbcnst_snap_hb, prbcnst_snap_hr_1, prbcnst
+
+COLS swiftuvlog 2 lignes ; colonnes DataLinkID, name, orig_target_id, target_id, ra, dec, roll_angle, start_time, stop_time, orig_obs_segment, obs_segment, orig_obsid, obsid, exposure, counts, image_loss, window_size, binning, filter, operation_mode, pointing_mode, filename, extname, asp_corr, submode, led_bias, lii, bii, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', '2017egm', np.int32(10150), np.int32(10150), np.float64(154.696991), np.float64(46.470707), np.float64(281.26226), np.float64(57914.524525463), np.float64(57914.5260763889), np.int32(7), np.int32(7), '00010150007', '00010150007', np.float64(132.63513), np.float64(456932.0), np.float64(0.0), '2048 x 2048', np.int16(1), 'UVW1', 'Event', 'POINTING', 'sw00010150007uw1_rw.img', 'w1518790924E', 'Y
+['2', '2017egm', np.int32(10150), np.int32(10150), np.float64(154.696991), np.float64(46.470707), np.float64(281.26226), np.float64(57914.524525463), np.float64(57914.526087963), np.int32(7), np.int32(7), '00010150007', '00010150007', np.float64(134.76058), np.float64(459195.0), masked, '', np.int16(1), 'UVW1', 'Event', 'POINTING', 'sw00010150007uw1w1po_uf.evt', '', 'Y', '0x00', np.int32(0), np.fl
+
+ERR intibisasc IndexError('No table found in VOTABLE file.')
+
+COLS intrefcat 2 lignes ; colonnes __row, source_number, source_id, name, ra, dec, ra_precision, dec_precision, lii, bii, error_radius, pos_ref, pos_ref_bibcode, isgri_flag, isgri2_flag, jemx_flag, spi_flag, picsit_flag, source_type, alt_names, class, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(366), 'J051400.0-881200', '4U 0546-88', np.float64(78.5), np.float64(-88.2), masked, masked, np.float64(301.07719094), np.float64(-27.85847641), np.float64(36.0), 'Forman W. et al.', '1978ApJS...38..357F', np.int16(0), np.int16(0), np.int16(0), np.int16(0), np.int16(0), 'Unclassified', '', np.int16(1500), np.float64(0.0307801788115508), np.float64(0.00626229815588264), np.float64(-0
+['2', np.int16(691), 'J100418.1-870207', 'IGR J10043-8702', np.float64(151.075), np.float64(-87.03333333), masked, masked, np.float64(300.75301107), np.float64(-24.89942943), np.float64(204.0), 'Paizis A. et al.', '2006ATel..865....1P', np.int16(1), np.int16(2), np.int16(0), np.int16(0), np.int16(0), 'Unclassified (T)', '', np.int16(9999), np.float64(0.0250320321341321), np.float64(-0.045298720926
+
+ERR ibisgps IndexError('No table found in VOTABLE file.')
+
+COLS batsegrb 2 lignes ; colonnes DataLinkID, trigger_num, name, ra, dec, lii, bii, day_trigger, time, seconds_trigger, error_radius, earth_angle, overwrite, overwritten, max_cts_64, threshold_64, flux_64, flux_64_error, flux_64_time, max_cts_256, threshold_256, flux_256, flux_256_error, flux_256_time, max_cts_1024, threshold_1024, flux_1024, flux_1024_error, flux_1024_time, t50, t50_error, t50_start, t90, t90_error, t90_start, fluence_1, fluence_1_error, fluence_2, fluence_2_error, fluence_3, fluence_3_error, fluence_4, fluence_4_error, comments_quality, comments_otherobs, comments_general, comments_position, comments_duration, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(2052), '4B 921112-', np.float64(76.94), np.float64(-88.95), np.float64(301.86643333), np.float64(-27.58318949), np.int32(8938), np.float64(48938.5320429815), np.float64(45968.5136), np.float32(7.79), np.float32(102.99), 'N', 'N', masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, masked, mas
+['2', np.int16(7980), 'GRB 000203', np.float64(329.06), np.float64(-88.4), np.float64(304.18933741), np.float64(-28.27746411), np.int32(11577), np.float64(51577.4359954792), np.float64(37670.0094), np.float32(5.3), np.float32(102.51), 'N', 'N', masked, masked, np.float32(2.414), np.float32(0.2203), np.float32(0.064), masked, masked, np.float32(1.8037), np.float32(0.1031), np.float32(0.128), masked
+
+COLS batse4b 2 lignes ; colonnes DataLinkID, trigger_num, name, ra, dec, lii, bii, day_trigger, time, seconds_trigger, error_radius, earth_angle, overwrite, overwritten, max_cts_64, threshold_64, flux_64, flux_64_error, flux_64_time, max_cts_256, threshold_256, flux_256, flux_256_error, flux_256_time, max_cts_1024, threshold_1024, flux_1024, flux_1024_error, flux_1024_time, t50, t50_error, t50_start, t90, t90_error, t90_start, fluence_1, fluence_1_error, fluence_2, fluence_2_error, fluence_3, fluence_3_error, fluence_4, fluence_4_error, comments_quality, comments_otherobs, comments_general, comments_position, comments_duration, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(3875), '4B 951019', np.float64(161.51), np.float64(-87.81), np.float64(301.67), np.float64(-25.25), np.int32(10009), np.float64(50009.558388), np.float64(48244.723), np.float32(1.8), np.float32(90.6), 'N', 'N', np.float32(2.312), np.float32(82.0), np.float32(3.023), np.float32(0.226), np.float32(0.128), np.float32(4.285), np.float32(165.0), np.float32(2.802), np.float32(0.112), np.f
+['2', np.int16(3441), '4B 950225B', np.float64(194.04), np.float64(-85.03), np.float64(303.04), np.float64(-22.16), np.int32(9773), np.float64(49773.7150228), np.float64(61777.969), np.float32(8.94), np.float32(122.47), 'N', 'N', np.float32(1.603), np.float32(63.0), np.float32(2.057), np.float32(0.25), np.float32(0.0), np.float32(-999.0), np.float32(126.0), np.float32(1.162), np.float32(1.292), np
+
+ERR egr3 IndexError('No table found in VOTABLE file.')
+
+COLS wmapptsrc 2 lignes ; colonnes __row, name, ra, dec, lii, bii, flux_23_ghz, flux_23_ghz_error, flux_33_ghz, flux_33_ghz_error, flux_41_ghz, flux_41_ghz_error, flux_61_ghz, flux_61_ghz_error, flux_94_ghz, flux_94_ghz_error, alt_name_5_ghz, source_flag, yr1_source_number, spectral_index, spectral_index_error, band_det, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', 'WMAP J0046-8418', np.float64(11.56), np.float64(-84.31527778), np.float64(303.08505888), np.float64(-32.81142782), np.float64(800.0), np.float64(30.0), np.float64(1000.0), np.float64(40.0), np.float64(800.0), np.float64(50.0), np.float64(700.0), np.float64(80.0), np.float64(700.0), np.float64(140.0), 'PMN J0044-8422', 'a', masked, np.float64(-0.0), np.float64(0.2), np.int16(1), np.float64(0
+['2', 'WMAP J1224-8308', np.float64(186.11875), np.float64(-83.13444444), np.float64(302.07467483), np.float64(-20.30761829), np.float64(1000.0), np.float64(30.0), np.float64(1200.0), np.float64(40.0), np.float64(1100.0), np.float64(50.0), np.float64(1100.0), np.float64(80.0), masked, masked, 'PMN J1224-8312', '', np.int16(178), np.float64(0.2), np.float64(0.2), np.int16(1), np.float64(-0.01274170
+
+COLS plancksz2 2 lignes ; colonnes __row, source_number, name, ra, dec, lii, bii, error_radius, snr, ref_pipeline_code, det_pipeline_codes, pccs2_match, psz1_match, ir_contam_flag, nn_quality_flag, y5r500, y5r500_error, validation_status, redshift, redshift_source_name, mass_sz, mass_sz_pos_err, mass_sz_neg_err, mcxc_name, redmapper_name, act_name, spt_name, wise_flag, ami_det_significance, cosmology_sample_flag, source_note, __x_ra_dec, __y_ra_dec, __z_ra_dec
+['1', np.int16(1443), 'PSZ2 G305.96-25.45', np.float64(251.9190311), np.float64(-86.8106899), np.float64(305.96137368), np.float64(-25.45612026), np.float64(2.428232), np.float64(6.64376), np.int16(1), np.int16(111), np.int16(1), np.int32(1072), np.int16(0), np.float64(0.949653), np.float64(0.00153902), np.float64(0.000511336), np.int16(-1), masked, '', masked, masked, masked, '', '', '', '', np.i
+['2', np.int16(1432), 'PSZ2 G304.65-31.66', np.float64(354.9463884), np.float64(-85.2179879), np.float64(304.65830485), np.float64(-31.66782532), np.float64(1.921301), np.float64(8.28185), np.int16(3), np.int16(111), np.int16(1), np.int32(1063), np.int16(0), np.float64(0.999464), np.float64(0.004199278), np.float64(0.000873396), np.int16(21), np.float64(0.1934), 'RXCJ2340.1-8510', np.float64(4.709
+
+ERR planckpsc IndexError('No table found in VOTABLE file.')
