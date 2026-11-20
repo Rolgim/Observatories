@@ -32,7 +32,7 @@ BODIES = {  # identifiants Horizons, période, pas
     # vague 1 : missions terminées autour de L2 (toute la mission) et INTEGRAL (une orbite de 2024, repère géocentrique fixe)
     "herschel": dict(id="-486", start="2009-07-15", stop="2013-05-15", step="2d", name="Herschel Space Observatory"),
     "planck":   dict(id="-489", start="2009-07-15", stop="2013-10-15", step="2d", name="Planck"),
-    "wmap":     dict(id="-165", start="2001-10-05", stop="2010-08-15", step="4d", name="Wilkinson Microwave Anisotropy Probe"),
+    "wmap":     dict(id="?WMAP", alts=("WMAP", "Microwave Anisotropy Probe", "MAP"), start="2001-10-05", stop="2010-08-15", step="4d", name="Wilkinson Microwave Anisotropy Probe"),
     "integral": dict(id="?INTEGRAL", start="2024-06-01", stop="2024-06-04", step="30m", name="INTEGRAL", inertial=True, alts=("INTEGRAL", "International Gamma-Ray Astrophysics Laboratory")),
 }
 

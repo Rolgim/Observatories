@@ -1209,7 +1209,7 @@ def planck_hfi(key):
     base = "https://irsa.ipac.caltech.edu/data/Planck/release_3/all-sky-maps/maps/component-maps/cmb/"
     return healpix_map(key, [base + "COM_CMB_IQU-smica_2048_R3.00_full.fits", base + "COM_CMB_IQU-commander_2048_R3.00_full.fits"], "Planck",
         "Le fond diffus cosmologique, carte SMICA de Planck (2018)",
-        "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. La bande du plan de la Galaxie, où l'émission ne peut être retirée parfaitement, a été remplie par le traitement.",
+        "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. Le long du plan de la Galaxie, où son émission ne peut être retirée parfaitement, il en reste quelques traces au milieu de la carte.",
         "ESA, collaboration Planck", "IRSA (NASA/IPAC), Planck Legacy Archive", scale=1e6, unit="µK")
 
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
