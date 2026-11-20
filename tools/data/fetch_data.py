@@ -1116,6 +1116,49 @@ def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, 
                 caption="Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
                 credit="ESA, XMM-Newton", fetched=TODAY)
 
+# ---------- Swift, INTEGRAL, Compton : catalogues du HEASARC, cartes du ciel en coordonnées galactiques ----------
+def sky_scatter(key, table, where, title, caption, credit, what, extra_meta=()):
+    t = heasarc_tap("SELECT lii, bii FROM " + table + ((" WHERE " + where) if where else ""))
+    l = np.array(t["lii"], float); b = np.array(t["bii"], float); ok = np.isfinite(l) & np.isfinite(b); l, b = l[ok], b[ok]; l = np.where(l > 180, l - 360, l)
+    fname = key.replace("/", "-") + ".json"
+    save_json(fname, dict(type="scatter", x=[round(float(v), 2) for v in l], y=[round(float(v), 2) for v in b], ymin=-90, ymax=90,
+                          xlabel="longitude galactique (°), centre de la Galaxie au milieu", ylabel="latitude galactique (°)"))
+    meta = [["Archive", "HEASARC (NASA), table " + table], ["Catalogue", what], ["Sources", fr(len(l))]] + list(extra_meta) + [["Points", fr(len(l)) + " tracés"]]
+    return dict(type="plot", file=fname, title=title, meta=meta, url="https://heasarc.gsfc.nasa.gov/W3Browse/all/" + table + ".html", caption=caption, credit=credit, fetched=TODAY)
+
+def swift_bat(key):
+    return sky_scatter(key, "swbat157m", "", "Le ciel en rayons X durs, relevé de BAT sur 157 mois",
+        "Chaque point est une source détectée par BAT entre 15 et 150 keV pendant les 157 premiers mois de Swift. Le long du plan de la Galaxie, des étoiles binaires où un trou noir ou une étoile à neutrons dévore sa compagne ; partout ailleurs, surtout des noyaux actifs de galaxies.",
+        "NASA, équipe de Swift-BAT", "relevé de BAT sur 157 mois")
+
+def swift_xrt(key):
+    t = heasarc_tap("SELECT bat_t90 FROM swiftgrb WHERE bat_t90 > 0")
+    v = np.array(t["bat_t90"], float); v = v[np.isfinite(v) & (v > 0)]
+    lg = np.log10(v); edges = np.arange(-2.0, 3.51, 0.1); n, _ = np.histogram(lg, edges)
+    fname = key.replace("/", "-") + ".json"
+    save_json(fname, dict(type="hist", x=[round(float(c), 2) for c in (edges[:-1] + 0.05)], y=[int(c) for c in n], binw=0.1,
+                          xlabel="durée T90, en puissance de dix de secondes (0 = 1 s, 1 = 10 s, 2 = 100 s)", ylabel="nombre de sursauts"))
+    meta = [["Archive", "HEASARC (NASA), table swiftgrb"], ["Catalogue", "sursauts gamma de Swift"], ["Sursauts", fr(len(v)) + " avec une durée mesurée par BAT"],
+            ["Données", "T90 : durée pendant laquelle arrivent 90 % des photons, entre 15 et 150 keV"], ["Points", fr(len(n)) + " intervalles de 0,1 en puissance de dix"]]
+    return dict(type="plot", file=fname, title="Durée des sursauts détectés par Swift, que le XRT est allé observer", meta=meta, url="https://heasarc.gsfc.nasa.gov/W3Browse/swift/swiftgrb.html",
+                caption="Chaque sursaut détecté par BAT a déclenché le pivotement de Swift et l'observation de sa lueur rémanente par le XRT. Comme pour Fermi, deux familles apparaissent ; les sursauts courts sont moins nombreux ici, car BAT, aux énergies plus basses, les voit moins bien.",
+                credit="NASA, équipe de Swift", fetched=TODAY)
+
+def integral_ibis(key):
+    return sky_scatter(key, "intrefcat", "isgri_flag > 0", "Les sources vues par ISGRI, sur IBIS",
+        "Les sources du catalogue de référence d'INTEGRAL détectées par ISGRI, l'étage à basse énergie d'IBIS. Elles se concentrent dans le plan de la Galaxie et vers son centre, où INTEGRAL a beaucoup observé : binaires X, restes de supernovae, et de nombreuses sources découvertes par INTEGRAL lui-même (« IGR »).",
+        "ESA, ISDC, HEASARC", "catalogue de référence d'INTEGRAL, sources détectées par ISGRI")
+
+def cgro_batse(key):
+    return sky_scatter(key, "batsegrb", "", "Les sursauts gamma de BATSE sur le ciel",
+        "Chaque point est un sursaut gamma détecté par BATSE, en coordonnées galactiques. Ils sont répartis uniformément, sans se concentrer dans le plan de la Galaxie : la preuve qu'ils viennent de bien au-delà, de galaxies lointaines.",
+        "NASA, équipe de BATSE", "catalogue des sursauts de BATSE")
+
+def cgro_egret(key):
+    return sky_scatter(key, "egret3", "", "Les sources du troisième catalogue d'EGRET (3EG)",
+        "Les sources gamma de plus de 100 MeV détectées par EGRET. Le long du plan de la Galaxie, des pulsars et des sources non identifiées ; ailleurs, les blazars, noyaux actifs de galaxies dont le jet pointe vers nous, découverts comme sources gamma par EGRET.",
+        "NASA, équipe d'EGRET", "troisième catalogue d'EGRET (3EG)")
+
 # ---------- WMAP et Planck : cartes HEALPix du ciel entier, projetées en Mollweide (coordonnées galactiques) ----------
 def healpix_map(key, urls, name, title, caption, credit, page, scale=1e6, unit="µK", lim=None):
     """Télécharge la première carte HEALPix disponible, la dégrade à nside 256 et la projette en Mollweide, couleurs divergentes."""
@@ -1194,6 +1237,7 @@ RECIPES = {
     "xmm/rgs": xmm_rgs,
     "xmm/om": xmm_om,
     "wmap/rad": wmap_rad, "planck/hfi": planck_hfi,
+    "swift/bat": swift_bat, "swift/xrt": swift_xrt, "integral/ibis": integral_ibis, "cgro/batse": cgro_batse, "cgro/egret": cgro_egret,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,
