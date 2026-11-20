@@ -1154,11 +1154,6 @@ def cgro_batse(key):
         "Chaque point est un sursaut gamma détecté par BATSE, en coordonnées galactiques. Ils sont répartis uniformément, sans se concentrer dans le plan de la Galaxie : la preuve qu'ils viennent de bien au-delà, de galaxies lointaines.",
         "NASA, équipe de BATSE", "catalogue des sursauts de BATSE")
 
-def cgro_egret(key):
-    return sky_scatter(key, "egret3", "", "Les sources du troisième catalogue d'EGRET (3EG)",
-        "Les sources gamma de plus de 100 MeV détectées par EGRET. Le long du plan de la Galaxie, des pulsars et des sources non identifiées ; ailleurs, les blazars, noyaux actifs de galaxies dont le jet pointe vers nous, découverts comme sources gamma par EGRET.",
-        "NASA, équipe d'EGRET", "troisième catalogue d'EGRET (3EG)")
-
 # ---------- WMAP et Planck : cartes HEALPix du ciel entier, projetées en Mollweide (coordonnées galactiques) ----------
 def healpix_map(key, urls, name, title, caption, credit, page, scale=1e6, unit="µK", lim=None):
     """Télécharge la première carte HEALPix disponible, la dégrade à nside 256 et la projette en Mollweide, couleurs divergentes."""
@@ -1237,7 +1232,7 @@ RECIPES = {
     "xmm/rgs": xmm_rgs,
     "xmm/om": xmm_om,
     "wmap/rad": wmap_rad, "planck/hfi": planck_hfi,
-    "swift/bat": swift_bat, "swift/xrt": swift_xrt, "integral/ibis": integral_ibis, "cgro/batse": cgro_batse, "cgro/egret": cgro_egret,
+    "swift/bat": swift_bat, "swift/xrt": swift_xrt, "integral/ibis": integral_ibis, "cgro/batse": cgro_batse,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,

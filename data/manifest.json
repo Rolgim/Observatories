@@ -1719,32 +1719,5 @@
   "caption": "Chaque point est un sursaut gamma détecté par BATSE, en coordonnées galactiques. Ils sont répartis uniformément, sans se concentrer dans le plan de la Galaxie : la preuve qu'ils viennent de bien au-delà, de galaxies lointaines.",
   "credit": "NASA, équipe de BATSE",
   "fetched": "2026-11-20"
- },
- "cgro/egret": {
-  "type": "plot",
-  "file": "cgro-egret.json",
-  "title": "Les sources du troisième catalogue d'EGRET (3EG)",
-  "meta": [
-   [
-    "Archive",
-    "HEASARC (NASA), table egret3"
-   ],
-   [
-    "Catalogue",
-    "troisième catalogue d'EGRET (3EG)"
-   ],
-   [
-    "Sources",
-    "5 246"
-   ],
-   [
-    "Points",
-    "5 246 tracés"
-   ]
-  ],
-  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/all/egret3.html",
-  "caption": "Les sources gamma de plus de 100 MeV détectées par EGRET. Le long du plan de la Galaxie, des pulsars et des sources non identifiées ; ailleurs, les blazars, noyaux actifs de galaxies dont le jet pointe vers nous, découverts comme sources gamma par EGRET.",
-  "credit": "NASA, équipe d'EGRET",
-  "fetched": "2026-11-20"
  }
 }
