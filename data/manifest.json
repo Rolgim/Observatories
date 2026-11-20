@@ -1604,8 +1604,147 @@
    ]
   ],
   "url": "https://irsa.ipac.caltech.edu/data/Planck/release_3/all-sky-maps/maps/component-maps/cmb/COM_CMB_IQU-smica_2048_R3.00_full.fits",
-  "caption": "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. La bande du plan de la Galaxie, où l'émission ne peut être retirée parfaitement, a été remplie par le traitement.",
+  "caption": "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. Le long du plan de la Galaxie, où son émission ne peut être retirée parfaitement, il en reste quelques traces au milieu de la carte.",
   "credit": "ESA, collaboration Planck",
+  "fetched": "2026-11-20"
+ },
+ "swift/bat": {
+  "type": "plot",
+  "file": "swift-bat.json",
+  "title": "Le ciel en rayons X durs, relevé de BAT sur 157 mois",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table swbat157m"
+   ],
+   [
+    "Catalogue",
+    "relevé de BAT sur 157 mois"
+   ],
+   [
+    "Sources",
+    "1 891"
+   ],
+   [
+    "Points",
+    "1 891 tracés"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/all/swbat157m.html",
+  "caption": "Chaque point est une source détectée par BAT entre 15 et 150 keV pendant les 157 premiers mois de Swift. Le long du plan de la Galaxie, des étoiles binaires où un trou noir ou une étoile à neutrons dévore sa compagne ; partout ailleurs, surtout des noyaux actifs de galaxies.",
+  "credit": "NASA, équipe de Swift-BAT",
+  "fetched": "2026-11-20"
+ },
+ "swift/xrt": {
+  "type": "plot",
+  "file": "swift-xrt.json",
+  "title": "Durée des sursauts détectés par Swift, que le XRT est allé observer",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table swiftgrb"
+   ],
+   [
+    "Catalogue",
+    "sursauts gamma de Swift"
+   ],
+   [
+    "Sursauts",
+    "708 avec une durée mesurée par BAT"
+   ],
+   [
+    "Données",
+    "T90 : durée pendant laquelle arrivent 90 % des photons, entre 15 et 150 keV"
+   ],
+   [
+    "Points",
+    "55 intervalles de 0,1 en puissance de dix"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/swift/swiftgrb.html",
+  "caption": "Chaque sursaut détecté par BAT a déclenché le pivotement de Swift et l'observation de sa lueur rémanente par le XRT. Comme pour Fermi, deux familles apparaissent ; les sursauts courts sont moins nombreux ici, car BAT, aux énergies plus basses, les voit moins bien.",
+  "credit": "NASA, équipe de Swift",
+  "fetched": "2026-11-20"
+ },
+ "integral/ibis": {
+  "type": "plot",
+  "file": "integral-ibis.json",
+  "title": "Les sources vues par ISGRI, sur IBIS",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table intrefcat"
+   ],
+   [
+    "Catalogue",
+    "catalogue de référence d'INTEGRAL, sources détectées par ISGRI"
+   ],
+   [
+    "Sources",
+    "1 227"
+   ],
+   [
+    "Points",
+    "1 227 tracés"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/all/intrefcat.html",
+  "caption": "Les sources du catalogue de référence d'INTEGRAL détectées par ISGRI, l'étage à basse énergie d'IBIS. Elles se concentrent dans le plan de la Galaxie et vers son centre, où INTEGRAL a beaucoup observé : binaires X, restes de supernovae, et de nombreuses sources découvertes par INTEGRAL lui-même (« IGR »).",
+  "credit": "ESA, ISDC, HEASARC",
+  "fetched": "2026-11-20"
+ },
+ "cgro/batse": {
+  "type": "plot",
+  "file": "cgro-batse.json",
+  "title": "Les sursauts gamma de BATSE sur le ciel",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table batsegrb"
+   ],
+   [
+    "Catalogue",
+    "catalogue des sursauts de BATSE"
+   ],
+   [
+    "Sources",
+    "2 702"
+   ],
+   [
+    "Points",
+    "2 702 tracés"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/all/batsegrb.html",
+  "caption": "Chaque point est un sursaut gamma détecté par BATSE, en coordonnées galactiques. Ils sont répartis uniformément, sans se concentrer dans le plan de la Galaxie : la preuve qu'ils viennent de bien au-delà, de galaxies lointaines.",
+  "credit": "NASA, équipe de BATSE",
+  "fetched": "2026-11-20"
+ },
+ "cgro/egret": {
+  "type": "plot",
+  "file": "cgro-egret.json",
+  "title": "Les sources du troisième catalogue d'EGRET (3EG)",
+  "meta": [
+   [
+    "Archive",
+    "HEASARC (NASA), table egret3"
+   ],
+   [
+    "Catalogue",
+    "troisième catalogue d'EGRET (3EG)"
+   ],
+   [
+    "Sources",
+    "5 246"
+   ],
+   [
+    "Points",
+    "5 246 tracés"
+   ]
+  ],
+  "url": "https://heasarc.gsfc.nasa.gov/W3Browse/all/egret3.html",
+  "caption": "Les sources gamma de plus de 100 MeV détectées par EGRET. Le long du plan de la Galaxie, des pulsars et des sources non identifiées ; ailleurs, les blazars, noyaux actifs de galaxies dont le jet pointe vers nous, découverts comme sources gamma par EGRET.",
+  "credit": "NASA, équipe d'EGRET",
   "fetched": "2026-11-20"
  }
 }
