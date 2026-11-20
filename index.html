@@ -453,6 +453,28 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .orb-key small{ font-weight:400; color:var(--mute); margin-left:4px; }
 .orb-fam{ max-width:580px; }
 
+/* page Flotte */
+.fl-filters{ display:flex; flex-direction:column; gap:6px; margin:4px 0 10px; }
+.fl-f{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
+.fl-f > span{ font-size:12px; font-weight:700; min-width:76px; color:var(--ink-2); }
+.fl-f .chip[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
+.fl-count{ font-size:13px; color:var(--ink-2); margin:6px 0; }
+.fl-tl svg{ width:100%; min-width:640px; height:auto; }
+.fl-tl{ overflow-x:auto; }
+.fl-row{ cursor:pointer; }
+.fl-row:hover rect:first-child, .fl-row:focus rect:first-child{ fill:var(--sheet); }
+.fl-row:focus{ outline:2px solid var(--ink); outline-offset:-2px; }
+.fl-cnes{ fill:var(--ink); text-decoration:underline; }
+.fl-now{ stroke:var(--bad); } .fl-nowt{ fill:var(--bad); }
+.fl-who{ margin:14px 0; }
+.fl-who h4{ margin:0 0 4px; font-size:15px; }
+.fl-who h4 small{ font-weight:400; color:var(--mute); font-size:12px; margin-left:6px; }
+.fl-who .k small{ display:block; font-weight:400; color:var(--mute); font-size:11.5px; }
+.fl-who b.cnes{ background:var(--mark); color:var(--on-mark); padding:0 4px; }
+.linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
+.fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
+.fl-who .spec-row .v{ text-align:left; font-weight:400; }
+
 </style>
 </head>
 <body>
@@ -1758,6 +1780,85 @@ function domRow(cur){
   }).join('') + '</div>';
 }
 function domList(cur){ var d = window.OBS_DOM || domainOf(cur) || null; return d ? TELESCOPES.filter(function(t){ return t.domain === d; }) : []; }
+
+/* =================================================================
+   FLOTTE (priorité 3 des spécifications) : vie de chaque observatoire et « qui a fait quoi ».
+   life : [lancement, fin des observations ou null si en service, clé de source de la fin]
+          (dates AAAA-MM-JJ ; la source du lancement est celle de la ligne « Lancement » de la fiche)
+   who  : [agence, rôle, texte FR, texte EN, clés de source] ; rôle parmi ROLES ci-dessous.
+          Les clés renvoient à refs ci-dessous, sinon à celles de la fiche (TELESCOPES[…].refs).
+   Agences filtrables : NASA, ESA, CNES ; les autres partenaires sont nommés dans le texte.
+================================================================= */
+var FLEET_ROLES = { lead:['Responsable de la mission','Mission lead'], partner:['Partenaire','Partner'], instrument:['Instrument','Instrument'], data:['Données et opérations','Data and operations'], launch:['Lancement','Launch'] };
+var FLEET = {
+  hubble:{ life:['1990-04-24', null], who:[
+    ['NASA','lead',"Mission de la NASA, exploitée par le STScI (Baltimore).","A NASA mission, operated by STScI (Baltimore).",'nasa'],
+    ['ESA','partner',"Partenaire de la mission.","Mission partner.",'nasa'] ] },
+  cgro:{ life:['1991-04-05', '2000-06-04', 'wiki'], who:[
+    ['NASA','lead',"Mission de la NASA (Goddard).","A NASA mission (Goddard).",'cossc'],
+    ['Partenaires','partner',"Partenaires européens pour l'instrument COMPTEL.","European partners for the COMPTEL instrument.",'wiki'] ] },
+  chandra:{ life:['1999-07-23', null], who:[
+    ['NASA','lead',"Mission de la NASA ; centre Chandra au Smithsonian Astrophysical Observatory (Cambridge, Massachusetts).","A NASA mission; Chandra X-ray Center at the Smithsonian Astrophysical Observatory (Cambridge, Massachusetts).",['specs','pog']] ] },
+  xmm:{ life:['1999-12-10', null], who:[
+    ['ESA','lead',"Mission de l'ESA, pilotée depuis l'ESOC ; centre scientifique à l'ESAC.","An ESA mission, flown from ESOC; science centre at ESAC.",'fs'] ] },
+  wmap:{ life:['2001-06-30', '2010-08-19', 'nasa'], who:[
+    ['NASA','lead',"Mission de la NASA (Goddard), avec l'université de Princeton.","A NASA mission (Goddard), with Princeton University.",'nasa'] ] },
+  integral:{ life:['2002-10-17', '2025-02-28', 'end'], who:[
+    ['ESA','lead',"Mission de l'ESA ; données traitées à l'ISDC (Genève).","An ESA mission; data processed at the ISDC (Geneva).",'fs'],
+    ['Russie','launch',"Lancement par une fusée Proton.","Launch on a Proton rocket.",'fs'],
+    ['NASA','partner',"Coopération des États-Unis.","Cooperation from the United States.",'fs'],
+    ['CNES','instrument',"Maîtrise d'œuvre du spectromètre SPI, l'un des deux instruments principaux.","Prime contractor for the SPI spectrometer, one of the two main instruments.",'cnesI'] ] },
+  spitzer:{ life:['2003-08-25', '2020-01-30', 'mo'], who:[
+    ['NASA','lead',"Mission de la NASA, gérée par le JPL ; centre scientifique à Caltech (IPAC).","A NASA mission, managed by JPL; science centre at Caltech (IPAC).",['qf','mo']] ] },
+  swift:{ life:['2004-11-20', '2026-10-20', 'end'], who:[
+    ['NASA','lead',"Mission de la NASA (Goddard) ; opérations à Penn State.","A NASA mission (Goddard); operations at Penn State.",'g04'],
+    ['Italie et Royaume-Uni','partner',"Partenaires pour le XRT, l'UVOT et les centres de données.","Partners for the XRT, the UVOT and the data centres.",'g04'] ] },
+  fermi:{ life:['2008-06-11', null], who:[
+    ['NASA','lead',"Mission de la NASA, avec le département de l'Énergie des États-Unis.","A NASA mission, with the U.S. Department of Energy.",'fs'],
+    ['Partenaires','partner',"France, Allemagne, Italie, Japon et Suède.","France, Germany, Italy, Japan and Sweden.",'fs'] ] },
+  kepler:{ life:['2009-03-07', '2018-10-30', 'nasa'], who:[
+    ['NASA','lead',"Mission de la NASA (Ames, JPL), construite par Ball Aerospace.","A NASA mission (Ames, JPL), built by Ball Aerospace.",'pk'] ] },
+  herschel:{ life:['2009-05-14', '2013-04-29', 'fs'], who:[
+    ['ESA','lead',"Mission de l'ESA ; instruments construits par des consortiums européens.","An ESA mission; instruments built by European consortia.",'fs'],
+    ['NASA','partner',"Centre scientifique de la NASA à l'IPAC (Caltech).","NASA science centre at IPAC (Caltech).",'fs'],
+    ['CNES','instrument',"Financement et suivi de toutes les participations françaises : plan focal du photomètre de PACS et ses matrices de bolomètres (CEA), mécanisme du spectromètre de SPIRE (LAM), spectromètre haute résolution de HIFI (IRAP), cryoréfrigérateur de PACS et SPIRE (CEA).","Funding and follow-up of all French contributions: the PACS photometer focal plane and its bolometer arrays (CEA), the SPIRE spectrometer mechanism (LAM), the HIFI high-resolution spectrometer (IRAP), the PACS and SPIRE cryocooler (CEA).",'cnesH'] ] },
+  planck:{ life:['2009-05-14', '2013-10-23', 'fs'], who:[
+    ['ESA','lead',"Mission de l'ESA.","An ESA mission.",'fs'],
+    ['CNES','instrument',"Partenaire du CNRS et de l'IAS pour l'instrument HFI ; responsable du contrat du système de dilution à 0,1 K ; financement des participations françaises et du traitement des données associé.","Partner of CNRS and IAS for the HFI instrument; responsible for the contract for the 0.1 K dilution system; funding of the French contributions and of the associated data processing.",'cnesP'],
+    ['Italie','instrument',"Instrument LFI, dirigé depuis Bologne.","LFI instrument, led from Bologna.",'fs'] ] },
+  gaia:{ life:['2013-12-19', '2025-01-15', 'end'], who:[
+    ['ESA','lead',"Mission de l'ESA ; données traitées par le consortium européen DPAC.","An ESA mission; data processed by the European DPAC consortium.",'fs'],
+    ['CNES','data',"Architecture du système de traitement (CU1), traitement des unités CU4, CU6 et CU8, outils de simulation (CU2). 80 % des nouveaux objets du troisième catalogue viennent de son centre de traitement.","Architecture of the processing system (CU1), processing for units CU4, CU6 and CU8, simulation tools (CU2). 80% of the new objects in the third catalogue come from its processing centre.",'cnesG'] ] },
+  tess:{ life:['2018-04-18', null], who:[
+    ['NASA','lead',"Mission de la NASA dirigée par le MIT.","A NASA mission led by MIT.",'fs'] ] },
+  cheops:{ life:['2019-12-18', null], who:[
+    ['ESA','lead',"Mission de l'ESA menée avec la Suisse ; instrument construit par un consortium dirigé par l'Université de Berne.","An ESA mission run with Switzerland; instrument built by a consortium led by the University of Bern.",'nut'],
+    ['CNES','data',"Soutien au LAM, qui a fourni les méthodes de traitement des données brutes.","Support to LAM, which supplied the raw-data processing methods.",'cnesC'] ] },
+  jwst:{ life:['2021-12-25', null], who:[
+    ['NASA','lead',"Mission de la NASA, avec l'ESA et l'Agence spatiale canadienne.","A NASA mission, with ESA and the Canadian Space Agency.",'esafs'],
+    ['ESA','launch',"Lancement par Ariane 5 depuis Kourou ; instrument NIRSpec et part de MIRI.","Launch by Ariane 5 from Kourou; the NIRSpec instrument and part of MIRI.",'esafs'],
+    ['CNES','instrument',"Maître d'ouvrage de l'imageur de MIRI (MIRIM), réalisé par le CEA, maître d'œuvre, entre 2004 et 2009.","Project owner of the MIRI imager (MIRIM), built by CEA, the prime contractor, between 2004 and 2009.",'cnesM'] ] },
+  euclid:{ life:['2023-07-01', null], who:[
+    ['ESA','lead',"Mission de l'ESA ; instruments VIS et NISP et traitement des données par le consortium Euclid.","An ESA mission; VIS and NISP instruments and data processing by the Euclid Consortium.",'e1'],
+    ['NASA','partner',"Partenaire de la mission.","Mission partner.",'e1'],
+    ['CNES','instrument',"Membre du consortium Euclid ; finance les 13 laboratoires et instituts français qui travaillent sur VIS et NISP ; rôle clé dans le segment sol.","Member of the Euclid Consortium; funds the 13 French laboratories and institutes working on VIS and NISP; key role in the ground segment.",'cnesE'] ] },
+  roman:{ life:['2026-08-30', null], who:[
+    ['NASA','lead',"Mission de la NASA (Goddard).","A NASA mission (Goddard).",'ot'],
+    ['ESA','partner',"Partenaire de la mission.","Mission partner.",'esa'],
+    ['CNES','instrument',"Miroirs du coronographe, développés par le LAM ; participation à la préparation des observations et de l'analyse des données.","Coronagraph mirrors, developed by LAM; participation in planning the observations and the data analysis.",'cnesR'] ] }
+};
+var FLEET_REFS = {
+  cnesI:{ t:'INTEGRAL en détails', p:'CNES', u:'https://cnes.fr/projets/integral/en-details' },
+  cnesH:{ t:'Herschel en détails', p:'CNES', u:'https://cnes.fr/projets/herschel/en-details' },
+  cnesP:{ t:'Planck en détails', p:'CNES', u:'https://cnes.fr/projets/planck/en-details' },
+  cnesG:{ t:'Gaia en détails', p:'CNES', u:'https://cnes.fr/projets/gaia/en-details' },
+  cnesC:{ t:'CHEOPS', p:'CNES', u:'https://cnes.fr/en/projects/cheops' },
+  cnesM:{ t:'Webb / MIRI en détails', p:'CNES', u:'https://cnes.fr/projets/webb-miri/en-details' },
+  cnesE:{ t:'Euclid', p:'CNES', u:'https://cnes.fr/en/projects/euclid' },
+  cnesR:{ t:'Imager des planètes lointaines : la France coopère avec la NASA pour un démonstrateur embarqué sur le télescope Roman (communiqué, 2024)', p:'CNES', u:'https://cnes.fr/communiques/imager-planetes-lointaines-france-coopere-nasa-un-demonstrateur-embarque-telescope' }
+};
+function fleetRefs(id){ var t = TELESCOPES.filter(function(x){ return x.id === id; })[0], r = {}, k; for (k in t.refs) r[k] = t.refs[k]; for (k in FLEET_REFS) r[k] = FLEET_REFS[k]; return r; }
+function fleetAgencies(id){ var a = {}; (FLEET[id] ? FLEET[id].who : []).forEach(function(w){ a[w[0]] = 1; }); return Object.keys(a); }
 
 /* =================================================================
    INSTRUMENTS — données par observatoire.
@@ -5713,7 +5814,7 @@ var InstrumentsUI = (function(){
   function pillsFor(cur){
     return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
       return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button></div>'; }
+      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button><button class="pill cmp" data-tele="flotte">Flotte</button></div>'; }
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +
@@ -5735,6 +5836,94 @@ var InstrumentsUI = (function(){
   }
 
   return { ORDER:ORDER, NAMES:NAMES, OBS:OBS, plot:plot, pills:pillsFor, render:render, renderCompare:renderCompare, filterPanel:filterPanel, getCopy:function(i){ return copyStore[i]; } };
+})();
+
+/* =================================================================
+   PAGE « FLOTTE » (#flotte) : tous les observatoires sur une frise chronologique, filtrables par agence,
+   état, domaine spectral, famille d'orbite et type de mission ; puis « qui a fait quoi », sourcé.
+   Données : FLEET et FLEET_REFS (data-fleet.js), registre TELESCOPES.
+================================================================= */
+var FleetUI = (function(){
+  var T = function(s){ return (window.OBS_T || function(x){ return x; })(s); };
+  var F = window.OBS_FLEET = window.OBS_FLEET || { ag:null, st:null, dom:null, orb:null, mis:null };
+  function esc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function en(){ return window.OBS_LANG === 'en'; }
+  function yr(d){ var p = d.split('-'); return +p[0] + ((+p[1] - 1) + (+p[2] - 1)/31)/12; }
+  function today(){ var n = new Date(); return n.getFullYear() + n.getMonth()/12 + (n.getDate() - 1)/365; }
+  function dfmt(d){ var p = d.split('-'); return en() ? d : p[2] + '/' + p[1] + '/' + p[0]; }
+  function list(){
+    return TELESCOPES.filter(function(t){
+      var f = FLEET[t.id]; if (!f) return false;
+      if (F.ag && fleetAgencies(t.id).indexOf(F.ag) < 0) return false;
+      if (F.st === 'on' && f.life[1]) return false; if (F.st === 'off' && !f.life[1]) return false;
+      if (F.dom && t.domain !== F.dom) return false;
+      if (F.orb && t.orbit !== F.orb) return false;
+      if (F.mis && (t.mission || []).indexOf(F.mis) < 0) return false;
+      return true;
+    }).sort(function(a, b){ return FLEET[a.id].life[0] < FLEET[b.id].life[0] ? -1 : 1; });
+  }
+  function chips(key, label, opts){
+    return '<div class="fl-f" role="group" aria-label="' + esc(T(label)) + '"><span>' + esc(T(label)) + '</span>' +
+      '<button class="chip" data-fleet="' + key + ':" aria-pressed="' + (!F[key]) + '">' + esc(T('Tous')) + '</button>' +
+      opts.map(function(o){ return '<button class="chip" data-fleet="' + key + ':' + o[0] + '" aria-pressed="' + (F[key] === o[0]) + '">' + esc(T(o[1])) + '</button>'; }).join('') + '</div>';
+  }
+  function filters(){
+    return '<div class="fl-filters">' +
+      chips('ag', 'Agence', [['NASA','NASA'],['ESA','ESA'],['CNES','CNES']]) +
+      chips('st', 'État', [['on','En service'],['off','Terminés']]) +
+      chips('dom', 'Domaine spectral', DOMAINS.map(function(d){ return [d.id, d.label]; })) +
+      chips('orb', 'Orbite', ORBIT_FAMILIES.map(function(o){ return [o.id, o.label]; })) +
+      chips('mis', 'Mission', MISSION_TYPES.map(function(o){ return [o.id, o.label]; })) + '</div>';
+  }
+  /* frise : une barre par observatoire, du lancement à la fin des observations (ou à aujourd'hui, en service) */
+  function timeline(L){
+    var y0 = 1990, y1 = Math.max(2027, Math.ceil(today()) + 1), W = 1000, lw = 110, rh = 26, top = 26, H = top + L.length*rh + 30, now = today();
+    function X(y){ return lw + (y - y0)/(y1 - y0)*(W - lw - 56); }
+    var s = '';
+    for (var y = y0; y <= y1; y += 5){ s += '<line x1="' + X(y) + '" y1="' + (top - 6) + '" x2="' + X(y) + '" y2="' + (H - 22) + '" stroke="#C8CDD1" stroke-width="1"/><text x="' + X(y) + '" y="14" text-anchor="middle" font-size="11" fill="#3A4147">' + y + '</text>'; }
+    s += '<line x1="' + X(now) + '" y1="' + (top - 6) + '" x2="' + X(now) + '" y2="' + (H - 22) + '" stroke-width="1.5" stroke-dasharray="3 3" class="fl-now"/><text x="' + X(now) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" class="fl-nowt">' + esc(T('aujourd\'hui')) + '</text>';
+    L.forEach(function(t, i){
+      var f = FLEET[t.id], a = yr(f.life[0]), b = f.life[1] ? yr(f.life[1]) : now, yy = top + i*rh, on = !f.life[1], cn = fleetAgencies(t.id).indexOf('CNES') >= 0;
+      var tip = t.short + ' : ' + dfmt(f.life[0]) + ' – ' + (on ? T('en service') : dfmt(f.life[1]));
+      s += '<g class="fl-row" data-go="' + t.id + '" tabindex="0" role="link" aria-label="' + esc(tip) + '"><title>' + esc(tip) + '</title>' +
+        '<rect x="0" y="' + (yy - 2) + '" width="' + W + '" height="' + rh + '" fill="transparent"/>' +
+        '<text x="' + (lw - 10) + '" y="' + (yy + 15) + '" text-anchor="end" font-size="12.5" font-weight="700" fill="#14171A">' + esc(t.short) + '</text>' +
+        '<rect x="' + X(a) + '" y="' + (yy + 4) + '" width="' + Math.max(3, X(b) - X(a)) + '" height="14" fill="' + t.color + '"' + (on ? '' : ' fill-opacity="0.55"') + '/>' +
+        (on ? '<path d="M' + X(b) + ' ' + (yy + 4) + ' l7 7 l-7 7 z" fill="' + t.color + '"/>' : '') +
+        (cn ? '<text x="' + (X(b) + (on ? 12 : 5)) + '" y="' + (yy + 15) + '" font-size="10.5" font-weight="700" class="fl-cnes">CNES</text>' : '') + '</g>';
+    });
+    return '<div class="svgwrap fl-tl"><svg viewBox="0 0 ' + W + ' ' + H + '" role="group" aria-label="' + esc(T('Frise chronologique des observatoires')) + '" font-family="Archivo, Arial, sans-serif">' + s + '</svg></div>' +
+      '<div class="cap">' + esc(T('Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s\'il est en service. « CNES » signale une contribution du CNES, détaillée plus bas. Cliquer une barre ouvre l\'observatoire en 3D.')) + '</div>';
+  }
+  function who(L){
+    var nums = {}, n = 0, refs = {}, h = '';
+    L.forEach(function(t){
+      var r = fleetRefs(t.id), f = FLEET[t.id];
+      h += '<div class="fl-who"><h4><button class="linkish" data-go="' + t.id + '">' + esc(t.short) + '</button> <small>' + dfmt(f.life[0]) + ' – ' + (f.life[1] ? dfmt(f.life[1]) : esc(T('en service'))) + '</small></h4>' +
+        f.who.map(function(w){
+          var ks = [].concat(w[4]).filter(function(k){ return r[k]; }), mk = ks.map(function(k){ var id = t.id + ':' + k; if (!nums[id]){ nums[id] = ++n; refs[n] = r[k]; } return nums[id]; });
+          return '<div class="spec-row"><div class="k"><b' + (w[0] === 'CNES' ? ' class="cnes"' : '') + '>' + esc(T(w[0])) + '</b><small>' + esc(FLEET_ROLES[w[1]][en() ? 1 : 0]) + '</small></div><div class="v">' + esc(en() ? w[3] : w[2]) + (mk.length ? '<sup class="ref">' + mk.join(',') + '</sup>' : '') + '</div></div>';
+        }).join('') + '</div>';
+    });
+    var src = Object.keys(refs).map(function(k){ var x = refs[k]; return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(T(x.t)) + '</a> <span>' + esc(T(x.p)) + '</span></li>'; }).join('');
+    return h + (src ? '<div class="spec-section"><div class="spec-section-title">' + esc(T('Sources')) + '</div><ol class="refs">' + src + '</ol></div>' : '');
+  }
+  function render(sec){
+    var L = list(), all = TELESCOPES.filter(function(t){ return FLEET[t.id]; }).length;
+    var nav = '<button class="nav-i' + (sec !== 'who' ? ' on' : '') + '" data-fleet-sec="tl"><span class="n">' + esc(T('Frise chronologique')) + '</span><span class="k">' + esc(T('Du lancement à la fin des observations')) + '</span></button>' +
+      '<button class="nav-i' + (sec === 'who' ? ' on' : '') + '" data-fleet-sec="who"><span class="n">' + esc(T('Qui a fait quoi')) + '</span><span class="k">' + esc(T('Agences, instruments, données, lancement')) + '</span></button>';
+    var head = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + esc(T('Flotte')) + '</div><div class="inst-full">' + esc(T('Les observatoires de la NASA, de l\'ESA et du CNES présentés sur ce site')) + '</div></div>' +
+      '<p class="inst-sum">' + esc(T('Chaque observatoire a sa fiche, sa maquette et ses données. Les filtres se combinent ; le nombre affiché est celui des observatoires retenus.')) + '</p></div>';
+    var main = head + filters() + '<p class="fl-count">' + esc(T('Observatoires affichés')) + (en() ? ': ' : ' : ') + '<b>' + L.length + '</b> / ' + all + '</p>';
+    if (!L.length) main += '<p class="cap">' + esc(T('Aucun observatoire ne correspond à ces filtres.')) + '</p>';
+    else main += sec === 'who' ? who(L) : timeline(L);
+    return { pills:'', nav:nav, main:main };
+  }
+  function click(el){
+    if (el.hasAttribute('data-fleet')){ var p = el.getAttribute('data-fleet').split(':'); F[p[0]] = p[1] || null; return true; }
+    return false;
+  }
+  return { render:render, click:click };
 })();
 
 /* English text for the observatory sheets and clickable parts (applied over src/data-tele.js by src/i18n.js). */
@@ -7023,6 +7212,7 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^(.+) : (\d\d)\/(\d\d)\/(\d{4}) – (\d\d)\/(\d\d)\/(\d{4})$/, '$1: $4-$3-$2 – $7-$6-$5'],
   [/^HEALPix nside (\d+), dégradée à 256 pour le site$/, 'HEALPix nside $1, degraded to 256 for the site'], [/^bleu : plus froid, rouge : plus chaud ; échelle ± ([\d  ,.]+) µK$/, function(m, v){ return 'blue: colder, red: warmer; scale ± ' + v.replace(/[  ]/g, ',') + ' µK'; }], [/^(\d[\d  ]*) avec une durée mesurée par BAT$/, function(m, n){ return n.replace(/[  ]/g, ',') + ' with a duration measured by BAT'; }],
   [/^Position occupée de (\d{4}) à (\d{4})\. Terre, Lune et L2 à l'échelle\.$/, 'Position held from $1 to $2. Earth, Moon and L2 to scale.'],
   [/^≈ ([\d  ]+) millionièmes \(ppm\) par point de 2 min$/, function(m, n){ return '≈ ' + n.replace(/[  ]/g, ',') + ' parts per million (ppm) per 2 min point'; }],
@@ -7067,6 +7257,12 @@ var EN_RULES = [
 ];
 /* vague 1 (Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton, WMAP) */
 Object.assign(EN_UI, {
+  "Flotte":"Fleet", "Domaine spectral":"Waveband", "chronologie":"timeline", "Agence":"Agency", "État":"Status", "Mission":"Mission", "En service":"In service", "Terminés":"Ended", "aujourd'hui":"today", "en service":"in service",
+  "Frise chronologique des observatoires":"Timeline of the observatories", "Frise chronologique":"Timeline", "Du lancement à la fin des observations":"From launch to the end of observations", "Qui a fait quoi":"Who did what", "Agences, instruments, données, lancement":"Agencies, instruments, data, launch",
+  "Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. « CNES » signale une contribution du CNES, détaillée plus bas. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid and arrowed if it is in service. 'CNES' marks a CNES contribution, detailed in 'Who did what'. Clicking a bar opens the observatory in 3D.",
+  "Les observatoires de la NASA, de l'ESA et du CNES présentés sur ce site":"The NASA, ESA and CNES observatories presented on this site", "Chaque observatoire a sa fiche, sa maquette et ses données. Les filtres se combinent ; le nombre affiché est celui des observatoires retenus.":"Each observatory has its overview, its model and its data. Filters combine; the count shown is the number of observatories kept.",
+  "Observatoires affichés":"Observatories shown", "Aucun observatoire ne correspond à ces filtres.":"No observatory matches these filters.", "Partenaires":"Partners", "Russie":"Russia", "Italie":"Italy", "Italie et Royaume-Uni":"Italy and United Kingdom",
+  "Herschel en détails":"Herschel in detail", "Planck en détails":"Planck in detail", "Gaia en détails":"Gaia in detail", "Webb / MIRI en détails":"Webb / MIRI in detail", "Imager des planètes lointaines : la France coopère avec la NASA pour un démonstrateur embarqué sur le télescope Roman (communiqué, 2024)":"Imaging distant planets: France cooperates with NASA on a demonstrator aboard the Roman telescope (press release, 2024)",
   "relevé de BAT sur 157 mois":"BAT 157-month survey", "sursauts gamma de Swift":"Swift gamma-ray bursts", "catalogue de référence d'INTEGRAL, sources détectées par ISGRI":"INTEGRAL reference catalogue, sources detected by ISGRI", "catalogue des sursauts de BATSE":"BATSE burst catalogue", "troisième catalogue d'EGRET (3EG)":"third EGRET catalogue (3EG)",
   "T90 : durée pendant laquelle arrivent 90 % des photons, entre 15 et 150 keV":"T90: the time during which 90% of the photons arrive, between 15 and 150 keV", "Carte":"Map", "Résolution d'origine":"Original resolution", "Projection":"Projection", "Couleurs":"Colours", "Mollweide, coordonnées galactiques, centre de la Galaxie au milieu":"Mollweide, Galactic coordinates, Galactic Centre in the middle", "LAMBDA (NASA Goddard)":"LAMBDA (NASA Goddard)", "IRSA (NASA/IPAC), Planck Legacy Archive":"IRSA (NASA/IPAC), Planck Legacy Archive", "NASA, équipe scientifique de WMAP":"NASA, WMAP science team", "ESA, collaboration Planck":"ESA, Planck Collaboration", "NASA, équipe de Swift-BAT":"NASA, Swift-BAT team", "NASA, équipe de Swift":"NASA, Swift team", "NASA, équipe de BATSE":"NASA, BATSE team", "NASA, équipe d'EGRET":"NASA, EGRET team",
   "apogée ≈ 153 000 km":"apogee ≈ 153,000 km", "un tour en 72 h":"one orbit in 72 h", "Terre, orbite de 2024 et Lune à l'échelle.":"Earth, 2024 orbit and Moon to scale.",
@@ -7928,6 +8124,9 @@ function missionHtml(t){
     m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
     m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
+  if (window.FLEET && FLEET[t.id]){ for (k in FLEET_REFS) refs[k] = FLEET_REFS[k];
+    h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Who did what' : 'Qui a fait quoi') + '</div>' +
+      FLEET[t.id].who.map(function(w){ return '<div class="spec-row"><div class="k">' + esc(OBS_T(w[0])) + ' <small>' + esc(FLEET_ROLES[w[1]][en ? 1 : 0]) + '</small></div><div class="v">' + esc(en ? w[3] : w[2]) + mark(w[4]) + '</div></div>'; }).join('') + '</div>'; }
   if (m.arch) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Spacecraft equipment' : 'Équipements du véhicule') + '</div><p class="ms-intro">' + (en ? 'Equipment whose exact place inside the spacecraft is not published: it is listed here, not drawn in the 3D model.' : 'Équipements dont la place exacte dans le véhicule n\'est pas publiée : ils sont décrits ici, pas dessinés dans la maquette.') + '</p>' +
     m.arch.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Processing pipeline' : 'Chaîne de traitement') + '</div><p class="ms-intro">' + esc(L(m.chain.intro)) + '</p><ol class="ms-chain">' +
@@ -7958,7 +8157,8 @@ function renderTabs(){
   domList(S.id).forEach(function(t){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button></div>';
+  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare' && !S.fleet) + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab cmp" role="tab" data-go="flotte" aria-selected="' + !!S.fleet + '">Flotte<small>chronologie</small></button></div>';
   $('tabs').innerHTML = h;
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
@@ -8027,6 +8227,8 @@ function renderHud(){
 
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
+  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : 'Mission et données');
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
   $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
@@ -8049,9 +8251,13 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-go],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
+  if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-fleet-sec')){ S.fleetSec = el.getAttribute('data-fleet-sec'); renderInst(); return; }
+  if (FleetUI.click(el)){ renderInst(true); return; }
+  if (el.getAttribute('data-tele') === 'flotte'){ location.hash = 'flotte'; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){
@@ -8093,6 +8299,9 @@ document.addEventListener('click', function(e){
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
   if (el.hasAttribute('data-part') && e.target.closest('button') && !e.target.closest('.plink')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
 });
+$('inst-page').addEventListener('keydown', function(e){
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('data-go') && e.target.tagName.toLowerCase() === 'g'){ e.preventDefault(); location.hash = e.target.getAttribute('data-go'); }
+});
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
   if (S.inst) location.hash = S.mode === 'compare' ? 'comparer' : S.id; else if (S.part) selectPart(null);
@@ -8101,7 +8310,8 @@ document.addEventListener('keydown', function(e){
 function route(){
   var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
-  if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
+  S.fleet = h === 'flotte'; if (S.fleet){ inst = true; mode = S.mode || 'tele'; }
+  else if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;
   if (id !== S.id){ S.instSel = null; S.filterIdx = 0; }
   if (S.pendingInst){ if (mode === 'tele'){ S.instSel = S.pendingInst; S.filterIdx = 0; } S.pendingInst = null; }

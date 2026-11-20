@@ -185,3 +185,25 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .fov-leg .ticon{ vertical-align:-1px; }
 .orb-key small{ font-weight:400; color:var(--mute); margin-left:4px; }
 .orb-fam{ max-width:580px; }
+
+/* page Flotte */
+.fl-filters{ display:flex; flex-direction:column; gap:6px; margin:4px 0 10px; }
+.fl-f{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; }
+.fl-f > span{ font-size:12px; font-weight:700; min-width:76px; color:var(--ink-2); }
+.fl-f .chip[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
+.fl-count{ font-size:13px; color:var(--ink-2); margin:6px 0; }
+.fl-tl svg{ width:100%; min-width:640px; height:auto; }
+.fl-tl{ overflow-x:auto; }
+.fl-row{ cursor:pointer; }
+.fl-row:hover rect:first-child, .fl-row:focus rect:first-child{ fill:var(--sheet); }
+.fl-row:focus{ outline:2px solid var(--ink); outline-offset:-2px; }
+.fl-cnes{ fill:var(--ink); text-decoration:underline; }
+.fl-now{ stroke:var(--bad); } .fl-nowt{ fill:var(--bad); }
+.fl-who{ margin:14px 0; }
+.fl-who h4{ margin:0 0 4px; font-size:15px; }
+.fl-who h4 small{ font-weight:400; color:var(--mute); font-size:12px; margin-left:6px; }
+.fl-who .k small{ display:block; font-weight:400; color:var(--mute); font-size:11.5px; }
+.fl-who b.cnes{ background:var(--mark); color:var(--on-mark); padding:0 4px; }
+.linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
+.fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
+.fl-who .spec-row .v{ text-align:left; font-weight:400; }

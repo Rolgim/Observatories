@@ -397,7 +397,7 @@ var InstrumentsUI = (function(){
   function pillsFor(cur){
     return domRow(cur === 'comparer' ? null : cur) + '<div class="trow">' + domList(cur).map(function(t){
       return '<button class="pill'+(t.id===cur?' on':'')+'" data-tele="'+t.id+'">'+NAMES[t.id]+'</button>'; }).join('') +
-      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button></div>'; }
+      '<button class="pill cmp'+(cur==='comparer'?' on':'')+'" data-tele="comparer">Comparer</button><button class="pill cmp" data-tele="flotte">Flotte</button></div>'; }
   function renderCompare(){
     copyStore = [];
     var nav = '<button class="nav-i on" data-inst=""><span class="n">Comparaison</span><span class="k">Spectre, champs de vue, tableau</span></button>' +

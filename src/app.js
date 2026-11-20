@@ -138,6 +138,9 @@ function missionHtml(t){
     m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
     m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
+  if (window.FLEET && FLEET[t.id]){ for (k in FLEET_REFS) refs[k] = FLEET_REFS[k];
+    h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Who did what' : 'Qui a fait quoi') + '</div>' +
+      FLEET[t.id].who.map(function(w){ return '<div class="spec-row"><div class="k">' + esc(OBS_T(w[0])) + ' <small>' + esc(FLEET_ROLES[w[1]][en ? 1 : 0]) + '</small></div><div class="v">' + esc(en ? w[3] : w[2]) + mark(w[4]) + '</div></div>'; }).join('') + '</div>'; }
   if (m.arch) h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Spacecraft equipment' : 'Équipements du véhicule') + '</div><p class="ms-intro">' + (en ? 'Equipment whose exact place inside the spacecraft is not published: it is listed here, not drawn in the 3D model.' : 'Équipements dont la place exacte dans le véhicule n\'est pas publiée : ils sont décrits ici, pas dessinés dans la maquette.') + '</p>' +
     m.arch.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Processing pipeline' : 'Chaîne de traitement') + '</div><p class="ms-intro">' + esc(L(m.chain.intro)) + '</p><ol class="ms-chain">' +
@@ -168,7 +171,8 @@ function renderTabs(){
   domList(S.id).forEach(function(t){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
-  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare') + '">Comparer<small>tailles</small></button></div>';
+  h += '<button class="tab cmp" role="tab" data-go="comparer" aria-selected="' + (S.mode==='compare' && !S.fleet) + '">Comparer<small>tailles</small></button>';
+  h += '<button class="tab cmp" role="tab" data-go="flotte" aria-selected="' + !!S.fleet + '">Flotte<small>chronologie</small></button></div>';
   $('tabs').innerHTML = h;
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
   /* réglages, à part des onglets : globe + langue proposée, puis thème */
@@ -237,6 +241,8 @@ function renderHud(){
 
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
+  var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : 'Mission et données');
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare() : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
   $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
@@ -259,9 +265,13 @@ function loadReal(){
 }
 try { fetch('data/manifest.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (j){ window.OBS_DATA = OBS_I18N.real(j); if (S.inst && S.mode === 'tele') renderInst(true); } }).catch(function(){}); } catch(e){}
 $('inst-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],#inst-close') : null;
+  var el = e.target.closest ? e.target.closest('[data-copy],[data-filter],[data-jump3d],[data-jump],[data-inst],[data-dom],[data-cmpby],[data-cmpg],[data-itype],[data-tele],[data-fleet],[data-fleet-sec],[data-go],#inst-close') : null;
   if (!el) return;
   if (el.id === 'inst-close'){ location.hash = S.mode === 'compare' ? 'comparer' : S.id; return; }
+  if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-fleet-sec')){ S.fleetSec = el.getAttribute('data-fleet-sec'); renderInst(); return; }
+  if (FleetUI.click(el)){ renderInst(true); return; }
+  if (el.getAttribute('data-tele') === 'flotte'){ location.hash = 'flotte'; return; }
   if (el.hasAttribute('data-jump3d')){ var j3 = el.getAttribute('data-jump3d').split(':'); S.pendingPart = j3[1]; location.hash = j3[0]; return; }
   if (el.hasAttribute('data-jump')){ var jp = el.getAttribute('data-jump').split(':'); S.pendingInst = jp[1]; location.hash = jp[0] + '-instruments'; return; }
   if (el.hasAttribute('data-copy')){
@@ -303,6 +313,9 @@ document.addEventListener('click', function(e){
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
   if (el.hasAttribute('data-part') && e.target.closest('button') && !e.target.closest('.plink')){ var k = el.getAttribute('data-part'); selectPart(S.part === k ? null : k, true); }
 });
+$('inst-page').addEventListener('keydown', function(e){
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('data-go') && e.target.tagName.toLowerCase() === 'g'){ e.preventDefault(); location.hash = e.target.getAttribute('data-go'); }
+});
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
   if (S.inst) location.hash = S.mode === 'compare' ? 'comparer' : S.id; else if (S.part) selectPart(null);
@@ -311,7 +324,8 @@ document.addEventListener('keydown', function(e){
 function route(){
   var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
-  if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
+  S.fleet = h === 'flotte'; if (S.fleet){ inst = true; mode = S.mode || 'tele'; }
+  else if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;
   if (id !== S.id){ S.instSel = null; S.filterIdx = 0; }
   if (S.pendingInst){ if (mode === 'tele'){ S.instSel = S.pendingInst; S.filterIdx = 0; } S.pendingInst = null; }

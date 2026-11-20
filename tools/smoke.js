@@ -44,10 +44,22 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     if (t.domain && !DOMAINS.some(d => d.id === t.domain)) m.push('domain inconnu de DOMAINS');
     if (!INST_DATA[t.id]) m.push('INST_DATA'); if (!MISSION[t.id]) m.push('MISSION');
     if (!Optics.TEXT[t.id] || !Optics.FP[t.id] || !Optics.LINK3D[t.id]) m.push('Optics'); if (!Orbits.TEXT[t.id]) m.push('Orbits');
+    if (!FLEET[t.id]) m.push('FLEET'); else FLEET[t.id].who.forEach(function(w){ var r = fleetRefs(t.id); if (![].concat(w[4]).every(function(k){ return r[k]; })) m.push('source inconnue dans FLEET (' + w[0] + ')'); });
     if (!EN_TELE[t.id]) m.push('EN_TELE'); if (!EN_INST[t.id]) m.push('EN_INST'); if (!EN_OPTICS[t.id]) m.push('EN_OPTICS'); if (!EN_ORBITS[t.id]) m.push('EN_ORBITS');
     return m.length ? t.id + ' : ' + m.join(', ') : '';
   }).filter(Boolean));
   miss.forEach(m => fail('registre, il manque ' + m));
+  // ---- page Flotte : une barre par observatoire, filtre CNES, « qui a fait quoi »
+  await go(pg, 'flotte'); await pg.waitForTimeout(300);
+  { const nb = await pg.locator('.fl-row').count(), all = await pg.evaluate(() => TELESCOPES.length);
+    if (nb !== all) fail('flotte : ' + nb + ' barres pour ' + all + ' observatoires');
+    await pg.click('[data-fleet="ag:CNES"]'); await pg.waitForTimeout(150);
+    const nc = await pg.locator('.fl-row').count(), ec = await pg.evaluate(() => TELESCOPES.filter(t => fleetAgencies(t.id).indexOf('CNES') >= 0).length);
+    if (nc !== ec || !nc) fail('flotte, filtre CNES : ' + nc + ' barres pour ' + ec);
+    await pg.click('[data-fleet-sec="who"]'); await pg.waitForTimeout(150);
+    if (await pg.locator('.fl-who').count() !== ec) fail('flotte : « qui a fait quoi » incomplet');
+    await pg.click('[data-fleet="ag:"]'); await pg.click('[data-fleet-sec="tl"]');
+    notes.push('flotte : ' + nb + ' observatoires, ' + ec + ' avec une contribution du CNES'); }
   // ---- intérieurs (priorité 1) : chaque élément cite sa source ; pas de bouton Coupe sans intérieur documenté
   for (const e of await pg.evaluate(() => { const out = []; Object.keys(INTERIOR.DATA).forEach(id => INTERIOR.DATA[id].forEach((x, i) => { if (!x.cite) out.push(id + ' n° ' + i + ' (' + (x.l || '').slice(0, 40) + ')'); })); return out; })) fail('intérieur sans source : ' + e);
   for (const id of ['gaia', 'jwst', 'chandra']){ await go(pg, id); await loaded(pg);

@@ -6,6 +6,7 @@ Visualisation 3D de dix-huit observatoires spatiaux (Hubble, Compton, Chandra, X
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
+- **Flotte** : frise chronologique de tous les observatoires, filtrable par agence (NASA, ESA, CNES), état, domaine, orbite et type de mission, et « qui a fait quoi », contributions du CNES comprises, chaque ligne sourcée.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
   - trajet de la lumière (schéma optique, plan focal à l'échelle) ;
