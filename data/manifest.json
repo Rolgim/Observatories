@@ -1541,5 +1541,71 @@
   "caption": "Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons. Les lignes sombres sont les espaces entre les CCD des caméras.",
   "credit": "ESA, XMM-Newton",
   "fetched": "2026-11-19"
+ },
+ "wmap/rad": {
+  "type": "image",
+  "file": "wmap-rad.jpg",
+  "width": 1200,
+  "height": 600,
+  "title": "Le fond diffus cosmologique, carte ILC de WMAP (neuf ans)",
+  "meta": [
+   [
+    "Archive",
+    "LAMBDA (NASA Goddard)"
+   ],
+   [
+    "Carte",
+    "wmap_ilc_9yr_v5.fits"
+   ],
+   [
+    "Résolution d'origine",
+    "HEALPix nside 512, dégradée à 256 pour le site"
+   ],
+   [
+    "Projection",
+    "Mollweide, coordonnées galactiques, centre de la Galaxie au milieu"
+   ],
+   [
+    "Couleurs",
+    "bleu : plus froid, rouge : plus chaud ; échelle ± 187 µK"
+   ]
+  ],
+  "url": "https://lambda.gsfc.nasa.gov/data/map/dr5/dfp/ilc/wmap_ilc_9yr_v5.fits",
+  "caption": "Les variations de température du rayonnement émis 380 000 ans après le Big Bang, de l'ordre de cent millionièmes de degré. Cette carte combine les cinq bandes de WMAP pour retirer au mieux l'émission de la Galaxie ; il en reste des traces le long de son plan, au milieu.",
+  "credit": "NASA, équipe scientifique de WMAP",
+  "fetched": "2026-11-20"
+ },
+ "planck/hfi": {
+  "type": "image",
+  "file": "planck-hfi.jpg",
+  "width": 1200,
+  "height": 600,
+  "title": "Le fond diffus cosmologique, carte SMICA de Planck (2018)",
+  "meta": [
+   [
+    "Archive",
+    "IRSA (NASA/IPAC), Planck Legacy Archive"
+   ],
+   [
+    "Carte",
+    "COM_CMB_IQU-smica_2048_R3.00_full.fits"
+   ],
+   [
+    "Résolution d'origine",
+    "HEALPix nside 2048, dégradée à 256 pour le site"
+   ],
+   [
+    "Projection",
+    "Mollweide, coordonnées galactiques, centre de la Galaxie au milieu"
+   ],
+   [
+    "Couleurs",
+    "bleu : plus froid, rouge : plus chaud ; échelle ± 261 µK"
+   ]
+  ],
+  "url": "https://irsa.ipac.caltech.edu/data/Planck/release_3/all-sky-maps/maps/component-maps/cmb/COM_CMB_IQU-smica_2048_R3.00_full.fits",
+  "caption": "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. La bande du plan de la Galaxie, où l'émission ne peut être retirée parfaitement, a été remplie par le traitement.",
+  "credit": "ESA, collaboration Planck",
+  "fetched": "2026-11-20"
  }
 }
