@@ -1,16 +1,16 @@
 # Observatoires en orbite
 
-*Observatories in orbit: an interactive 3D guide to Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid and Roman, in English (default) and French.*
+*Observatories in orbit: an interactive 3D guide to eighteen space observatories, from Hubble, Compton and Chandra to Webb, Euclid and Roman, in English (default) and French.*
 
-Visualisation 3D de onze télescopes spatiaux (Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
+Visualisation 3D de dix-huit observatoires spatiaux (Hubble, Compton, Chandra, XMM-Newton, WMAP, INTEGRAL, Spitzer, Swift, Fermi, Kepler, Herschel, Planck, Gaia, TESS, CHEOPS, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
   - trajet de la lumière (schéma optique, plan focal à l'échelle) ;
-  - orbite (trajectoire réelle, y compris autour du Soleil pour Spitzer et Kepler, en résonance avec la Lune pour TESS, position de Hubble et de Fermi en direct, ciel observable, carte des pointés réels) ;
-  - une fiche par instrument (26 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
+  - orbite (trajectoire réelle, y compris autour du Soleil pour Spitzer et Kepler, en résonance avec la Lune pour TESS, position de Hubble, de Fermi et de CHEOPS en direct, ciel observable, carte des pointés réels) ;
+  - une fiche par instrument (49 au total) : couverture spectrale, champ de vue, filtres, produits de données, observation réelle, code d'accès (astroquery, ADQL), liens vers les archives ;
   - une page de comparaison de tous les instruments.
 - Anglais par défaut et français, thèmes clair et sombre, mise en page téléphone, liens directs par ancre (`#jwst`, `#roman-instruments`, `#comparer`, `#en-euclid`…).
 

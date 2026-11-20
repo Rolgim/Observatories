@@ -84,6 +84,7 @@ Principe : on compare **à l'intérieur d'une famille**, et le **type d'instrume
 **Vagues d'ajout** (vague 1 validée le 19 novembre) :
 
 - **Vague 1**, maquettes disponibles, missions phares : Swift, INTEGRAL, CHEOPS, Herschel, Planck, Compton (CGRO), WMAP.
+  **Livrée le 20 novembre** : sept maquettes (NASA 3D Resources pour Swift, Compton et WMAP ; ESA SCIFLEET, conditions d'utilisation de l'ESA, pour INTEGRAL, Herschel, Planck et CHEOPS) redécoupées en pièces ; fiches, instruments typés, mission et chaîne de traitement, trajet de la lumière, orbites (rentrées de Swift le 4 novembre 2026 et de Compton en 2000), anglais ; domaine « Micro-ondes » ; données réelles : cartes du fond diffus de WMAP et de Planck, relevé BAT et sursauts de Swift, sources ISGRI, sursauts de BATSE, catalogue 3EG ; éphémérides Horizons (Herschel, Planck, WMAP, INTEGRAL) et TLE de CHEOPS. Reste : données réelles de CHEOPS, de Herschel, de l'UVOT et de COMPTEL ; champs `agencies` et `status` et page Flotte (points 1 à 4 ci-dessus).
 - **Vague 2**, maquettes disponibles : ISO, LISA Pathfinder, Suzaku, FUSE, HETE-2, SWAS, NICER (instrument de la Station spatiale, à confirmer dans le périmètre).
 - **Vague 3**, sans maquette publique connue : NuSTAR, IXPE, SPHEREx, XRISM, CoRoT, SVOM, MICROSCOPE, COBE, IRAS, IUE, Hipparcos, EXOSAT, COS-B, GALEX, WISE, RXTE, et les premiers observatoires de la NASA (Uhuru, Copernicus, HEAO 1 à 3).
 
