@@ -95,7 +95,7 @@ ol.notes{ padding-left:20px; }
 .lnk{ display:flex; justify-content:space-between; gap:14px; padding:8px 0; border-bottom:1px solid var(--rule); color:var(--ink); font-size:13.5px; font-weight:600; text-underline-offset:3px; }
 .lnk em{ font-style:normal; font-weight:400; font-size:12.5px; color:var(--mute); text-decoration:none; white-space:nowrap; }
 @media (max-width: 860px){
-  .inst-top{ padding:0; }
+  .inst-top{ padding:0 var(--gr) 0 var(--gl); }
   .inst-back{ margin:9px 12px 9px var(--gl); }
   .inst-title{ font-size:17px; }
   .pills{ border-top:1px solid var(--rule); margin-left:0; flex:1 1 100%; }
@@ -260,6 +260,8 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .home-who small{ display:block; color:var(--mute); font-size:12px; padding-left:16px; }
 @media (max-width: 860px){
   .home{ grid-template-columns:1fr; }
+  .home-zoom{ position:static; justify-content:flex-end; padding:6px 2px 2px; }
+  .home-zoom button{ height:28px; font-size:12px; }
   .home-map{ padding:14px var(--gr) 16px var(--gl); }
   .home-head h2{ font-size:22px; }
   .home-sky{ padding:4px; }
