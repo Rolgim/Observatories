@@ -11,11 +11,11 @@ def q(adql, n=60):
     r = requests.get(TAP, params=dict(REQUEST="doQuery", LANG="ADQL", QUERY=adql), timeout=n); r.raise_for_status()
     t = parse_single_table(io.BytesIO(r.content)).to_table()
     return str(len(t)) + " lignes ; colonnes " + ", ".join(t.colnames) + "\n" + "\n".join(str(list(row))[:400] for row in t[:3])
-for kw in ("swift", "integral", "ibis", "batse", "egret", "comptel", "osse", "wmap", "planck", "herschel", "cheops", "grb"):
-    try: p("== tables", kw, q("SELECT table_name FROM TAP_SCHEMA.tables WHERE table_name LIKE '%" + kw + "%'")[:1500])
+for kw in ("mast", "log", "aec", "obs", "scw", "spitz", "hersch", "jwst", "kepler", "cheops", "point"):
+    try: p("== tables", kw, q("SELECT table_name, description FROM TAP_SCHEMA.tables WHERE table_name LIKE '%" + kw + "%'", 120)[:3000])
     except Exception as e: p("ERR tables", kw, repr(e)[:150])
-for n in ("swiftgrb", "swiftbalog", "swbat157m", "swbat105m", "swift2sxps", "swiftuvlog", "intibisasc", "intrefcat", "ibisgps", "batsegrb", "batse4b", "egr3", "wmapptsrc", "plancksz2", "planckpsc"):
+for n in ("chanmaster", "xmmmaster", "swiftmastr", "hstaec", "intscw", "nustarmastr", "jwstmastr", "herschlog", "spitzmastr", "cheopsmastr", "suzamaster", "rosmaster"):
     try:
-        t = q("SELECT TOP 2 * FROM " + n); p("\nCOLS", n, t[:1500])
+        p("\nCOLS", n, q("SELECT TOP 2 * FROM " + n)[:1200]); p("   N", q("SELECT COUNT(*) AS n FROM " + n))
     except Exception as e: p("\nERR", n, repr(e)[:150])
 log.close()
