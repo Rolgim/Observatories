@@ -110,7 +110,7 @@ var HomeUI = (function(){
     var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><p class="cap">' + esc(T('Survolez un observatoire pour le voir seul ; cliquez pour l\'afficher ou le masquer.')) + '</p><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
     var have = TELESCOPES.filter(function(t){ return D && D.bodies[t.id]; });
     have.forEach(function(t){
-      var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).filter(function(k){ return k !== '*' && k !== '?'; });
+      var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).join(', ').split(', ').filter(function(k, i, a){ return k !== '*' && k !== '?' && a.indexOf(k) === i; });
       h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(unit(t.id)) + '</span>' +
         (ins.length ? '<small>' + esc(ins.map(function(k){ return INSN[k] || k; }).join(', ')) + '</small>' : '') + '</button>';
     });
@@ -203,7 +203,7 @@ var HomeUI = (function(){
     if (!ids.length) h += '<p class="cap">' + esc(T('Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.')) + '</p>';
     else h += '<ul class="home-who">' + ids.map(function(id){ var t = tele(id), b = by[id];
       var ins = Object.keys(b.ins).filter(function(k){ return k !== '*'; }).sort(function(x, y){ return b.ins[y] - b.ins[x]; }).map(function(k){ return (INSN[k] || k) + ' ' + fr(b.ins[k]); }).join(', ');
-      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(unit(id)) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
+      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(b.n === 1 ? unit(id).replace(/s$/, '').replace(/s /, ' ') : unit(id)) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
       '<p class="cap">' + esc(T('Carré de 3° de côté centré sur le point cliqué ; une observation est comptée là où elle a commencé.')) + '</p>';
     var inK = Math.acos(Math.max(-1, Math.min(1, Math.sin(p[1]*R)*Math.sin(KEPLER.dec*R) + Math.cos(p[1]*R)*Math.cos(KEPLER.dec*R)*Math.cos((p[0] - KEPLER.ra)*R))))/R < KEPLER.r;
     if (inK) h += '<p class="cap"><b>' + esc(T('Dans le champ de Kepler,')) + '</b> ' + esc(T('fixé pendant quatre ans.')) + '</p>';

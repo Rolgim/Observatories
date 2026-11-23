@@ -6091,6 +6091,7 @@ var HomeUI = (function(){
         P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color, key:keys });
       });
     });
+    P.layers.sort(function(a, b){ return b.y.length - a.y.length; });   /* les couches les plus étendues dessous */
     if (st.year === null) st.year = P.y1;
   }
 
@@ -6115,11 +6116,11 @@ var HomeUI = (function(){
   }
 
   function legend(){
-    var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
+    var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><p class="cap">' + esc(T('Survolez un observatoire pour le voir seul ; cliquez pour l\'afficher ou le masquer.')) + '</p><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
     var have = TELESCOPES.filter(function(t){ return D && D.bodies[t.id]; });
     have.forEach(function(t){
-      var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).filter(function(k){ return k !== '*' && k !== '?'; });
-      h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(T('observations')) + '</span>' +
+      var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).join(', ').split(', ').filter(function(k, i, a){ return k !== '*' && k !== '?' && a.indexOf(k) === i; });
+      h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(unit(t.id)) + '</span>' +
         (ins.length ? '<small>' + esc(ins.map(function(k){ return INSN[k] || k; }).join(', ')) + '</small>' : '') + '</button>';
     });
     h += '</div><div class="home-all"><button class="linkish" data-hall="1">' + esc(T('Tout afficher')) + '</button> <button class="linkish" data-hall="0">' + esc(T('Tout masquer')) + '</button></div>';
@@ -6165,12 +6166,12 @@ var HomeUI = (function(){
     /* cases observées */
     if (P){
       var px = Math.max(1.6, s*1.05), seen = new Uint8Array(360*180);
-      P.layers.forEach(function(L){
+      P.layers.slice().sort(function(a, b){ return (a.id === st.solo) - (b.id === st.solo); }).forEach(function(L){
         if (st.off[L.id]) return;
-        g.fillStyle = L.color;
+        g.fillStyle = L.color; var dim = st.solo && st.solo !== L.id;
         for (var k = 0, n = L.y.length; k < n; k++){
           if (L.y[k] > st.year) continue;
-          g.globalAlpha = st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9;
+          g.globalAlpha = (st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9) * (dim ? 0.12 : 1);
           g.fillRect(X(L.xy[2*k]) - px/2, Y(L.xy[2*k+1]) - px/2, px, px);
           seen[L.key[k]] = 1;
         }
@@ -6211,7 +6212,7 @@ var HomeUI = (function(){
     if (!ids.length) h += '<p class="cap">' + esc(T('Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.')) + '</p>';
     else h += '<ul class="home-who">' + ids.map(function(id){ var t = tele(id), b = by[id];
       var ins = Object.keys(b.ins).filter(function(k){ return k !== '*'; }).sort(function(x, y){ return b.ins[y] - b.ins[x]; }).map(function(k){ return (INSN[k] || k) + ' ' + fr(b.ins[k]); }).join(', ');
-      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(T('observations')) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
+      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(b.n === 1 ? unit(id).replace(/s$/, '').replace(/s /, ' ') : unit(id)) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
       '<p class="cap">' + esc(T('Carré de 3° de côté centré sur le point cliqué ; une observation est comptée là où elle a commencé.')) + '</p>';
     var inK = Math.acos(Math.max(-1, Math.min(1, Math.sin(p[1]*R)*Math.sin(KEPLER.dec*R) + Math.cos(p[1]*R)*Math.cos(KEPLER.dec*R)*Math.cos((p[0] - KEPLER.ra)*R))))/R < KEPLER.r;
     if (inK) h += '<p class="cap"><b>' + esc(T('Dans le champ de Kepler,')) + '</b> ' + esc(T('fixé pendant quatre ans.')) + '</p>';
@@ -6259,7 +6260,9 @@ var HomeUI = (function(){
     tip.textContent = k.map(function(id){ return tele(id).short + ' ' + fr(ids[id]); }).join(' · ');
     var r = cv.getBoundingClientRect(); tip.style.left = (ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top + 12) + 'px'; tip.hidden = false;
   }
-  return { render:render, click:click, input:input, resize:resize, hover:hover };
+  /* survol d'une ligne de la légende : cet observatoire seul en couleur vive */
+  function solo(id){ if (st.solo === id) return; st.solo = id; draw(); }
+  return { render:render, click:click, input:input, resize:resize, hover:hover, solo:solo };
 })();
 
 /* English text for the observatory sheets and clickable parts (applied over src/data-tele.js by src/i18n.js). */
@@ -7661,7 +7664,8 @@ Object.assign(EN_UI, {
 "Les observations n'ont pas pu être chargées.":"The observations could not be loaded.",
 "Dans le champ de Kepler,":"In the Kepler field,","fixé pendant quatre ans.":"held for four years.",
 "Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid with an arrow if still in service. Click a bar to open the observatory in 3D.","Champs de vue":"Fields of view",
-"cases de 1° observées":"1° cells observed"
+"cases de 1° observées":"1° cells observed",
+"Survolez un observatoire pour le voir seul ; cliquez pour l'afficher ou le masquer.":"Hover over an observatory to see it alone; click to show or hide it.","fenêtres scientifiques":"science windows"
 });
 
 /* =================================================================
@@ -8661,6 +8665,8 @@ $('home-page').addEventListener('click', function(e){
   if (el) HomeUI.click(el, e);
 });
 $('home-page').addEventListener('input', function(e){ HomeUI.input(e.target); });
+$('home-page').addEventListener('mouseover', function(e){ var li = e.target.closest && e.target.closest('[data-hob]'); HomeUI.solo(li ? li.getAttribute('data-hob') : null); });
+$('home-page').addEventListener('focusin', function(e){ var li = e.target.closest && e.target.closest('[data-hob]'); HomeUI.solo(li ? li.getAttribute('data-hob') : null); });
 $('home-page').addEventListener('mousemove', function(e){ if (e.target.id === 'home-cv') HomeUI.hover(e); else HomeUI.hover(null); });
 window.addEventListener('resize', function(){ if (S.home) HomeUI.resize(); });
 
