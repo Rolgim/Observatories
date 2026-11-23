@@ -918,13 +918,13 @@ def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1
     from astroquery.esa.hsa import HSA
     t = pyvo.dal.TAPService(HSA_TAP).run_sync(
         "SELECT observation_id, aor, target_name, duration, od_number FROM hsa.v_active_observation "
-        f"WHERE target_name LIKE '%{target}%' AND is_public = 'true' AND obsstate LIKE 'LEVEL2%' ORDER BY duration DESC", maxrec=200).to_table()
-    cands = [r for r in t]
-    print("  ", len(cands), "observations publiques de", target)
-    # d'abord les cartes photométriques (AOR « Phot », « scan », « map »), puis les autres
-    pref = lambda r: (0 if any(k in str(r["aor"]).lower() for k in ("phot", "scan", "map", "spire")) else 1, -float(r["duration"]))
+        f"WHERE ra BETWEEN {ra - 0.2} AND {ra + 0.2} AND dec BETWEEN {dec - 0.15} AND {dec + 0.15} AND is_public = 'true' AND obsstate LIKE 'LEVEL2%' ORDER BY duration DESC", maxrec=500).to_table()
+    # observations pointées à moins de 0,15° de la cible ; on écarte la spectroscopie (AOR « Spec », « Range », « Line », « FTS »)
+    cands = [r for r in t if not any(k in str(r["aor"]).lower() for k in ("spec", "range", "line", "fts", "hifi", "point"))]
+    print("  ", len(t), "observations publiques autour de", target, ";", len(cands), "sans spectroscopie :", [str(r["aor"])[:40] for r in cands[:12]])
+    pref = lambda r: (0 if any(k in str(r["aor"]).lower() for k in ("phot", "scan", "map", "spire", "pacs", "kingfish", "very")) else 1, -float(r["duration"]))
     d = os.path.join(TMP, "hsa"); os.makedirs(d, exist_ok=True)
-    for r in sorted(cands, key=pref)[:12]:
+    for r in sorted(cands, key=pref)[:16]:
         oid = str(r["observation_id"])
         for level in ("LEVEL2_5", "LEVEL2"):
             try:
@@ -936,11 +936,13 @@ def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1
                 with tarfile.open(path) as tf:
                     for m in tf.getmembers():
                         if m.isfile() and m.name.endswith((".fits", ".fits.gz")) and ".." not in m.name and not m.name.startswith("/"):
-                            tf.extract(m, d); files.append(os.path.join(d, m.name))
+                            tf.extract(m, d, filter="data") if hasattr(tarfile, "data_filter") else tf.extract(m, d); files.append(os.path.join(d, m.name))
             elif path and os.path.exists(path):
                 files = [path]
             maps = [f for f in files if any(k in os.path.basename(f).upper() for k in band_keys)]
             print("   ", oid, level, str(r["aor"])[:50], len(files), "fichiers,", len(maps), "cartes")
+            if not files: continue
+            if not maps: print("     fichiers :", sorted(os.path.basename(f) for f in files)[:12])
             for f in sorted(maps):
                 try:
                     hd = fits.open(f)
