@@ -1,0 +1,27 @@
+name: Version
+# Lancement manuel : pose une étiquette de version (tag annoté) sur un commit de main.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Nom de la version (ex. v1.0)'
+        required: true
+      message:
+        description: 'Message de la version'
+        required: true
+      sha:
+        description: 'Commit à étiqueter (vide = dernier commit de main)'
+        required: false
+permissions:
+  contents: write
+jobs:
+  tag:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ github.event.inputs.tag }}" -m "${{ github.event.inputs.message }}" ${{ github.event.inputs.sha }}
+          git push origin "${{ github.event.inputs.tag }}"
