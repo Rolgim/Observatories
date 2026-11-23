@@ -1,7 +1,7 @@
 <div id="app">
   <header id="top">
     <div class="brand">
-      <h1>Observatoires en orbite</h1>
+      <h1><a href="#accueil" class="home-link">Observatoires en orbite</a></h1>
     </div>
     <nav id="tabs" aria-label="Observatoire"></nav>
     <nav id="views" aria-label="Vues d'ensemble"></nav>
@@ -75,18 +75,18 @@
       <div id="ptabs"></div>
       <div id="pbody"></div>
     </aside>
+    <div id="home-page" hidden></div>
+    <div id="inst-page" hidden>
+      <div class="inst-top">
+        <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
+        <div class="inst-title">Mission et données</div>
+        <div class="pills" id="inst-pills" hidden></div>
+      </div>
+      <div class="inst-body">
+        <nav class="inst-nav" id="inst-nav"></nav>
+        <div class="inst-main" id="inst-main"></div>
+      </div>
+    </div>
   </div>
 
-  <div id="inst-page" hidden>
-    <div class="inst-top">
-      <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
-      <div class="inst-title">Mission et données</div>
-      <div id="inst-views"></div>
-      <div class="pills" id="inst-pills"></div>
-    </div>
-    <div class="inst-body">
-      <nav class="inst-nav" id="inst-nav"></nav>
-      <div class="inst-main" id="inst-main"></div>
-    </div>
-  </div>
 </div>

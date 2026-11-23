@@ -60,6 +60,16 @@ const overflow = async (pg, where) => { const [sw, iw] = await pg.evaluate(() =>
     if (await pg.locator('.fl-who').count() !== ec) fail('flotte : « qui a fait quoi » incomplet');
     await pg.click('[data-fleet="ag:"]'); await pg.click('[data-fleet-sec="tl"]');
     notes.push('flotte : ' + nb + ' observatoires, filtre par agence vérifié'); }
+  // ---- accueil : carte du ciel chargée, clic au centre de la Galaxie, boutons de vue toujours dans l'en-tête
+  await go(pg, 'accueil'); await pg.waitForSelector('.home-li', { timeout: 15000 }).catch(() => fail('accueil : légende non chargée'));
+  { const nl = await pg.locator('.home-li').count();
+    const box = await pg.locator('#home-cv').boundingBox(); await pg.mouse.click(box.x + box.width/2, box.y + box.height/2); await pg.waitForTimeout(150);
+    const nw = await pg.locator('.home-who li').count(); if (!nw) fail('accueil : aucun observatoire au centre de la Galaxie');
+    await go(pg, 'hubble-instruments'); await pg.waitForTimeout(300);
+    if (!(await pg.locator('#views [data-go="flotte"]').isVisible())) fail('page instruments : bouton Flotte masqué');
+    await pg.click('#tabs [data-go="kepler"]'); await pg.waitForTimeout(300);
+    if (await pg.evaluate(() => location.hash) !== '#kepler-instruments') fail('onglet d\'en-tête depuis la page instruments : ' + await pg.evaluate(() => location.hash));
+    notes.push('accueil : ' + nl + ' couches, ' + nw + ' observatoires au centre de la Galaxie'); }
   // ---- intérieurs (priorité 1) : chaque élément cite sa source ; pas de bouton Coupe sans intérieur documenté
   for (const e of await pg.evaluate(() => { const out = []; Object.keys(INTERIOR.DATA).forEach(id => INTERIOR.DATA[id].forEach((x, i) => { if (!x.cite) out.push(id + ' n° ' + i + ' (' + (x.l || '').slice(0, 40) + ')'); })); return out; })) fail('intérieur sans source : ' + e);
   for (const id of ['gaia', 'jwst', 'chandra']){ await go(pg, id); await loaded(pg);

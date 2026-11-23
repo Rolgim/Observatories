@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['tools/data/fetch_sky.py', '.github/workflows/sky.yml']
+    paths: ['tools/data/fetch_sky.py', 'tools/data/sky_all.py', '.github/workflows/sky.yml']
 permissions:
   contents: write
 concurrency: { group: sky, cancel-in-progress: false }

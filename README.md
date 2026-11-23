@@ -6,7 +6,8 @@ Visualisation 3D de dix-huit observatoires spatiaux (Hubble, Compton, Chandra, X
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
-- **Flotte** : frise chronologique de tous les observatoires, filtrable par agence (NASA, ESA, CNES), état, domaine, orbite et type de mission, et « qui a fait quoi », contributions du CNES comprises, chaque ligne sourcée.
+- **Accueil, le ciel observé** : carte du ciel entier où chaque observatoire laisse l'empreinte de ses pointés réels (MAST, HEASARC, archive Euclid), curseur des années, clic pour savoir qui a observé un point du ciel.
+- **Flotte** : frise chronologique de tous les observatoires, filtrable par agence, état, domaine, orbite et type de mission, et « qui a fait quoi », chaque ligne sourcée.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
   - trajet de la lumière (schéma optique, plan focal à l'échelle) ;
@@ -49,7 +50,7 @@ Après une modification dans `src/`, relancer `node build.js` et commiter `index
 |---|---|---|
 | Tests | à chaque push touchant le site | `index.html` à jour, `tools/smoke.js`, `tools/a11y.js` |
 | Données réelles | chaque jour, et à chaque push des scripts | TLE de Hubble et de Fermi, trajectoires JPL Horizons, observations manquantes ou périmées |
-| Pointés réels | à la demande, et à chaque push de `fetch_sky.py` | pointés de Hubble et de JWST (MAST), avancée du relevé Euclid |
+| Pointés réels | à la demande, et à chaque push de `fetch_sky.py` | pointés de Hubble et de JWST (MAST), de Chandra, XMM-Newton, Swift, INTEGRAL, Spitzer et Herschel (HEASARC), avancée du relevé Euclid ; puis `sky_all.py` en tire `data/sky-all.json`, la carte de l’accueil |
 | Sonde | à la demande | lance un script de `tools/probe/` |
 
 Pour lancer les tests en local : `npm install --no-save playwright@1.56.0 axe-core@4.10.2`, `npx playwright install chromium`, puis `node tools/smoke.js` et `node tools/a11y.js`.

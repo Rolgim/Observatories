@@ -488,13 +488,55 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 @media (max-width: 860px){ .inst-title{ min-width:0; } #inst-views{ flex:1 1 100%; margin:0; padding:0 var(--gr) 8px var(--gl); } }
 .views{ display:flex; gap:6px; }
 
+/* ---------- accueil : le ciel observé (home.js) ---------- */
+.home-link{ color:inherit; text-decoration:none; }
+.home-link:hover{ text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px; }
+#home-page{ position:absolute; inset:0; z-index:30; background:var(--paper); overflow:auto; }
+.home{ display:grid; grid-template-columns:minmax(0, 1fr) 340px; gap:0; min-height:100%; }
+.home-map{ min-width:0; padding:18px 24px 24px var(--gl); display:flex; flex-direction:column; gap:10px; }
+.home-head h2{ margin:0 0 4px; font-weight:800; font-stretch:75%; font-size:28px; letter-spacing:.1px; }
+.home-head p{ margin:0; max-width:68ch; color:var(--ink-2); line-height:1.5; }
+.home-sky{ position:relative; background:var(--black); padding:10px; }
+#home-cv{ display:block; max-width:100%; cursor:crosshair; }
+.home-tip{ position:absolute; pointer-events:none; background:var(--paper); color:var(--ink); border:1px solid var(--ink); font-size:12px; font-weight:600; padding:3px 7px; white-space:nowrap; z-index:2; }
+.home-ctl{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.home-ctl input[type=range]{ flex:1 1 200px; min-width:140px; accent-color:var(--ink); }
+.home-yr{ font-weight:700; font-variant-numeric:tabular-nums; min-width:22ch; }
+.home-mode{ display:flex; gap:6px; }
+.home-ctl .dep-b{ border:1.5px solid var(--ink); background:transparent; color:var(--ink); width:34px; height:30px; cursor:pointer; font-size:13px; }
+.home-side{ border-left:2px solid var(--ink); padding:18px var(--gr) 24px 20px; background:var(--sheet); min-width:0; }
+.home-side h3{ font-size:13.5px; font-weight:800; margin:18px 0 8px; }
+.home-side h3:first-child{ margin-top:0; }
+.home-pick{ border-bottom:1px solid var(--rule); padding-bottom:12px; }
+.home-pos{ margin:0 0 8px; font-variant-numeric:tabular-nums; color:var(--ink-2); font-size:12.5px; }
+.home-leg{ display:flex; flex-direction:column; gap:4px; }
+.home-li{ display:grid; grid-template-columns:12px auto 1fr; column-gap:8px; align-items:baseline; text-align:left; border:1px solid var(--rule); background:var(--paper); color:var(--ink); font:inherit; padding:6px 8px; cursor:pointer; }
+.home-li i{ width:12px; height:12px; align-self:center; }
+.home-li span{ font-size:12px; color:var(--mute); text-align:right; font-variant-numeric:tabular-nums; }
+.home-li small{ grid-column:2 / 4; font-size:11.5px; color:var(--mute); }
+.home-li[aria-pressed="false"]{ opacity:.45; }
+.home-li[aria-pressed="false"] i{ background:transparent !important; outline:1.5px solid var(--rule-2); outline-offset:-1.5px; }
+.home-li:hover{ border-color:var(--ink); }
+.home-all{ margin-top:6px; display:flex; gap:14px; font-size:12.5px; }
+.home-sv, .home-who{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; font-size:13px; line-height:1.45; color:var(--ink-2); }
+.home-sv i, .home-who i{ display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:0; }
+.home-sv .linkish, .home-who .linkish{ font-weight:700; }
+.home-who small{ display:block; color:var(--mute); font-size:12px; padding-left:16px; }
+@media (max-width: 860px){
+  .home{ grid-template-columns:1fr; }
+  .home-map{ padding:14px var(--gr) 16px var(--gl); }
+  .home-head h2{ font-size:22px; }
+  .home-sky{ padding:4px; }
+  .home-side{ border-left:0; border-top:2px solid var(--ink); padding:14px var(--gr) 24px var(--gl); }
+}
+
 </style>
 </head>
 <body>
 <div id="app">
   <header id="top">
     <div class="brand">
-      <h1>Observatoires en orbite</h1>
+      <h1><a href="#accueil" class="home-link">Observatoires en orbite</a></h1>
     </div>
     <nav id="tabs" aria-label="Observatoire"></nav>
     <nav id="views" aria-label="Vues d'ensemble"></nav>
@@ -568,20 +610,20 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
       <div id="ptabs"></div>
       <div id="pbody"></div>
     </aside>
+    <div id="home-page" hidden></div>
+    <div id="inst-page" hidden>
+      <div class="inst-top">
+        <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
+        <div class="inst-title">Mission et données</div>
+        <div class="pills" id="inst-pills" hidden></div>
+      </div>
+      <div class="inst-body">
+        <nav class="inst-nav" id="inst-nav"></nav>
+        <div class="inst-main" id="inst-main"></div>
+      </div>
+    </div>
   </div>
 
-  <div id="inst-page" hidden>
-    <div class="inst-top">
-      <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
-      <div class="inst-title">Mission et données</div>
-      <div id="inst-views"></div>
-      <div class="pills" id="inst-pills"></div>
-    </div>
-    <div class="inst-body">
-      <nav class="inst-nav" id="inst-nav"></nav>
-      <div class="inst-main" id="inst-main"></div>
-    </div>
-  </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -5965,6 +6007,258 @@ var FleetUI = (function(){
   return { render:render, click:click };
 })();
 
+/* =================================================================
+   ACCUEIL (#accueil, page de départ) : le ciel entier et les observations de tous les télescopes.
+   Données : data/sky-all.json (tools/data/fetch_sky.py puis sky_all.py) : pour chaque observatoire et chaque instrument,
+   les cases de 1° (grille équatoriale) où au moins une observation a commencé, avec l'année de la première et leur nombre.
+   Projection de Mollweide en coordonnées galactiques, centre de la Galaxie au milieu, longitudes croissantes vers la gauche.
+   Les relevés du ciel entier forment une liste à part, pour ne pas noyer les observatoires qui pointent.
+================================================================= */
+var HomeUI = (function(){
+  var T = function(s){ return (window.OBS_T || function(x){ return x; })(s); };
+  function en(){ return window.OBS_LANG === 'en'; }
+  function esc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function fr(n){ return en() ? n.toLocaleString('en-US') : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function tele(id){ return TELESCOPES.filter(function(t){ return t.id === id; })[0]; }
+
+  /* relevés du ciel entier, ou missions sans carte de pointés : texte repris de la fiche (sources sur la fiche) */
+  var SURVEY = {
+    gaia:['Tout le ciel, balayé en continu : le satellite tournait sur lui-même en six heures.', 'The whole sky, scanned continuously: the spacecraft spun once every six hours.'],
+    planck:['A cartographié tout le ciel en micro-ondes, dans neuf bandes.', 'Mapped the whole sky in microwaves, in nine bands.'],
+    wmap:['A cartographié tout le ciel en micro-ondes, dans cinq bandes.', 'Mapped the whole sky in microwaves, in five bands.'],
+    fermi:['Le LAT voit un cinquième du ciel à la fois et le balaie en entier toutes les trois heures.', 'The LAT sees a fifth of the sky at once and sweeps all of it every three hours.'],
+    cgro:['BATSE surveillait tout le ciel pour les sursauts gamma ; les autres instruments pointaient.', 'BATSE watched the whole sky for gamma-ray bursts; the other instruments pointed.'],
+    tess:['Une bande de 24° × 96° fixée 27 jours, puis la suivante : il pave le ciel bande après bande.', 'A 24° × 96° strip held for 27 days, then the next: it tiles the sky strip by strip.'],
+    kepler:['Un seul champ, entre le Cygne et la Lyre, fixé pendant quatre ans (cercle sur la carte).', 'A single field, between Cygnus and Lyra, held for four years (circle on the map).']
+  };
+  var NOMAP = {
+    cheops:['Pointe une étoile à la fois ; pas de table de pointés publique interrogée ici.', 'Points at one star at a time; no public pointing table queried here.'],
+    roman:['Lancé en 2026 : pas encore de données publiques.', 'Launched in 2026: no public data yet.']
+  };
+  /* Kepler : champ de 16,1° de diamètre (fiche, Kepler Instrument Handbook) ; centre RA 19 h 22 min 40 s, Dec +44° 30′ (même document) */
+  var KEPLER = { ra:290.667, dec:44.5, r:8.05 };
+  var INSN = { NIRSPEC:'NIRSpec', NIRCAM:'NIRCam', NIRISS:'NIRISS', '*':'' };
+
+  var D = null, loading = null, P = null, st = { off:{}, year:null, mode:'cov', pick:null, play:false };
+
+  /* équatorial J2000 -> galactique */
+  var M = [[-0.0548755604, -0.8734370902, -0.4838350155], [0.4941094279, -0.4448296300, 0.7469822445], [-0.8676661490, -0.1980763734, 0.4559837762]];
+  var R = Math.PI/180;
+  function eq2gal(ra, dec){
+    var a = ra*R, d = dec*R, v = [Math.cos(d)*Math.cos(a), Math.cos(d)*Math.sin(a), Math.sin(d)], g = [0,0,0];
+    for (var i = 0; i < 3; i++) g[i] = M[i][0]*v[0] + M[i][1]*v[1] + M[i][2]*v[2];
+    return [Math.atan2(g[1], g[0])/R, Math.asin(Math.max(-1, Math.min(1, g[2])))/R];
+  }
+  function gal2eq(l, b){
+    var a = l*R, d = b*R, g = [Math.cos(d)*Math.cos(a), Math.cos(d)*Math.sin(a), Math.sin(d)], v = [0,0,0];
+    for (var i = 0; i < 3; i++) v[i] = M[0][i]*g[0] + M[1][i]*g[1] + M[2][i]*g[2];
+    var ra = Math.atan2(v[1], v[0])/R; return [(ra + 360) % 360, Math.asin(Math.max(-1, Math.min(1, v[2])))/R];
+  }
+  /* Mollweide : x dans [-2√2, 2√2], y dans [-√2, √2] ; longitude galactique croissante vers la gauche */
+  function moll(l, b){
+    var lam = ((l + 180) % 360 + 360) % 360 - 180, phi = b*R, th = phi;
+    if (Math.abs(phi) > 1.5707) th = phi > 0 ? Math.PI/2 : -Math.PI/2;
+    else for (var k = 0; k < 12; k++){ var f = (2*th + Math.sin(2*th) - Math.PI*Math.sin(phi)) / (2 + 2*Math.cos(2*th)); th -= f; if (Math.abs(f) < 1e-7) break; }
+    return [-2*Math.SQRT2/Math.PI*lam*R*Math.cos(th), Math.SQRT2*Math.sin(th)];
+  }
+  function unmoll(x, y){
+    if (Math.abs(y) > Math.SQRT2) return null;
+    var th = Math.asin(y/Math.SQRT2), lam = -Math.PI*x/(2*Math.SQRT2*Math.cos(th));
+    if (Math.abs(lam) > Math.PI) return null;
+    return [lam/R, Math.asin((2*th + Math.sin(2*th))/Math.PI)/R];
+  }
+
+  function load(){
+    return loading || (loading = fetch('data/sky-all.json').then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }).then(function(j){ D = j; prep(); return j; })
+      .catch(function(){ loading = null; return null; }));
+  }
+  /* projection de toutes les cases, une fois ; index des cases pour le clic */
+  function prep(){
+    P = { layers:[], idx:{}, y0:9999, y1:0 };
+    TELESCOPES.forEach(function(t){
+      var b = D.bodies[t.id]; if (!b) return;
+      Object.keys(b.ins).forEach(function(nm){
+        var f = b.ins[nm], n = f.length/4, xy = new Float32Array(n*2), y = new Int16Array(n), c = new Float32Array(n);
+        for (var k = 0; k < n; k++){
+          var i = f[4*k], j = f[4*k+1], g = eq2gal(i + 0.5, j - 90 + 0.5), m = moll(g[0], g[1]);
+          xy[2*k] = m[0]; xy[2*k+1] = m[1]; y[k] = f[4*k+2]; c[k] = f[4*k+3];
+          P.y0 = Math.min(P.y0, y[k]); P.y1 = Math.max(P.y1, y[k]);
+          (P.idx[i*1000 + j] = P.idx[i*1000 + j] || []).push([t.id, nm, y[k], c[k]]);
+        }
+        P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color });
+      });
+    });
+    if (st.year === null) st.year = P.y1;
+  }
+
+  function shell(){
+    return '<div class="home">' +
+      '<div class="home-map">' +
+        '<div class="home-head"><h2>' + esc(T('Le ciel observé')) + '</h2>' +
+        '<p>' + esc(T('Chaque point coloré est une case du ciel d\'un degré de côté où un observatoire a commencé au moins une observation. Le ciel entier est déplié en ovale : la Voie lactée en travers, son centre au milieu.')) + '</p></div>' +
+        '<div class="home-sky"><canvas id="home-cv" role="img" aria-label="' + esc(T('Carte du ciel entier des observations')) + '"></canvas><div class="home-tip" id="home-tip" hidden></div></div>' +
+        '<div class="home-ctl">' +
+          '<button class="dep-b" id="home-play" aria-label="' + esc(T('Rejouer les années')) + '">▶</button>' +
+          '<input type="range" id="home-year" min="1990" max="2026" step="1" aria-label="' + esc(T('Année')) + '">' +
+          '<span class="home-yr" id="home-yr" aria-live="polite"></span>' +
+          '<span class="home-mode" role="group" aria-label="' + esc(T('Affichage')) + '"><button class="chip" data-hmode="cov">' + esc(T('Couvert ou non')) + '</button><button class="chip" data-hmode="n">' + esc(T('Nombre d\'observations')) + '</button></span>' +
+        '</div>' +
+        '<p class="cap" id="home-cap"></p>' +
+      '</div>' +
+      '<aside class="home-side">' +
+        '<div class="home-pick" id="home-pick" aria-live="polite"><p class="cap">' + esc(T('Cliquez un point du ciel pour voir qui l\'a observé, avec quel instrument et depuis quand.')) + '</p></div>' +
+        '<div id="home-legend"><p class="cap">' + esc(T('Chargement des observations…')) + '</p></div>' +
+      '</aside></div>';
+  }
+
+  function legend(){
+    var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
+    var have = TELESCOPES.filter(function(t){ return D && D.bodies[t.id]; });
+    have.forEach(function(t){
+      var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).filter(function(k){ return k !== '*' && k !== '?'; });
+      h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(T('observations')) + '</span>' +
+        (ins.length ? '<small>' + esc(ins.map(function(k){ return INSN[k] || k; }).join(', ')) + '</small>' : '') + '</button>';
+    });
+    h += '</div><div class="home-all"><button class="linkish" data-hall="1">' + esc(T('Tout afficher')) + '</button> <button class="linkish" data-hall="0">' + esc(T('Tout masquer')) + '</button></div>';
+    h += '<h3>' + esc(T('Relevés du ciel entier')) + '</h3><ul class="home-sv">';
+    TELESCOPES.forEach(function(t){ var s = SURVEY[t.id]; if (s && !(D && D.bodies[t.id])) h += '<li><button class="linkish" data-go="' + t.id + '"><i style="background:' + t.color + '"></i>' + esc(t.short) + '</button> ' + esc(s[en() ? 1 : 0]) + '</li>'; });
+    h += '</ul>';
+    var rest = TELESCOPES.filter(function(t){ return !(D && D.bodies[t.id]) && !SURVEY[t.id]; });
+    if (rest.length){
+      h += '<h3>' + esc(T('Sans carte ici')) + '</h3><ul class="home-sv">';
+      rest.forEach(function(t){ var s = NOMAP[t.id]; h += '<li><button class="linkish" data-go="' + t.id + '"><i style="background:' + t.color + '"></i>' + esc(t.short) + '</button> ' + esc(s ? s[en() ? 1 : 0] : T('Carte des pointés pas encore calculée.')) + '</li>'; });
+      h += '</ul>';
+    }
+    if (D){
+      h += '<h3>' + esc(T('Sources')) + '</h3><ol class="refs">';
+      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.source) + '</a>' : esc(b.source)) + ' <span>' + esc(t.short) + '</span></li>'; });
+      h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>';
+    }
+    return h;
+  }
+
+  var cv = null, raf = 0, last = 0;
+  function size(){
+    var box = cv.parentNode, cs = getComputedStyle(box), w = Math.max(260, box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)), h = Math.round(w/2), dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.width = w + 'px'; cv.style.height = h + 'px';
+    cv._w = w; cv._h = h; cv._d = dpr;
+  }
+  function X(x){ return cv._w/2 + x/(2*Math.SQRT2)*(cv._w/2 - 6); }
+  function Y(y){ return cv._h/2 - y/Math.SQRT2*(cv._h/2 - 6); }
+  function draw(){
+    if (!cv || !cv.isConnected) return;
+    var g = cv.getContext('2d'), W = cv._w, H = cv._h, s = (W/2 - 6)/(2*Math.SQRT2)*2*Math.SQRT2/180;   /* pixels par degré, à l'équateur */
+    g.setTransform(cv._d, 0, 0, cv._d, 0, 0); g.clearRect(0, 0, W, H);
+    g.save(); g.beginPath(); g.ellipse(W/2, H/2, W/2 - 6, H/2 - 6, 0, 0, 2*Math.PI); g.fillStyle = '#05070A'; g.fill(); g.clip();
+    /* grille galactique */
+    g.strokeStyle = 'rgba(255,255,255,0.14)'; g.lineWidth = 1;
+    [-60, -30, 0, 30, 60].forEach(function(b){ g.beginPath(); for (var l = -180; l <= 180; l += 3){ var m = moll(l, b); l === -180 ? g.moveTo(X(m[0]), Y(m[1])) : g.lineTo(X(m[0]), Y(m[1])); } g.stroke(); });
+    [-120, -60, 0, 60, 120].forEach(function(l){ g.beginPath(); for (var b = -90; b <= 90; b += 3){ var m = moll(l, b); b === -90 ? g.moveTo(X(m[0]), Y(m[1])) : g.lineTo(X(m[0]), Y(m[1])); } g.stroke(); });
+    /* équateur céleste, en pointillés */
+    g.setLineDash([3, 4]); g.strokeStyle = 'rgba(255,255,255,0.3)'; var prev = null;
+    g.beginPath(); for (var ra = 0; ra <= 360; ra += 2){ var q = eq2gal(ra, 0), m = moll(q[0], q[1]), p = [X(m[0]), Y(m[1])]; if (!prev || Math.abs(p[0] - prev[0]) > W/3) g.moveTo(p[0], p[1]); else g.lineTo(p[0], p[1]); prev = p; } g.stroke(); g.setLineDash([]);
+    /* Kepler : disque du champ */
+    if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
+    /* cases observées */
+    if (P){
+      var px = Math.max(1.6, s*1.05), cnt = 0, hit = {};
+      P.layers.forEach(function(L){
+        if (st.off[L.id]) return;
+        g.fillStyle = L.color;
+        for (var k = 0, n = L.y.length; k < n; k++){
+          if (L.y[k] > st.year) continue;
+          g.globalAlpha = st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9;
+          g.fillRect(X(L.xy[2*k]) - px/2, Y(L.xy[2*k+1]) - px/2, px, px);
+          if (!hit[L.id]) hit[L.id] = 0; hit[L.id] += L.c[k]; cnt += L.c[k];
+        }
+      });
+      g.globalAlpha = 1; st.shown = cnt;
+    }
+    /* repère du clic */
+    if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
+    g.restore();
+    g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 6, H/2 - 6, 0, 0, 2*Math.PI); g.stroke();
+    /* repères */
+    g.fillStyle = 'rgba(255,255,255,0.7)'; g.font = '11px Archivo, Arial, sans-serif'; g.textAlign = 'center';
+    g.fillText(T('centre de la Galaxie'), W/2, H/2 + 16);
+    var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('observations');
+  }
+  function tick(now){
+    raf = 0; if (!st.play || !cv || !cv.isConnected) return;
+    if (now - last > 420){ last = now; st.year++; if (st.year > P.y1){ st.year = P.y1; st.play = false; playBtn(); } var r = document.getElementById('home-year'); if (r) r.value = st.year; draw(); }
+    if (st.play) raf = requestAnimationFrame(tick);
+  }
+  function playBtn(){ var b = document.getElementById('home-play'); if (b){ b.textContent = st.play ? '❚❚' : '▶'; b.setAttribute('aria-label', T(st.play ? 'Pause' : 'Rejouer les années')); } }
+
+  function pickAt(ev){
+    var r = cv.getBoundingClientRect(), x = (ev.clientX - r.left - cv._w/2)/(cv._w/2 - 6)*2*Math.SQRT2, y = -(ev.clientY - r.top - cv._h/2)/(cv._h/2 - 6)*Math.SQRT2;
+    var lb = unmoll(x, y); if (!lb) return null;
+    var e = gal2eq(lb[0], lb[1]); return [e[0], e[1], lb[0], lb[1]];
+  }
+  /* qui a observé : la case cliquée et ses voisines (3° × 3°), pour qu'un clic n'ait pas à tomber pile sur un point */
+  function pickInfo(p){
+    var i0 = Math.floor(p[0]), j0 = Math.floor(p[1] + 90), by = {}, n = 0;
+    for (var di = -1; di <= 1; di++) for (var dj = -1; dj <= 1; dj++){
+      var i = (i0 + di + 360) % 360, j = j0 + dj, a = P.idx[i*1000 + j]; if (!a) continue;
+      a.forEach(function(e){ if (st.off[e[0]] || e[2] > st.year) return; var k = e[0]; by[k] = by[k] || { ins:{}, y:9999, n:0 }; by[k].ins[e[1]] = (by[k].ins[e[1]] || 0) + e[3]; by[k].y = Math.min(by[k].y, e[2]); by[k].n += e[3]; n += e[3]; });
+    }
+    var pos = 'RA ' + p[0].toFixed(1) + '°, Dec ' + (p[1] >= 0 ? '+' : '−') + Math.abs(p[1]).toFixed(1) + '° · l ' + ((p[2] + 360) % 360).toFixed(1) + '°, b ' + (p[3] >= 0 ? '+' : '−') + Math.abs(p[3]).toFixed(1) + '°';
+    var h = '<h3>' + esc(T('Autour de ce point')) + '</h3><p class="home-pos">' + esc(en() ? pos : pos.replace(/\./g, ',').replace(/ · /, ' ; ')) + '</p>';
+    var ids = Object.keys(by).sort(function(a, b){ return by[b].n - by[a].n; });
+    if (!ids.length) h += '<p class="cap">' + esc(T('Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.')) + '</p>';
+    else h += '<ul class="home-who">' + ids.map(function(id){ var t = tele(id), b = by[id];
+      var ins = Object.keys(b.ins).filter(function(k){ return k !== '*'; }).sort(function(x, y){ return b.ins[y] - b.ins[x]; }).map(function(k){ return (INSN[k] || k) + ' ' + fr(b.ins[k]); }).join(', ');
+      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(T('observations')) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
+      '<p class="cap">' + esc(T('Carré de 3° de côté centré sur le point cliqué ; une observation est comptée là où elle a commencé.')) + '</p>';
+    var inK = Math.acos(Math.max(-1, Math.min(1, Math.sin(p[1]*R)*Math.sin(KEPLER.dec*R) + Math.cos(p[1]*R)*Math.cos(KEPLER.dec*R)*Math.cos((p[0] - KEPLER.ra)*R))))/R < KEPLER.r;
+    if (inK) h += '<p class="cap"><b>' + esc(T('Dans le champ de Kepler,')) + '</b> ' + esc(T('fixé pendant quatre ans.')) + '</p>';
+    var surv = TELESCOPES.filter(function(t){ return SURVEY[t.id] && t.id !== 'kepler' && t.id !== 'tess' && !st.off[t.id]; }).map(function(t){ return t.short; });
+    if (surv.length) h += '<p class="cap">' + esc(T('Comme tout le ciel, ce point a aussi été couvert par les relevés :')) + ' ' + esc(surv.join(', ')) + '.</p>';
+    return h;
+  }
+
+  function caption(){
+    return T('Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l\'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d\'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1.');
+  }
+
+  function render(root){
+    root.innerHTML = shell();
+    cv = root.querySelector('#home-cv'); size();
+    var cap = root.querySelector('#home-cap'); cap.textContent = caption();
+    [].forEach.call(root.querySelectorAll('[data-hmode]'), function(b){ b.classList.toggle('on', b.getAttribute('data-hmode') === st.mode); b.setAttribute('aria-pressed', b.getAttribute('data-hmode') === st.mode); });
+    draw();
+    load().then(function(){
+      if (!cv || !cv.isConnected) return;
+      var leg = root.querySelector('#home-legend');
+      if (!D){ leg.innerHTML = '<p class="cap">' + esc(T('Les observations n\'ont pas pu être chargées.')) + '</p>'; return; }
+      leg.innerHTML = legend();
+      var r = root.querySelector('#home-year'); r.min = P.y0; r.max = P.y1; r.value = st.year;
+      draw();
+    });
+  }
+  function click(el, ev){
+    if (el.hasAttribute('data-hob')){ var id = el.getAttribute('data-hob'); st.off[id] = !st.off[id]; el.setAttribute('aria-pressed', !st.off[id]); draw(); refreshPick(); return true; }
+    if (el.hasAttribute('data-hall')){ var on = el.getAttribute('data-hall') === '1'; TELESCOPES.forEach(function(t){ st.off[t.id] = !on; }); var l = document.getElementById('home-legend'); if (l) l.innerHTML = legend(); draw(); refreshPick(); return true; }
+    if (el.hasAttribute('data-hmode')){ st.mode = el.getAttribute('data-hmode'); [].forEach.call(document.querySelectorAll('[data-hmode]'), function(b){ var o = b.getAttribute('data-hmode') === st.mode; b.classList.toggle('on', o); b.setAttribute('aria-pressed', o); }); draw(); return true; }
+    if (el.id === 'home-play'){ if (!P) return true; st.play = !st.play; if (st.play && st.year >= P.y1){ st.year = P.y0; } playBtn(); if (st.play && !raf){ last = 0; raf = requestAnimationFrame(tick); } return true; }
+    if (el.id === 'home-cv'){ if (!P) return true; var p = pickAt(ev); if (!p) return true; st.pick = [Math.floor(p[0]), Math.floor(p[1] + 90)]; st.pickP = p; draw(); refreshPick(); return true; }
+    return false;
+  }
+  function refreshPick(){ var b = document.getElementById('home-pick'); if (b && st.pickP && P) b.innerHTML = pickInfo(st.pickP); }
+  function input(el){ if (el.id === 'home-year'){ st.year = +el.value; st.play = false; playBtn(); draw(); refreshPick(); return true; } return false; }
+  function resize(){ if (cv && cv.isConnected){ size(); draw(); } }
+  function hover(ev){
+    var tip = document.getElementById('home-tip'); if (!tip || !P) return;
+    var p = ev && pickAt(ev); if (!p){ tip.hidden = true; return; }
+    var a = P.idx[Math.floor(p[0])*1000 + Math.floor(p[1] + 90)] || [], ids = {};
+    a.forEach(function(e){ if (!st.off[e[0]] && e[2] <= st.year) ids[e[0]] = (ids[e[0]] || 0) + e[3]; });
+    var k = Object.keys(ids); if (!k.length){ tip.hidden = true; return; }
+    tip.textContent = k.map(function(id){ return tele(id).short + ' ' + fr(ids[id]); }).join(' · ');
+    var r = cv.getBoundingClientRect(); tip.style.left = (ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top + 12) + 'px'; tip.hidden = false;
+  }
+  return { render:render, click:click, input:input, resize:resize, hover:hover };
+})();
+
 /* English text for the observatory sheets and clickable parts (applied over src/data-tele.js by src/i18n.js). */
 var EN_TELE = {
   hubble:{
@@ -7332,7 +7626,35 @@ Object.assign(EN_UI, {
   "585 × 604 km au départ ; sous 275 km à la dernière observation":"585 × 604 km at the start; below 275 km at the last observation",
   "96,6 min au départ":"96.6 min at the start", "rentré dans l'atmosphère le 4 novembre 2026":"re-entered the atmosphere on 4 November 2026",
   "Swift ne visait pas à moins de 46° du Soleil ; la Lune (23°) et le bord de la Terre (28°) ajoutaient des exclusions, non représentées (Swift Technical Handbook, contraintes de pointage). Carte du ciel entier en coordonnées équatoriales, centrée sur 12 h d'ascension droite ; le disque jaune est le Soleil. Position du Soleil calculée pour la date choisie.":"Swift did not point closer than 46° to the Sun; the Moon (23°) and the Earth's limb (28°) added exclusions, not shown (Swift Technical Handbook, pointing constraints). Whole-sky map in equatorial coordinates, centred on 12 h right ascension; the yellow disc is the Sun. Sun position computed for the chosen date.",
-  "≈ 140 eV à 6 keV":"≈ 140 eV at 6 keV"
+  "≈ 140 eV à 6 keV":"≈ 140 eV at 6 keV",
+"Ciel":"Sky",
+"Le ciel observé":"The observed sky",
+"Chaque point coloré est une case du ciel d'un degré de côté où un observatoire a commencé au moins une observation. Le ciel entier est déplié en ovale : la Voie lactée en travers, son centre au milieu.":"Each coloured dot is a one-degree patch of sky where an observatory began at least one observation. The whole sky is unfolded into an oval: the Milky Way runs across it, its centre in the middle.",
+"Carte du ciel entier des observations":"Whole-sky map of the observations",
+"Rejouer les années":"Replay the years",
+"Année":"Year",
+"Affichage":"Display",
+"Couvert ou non":"Covered or not",
+"Nombre d'observations":"Number of observations",
+"Cliquez un point du ciel pour voir qui l'a observé, avec quel instrument et depuis quand.":"Click a point in the sky to see who observed it, with which instrument and since when.",
+"Chargement des observations…":"Loading the observations…",
+"Observatoires qui pointent":"Observatories that point",
+"observations":"observations",
+"Tout afficher":"Show all",
+"Tout masquer":"Hide all",
+"Relevés du ciel entier":"Whole-sky surveys",
+"Sans carte ici":"No map here",
+"Carte des pointés pas encore calculée.":"Pointing map not computed yet.",
+"Cartes calculées le":"Maps computed on",
+"centre de la Galaxie":"Galactic centre",
+"Autour de ce point":"Around this point",
+"Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.":"No pointed observation in this 3° square with the chosen filters.",
+"depuis":"since",
+"Carré de 3° de côté centré sur le point cliqué ; une observation est comptée là où elle a commencé.":"A 3° square centred on the clicked point; an observation is counted where it began.",
+"Comme tout le ciel, ce point a aussi été couvert par les relevés :":"Like the whole sky, this point was also covered by the surveys:",
+"Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1.":"Mollweide equal-area projection in Galactic coordinates; longitude increases to the left, as the sky is seen. Dotted: the celestial equator. Cells are 1° in right ascension and declination, start-of-observation positions only, without the real shape of the fields. For Euclid: the VIS observations published in DR1.",
+"Les observations n'ont pas pu être chargées.":"The observations could not be loaded.",
+"Dans le champ de Kepler,":"In the Kepler field,","fixé pendant quatre ans.":"held for four years."
 });
 
 /* =================================================================
@@ -8193,15 +8515,15 @@ function edgeScroll(el){
   marks();
 }
 function viewsHtml(top){
-  var c = S.mode === 'compare' && !S.fleet, f = !!S.fleet;
-  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
+  var c = S.mode === 'compare' && !S.fleet && !S.home, f = !!S.fleet;
+  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="accueil" aria-pressed="' + !!S.home + '">' + OBS_T('Ciel') + '</button><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
 }
 function renderTabs(){
   /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
   if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
   var h = domRow(S.mode === 'tele' ? S.id : null) + '<div class="trow" role="tablist" aria-label="Observatoire">';
   domList(S.id).forEach(function(t){
-    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
+    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id && !S.home) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
   h += '</div>';
   $('tabs').innerHTML = (S.mode === 'compare' || S.fleet) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
@@ -8275,10 +8597,10 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -8326,6 +8648,15 @@ $('inst-page').addEventListener('click', function(e){
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
+/* accueil : carte du ciel (home.js) */
+$('home-page').addEventListener('click', function(e){
+  var el = e.target.closest ? e.target.closest('[data-hob],[data-hall],[data-hmode],#home-play,#home-cv') : null;
+  if (el) HomeUI.click(el, e);
+});
+$('home-page').addEventListener('input', function(e){ HomeUI.input(e.target); });
+$('home-page').addEventListener('mousemove', function(e){ if (e.target.id === 'home-cv') HomeUI.hover(e); else HomeUI.hover(null); });
+window.addEventListener('resize', function(){ if (S.home) HomeUI.resize(); });
+
 /* sélecteur de comparaison (critère, groupe, type d'instrument) : état partagé OBS_CMP (data-tele.js) */
 function cmpClick(el){
   if (el.hasAttribute('data-cmpby')){ var b = el.getAttribute('data-cmpby'); if (OBS_CMP.by !== b){ OBS_CMP.by = b; OBS_CMP.g = cmpGroups(b)[0].id; } return true; }
@@ -8341,7 +8672,7 @@ document.addEventListener('click', function(e){
   if (cmpClick(el)){ renderPanel(); renderHud(); if (S.mode === 'compare') show3D(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
-  if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-go')){ var g = el.getAttribute('data-go'); location.hash = (S.inst && !S.fleet && S.mode === 'tele' && tele(g)) ? g + '-instruments' : g; return; }   /* onglets d'en-tête : sur la page « Mission et données », on reste sur cette page */
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
@@ -8358,6 +8689,7 @@ document.addEventListener('keydown', function(e){
 function route(){
   var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
+  S.home = h === '' || h === 'accueil'; if (S.home) mode = S.mode === 'compare' ? 'tele' : (S.mode || 'tele');
   S.fleet = h === 'flotte'; if (S.fleet){ inst = true; mode = S.mode || 'tele'; }
   else if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;
@@ -8367,6 +8699,7 @@ function route(){
   if (changed){ S.part = null; S.hover = null; S.ptab = 'fiche'; }
   renderTabs(); renderHud(); renderPanel();
   $('inst-page').hidden = !S.inst;
+  $('home-page').hidden = !S.home; if (S.home) HomeUI.render($('home-page'));
   if (S.inst) renderInst();
   if (renderer){ show3D(changed); canvasLabel(); }
   consumePart();
@@ -8969,7 +9302,7 @@ function project(p, el, dx, dy){
 }
 function tick(now){
   requestAnimationFrame(tick);
-  if (S.inst || document.hidden) { clock = now; return; }
+  if (S.inst || S.home || document.hidden) { clock = now; return; }
   var dt = Math.min(0.05, (now - clock)/1000); clock = now;
   var k = 1 - Math.exp(-dt*7);
   if (S.spin && !nptr && now - C.last > 2600 && !S.part) C.gaz += dt*(S.mode === 'compare' ? 0 : 0.085);

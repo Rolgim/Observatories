@@ -165,15 +165,15 @@ function edgeScroll(el){
   marks();
 }
 function viewsHtml(top){
-  var c = S.mode === 'compare' && !S.fleet, f = !!S.fleet;
-  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
+  var c = S.mode === 'compare' && !S.fleet && !S.home, f = !!S.fleet;
+  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="accueil" aria-pressed="' + !!S.home + '">' + OBS_T('Ciel') + '</button><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
 }
 function renderTabs(){
   /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
   if (S.mode === 'tele' && !window.OBS_DOM_LOCK) window.OBS_DOM = domainOf(S.id);
   var h = domRow(S.mode === 'tele' ? S.id : null) + '<div class="trow" role="tablist" aria-label="Observatoire">';
   domList(S.id).forEach(function(t){
-    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
+    h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id && !S.home) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
   h += '</div>';
   $('tabs').innerHTML = (S.mode === 'compare' || S.fleet) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
@@ -247,10 +247,10 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills; $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
@@ -298,6 +298,15 @@ $('inst-page').addEventListener('click', function(e){
   if (el.hasAttribute('data-inst') && S.mode !== 'compare'){ S.instSel = el.getAttribute('data-inst') || null; window.OBS_OPT = null; S.filterIdx = 0; renderInst(); }
 });
 
+/* accueil : carte du ciel (home.js) */
+$('home-page').addEventListener('click', function(e){
+  var el = e.target.closest ? e.target.closest('[data-hob],[data-hall],[data-hmode],#home-play,#home-cv') : null;
+  if (el) HomeUI.click(el, e);
+});
+$('home-page').addEventListener('input', function(e){ HomeUI.input(e.target); });
+$('home-page').addEventListener('mousemove', function(e){ if (e.target.id === 'home-cv') HomeUI.hover(e); else HomeUI.hover(null); });
+window.addEventListener('resize', function(){ if (S.home) HomeUI.resize(); });
+
 /* sélecteur de comparaison (critère, groupe, type d'instrument) : état partagé OBS_CMP (data-tele.js) */
 function cmpClick(el){
   if (el.hasAttribute('data-cmpby')){ var b = el.getAttribute('data-cmpby'); if (OBS_CMP.by !== b){ OBS_CMP.by = b; OBS_CMP.g = cmpGroups(b)[0].id; } return true; }
@@ -313,7 +322,7 @@ document.addEventListener('click', function(e){
   if (cmpClick(el)){ renderPanel(); renderHud(); if (S.mode === 'compare') show3D(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
-  if (el.hasAttribute('data-go')){ location.hash = el.getAttribute('data-go'); return; }
+  if (el.hasAttribute('data-go')){ var g = el.getAttribute('data-go'); location.hash = (S.inst && !S.fleet && S.mode === 'tele' && tele(g)) ? g + '-instruments' : g; return; }   /* onglets d'en-tête : sur la page « Mission et données », on reste sur cette page */
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }
@@ -330,6 +339,7 @@ document.addEventListener('keydown', function(e){
 function route(){
   var h = (location.hash || '').replace(/^#/, '').replace(/^(en|fr)-/, ''), inst = false, mode = 'tele', id = S.id;
   if (/-instruments$/.test(h)){ inst = true; h = h.replace(/-instruments$/, ''); }
+  S.home = h === '' || h === 'accueil'; if (S.home) mode = S.mode === 'compare' ? 'tele' : (S.mode || 'tele');
   S.fleet = h === 'flotte'; if (S.fleet){ inst = true; mode = S.mode || 'tele'; }
   else if (h === 'comparer') mode = 'compare'; else if (tele(h)) id = h;
   var changed = id !== S.id || mode !== S.mode;
@@ -339,6 +349,7 @@ function route(){
   if (changed){ S.part = null; S.hover = null; S.ptab = 'fiche'; }
   renderTabs(); renderHud(); renderPanel();
   $('inst-page').hidden = !S.inst;
+  $('home-page').hidden = !S.home; if (S.home) HomeUI.render($('home-page'));
   if (S.inst) renderInst();
   if (renderer){ show3D(changed); canvasLabel(); }
   consumePart();
@@ -941,7 +952,7 @@ function project(p, el, dx, dy){
 }
 function tick(now){
   requestAnimationFrame(tick);
-  if (S.inst || document.hidden) { clock = now; return; }
+  if (S.inst || S.home || document.hidden) { clock = now; return; }
   var dt = Math.min(0.05, (now - clock)/1000); clock = now;
   var k = 1 - Math.exp(-dt*7);
   if (S.spin && !nptr && now - C.last > 2600 && !S.part) C.gaz += dt*(S.mode === 'compare' ? 0 : 0.085);

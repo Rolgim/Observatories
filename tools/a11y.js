@@ -13,7 +13,7 @@ const srv = http.createServer((q, s) => {
 }).listen(PORT);
 // [hash, clic éventuel une fois la page chargée]
 const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid-instruments', '#inst-nav [data-inst="mission"]'], ['comparer'], ['jwst-instruments'], ['euclid-instruments', '#inst-nav [data-inst="nisp"]'],
-  ['gaia-instruments', '#inst-nav [data-inst="optique"]'], ['roman-instruments', '#inst-nav [data-inst="wfi"]'], ['euclid-instruments', '#inst-nav [data-inst="orbite"]'], ['comparer-instruments'], ['comparer-instruments', '[data-cmpsec="spectre"]'], ['comparer-instruments', '[data-cmpsec="champs"]'], ['comparer-instruments', '[data-cmpsec="orbites"]'], ['flotte'], ['flotte', '[data-fleet-sec="who"]'], ['swift-instruments', '#inst-nav [data-inst="mission"]']];
+  ['gaia-instruments', '#inst-nav [data-inst="optique"]'], ['roman-instruments', '#inst-nav [data-inst="wfi"]'], ['euclid-instruments', '#inst-nav [data-inst="orbite"]'], ['comparer-instruments'], ['comparer-instruments', '[data-cmpsec="spectre"]'], ['comparer-instruments', '[data-cmpsec="champs"]'], ['comparer-instruments', '[data-cmpsec="orbites"]'], ['accueil'], ['flotte'], ['flotte', '[data-fleet-sec="who"]'], ['swift-instruments', '#inst-nav [data-inst="mission"]']];
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   let total = 0; const seen = {};

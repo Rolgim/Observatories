@@ -21,7 +21,7 @@ const fonts = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?fa
 const style = '<style>\n' + r('style.css') + '\n' + r('inst.css') + '\n</style>';
 const scripts = '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>\n' +
   '<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>\n' +
-  '<script>\n' + r('lang.js') + '\n' + data + '\n' + r('data-fleet.js') + '\n' + r('data-inst.js') + '\n' + r('data-mission.js') + '\n' + r('optics.js') + '\n' + r('orbits.js') + '\n' + r('inst-render.js') + '\n' + r('fleet.js') + '\n' + r('en/tele.js') + '\n' + r('en/inst.js') + '\n' + r('en/more.js') + '\n' + r('en/ui.js') + '\n' + r('i18n.js') + '\n' + r('glossary.js') + '\n' + r('interior.js') + '\n' + r('deploy.js') + '\n' + r('looks.js') + '\n' + r('app.js') + '\n</script>\n';
+  '<script>\n' + r('lang.js') + '\n' + data + '\n' + r('data-fleet.js') + '\n' + r('data-inst.js') + '\n' + r('data-mission.js') + '\n' + r('optics.js') + '\n' + r('orbits.js') + '\n' + r('inst-render.js') + '\n' + r('fleet.js') + '\n' + r('home.js') + '\n' + r('en/tele.js') + '\n' + r('en/inst.js') + '\n' + r('en/more.js') + '\n' + r('en/ui.js') + '\n' + r('i18n.js') + '\n' + r('glossary.js') + '\n' + r('interior.js') + '\n' + r('deploy.js') + '\n' + r('looks.js') + '\n' + r('app.js') + '\n</script>\n';
 
 if (artifact) {
   const out = path.join(__dirname, 'dist');

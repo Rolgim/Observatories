@@ -10,7 +10,7 @@ on:
     - cron: '17 5 * * *'   # chaque jour : TLE de Hubble, et recettes manquantes ou périmées (voir fetch_data.py)
   push:
     branches: [main]
-    paths: ['tools/data/**', '!tools/data/fetch_sky.py', '.github/workflows/data.yml']
+    paths: ['tools/data/**', '!tools/data/fetch_sky.py', '!tools/data/sky_all.py', '.github/workflows/data.yml']
 permissions:
   contents: write
 concurrency: { group: data, cancel-in-progress: true }

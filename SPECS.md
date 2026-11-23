@@ -106,6 +106,9 @@ Proposée le 19 novembre : une carte du ciel entier où chaque instrument laisse
 
 **Acceptation.** Chaque instrument du site a sa couche ou une mention « pas d'acquisitions pointées » ; chaque couche cite sa table d'archive et sa date de calcul.
 
+**Livré le 23 novembre (première version, page d'accueil `#accueil`).** Carte de Mollweide en coordonnées galactiques ; cases de 1° (grille équatoriale) où une observation a commencé, colorées par observatoire, avec l'année de la première et leur nombre ; curseur temporel, modes « couvert ou non » et « nombre d'observations » ; un clic liste, sur 3° × 3°, les observatoires et instruments. Données : `tools/data/fetch_sky.py` (MAST pour Hubble et Webb, ESA pour Euclid DR1, tables maîtresses du HEASARC pour Chandra, XMM-Newton, Swift XRT/UVOT, INTEGRAL, Spitzer et Herschel), réduites par `tools/data/sky_all.py` en `data/sky-all.json`. Relevés du ciel entier en liste à part ; champ de Kepler tracé (disque de 16,1°) ; CHEOPS et Roman signalés sans carte. Les boutons Ciel, Comparer et Flotte restent en haut à droite sur toutes les pages.
+Reste : temps de pose cumulé, couleurs par type d'instrument, filtres agence, domaine et orbite, vraies empreintes au zoom, TESS par secteurs, reprise dans « Comparer ».
+
 ### Priorité 4 : contenu encore approximatif
 
 1. **Prescriptions optiques** [D1] : schémas d'Euclid, de Gaia et de Roman à l'échelle seulement pour les éléments publiés ; courbures et positions des miroirs arrière manquent. Schéma de Gaia chargé.
