@@ -382,7 +382,7 @@ var InstrumentsUI = (function(){
   }
   function compare(sec){
     var LIST = cmpList().map(function(t){ return t.id; }), cur = CMP_SECS.filter(function(x){ return x[0] === (sec || ''); })[0] || CMP_SECS[0];
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
+    var s = '<div class="inst-head cmp-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
       '<div>' + cmpSelector() + '</div></div>';
     if (!sec) return s + cmpOverview(LIST);
     if (sec === 'orbites') return s + Orbits.renderCompare(OBS, NAMES, LIST);

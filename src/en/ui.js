@@ -265,5 +265,5 @@ Object.assign(EN_UI, {
 "Gaia EDR3, la couleur du ciel":"Gaia EDR3, the colour of the sky","ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, remerciements : A. Moitinho":"ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, acknowledgement: A. Moitinho",
 "reprojeté en Mollweide pour ce site":"reprojected to Mollweide for this site",
 "découpe, étirement asinh pour le site":"cutout, asinh stretch for the site","PACS, 160 µm":"PACS, 160 µm",
-
+"champ de Kepler":"Kepler field"
 });

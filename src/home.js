@@ -168,8 +168,6 @@ var HomeUI = (function(){
     /* équateur céleste, en pointillés */
     g.setLineDash([3, 4]); g.strokeStyle = 'rgba(255,255,255,0.3)'; var prev = null;
     g.beginPath(); for (var ra = 0; ra <= 360; ra += 2){ var q = eq2gal(ra, 0), m = moll(q[0], q[1]), p = [X(m[0]), Y(m[1])]; if (!prev || Math.abs(p[0] - prev[0]) > W/3) g.moveTo(p[0], p[1]); else g.lineTo(p[0], p[1]); prev = p; } g.stroke(); g.setLineDash([]);
-    /* Kepler : disque du champ */
-    if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
     /* cases observées */
     if (P){
       var px = Math.max(1.6, s*V.z*(BG && st.bg ? 0.8 : 1.05)), seen = new Uint8Array(360*180);
@@ -185,6 +183,9 @@ var HomeUI = (function(){
       });
       g.globalAlpha = 1; var cnt = 0; for (var q = 0; q < seen.length; q++) cnt += seen[q]; st.shown = cnt;
     }
+    /* Kepler : disque du champ */
+    if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2.5; g.globalAlpha = 1; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke();
+      var kc = eq2gal(KEPLER.ra, KEPLER.dec + KEPLER.r + 1.5), km = moll(kc[0], kc[1]); g.fillStyle = kt.color; g.font = '600 11px Archivo, Arial, sans-serif'; g.textAlign = 'center'; g.strokeStyle = 'rgba(0,0,0,.85)'; g.lineWidth = 3; g.strokeText(T('champ de Kepler'), X(km[0]), Y(km[1]) - 4); g.fillText(T('champ de Kepler'), X(km[0]), Y(km[1]) - 4); }
     /* repère du clic */
     if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
     g.restore();

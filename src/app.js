@@ -260,6 +260,7 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
+  $('inst-page').querySelector('.inst-top').hidden = !!(S.fleet || S.mode === 'compare');   /* Comparer, Flotte : le bouton surligné de l'en-tête suffit */
   if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;

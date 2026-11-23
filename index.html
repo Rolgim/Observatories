@@ -454,9 +454,10 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .cmpsel-by > span{ font-size:12px; color:var(--mute); margin-right:4px; }
 /* catégorie de filtre : onglets soulignés, distincts des boutons de filtre (chips) qu'ils commandent */
 .cmpsel-by{ gap:0 !important; border-bottom:1px solid var(--rule); }
-.seg{ border:0; border-bottom:3px solid transparent; background:transparent; color:var(--ink-2); font:inherit; font-size:13px; font-weight:600; padding:4px 10px 5px; margin-bottom:-1px; cursor:pointer; }
+.seg{ border:0; border-bottom:3px solid transparent; background:transparent; color:var(--mute); font:inherit; font-size:13px; font-weight:700; padding:4px 10px 5px; margin-bottom:-1px; cursor:pointer; }
 .seg:hover{ color:var(--ink); border-bottom-color:var(--rule-2); }
-.seg[aria-pressed="true"]{ color:var(--ink); font-weight:800; border-bottom-color:var(--ink); }
+.seg[aria-pressed="true"]{ color:var(--ink); border-bottom-color:var(--ink); }   /* même graisse : rien ne bouge au clic */
+.inst-head.cmp-head{ align-items:start; }
 .cmpsel-g .chip{ font-size:13px; padding:4px 9px; }
 .cmpsel-g .chip.mix{ border-style:dashed; }
 .cmpsel-def{ font-size:12.5px; color:var(--mute); margin:0; }
@@ -542,6 +543,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
   .home-sky{ padding:4px; }
   .home-side{ border-left:0; border-top:2px solid var(--ink); padding:14px var(--gr) 24px var(--gl); }
 }
+.inst-top[hidden] + .inst-body{ border-top:2px solid var(--ink); }
 
 </style>
 </head>
@@ -5872,7 +5874,7 @@ var InstrumentsUI = (function(){
   }
   function compare(sec){
     var LIST = cmpList().map(function(t){ return t.id; }), cur = CMP_SECS.filter(function(x){ return x[0] === (sec || ''); })[0] || CMP_SECS[0];
-    var s = '<div class="inst-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
+    var s = '<div class="inst-head cmp-head"><div class="inst-h"><div class="inst-name">' + cur[1] + '</div><div class="inst-full">Comparer : ce qui est comparable, sur les mêmes axes</div></div>' +
       '<div>' + cmpSelector() + '</div></div>';
     if (!sec) return s + cmpOverview(LIST);
     if (sec === 'orbites') return s + Orbits.renderCompare(OBS, NAMES, LIST);
@@ -6193,8 +6195,6 @@ var HomeUI = (function(){
     /* équateur céleste, en pointillés */
     g.setLineDash([3, 4]); g.strokeStyle = 'rgba(255,255,255,0.3)'; var prev = null;
     g.beginPath(); for (var ra = 0; ra <= 360; ra += 2){ var q = eq2gal(ra, 0), m = moll(q[0], q[1]), p = [X(m[0]), Y(m[1])]; if (!prev || Math.abs(p[0] - prev[0]) > W/3) g.moveTo(p[0], p[1]); else g.lineTo(p[0], p[1]); prev = p; } g.stroke(); g.setLineDash([]);
-    /* Kepler : disque du champ */
-    if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
     /* cases observées */
     if (P){
       var px = Math.max(1.6, s*V.z*(BG && st.bg ? 0.8 : 1.05)), seen = new Uint8Array(360*180);
@@ -6210,6 +6210,9 @@ var HomeUI = (function(){
       });
       g.globalAlpha = 1; var cnt = 0; for (var q = 0; q < seen.length; q++) cnt += seen[q]; st.shown = cnt;
     }
+    /* Kepler : disque du champ */
+    if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2.5; g.globalAlpha = 1; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke();
+      var kc = eq2gal(KEPLER.ra, KEPLER.dec + KEPLER.r + 1.5), km = moll(kc[0], kc[1]); g.fillStyle = kt.color; g.font = '600 11px Archivo, Arial, sans-serif'; g.textAlign = 'center'; g.strokeStyle = 'rgba(0,0,0,.85)'; g.lineWidth = 3; g.strokeText(T('champ de Kepler'), X(km[0]), Y(km[1]) - 4); g.fillText(T('champ de Kepler'), X(km[0]), Y(km[1]) - 4); }
     /* repère du clic */
     if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
     g.restore();
@@ -7723,7 +7726,7 @@ Object.assign(EN_UI, {
 "Gaia EDR3, la couleur du ciel":"Gaia EDR3, the colour of the sky","ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, remerciements : A. Moitinho":"ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, acknowledgement: A. Moitinho",
 "reprojeté en Mollweide pour ce site":"reprojected to Mollweide for this site",
 "découpe, étirement asinh pour le site":"cutout, asinh stretch for the site","PACS, 160 µm":"PACS, 160 µm",
-
+"champ de Kepler":"Kepler field"
 });
 
 /* =================================================================
@@ -8681,6 +8684,7 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
+  $('inst-page').querySelector('.inst-top').hidden = !!(S.fleet || S.mode === 'compare');   /* Comparer, Flotte : le bouton surligné de l'en-tête suffit */
   if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
