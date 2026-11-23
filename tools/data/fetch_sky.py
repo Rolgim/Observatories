@@ -78,14 +78,16 @@ HEASARC_TAP = "https://heasarc.gsfc.nasa.gov/xamin/vo/tap"
 def _chandra(r):
     g = str(r.get("grating", "") or "").strip().upper()
     return [g] if g in ("HETG", "LETG") else [str(r.get("detector", "") or "?").split("-")[0].strip().upper()]
-def _swift(r):
-    return [n for n, c in (("XRT", "xrt_exposure"), ("UVOT", "uvot_exposure")) if (r.get(c) or 0) > 0]
+def _swift(r):   # une observation compte une fois, avec les instruments qui ont posé
+    return [", ".join(n for n, c in (("XRT", "xrt_exposure"), ("UVOT", "uvot_exposure")) if (r.get(c) or 0) > 0)]
 def _spitzer(r):
     a = str(r.get("aot", "") or "").lower()
     return ["IRAC" if a.startswith("irac") else "MIPS" if a.startswith("mips") else "IRS" if a.startswith("irs") else "?"]
 def _herschel(r):
-    for c in ("instrument", "instrument_name", "inst"):
-        if r.get(c): return [str(r[c]).strip().upper()]
+    for c in ("instrument", "instrument_name", "inst", "obs_mode", "aot", "mode"):
+        if r.get(c):
+            v = str(r[c]).strip().upper()
+            return ["PACS" if "PACS" in v else "SPIRE" if "SPIRE" in v else "HIFI" if "HIFI" in v else v]
     return ["?"]
 HEASARC_BODIES = {
     "chandra": ("chanmaster", "status IN ('archived', 'observed')", ("time",), _chandra, ["detector", "grating"]),
@@ -106,7 +108,8 @@ def heasarc_pointings(key, cell=1.0):
     if tc is None:
         raise RuntimeError(f"pas de colonne de temps parmi {tcols} ; colonnes : {have}")
     if cols is None:
-        cols = [c for c in ("instrument", "instrument_name", "inst") if c in have][:1]
+        cols = [c for c in ("instrument", "instrument_name", "inst", "obs_mode", "aot", "mode") if c in have][:1]
+        print("   colonnes :", have, flush=True)
     adql = f"SELECT ra, dec, {tc}{''.join(', ' + c for c in cols)} FROM {table}" + (f" WHERE {where}" if where else "")
     print("  ", adql, flush=True)
     t = svc.run_async(adql, maxrec=2000000).to_table()
