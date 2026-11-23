@@ -1,6 +1,6 @@
 # Observatoires en orbite : spécifications
 
-Document de travail, revu le 19 novembre 2026. Ordre de lecture : objet, public et périmètre (1), ce que fait le site (2), **ce qui reste à faire (3)**, questions à trancher (4), puis le détail de chaque lot, ses exigences et ce qui a été livré (5). Les tableaux de vérification des valeurs sont en annexe.
+Document de travail, revu le 23 novembre 2026 (version 1.0 du site, tag `v1.0`). Ordre de lecture : objet, public et périmètre (1), ce que fait le site (2), **ce qui reste à faire (3)**, questions à trancher (4), puis le détail de chaque lot, ses exigences et ce qui a été livré (5). Les tableaux de vérification des valeurs sont en annexe.
 
 ## 1. Objet, public et périmètre
 
@@ -19,22 +19,27 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 - **Époques** : missions en service et terminées. Les missions futures (PLATO, Ariel, LISA, NewAthena…) viennent après, avec des valeurs prévues signalées comme telles.
 - **Agences et contributions** : chaque observatoire dit qui l'a conduit et qui a fourni quoi (instruments, centres de données, lanceur). Le CNES est représenté par ses missions propres (CoRoT, SVOM, MICROSCOPE) et par ses contributions aux autres (par exemple l'imageur de MIRI sur Webb, des éléments d'Euclid, le traitement de Gaia), chacune sourcée.
 
-## 2. Ce que fait le site
+## 2. Ce que fait le site (version 1.0, 23 novembre 2026)
 
-- **Onze observatoires**, dans l'ordre chronologique de lancement : Hubble, Chandra, XMM-Newton, Spitzer, Fermi, Kepler, Gaia, TESS, JWST, Euclid, Roman. Navigation en deux rangées : domaines spectraux (rayons gamma, rayons X, UV et visible, infrarouge, astrométrie), boutons qui filtrent, puis observatoires du domaine choisi. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
-- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », Terre sous les observatoires en orbite basse, vue en coupe (à refaire, voir 3), déploiement de Webb en 13 étapes et ouverture du pare-soleil de Gaia, comparaison des tailles à l'échelle.
-- **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
-- **Mission et données**, une page par observatoire : mission et traitements ; trajet de la lumière (schéma optique, étapes, plan focal à l'échelle) ; orbite (trajectoire réelle, position en direct pour l'orbite basse, ciel observable) ; une page par instrument (à quoi ça sert, couverture spectrale, champ de vue, filtres, produits, observation réelle, code d'accès, archives).
-- **Comparer** : tailles, orbites autour de L2, couvertures spectrales, champs de vue, plans focaux, tableau des instruments ; tout sur les mêmes figures, sans regroupement (à refaire, voir 3).
+- **Dix-huit observatoires**, dans l'ordre chronologique de lancement : Hubble, Compton, Chandra, XMM-Newton, WMAP, INTEGRAL, Spitzer, Swift, Fermi, Kepler, Herschel, Planck, Gaia, TESS, CHEOPS, JWST, Euclid, Roman. Navigation en deux rangées : domaines spectraux (rayons gamma, rayons X, UV et visible, infrarouge, micro-ondes, astrométrie), puis observatoires du domaine choisi. Tous sont décrits par le registre `TELESCOPES` (`src/data-tele.js`) ; en ajouter un ne demande aucune modification de `app.js`.
+- **En-tête** : quatre vues fixes en haut à droite, sur toutes les pages : Télescopes (vue 3D), Ciel (accueil), Comparer, Flotte.
+- **Ciel (accueil)** : carte de Mollweide galactique sur fond Gaia (ESA), cases de 1° où chaque observatoire a réellement pointé (MAST, HEASARC, archive Euclid), curseur des années, zoom, clic « qui a observé ici », relevés du ciel entier à part, champ de Kepler.
+- **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, Soleil réel par défaut, Terre sous les observatoires en orbite basse, coupe limitée aux éléments documentés, déploiement de Webb, comparaison des tailles à l'échelle.
+- **Fiche par observatoire** : chiffres clés (encombrement en deux dimensions), description, schéma d'orbite animé, tableaux de caractéristiques avec appels de note ; faits sourcés pour chaque pièce.
+- **Mission et données**, une page par observatoire : mission et traitements ; trajet de la lumière ; orbite (trajectoire réelle, position en direct pour l'orbite basse, ciel observable) ; une page par instrument (à quoi ça sert, couverture spectrale, champ de vue, filtres, produits, observation réelle, code d'accès, archives).
+- **Comparer**, en sous-pages : vue d'ensemble, domaine spectral, champs de vue, plans focaux, orbites, tableau, tailles en 3D ; regroupement par famille d'orbite, type de mission ou domaine.
+- **Flotte** : frise chronologique filtrable (agence, état, domaine, orbite, mission) et « qui a fait quoi », chaque ligne sourcée.
 - **Anglais par défaut**, français par le bouton FR ou un lien `#fr-…` ; thèmes clair et sombre ; téléphone ; liens par ancre.
-- Site statique sans serveur. Données réelles mises à jour par l'intégration continue (orbites et TLE chaque jour, observations quand une recette manque). Les archives et sites que le bac à sable n'atteint pas sont sondés depuis l'intégration continue (`tools/probe/`), qui peut déposer des fichiers sur la branche `probe-out`.
-- Tests à chaque push : parcours complet au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`).
+- Site statique sans serveur. Données réelles mises à jour par l'intégration continue (orbites et TLE chaque jour, observations quand une recette manque, pointés et fond de ciel à part). Les archives que le bac à sable n'atteint pas sont sondées depuis l'intégration continue (`tools/probe/`), qui peut déposer des fichiers sur la branche `probe-out`.
+- Tests à chaque push : parcours complet au bureau et au téléphone, complétude du registre, traduction (`tools/smoke.js`) ; accessibilité WCAG 2.1 A et AA (`tools/a11y.js`) ; chaînes non traduites (`tools/i18n-scan.js`).
+
+**Projet frère.** Le même site pour les sondes du Système solaire, à partir de STAC-PLANET du PDSSP, démarre dans un projet à part ; son dossier de lancement reprend les règles et l'architecture de celui-ci.
 
 ## 3. Ce qui reste à faire
 
 Classé par priorité. Entre crochets : le lot concerné (section 5).
 
-### Priorité 0 : retours du 23 novembre [R]
+### Priorité 0 : retours du 23 novembre [R] — fait (v1.0)
 
 Liste de l'utilisatrice, à traiter avant le reste ; entre crochets, ce qui a été fait.
 

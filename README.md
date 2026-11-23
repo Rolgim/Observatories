@@ -1,12 +1,15 @@
 # Observatoires en orbite
 
+**Version 1.0 (23 novembre 2026, tag `v1.0`).**
+
 *Observatories in orbit: an interactive 3D guide to eighteen space observatories, from Hubble, Compton and Chandra to Webb, Euclid and Roman, in English (default) and French.*
 
 Visualisation 3D de dix-huit observatoires spatiaux (Hubble, Compton, Chandra, XMM-Newton, WMAP, INTEGRAL, Spitzer, Swift, Fermi, Kepler, Herschel, Planck, Gaia, TESS, CHEOPS, JWST, Euclid, Roman), pour un public allant de l'étudiant à l'expert. Toute valeur affichée est sourcée ; ce qui est schématique ou indicatif est signalé comme tel.
 
 - **Vue 3D** : maquettes réelles redécoupées en pièces cliquables, vue éclatée, éclairage « Soleil réel », vue en coupe avec intérieurs reconstruits, déploiement de Webb et ouverture du pare-soleil de Gaia pas à pas, comparaison des tailles à l'échelle, avec une silhouette humaine pour référence.
 - **Fiche par observatoire** : chiffres clés, description, schéma d'orbite, tableaux de caractéristiques avec appels de note.
-- **Accueil, le ciel observé** : carte du ciel entier où chaque observatoire laisse l'empreinte de ses pointés réels (MAST, HEASARC, archive Euclid), curseur des années, clic pour savoir qui a observé un point du ciel.
+- **Accueil, le ciel observé** : carte du ciel entier sur fond Gaia (ESA) où chaque observatoire laisse l'empreinte de ses pointés réels (MAST, HEASARC, archive Euclid), curseur des années, zoom, clic pour savoir qui a observé un point du ciel.
+- **En-tête** : Télescopes, Ciel, Comparer et Flotte, toujours en haut à droite.
 - **Flotte** : frise chronologique de tous les observatoires, filtrable par agence, état, domaine, orbite et type de mission, et « qui a fait quoi », chaque ligne sourcée.
 - **Mission et données**, une page par observatoire :
   - déroulé de la mission et chaîne de traitement des données ;
