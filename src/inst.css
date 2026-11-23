@@ -205,5 +205,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
 .fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
 .fl-who .spec-row .v{ text-align:left; font-weight:400; }
-.views.in{ display:inline-flex; gap:6px; margin-left:12px; vertical-align:middle; }
+#inst-views{ align-self:center; margin-left:18px; }
+.inst-title{ min-width:186px; }   /* même largeur pour « Flotte », « Comparer » et « Mission et données » : les boutons ne bougent pas */
+@media (max-width: 860px){ .inst-title{ min-width:0; } #inst-views{ flex:1 1 100%; margin:0; padding:0 var(--gr) 8px var(--gl); } }
 .views{ display:flex; gap:6px; }

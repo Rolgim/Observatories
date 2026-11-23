@@ -176,7 +176,7 @@ function renderTabs(){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
   h += '</div>';
-  $('tabs').innerHTML = h;
+  $('tabs').innerHTML = (S.mode === 'compare' || S.fleet) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
   /* vues d'ensemble, à part des onglets d'observatoires */
   $('views').innerHTML = viewsHtml(true);
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
@@ -247,10 +247,10 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills + viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills + viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);

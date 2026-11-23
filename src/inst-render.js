@@ -421,7 +421,7 @@ var InstrumentsUI = (function(){
     copyStore = [];
     var nav = CMP_SECS.map(function(x){ return '<button class="nav-i' + ((sec || '') === x[0] ? ' on' : '') + '" data-cmpsec="' + x[0] + '"><span class="n">' + x[1] + '</span><span class="k">' + x[2] + '</span></button>'; }).join('') +
       '<button class="nav-i" data-go="comparer"><span class="n">Tailles en 3D</span><span class="k">Les maquettes côte à côte, à l\'échelle</span></button>';
-    return { pills:pillsFor('comparer'), nav:nav, main:compare(sec), sel:null };
+    return { pills:'', nav:nav, main:compare(sec), sel:null };
   }
 
   function render(tid, sel, fidx){

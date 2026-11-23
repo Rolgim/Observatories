@@ -39,7 +39,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #app{ height:100%; display:flex; flex-direction:column; min-height:0; position:relative; }
 
 /* ---------- en-tête ---------- */
-#top{ flex:none; display:flex; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
+#top{ flex:none; display:flex; min-height:55px; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
 .brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
 /* navigation en deux rangées : domaines spectraux (filtres), puis observatoires du domaine choisi */
@@ -274,6 +274,7 @@ ol.refs.pref li{ margin:0 0 2px; }
   #views{ margin:0; gap:6px; padding:5px var(--gr) 5px var(--gl); border-top:1px solid var(--rule); }
   .vbtn{ font-size:12.5px; padding:3px 10px; }
 }
+#tabs:empty{ border:0; }
 
 /* ===== Instruments et données : un manuel d'instrument, sur toute la largeur ===== */
 #inst-page{ position:absolute; inset:0; z-index:30; display:flex; flex-direction:column; background:var(--paper); }
@@ -482,7 +483,9 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 .linkish{ background:none; border:0; padding:0; font:inherit; color:inherit; text-decoration:underline; cursor:pointer; }
 .fl-who .spec-row{ display:grid; grid-template-columns:minmax(120px, 200px) 1fr; gap:12px; align-items:baseline; }
 .fl-who .spec-row .v{ text-align:left; font-weight:400; }
-.views.in{ display:inline-flex; gap:6px; margin-left:12px; vertical-align:middle; }
+#inst-views{ align-self:center; margin-left:18px; }
+.inst-title{ min-width:186px; }   /* même largeur pour « Flotte », « Comparer » et « Mission et données » : les boutons ne bougent pas */
+@media (max-width: 860px){ .inst-title{ min-width:0; } #inst-views{ flex:1 1 100%; margin:0; padding:0 var(--gr) 8px var(--gl); } }
 .views{ display:flex; gap:6px; }
 
 </style>
@@ -571,6 +574,7 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
     <div class="inst-top">
       <button class="inst-back" id="inst-close">Retour à la vue 3D</button>
       <div class="inst-title">Mission et données</div>
+      <div id="inst-views"></div>
       <div class="pills" id="inst-pills"></div>
     </div>
     <div class="inst-body">
@@ -5849,7 +5853,7 @@ var InstrumentsUI = (function(){
     copyStore = [];
     var nav = CMP_SECS.map(function(x){ return '<button class="nav-i' + ((sec || '') === x[0] ? ' on' : '') + '" data-cmpsec="' + x[0] + '"><span class="n">' + x[1] + '</span><span class="k">' + x[2] + '</span></button>'; }).join('') +
       '<button class="nav-i" data-go="comparer"><span class="n">Tailles en 3D</span><span class="k">Les maquettes côte à côte, à l\'échelle</span></button>';
-    return { pills:pillsFor('comparer'), nav:nav, main:compare(sec), sel:null };
+    return { pills:'', nav:nav, main:compare(sec), sel:null };
   }
 
   function render(tid, sel, fidx){
@@ -8200,7 +8204,7 @@ function renderTabs(){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
   h += '</div>';
-  $('tabs').innerHTML = h;
+  $('tabs').innerHTML = (S.mode === 'compare' || S.fleet) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
   /* vues d'ensemble, à part des onglets d'observatoires */
   $('views').innerHTML = viewsHtml(true);
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
@@ -8271,10 +8275,10 @@ function renderHud(){
 /* ---------- instruments ---------- */
 function renderInst(keepScroll){
   var ttl = $('inst-page').querySelector('.inst-title'); if (ttl) ttl.textContent = OBS_T(S.fleet ? 'Flotte' : S.mode === 'compare' ? 'Comparer' : 'Mission et données');
-  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills + viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
+  if (S.fleet){ var q = FleetUI.render(S.fleetSec); $('inst-pills').innerHTML = q.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = q.nav; var mm = $('inst-main'); mm.innerHTML = q.main; if (!keepScroll) mm.scrollTop = 0; return; }
   var r = S.mode === 'compare' ? InstrumentsUI.renderCompare(S.cmpSec) : InstrumentsUI.render(S.id, S.instSel, S.filterIdx);
   S.instSel = r.sel;
-  $('inst-pills').innerHTML = r.pills + viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
+  $('inst-pills').innerHTML = r.pills; $('inst-views').innerHTML = viewsHtml(); $('inst-nav').innerHTML = r.nav; edgeScroll($('inst-pills').querySelector('.trow')); edgeScroll($('inst-pills').querySelector('.drow'));
   var m = $('inst-main'); m.innerHTML = r.main; if (!keepScroll) m.scrollTop = 0;
   loadReal();
   if (S.instSel === 'orbite' && S.mode === 'tele') Orbits.start($('inst-main'), S.id);
