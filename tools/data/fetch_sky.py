@@ -141,7 +141,7 @@ def save_and_commit(key):
     run = lambda *c: subprocess.run(c, cwd=ROOT, check=False)
     run("git", "config", "user.name", "github-actions[bot]"); run("git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
     subprocess.run([sys.executable, os.path.join(ROOT, "tools", "data", "sky_all.py")], cwd=ROOT, check=False)
-    run("git", "add", "data/sky.json", "data/sky-all.json")
+    run("git", "add", *[f for f in ("data/sky.json", "data/sky-all.json", "data/sky-gaia.jpg", "data/sky-gaia.json") if os.path.exists(os.path.join(ROOT, f))])
     if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
         return
     run("git", "commit", "-m", f"Pointés réels : {key}")
