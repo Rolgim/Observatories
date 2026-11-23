@@ -6037,6 +6037,8 @@ var HomeUI = (function(){
   };
   /* Kepler : champ de 16,1° de diamètre (fiche, Kepler Instrument Handbook) ; centre RA 19 h 22 min 40 s, Dec +44° 30′ (même document) */
   var KEPLER = { ra:290.667, dec:44.5, r:8.05 };
+  var UNIT = { integral:['fenêtres scientifiques', 'science windows'] };
+  function unit(id){ return UNIT[id] ? UNIT[id][en() ? 1 : 0] : T('observations'); }
   var INSN = { NIRSPEC:'NIRSpec', NIRCAM:'NIRCam', NIRISS:'NIRISS', '*':'' };
 
   var D = null, loading = null, P = null, st = { off:{}, year:null, mode:'cov', pick:null, play:false };
@@ -6078,14 +6080,15 @@ var HomeUI = (function(){
     TELESCOPES.forEach(function(t){
       var b = D.bodies[t.id]; if (!b) return;
       Object.keys(b.ins).forEach(function(nm){
-        var f = b.ins[nm], n = f.length/4, xy = new Float32Array(n*2), y = new Int16Array(n), c = new Float32Array(n);
+        /* [Δk, année - 1990, nombre, …] ; case k = i*180 + j (tools/data/sky_all.py) */
+        var f = b.ins[nm], n = f.length/3, xy = new Float32Array(n*2), y = new Int16Array(n), c = new Float32Array(n), key = 0, keys = new Int32Array(n);
         for (var k = 0; k < n; k++){
-          var i = f[4*k], j = f[4*k+1], g = eq2gal(i + 0.5, j - 90 + 0.5), m = moll(g[0], g[1]);
-          xy[2*k] = m[0]; xy[2*k+1] = m[1]; y[k] = f[4*k+2]; c[k] = f[4*k+3];
+          key += f[3*k]; var i = Math.floor(key/180), j = key % 180, g = eq2gal(i + 0.5, j - 90 + 0.5), m = moll(g[0], g[1]);
+          xy[2*k] = m[0]; xy[2*k+1] = m[1]; y[k] = f[3*k+1] + (D.y0 || 1990); c[k] = f[3*k+2]; keys[k] = key;
           P.y0 = Math.min(P.y0, y[k]); P.y1 = Math.max(P.y1, y[k]);
           (P.idx[i*1000 + j] = P.idx[i*1000 + j] || []).push([t.id, nm, y[k], c[k]]);
         }
-        P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color });
+        P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color, key:keys });
       });
     });
     if (st.year === null) st.year = P.y1;
@@ -6161,7 +6164,7 @@ var HomeUI = (function(){
     if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
     /* cases observées */
     if (P){
-      var px = Math.max(1.6, s*1.05), cnt = 0, hit = {};
+      var px = Math.max(1.6, s*1.05), seen = new Uint8Array(360*180);
       P.layers.forEach(function(L){
         if (st.off[L.id]) return;
         g.fillStyle = L.color;
@@ -6169,10 +6172,10 @@ var HomeUI = (function(){
           if (L.y[k] > st.year) continue;
           g.globalAlpha = st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9;
           g.fillRect(X(L.xy[2*k]) - px/2, Y(L.xy[2*k+1]) - px/2, px, px);
-          if (!hit[L.id]) hit[L.id] = 0; hit[L.id] += L.c[k]; cnt += L.c[k];
+          seen[L.key[k]] = 1;
         }
       });
-      g.globalAlpha = 1; st.shown = cnt;
+      g.globalAlpha = 1; var cnt = 0; for (var q = 0; q < seen.length; q++) cnt += seen[q]; st.shown = cnt;
     }
     /* repère du clic */
     if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
@@ -6181,7 +6184,7 @@ var HomeUI = (function(){
     /* repères */
     g.fillStyle = 'rgba(255,255,255,0.7)'; g.font = '11px Archivo, Arial, sans-serif'; g.textAlign = 'center';
     g.fillText(T('centre de la Galaxie'), W/2, H/2 + 16);
-    var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('observations');
+    var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('cases de 1° observées');
   }
   function tick(now){
     raf = 0; if (!st.play || !cv || !cv.isConnected) return;
@@ -7657,7 +7660,8 @@ Object.assign(EN_UI, {
 "Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1.":"Mollweide equal-area projection in Galactic coordinates; longitude increases to the left, as the sky is seen. Dotted: the celestial equator. Cells are 1° in right ascension and declination, start-of-observation positions only, without the real shape of the fields. For Euclid: the VIS observations published in DR1.",
 "Les observations n'ont pas pu être chargées.":"The observations could not be loaded.",
 "Dans le champ de Kepler,":"In the Kepler field,","fixé pendant quatre ans.":"held for four years.",
-"Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid with an arrow if still in service. Click a bar to open the observatory in 3D.","Champs de vue":"Fields of view"
+"Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid with an arrow if still in service. Click a bar to open the observatory in 3D.","Champs de vue":"Fields of view",
+"cases de 1° observées":"1° cells observed"
 });
 
 /* =================================================================

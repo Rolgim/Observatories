@@ -304,6 +304,8 @@ $('home-page').addEventListener('click', function(e){
   if (el) HomeUI.click(el, e);
 });
 $('home-page').addEventListener('input', function(e){ HomeUI.input(e.target); });
+$('home-page').addEventListener('mouseover', function(e){ var li = e.target.closest && e.target.closest('[data-hob]'); HomeUI.solo(li ? li.getAttribute('data-hob') : null); });
+$('home-page').addEventListener('focusin', function(e){ var li = e.target.closest && e.target.closest('[data-hob]'); HomeUI.solo(li ? li.getAttribute('data-hob') : null); });
 $('home-page').addEventListener('mousemove', function(e){ if (e.target.id === 'home-cv') HomeUI.hover(e); else HomeUI.hover(null); });
 window.addEventListener('resize', function(){ if (S.home) HomeUI.resize(); });
 

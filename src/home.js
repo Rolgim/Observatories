@@ -28,6 +28,8 @@ var HomeUI = (function(){
   };
   /* Kepler : champ de 16,1° de diamètre (fiche, Kepler Instrument Handbook) ; centre RA 19 h 22 min 40 s, Dec +44° 30′ (même document) */
   var KEPLER = { ra:290.667, dec:44.5, r:8.05 };
+  var UNIT = { integral:['fenêtres scientifiques', 'science windows'] };
+  function unit(id){ return UNIT[id] ? UNIT[id][en() ? 1 : 0] : T('observations'); }
   var INSN = { NIRSPEC:'NIRSpec', NIRCAM:'NIRCam', NIRISS:'NIRISS', '*':'' };
 
   var D = null, loading = null, P = null, st = { off:{}, year:null, mode:'cov', pick:null, play:false };
@@ -69,16 +71,18 @@ var HomeUI = (function(){
     TELESCOPES.forEach(function(t){
       var b = D.bodies[t.id]; if (!b) return;
       Object.keys(b.ins).forEach(function(nm){
-        var f = b.ins[nm], n = f.length/4, xy = new Float32Array(n*2), y = new Int16Array(n), c = new Float32Array(n);
+        /* [Δk, année - 1990, nombre, …] ; case k = i*180 + j (tools/data/sky_all.py) */
+        var f = b.ins[nm], n = f.length/3, xy = new Float32Array(n*2), y = new Int16Array(n), c = new Float32Array(n), key = 0, keys = new Int32Array(n);
         for (var k = 0; k < n; k++){
-          var i = f[4*k], j = f[4*k+1], g = eq2gal(i + 0.5, j - 90 + 0.5), m = moll(g[0], g[1]);
-          xy[2*k] = m[0]; xy[2*k+1] = m[1]; y[k] = f[4*k+2]; c[k] = f[4*k+3];
+          key += f[3*k]; var i = Math.floor(key/180), j = key % 180, g = eq2gal(i + 0.5, j - 90 + 0.5), m = moll(g[0], g[1]);
+          xy[2*k] = m[0]; xy[2*k+1] = m[1]; y[k] = f[3*k+1] + (D.y0 || 1990); c[k] = f[3*k+2]; keys[k] = key;
           P.y0 = Math.min(P.y0, y[k]); P.y1 = Math.max(P.y1, y[k]);
           (P.idx[i*1000 + j] = P.idx[i*1000 + j] || []).push([t.id, nm, y[k], c[k]]);
         }
-        P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color });
+        P.layers.push({ id:t.id, nm:nm, xy:xy, y:y, c:c, color:t.color, key:keys });
       });
     });
+    P.layers.sort(function(a, b){ return b.y.length - a.y.length; });   /* les couches les plus étendues dessous */
     if (st.year === null) st.year = P.y1;
   }
 
@@ -103,11 +107,11 @@ var HomeUI = (function(){
   }
 
   function legend(){
-    var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
+    var h = '<h3>' + esc(T('Observatoires qui pointent')) + '</h3><p class="cap">' + esc(T('Survolez un observatoire pour le voir seul ; cliquez pour l\'afficher ou le masquer.')) + '</p><div class="home-leg" role="group" aria-label="' + esc(T('Observatoires affichés')) + '">';
     var have = TELESCOPES.filter(function(t){ return D && D.bodies[t.id]; });
     have.forEach(function(t){
       var b = D.bodies[t.id], on = !st.off[t.id], ins = Object.keys(b.ins).filter(function(k){ return k !== '*' && k !== '?'; });
-      h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(T('observations')) + '</span>' +
+      h += '<button class="home-li" data-hob="' + t.id + '" aria-pressed="' + on + '"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b><span>' + fr(b.total) + ' ' + esc(unit(t.id)) + '</span>' +
         (ins.length ? '<small>' + esc(ins.map(function(k){ return INSN[k] || k; }).join(', ')) + '</small>' : '') + '</button>';
     });
     h += '</div><div class="home-all"><button class="linkish" data-hall="1">' + esc(T('Tout afficher')) + '</button> <button class="linkish" data-hall="0">' + esc(T('Tout masquer')) + '</button></div>';
@@ -152,18 +156,18 @@ var HomeUI = (function(){
     if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
     /* cases observées */
     if (P){
-      var px = Math.max(1.6, s*1.05), cnt = 0, hit = {};
-      P.layers.forEach(function(L){
+      var px = Math.max(1.6, s*1.05), seen = new Uint8Array(360*180);
+      P.layers.slice().sort(function(a, b){ return (a.id === st.solo) - (b.id === st.solo); }).forEach(function(L){
         if (st.off[L.id]) return;
-        g.fillStyle = L.color;
+        g.fillStyle = L.color; var dim = st.solo && st.solo !== L.id;
         for (var k = 0, n = L.y.length; k < n; k++){
           if (L.y[k] > st.year) continue;
-          g.globalAlpha = st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9;
+          g.globalAlpha = (st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9) * (dim ? 0.12 : 1);
           g.fillRect(X(L.xy[2*k]) - px/2, Y(L.xy[2*k+1]) - px/2, px, px);
-          if (!hit[L.id]) hit[L.id] = 0; hit[L.id] += L.c[k]; cnt += L.c[k];
+          seen[L.key[k]] = 1;
         }
       });
-      g.globalAlpha = 1; st.shown = cnt;
+      g.globalAlpha = 1; var cnt = 0; for (var q = 0; q < seen.length; q++) cnt += seen[q]; st.shown = cnt;
     }
     /* repère du clic */
     if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
@@ -172,7 +176,7 @@ var HomeUI = (function(){
     /* repères */
     g.fillStyle = 'rgba(255,255,255,0.7)'; g.font = '11px Archivo, Arial, sans-serif'; g.textAlign = 'center';
     g.fillText(T('centre de la Galaxie'), W/2, H/2 + 16);
-    var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('observations');
+    var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('cases de 1° observées');
   }
   function tick(now){
     raf = 0; if (!st.play || !cv || !cv.isConnected) return;
@@ -199,7 +203,7 @@ var HomeUI = (function(){
     if (!ids.length) h += '<p class="cap">' + esc(T('Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.')) + '</p>';
     else h += '<ul class="home-who">' + ids.map(function(id){ var t = tele(id), b = by[id];
       var ins = Object.keys(b.ins).filter(function(k){ return k !== '*'; }).sort(function(x, y){ return b.ins[y] - b.ins[x]; }).map(function(k){ return (INSN[k] || k) + ' ' + fr(b.ins[k]); }).join(', ');
-      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(T('observations')) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
+      return '<li><button class="linkish" data-go="' + id + '-instruments"><i style="background:' + t.color + '"></i><b>' + esc(t.short) + '</b></button> ' + fr(b.n) + ' ' + esc(unit(id)) + ' ' + esc(T('depuis')) + ' ' + b.y + (ins ? '<small>' + esc(ins) + '</small>' : '') + '</li>'; }).join('') + '</ul>' +
       '<p class="cap">' + esc(T('Carré de 3° de côté centré sur le point cliqué ; une observation est comptée là où elle a commencé.')) + '</p>';
     var inK = Math.acos(Math.max(-1, Math.min(1, Math.sin(p[1]*R)*Math.sin(KEPLER.dec*R) + Math.cos(p[1]*R)*Math.cos(KEPLER.dec*R)*Math.cos((p[0] - KEPLER.ra)*R))))/R < KEPLER.r;
     if (inK) h += '<p class="cap"><b>' + esc(T('Dans le champ de Kepler,')) + '</b> ' + esc(T('fixé pendant quatre ans.')) + '</p>';
@@ -247,5 +251,7 @@ var HomeUI = (function(){
     tip.textContent = k.map(function(id){ return tele(id).short + ' ' + fr(ids[id]); }).join(' · ');
     var r = cv.getBoundingClientRect(); tip.style.left = (ev.clientX - r.left + 12) + 'px'; tip.style.top = (ev.clientY - r.top + 12) + 'px'; tip.hidden = false;
   }
-  return { render:render, click:click, input:input, resize:resize, hover:hover };
+  /* survol d'une ligne de la légende : cet observatoire seul en couleur vive */
+  function solo(id){ if (st.solo === id) return; st.solo = id; draw(); }
+  return { render:render, click:click, input:input, resize:resize, hover:hover, solo:solo };
 })();
