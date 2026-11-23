@@ -26,7 +26,9 @@ except Exception as e: p("ERR scifleet", repr(e)[:300])
 # 2) Conditions générales de l'ESA et conditions des images et vidéos
 for u in ("https://www.esa.int/Services/Terms_and_conditions", "https://www.esa.int/ESA_Multimedia/Terms_and_Conditions", "https://www.esa.int/ESA_Multimedia/Copyright_Notice_Images"):
     try:
-        t = text(u); i = max(0, t.find("Terms")); p("== TEXTE", u, "\n", t[:9000])
+        t = text(u)
+        for kw in ("personal", "non-commercial", "resell", "redistribut", "modify", "derivative", "prior written", "images and videos", "Creative Commons", "copyright"):
+            for mm in list(re.finditer(kw, t, flags=re.I))[:3]: p("== [" + kw + "]", t[max(0, mm.start() - 500):mm.end() + 700])
     except Exception as e: p("ERR", u, repr(e)[:200])
 # 3) Service SPICE de l'ESA, dossier de la maquette de XMM-Newton : lisez-moi, licence ?
 for u in ("https://spiftp.esac.esa.int/data/SPICE/XMM/misc/cosmo/", "https://spiftp.esac.esa.int/data/SPICE/XMM/misc/", "https://spiftp.esac.esa.int/data/SPICE/XMM/", "https://www.cosmos.esa.int/web/spice/spice-for-xmm"):
