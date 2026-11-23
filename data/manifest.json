@@ -1719,5 +1719,46 @@
   "caption": "Chaque point est un sursaut gamma détecté par BATSE, en coordonnées galactiques. Ils sont répartis uniformément, sans se concentrer dans le plan de la Galaxie : la preuve qu'ils viennent de bien au-delà, de galaxies lointaines.",
   "credit": "NASA, équipe de BATSE",
   "fetched": "2026-11-20"
+ },
+ "herschel/pacs": {
+  "type": "image",
+  "file": "herschel-pacs.jpg",
+  "width": 450,
+  "height": 450,
+  "title": "La galaxie du Tourbillon (M51), PACS 160 µm",
+  "meta": [
+   [
+    "Archive",
+    "Herschel Science Archive (ESA), observation 1342188329"
+   ],
+   [
+    "Instrument",
+    "PACS, 160 µm"
+   ],
+   [
+    "Cible",
+    "M51"
+   ],
+   [
+    "Produit",
+    "hpacs_25HPPHPFMAPR_1330_p4712_00_v1.0_1470494180244.fits.gz (niveau 2.5)"
+   ],
+   [
+    "Échelle",
+    "3,2″ par pixel"
+   ],
+   [
+    "Champ",
+    "12′ de côté"
+   ],
+   [
+    "Traitement",
+    "découpe, étirement asinh pour le site"
+   ]
+  ],
+  "url": "https://archives.esac.esa.int/hsa/whsa/",
+  "caption": "À 160 µm, PACS voit la poussière froide qui trace le gaz des bras spiraux, là où se forment les étoiles. L'image est plus floue que celles de Spitzer : la tache de diffraction grandit avec la longueur d'onde, malgré le miroir de 3,5 m.",
+  "credit": "ESA, Herschel, consortium PACS",
+  "fetched": "2026-11-23"
  }
 }
