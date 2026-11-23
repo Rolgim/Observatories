@@ -219,12 +219,20 @@ var InstrumentsUI = (function(){
     else { var bw = (X(x0 + j.binw) - X(x0)); for (i=0;i<n;i++){ var yy = Y(j.y[i]); s += '<rect x="'+(X(j.x[i]) - bw/2 + 0.5).toFixed(1)+'" y="'+yy.toFixed(1)+'" width="'+Math.max(1, bw-1).toFixed(1)+'" height="'+(H-B-yy).toFixed(1)+'" fill="#3D6BE0"/>'; } }
     return '<div class="svgwrap">' + s + '</svg></div>';
   }
+  /* droits d'utilisation selon l'archive (vérifiés le 23 novembre 2026, détail dans LICENSES.md) */
+  function rights(m){
+    var a = (m.meta[0] || [])[1] || '';
+    if (/Gaia Archive|Euclid|XMM-Newton Science Archive|Herschel Science Archive|Planck Legacy Archive/.test(a))
+      return { t:'Licence CC BY-NC 3.0 IGO (archives scientifiques de l\'ESA)', u:'https://www.cosmos.esa.int/web/esdc/terms-and-conditions' };
+    if (/MAST/.test(a)) return { t:'Sans droit d\'auteur revendiqué par le STScI ; crédit demandé', u:'https://www.stsci.edu/copyright' };
+    return { t:'Données de la NASA, libres d\'utilisation ; crédit demandé', u:'https://www.nasa.gov/nasa-brand-center/images-and-media/' };
+  }
   function realBlock(m){
     var body = m.type === 'image'
       ? '<img class="real-img" src="data/'+esc(m.file)+'" width="'+m.width+'" height="'+m.height+'" loading="lazy" alt="'+esc(m.title)+'">'
       : '<div data-real-plot="'+esc(m.file)+'"><div class="cap">Chargement des mesures…</div></div>';
     return '<div class="real-item"><div class="ex-head"><span class="ex-title">'+esc(m.title)+'</span><span class="tag real">données réelles</span></div>' + body +
-      '<div class="cap">'+esc(m.caption)+(m.type === 'image' && /MAST/.test(m.meta[0][1]) ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'.</div>' +
+      '<div class="cap">'+esc(m.caption)+(m.type === 'image' && /MAST/.test(m.meta[0][1]) ? ' Les zones blanches sont hors du champ observé.' : '')+' Crédit : '+esc(m.credit)+'. Récupéré dans l\'archive le '+esc(m.fetched.split('-').reverse().join('/'))+'. <a href="'+esc(rights(m).u)+'" target="_blank" rel="noopener">'+esc(rights(m).t)+'</a>.</div>' +
       '<details class="real-meta"><summary>Provenance et traitement</summary>' + table(m.meta) +
       '<div class="lnks"><a class="lnk" href="'+esc(m.url)+'" target="_blank" rel="noopener">'+(/proposal|program/.test(m.url) ? 'Voir le programme d\'observation' : 'Ouvrir l\'archive')+'<em>'+esc(host(m.url))+'</em></a></div></details></div>';
   }

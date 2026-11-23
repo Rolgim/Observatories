@@ -258,13 +258,13 @@ def gaia_astro(key):
     save_json("gaia-astro.json", dict(type="scatter", x=rnd(col, 4), y=rnd(mg, 4), invertY=True, xlabel="couleur BP − RP (mag)", ylabel="magnitude absolue M_G"))
     return dict(type="plot", file="gaia-astro.json", title="Diagramme de Hertzsprung-Russell des étoiles proches", meta=gaia_meta(len(a)), url="https://gea.esac.esa.int/archive/",
                 caption="Chaque point est une étoile à moins de 100 parsecs. La magnitude absolue vient de la parallaxe mesurée par le champ astrométrique : M_G = G + 5 log10(parallaxe / 100 mas). La séquence principale, les géantes et les naines blanches se séparent d'elles-mêmes.",
-                credit="ESA/Gaia/DPAC", fetched=TODAY)
+                credit="ESA, Gaia DPAC", fetched=TODAY)
 
 def gaia_bprp(key):
     a = gaia_rows(); x, y, w = histogram(a[:, 2], -0.5, 4.5, 50)
     save_json("gaia-bprp.json", dict(type="hist", x=x, y=y, binw=w, xlabel="couleur BP − RP (mag)", ylabel="nombre d'étoiles"))
     return dict(type="plot", file="gaia-bprp.json", title="Couleurs des étoiles proches, mesurées par les photomètres BP et RP", meta=gaia_meta(len(a)), url="https://gea.esac.esa.int/archive/",
-                caption="Répartition de l'indice de couleur BP − RP pour le même échantillon. Les étoiles rouges de faible masse dominent largement le voisinage solaire.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+                caption="Répartition de l'indice de couleur BP − RP pour le même échantillon. Les étoiles rouges de faible masse dominent largement le voisinage solaire.", credit="ESA, Gaia DPAC", fetched=TODAY)
 
 def gaia_rvs(key):
     a = gaia_rows(); rv = a[:, 3]; rv = rv[np.isfinite(rv)]
@@ -272,7 +272,7 @@ def gaia_rvs(key):
     meta = gaia_meta(len(a)); meta.insert(4, ["Avec vitesse radiale", fr(len(rv)) + " étoiles"])
     save_json("gaia-rvs.json", dict(type="hist", x=x, y=y, binw=w, xlabel="vitesse radiale (km/s)", ylabel="nombre d'étoiles"))
     return dict(type="plot", file="gaia-rvs.json", title="Vitesses radiales des étoiles proches, mesurées par le RVS", meta=meta, url="https://gea.esac.esa.int/archive/",
-                caption="Vitesse d'éloignement (positive) ou de rapprochement (négative) de chaque étoile de l'échantillon pour laquelle le spectromètre a obtenu une mesure.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+                caption="Vitesse d'éloignement (positive) ou de rapprochement (négative) de chaque étoile de l'échantillon pour laquelle le spectromètre a obtenu une mesure.", credit="ESA, Gaia DPAC", fetched=TODAY)
 
 # Euclid : DR1 (12 novembre 2026), lu sur le miroir IRSA, qui expose catalogues, mosaïques et spectres.
 # Champ : COSMOS, couvert par les champs profonds de DR1 ; replis sur les champs profonds Nord et Sud.
@@ -371,7 +371,7 @@ def euclid_vis(key):
     x, y, w = histogram(mag[np.isfinite(mag)], 16, 30, 56)
     save_json("euclid-vis.json", dict(type="hist", x=x, y=y, binw=w, xlabel="magnitude I_E (AB)", ylabel="nombre de sources"))
     return dict(type="plot", file="euclid-vis.json", title="Comptage des sources par magnitude dans la bande I_E de VIS", meta=euclid_meta(len(a)), url=EUCLID_DR1_URL,
-                caption="Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
+                caption="Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 def euclid_nisp(key):
     a = euclid_rows(); ok = (a[:, 1] > 0) & np.isfinite(a[:, 1])
@@ -380,7 +380,7 @@ def euclid_nisp(key):
     meta = euclid_meta(len(a)); meta.insert(5, ["Détectées aussi en H", fr(int(keep.sum())) + " sources tracées"])
     save_json("euclid-nisp.json", dict(type="scatter", x=rnd(mv[keep], 4), y=rnd((mv - mh)[keep], 4), xlabel="magnitude I_E (AB)", ylabel="couleur I_E − H (mag)"))
     return dict(type="plot", file="euclid-nisp.json", title="Couleur visible − infrarouge des sources, VIS et NISP combinés", meta=meta, url=EUCLID_DR1_URL,
-                caption="Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.", credit="ESA/Euclid/Euclid Consortium", fetched=TODAY)
+                caption="Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 # ---------------------------------------------------------------- Euclid : images et spectre (IRSA, DR1)
 def stretch(d, hi_pct=99.7):
@@ -450,7 +450,7 @@ def euclid_vis_image(key):
     im = Image.fromarray((stretch(cut["VIS"]) * 255).astype("uint8")); im.thumbnail((1100, 1100))
     im.save(os.path.join(OUT, "euclid-vis-image.jpg"), "JPEG", quality=86, optimize=True)
     return dict(type="image", file="euclid-vis-image.jpg", width=im.size[0], height=im.size[1], title="VIS : " + label, meta=euclid_img_meta(ra, dec, size, [cut["VIS_file"]]), url=EUCLID_DR1_URL,
-                caption="Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+                caption="Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 def euclid_nisp_image(key):
     from PIL import Image
@@ -461,7 +461,7 @@ def euclid_nisp_image(key):
     im = Image.fromarray((rgb * 255).astype("uint8")); im.thumbnail((1100, 1100))
     im.save(os.path.join(OUT, "euclid-nisp-image.jpg"), "JPEG", quality=86, optimize=True)
     return dict(type="image", file="euclid-nisp-image.jpg", width=im.size[0], height=im.size[1], title="NISP : " + label + ", bandes Y, J et H", meta=euclid_img_meta(ra, dec, size, [cut[b + "_file"] for b in "YJH"]), url=EUCLID_DR1_URL,
-                caption="Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+                caption="Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 def euclid_spectrum(key):
     try:
@@ -522,7 +522,7 @@ def euclid_spectrum_s3(key):
             ["Domaine couvert", f"{fr(w.min(), 2)} à {fr(w.max(), 2)} µm"], ["Temps de pose cumulé", f"{fr(texp)} s"], ["Champ", f"{label[0].upper()}{label[1:]}, tuile MER {tile}"],
             ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(i)], ["Choix de la source", f"meilleur signal sur bruit parmi {seen} sources examinées (≈ {snr:.0f} par pixel)"]]
     return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source de DR1", meta=meta, url=EUCLID_DR1_URL,
-                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 def euclid_spectrum_tap(key):
     from astroquery.ipac.irsa import Irsa
@@ -586,7 +586,7 @@ def euclid_spectrum_tap(key):
             ["Grisme", str(r["bandpass_name"]) if "bandpass_name" in r.colnames else "rouge (RG)"],
             ["Fichier d'origine", url.split("/")[-1] + ", extension " + str(r["hdu"])], ["Choix de la source", f"meilleur signal sur bruit parmi {len(res)} sources examinées (≈ {snr:.0f} par pixel)"]]
     return dict(type="plot", file="euclid-nisp-spectre.json", title="Spectre NISP d'une source de DR1", meta=meta, url=EUCLID_DR1_URL,
-                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA/Euclid/Euclid Consortium/NASA", fetched=TODAY)
+                caption="Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).", credit="ESA Euclid, Euclid Consortium, NASA", fetched=TODAY)
 
 # ---------------------------------------------------------------- Gaia : vrais spectres (DataLink)
 _gstar = {}
@@ -618,14 +618,14 @@ def gaia_xp_spectrum(key):
     s = gaia_star(); w, f = gaia_datalink(s["source_id"], "XP_SAMPLED")
     save_json("gaia-bprp-spectre.json", dict(type="line", x=rnd(w, 5), y=rnd(f), ymin=0, ymax=float(f.max() * 1.08), xlabel="longueur d'onde (nm)", ylabel="flux (W/m²/nm)"))
     return dict(type="plot", file="gaia-bprp-spectre.json", title="Spectre BP/RP d'une étoile proche de type solaire", meta=gaia_star_meta(s, [["Produit", "XP_SAMPLED : spectre BP/RP calibré, échantillonné tous les 2 nm"]]), url="https://gea.esac.esa.int/archive/",
-                caption="Le spectre basse résolution des deux photomètres, raccordés en une seule courbe de 336 à 1 020 nm. C'est de cette forme que sont tirées la température et l'extinction de l'étoile.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+                caption="Le spectre basse résolution des deux photomètres, raccordés en une seule courbe de 336 à 1 020 nm. C'est de cette forme que sont tirées la température et l'extinction de l'étoile.", credit="ESA, Gaia DPAC", fetched=TODAY)
 
 def gaia_rvs_spectrum(key):
     s = gaia_star(); w, f = gaia_datalink(s["source_id"], "RVS")
     save_json("gaia-rvs-spectre.json", dict(type="line", x=rnd(w, 6), y=rnd(f), ymin=0, ymax=float(max(1.1, np.percentile(f, 99.5) * 1.05)), xlabel="longueur d'onde (nm)", ylabel="flux normalisé"))
     rv = s.get("radial_velocity")
     return dict(type="plot", file="gaia-rvs-spectre.json", title="Spectre RVS de la même étoile", meta=gaia_star_meta(s, [["Produit", "RVS : spectre moyen normalisé, 846 à 870 nm"]] + ([["Vitesse radiale mesurée", fr(float(rv), 1).replace("-", "−") + " km/s"]] if rv is not None else [])), url="https://gea.esac.esa.int/archive/",
-                caption="Les trois creux profonds sont le triplet du calcium ionisé. Leur décalage par rapport à leur position au repos donne la vitesse radiale de l'étoile.", credit="ESA/Gaia/DPAC", fetched=TODAY)
+                caption="Les trois creux profonds sont le triplet du calcium ionisé. Leur décalage par rapport à leur position au repos donne la vitesse radiale de l'étoile.", credit="ESA, Gaia DPAC", fetched=TODAY)
 
 # ---------------------------------------------------------------- recettes
 M51, M83, Q3C273, HD209458, SMACS = (202.4696, 47.1952), (204.2538, -29.8658), (187.27792, 2.05239), (330.79489, 18.88432), (110.8375, -73.4540)
@@ -908,6 +908,9 @@ def spitzer_mips(key):
 
 # ---------- Herschel : carte PACS de l'archive HSA de l'ESA (TAP pour choisir l'observation, astroquery pour la télécharger) ----------
 HSA_TAP = "https://archives.esac.esa.int/hsa/whsa-tap-server/tap"
+# Lignes de crédit exigées par l'ESA pour ses archives (CC BY-NC 3.0 IGO) : https://cosmos.esa.int/web/esdc/terms-and-conditions
+# Gaia « ESA, Gaia DPAC » ; Euclid « ESA Euclid, Euclid Consortium, NASA » ; Planck « ESA, Planck Collaboration » ;
+# XMM-Newton et Herschel « ESA, nom du PI de l'observation » (recherché dans xmmmaster et hsa.v_active_observation).
 def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1952, size_arcmin=12, title="", caption="", bands=""):
     import pyvo, tarfile, glob
     from astropy.io import fits
@@ -917,7 +920,7 @@ def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1
     import astropy.units as u
     from astroquery.esa.hsa import HSA
     t = pyvo.dal.TAPService(HSA_TAP).run_sync(
-        "SELECT observation_id, aor, target_name, duration, od_number FROM hsa.v_active_observation "
+        "SELECT observation_id, aor, target_name, duration, od_number, proposal_id FROM hsa.v_active_observation "
         f"WHERE ra BETWEEN {ra - 0.2} AND {ra + 0.2} AND dec BETWEEN {dec - 0.15} AND {dec + 0.15} AND is_public = 'true' AND obsstate LIKE 'LEVEL2%' ORDER BY duration DESC", maxrec=500).to_table()
     # observations pointées à moins de 0,15° de la cible ; on écarte la spectroscopie (AOR « Spec », « Range », « Line », « FTS »)
     cands = [r for r in t if not any(k in str(r["aor"]).lower() for k in ("spec", "range", "line", "fts", "hifi", "point"))]
@@ -963,7 +966,7 @@ def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1
                         ["Cible", target], ["Produit", os.path.basename(f) + " (" + level.replace("_", ".").replace("LEVEL", "niveau ") + ")"],
                         ["Échelle", fr(pix, 1) + "″ par pixel"], ["Champ", fr(size_arcmin) + "′ de côté"], ["Traitement", "découpe, étirement asinh pour le site"]]
                 return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title=title, meta=meta,
-                            url="https://archives.esac.esa.int/hsa/whsa/", caption=caption, credit="ESA, Herschel, consortium " + instrument, fetched=TODAY)
+                            url="https://archives.esac.esa.int/hsa/whsa/", caption=caption, credit="ESA, PI du programme " + str(r["proposal_id"]) if "proposal_id" in r.colnames else "ESA, " + instrument, fetched=TODAY)
     raise RuntimeError("aucune carte " + instrument + " exploitable pour " + target)
 
 def herschel_pacs(key):
@@ -1080,6 +1083,15 @@ def kepler_lc(key, kic="010666592", name="HAT-P-7", quarter=4):
 XMM_PPS = "https://heasarc.gsfc.nasa.gov/FTP/xmm/data/rev0/{o}/PPS/"
 XMM_XSA = "https://nxsa.esac.esa.int/nxsa-web/#obsid={o}"
 
+def xmm_credit(obsid):
+    """« ESA, nom du PI » : ligne de crédit exigée par l'ESA pour les données de XMM-Newton."""
+    try:
+        t = heasarc_tap(f"SELECT pi_fname, pi_lname FROM xmmmaster WHERE obsid = '{obsid}'")
+        f, l = str(t[0]["pi_fname"]).strip(), str(t[0]["pi_lname"]).replace("XMM-Newton MM", "").strip()
+        return f"ESA, {f[:1]}. {l} (PI de l'observation {obsid})"
+    except Exception:
+        return f"ESA, PI de l'observation {obsid}"
+
 def xmm_files(obsid):
     import re
     u = XMM_PPS.format(o=obsid)
@@ -1131,7 +1143,7 @@ def xmm_epic(key, obsid="0412180101", ra=350.8500, dec=58.8150, size_arcmin=10.0
                            ["Temps de pose (pn)", fr(expo) + " s"], ["Traitement", "images PPS des trois caméras additionnées par bande, étirement logarithmique, agrandies ×" + fr(600 / rgb.shape[0], 1) + " pour le site"]])
     return dict(type="image", file=fname, width=600, height=600, title="Le reste de supernova Cassiopée A, EPIC", meta=meta, url=XMM_XSA.format(o=obsid),
                 caption="Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons. Les lignes sombres sont les espaces entre les CCD des caméras.",
-                credit="ESA, XMM-Newton", fetched=TODAY)
+                credit=xmm_credit(obsid), fetched=TODAY)
 
 def xmm_rgs(key, obsid="0510780601"):
     """Spectre « fluxed » des deux RGS (premier ordre) de Capella, produit du pipeline."""
@@ -1153,7 +1165,7 @@ def xmm_rgs(key, obsid="0510780601"):
                                                                          ["Temps de pose", (fr(float(h["EXPOSURE"])) + " s") if h.get("EXPOSURE") else "non indiqué"]])
     return dict(type="plot", file=fname, title="Spectre RGS de l'étoile Capella", meta=meta, url=XMM_XSA.format(o=obsid),
                 caption="La couronne de Capella, à plusieurs millions de degrés, émet des raies X : chaque pic est un élément chimique ionisé (fer, oxygène, néon…). Le RGS les sépare finement, entre 6 et 38 Å.",
-                credit="ESA, XMM-Newton", fetched=TODAY)
+                credit=xmm_credit(obsid), fetched=TODAY)
 
 def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, filt="UVW1"):
     """Image du moniteur optique (pose la plus longue dans le filtre demandé), découpée autour de la galaxie."""
@@ -1184,7 +1196,7 @@ def xmm_om(key, obsid="0104260101", ra=210.8023, dec=54.3489, size_arcmin=12.0, 
                                                                               ["Temps de pose", "≈ " + fr(score) + " s"], ["Traitement", "image du ciel du pipeline, découpée, étirement asinh pour le site"]])
     return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title="La galaxie du Moulinet (M101), OM en ultraviolet", meta=meta, url=XMM_XSA.format(o=obsid),
                 caption="Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
-                credit="ESA, XMM-Newton", fetched=TODAY)
+                credit=xmm_credit(obsid), fetched=TODAY)
 
 # ---------- Swift, INTEGRAL, Compton : catalogues du HEASARC, cartes du ciel en coordonnées galactiques ----------
 def sky_scatter(key, table, where, title, caption, credit, what, extra_meta=()):
@@ -1275,7 +1287,7 @@ def planck_hfi(key):
     return healpix_map(key, [base + "COM_CMB_IQU-smica_2048_R3.00_full.fits", base + "COM_CMB_IQU-commander_2048_R3.00_full.fits"], "Planck",
         "Le fond diffus cosmologique, carte SMICA de Planck (2018)",
         "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. Le long du plan de la Galaxie, où son émission ne peut être retirée parfaitement, il en reste quelques traces au milieu de la carte.",
-        "ESA, collaboration Planck", "IRSA (NASA/IPAC), Planck Legacy Archive", scale=1e6, unit="µK")
+        "ESA, Planck Collaboration", "IRSA (NASA/IPAC), Planck Legacy Archive", scale=1e6, unit="µK")
 
 LMC_ASTRO = (80.489, -69.499)  # champ d'étalonnage astrométrique de JWST dans le Grand Nuage de Magellan
 RECIPES = {

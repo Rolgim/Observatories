@@ -100,7 +100,8 @@ def via_allsky():
     return im, "reprojection de l'image Allsky d'ordre 3 (healpy)"
 
 def main():
-    meta = dict(what="Gaia EDR3, la couleur du ciel", credit="ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, remerciements : A. Moitinho", url=ESA_PAGE)
+    meta = dict(what="Gaia EDR3, la couleur du ciel", credit="ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, remerciements : A. Moitinho", url=ESA_PAGE,
+                licence="CC BY-SA 3.0 IGO ; image modifiée (reprojetée en Mollweide), redistribuée sous la même licence", licence_url="https://creativecommons.org/licenses/by-sa/3.0/igo/")
     try:
         im, how = via_esa()
     except Exception as e:

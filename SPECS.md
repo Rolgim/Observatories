@@ -138,7 +138,7 @@ Reste : temps de pose cumulé, couleurs par type d'instrument, filtres agence, d
 1. **Prescriptions optiques** [D1] : schémas d'Euclid, de Gaia et de Roman à l'échelle seulement pour les éléments publiés ; courbures et positions des miroirs arrière manquent. Schéma de Gaia chargé.
 2. **Plans focaux** [D2] : espaces entre détecteurs indicatifs pour Webb, Gaia, Kepler et XMM-Newton ; trois CCD de contrôle de Gaia non confirmés.
 3. **Suffixes de fichiers de Webb et de Hubble** [M] : relire chaque tableau de produits.
-4. **Licences des maquettes de l'ESA** [A3] : Euclid (SCIFLEET) et XMM-Newton (service SPICE) n'ont pas de licence explicite ; utilisées en les créditant (décision du 19 novembre pour XMM-Newton). Écrire à l'ESA (support SCIFLEET) pour l'ensemble des maquettes de la flotte ; à faire par l'utilisatrice.
+4. **Licences des maquettes de l'ESA** [A3] : vérifié le 23 novembre (détail dans `LICENSES.md`). SCIFLEET renvoie aux conditions générales du site de l'ESA, qui interdisent modification et redistribution sans autorisation écrite ; la maquette de XMM-Newton (service SPICE) n'a aucune licence. Décision du 23 novembre : les six maquettes (INTEGRAL, Herschel, Planck, CHEOPS, Euclid, XMM-Newton) restent, marquées « autorisation demandée » ; demande à envoyer par l'utilisatrice au service d'assistance de SCIFLEET. Données des archives de l'ESA : CC BY-NC 3.0 IGO, lignes de crédit exigées appliquées. Licence du code et des textes : à choisir.
 5. Relecture de la version anglaise par un anglophone du domaine [H4].
 6. Orbite de XMM-Newton : la fiche donne l'orbite du lancement (7 000 × 114 000 km), signalée comme telle ; trouver une source pour l'orbite actuelle.
 

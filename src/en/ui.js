@@ -141,6 +141,7 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/\(PI de l'observation (\d+)\)/g, "(PI of observation $1)"], [/\(PI du programme (\S+)\)/g, "(PI of programme $1)"], [/PI du programme (\S+)/g, "PI of programme $1"],
   [/^Herschel Science Archive \(ESA\), observation (\d+)$/, 'Herschel Science Archive (ESA), observation $1'], [/^(\S+) \(niveau ([\d.]+)\)$/, '$1 (level $2)'],
   [/^JPL Horizons, objet (\S+), récupéré le (\d{4}-\d\d-\d\d)$/, "JPL Horizons, object $1, retrieved $2"],
   [/^(.+) \(observations VIS de DR1\)$/, '$1 (VIS observations in DR1)'], [/^(.+) \(observations scientifiques\)$/, '$1 (science observations)'],
@@ -265,5 +266,9 @@ Object.assign(EN_UI, {
 "Gaia EDR3, la couleur du ciel":"Gaia EDR3, the colour of the sky","ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, remerciements : A. Moitinho":"ESA/Gaia/DPAC, CC BY-SA 3.0 IGO, acknowledgement: A. Moitinho",
 "reprojeté en Mollweide pour ce site":"reprojected to Mollweide for this site",
 "découpe, étirement asinh pour le site":"cutout, asinh stretch for the site","PACS, 160 µm":"PACS, 160 µm",
-"champ de Kepler":"Kepler field"
+"champ de Kepler":"Kepler field",
+"Licence CC BY-NC 3.0 IGO (archives scientifiques de l'ESA)":"CC BY-NC 3.0 IGO licence (ESA science archives)","Sans droit d'auteur revendiqué par le STScI ; crédit demandé":"No copyright claimed by STScI; credit requested","Données de la NASA, libres d'utilisation ; crédit demandé":"NASA data, free to use; credit requested",
+"CC BY-SA 3.0 IGO ; image modifiée (reprojetée en Mollweide), redistribuée sous la même licence":"CC BY-SA 3.0 IGO; modified image (reprojected to Mollweide), redistributed under the same licence",
+"crédit : ESA Euclid, Euclid Consortium, NASA ; licence CC BY-NC 3.0 IGO":"credit: ESA Euclid, Euclid Consortium, NASA; CC BY-NC 3.0 IGO licence",
+"Licences et crédits de tout le site":"Licences and credits for the whole site"
 });

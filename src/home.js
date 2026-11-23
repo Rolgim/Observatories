@@ -127,9 +127,10 @@ var HomeUI = (function(){
     }
     if (D){
       h += '<h3>' + esc(T('Sources')) + '</h3><ol class="refs">';
-      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(T(b.source)) + '</a>' : esc(T(b.source))) + ' <span>' + esc(t.short) + '</span></li>'; });
-      if (BGM) h += '<li><a href="' + esc(BGM.url) + '" target="_blank" rel="noopener">' + esc(T(BGM.what)) + '</a> <span>' + esc(T(BGM.credit)) + '</span></li>';
-      h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>';
+      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(T(b.source)) + '</a>' : esc(T(b.source))) + ' <span>' + esc(t.short) + (t.id === 'euclid' ? ' ; ' + esc(T('crédit : ESA Euclid, Euclid Consortium, NASA ; licence CC BY-NC 3.0 IGO')) : '') + '</span></li>'; });
+      if (BGM) h += '<li><a href="' + esc(BGM.url) + '" target="_blank" rel="noopener">' + esc(T(BGM.what)) + '</a> <span>' + esc(T(BGM.credit)) + '</span>' + (BGM.licence_url ? ' <a href="' + esc(BGM.licence_url) + '" target="_blank" rel="noopener">' + esc(T(BGM.licence)) + '</a>' : '') + '</li>';
+      h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>'
+      h += '<p class="cap"><a href="https://github.com/Rolgim/Observatories/blob/main/LICENSES.md" target="_blank" rel="noopener">' + esc(T('Licences et crédits de tout le site')) + '</a></p>';
     }
     return h;
   }

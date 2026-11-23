@@ -355,7 +355,7 @@
   ],
   "url": "https://gea.esac.esa.int/archive/",
   "caption": "Chaque point est une étoile à moins de 100 parsecs. La magnitude absolue vient de la parallaxe mesurée par le champ astrométrique : M_G = G + 5 log10(parallaxe / 100 mas). La séquence principale, les géantes et les naines blanches se séparent d'elles-mêmes.",
-  "credit": "ESA/Gaia/DPAC",
+  "credit": "ESA, Gaia DPAC",
   "fetched": "2026-11-13"
  },
  "gaia/bprp": {
@@ -386,7 +386,7 @@
   ],
   "url": "https://gea.esac.esa.int/archive/",
   "caption": "Répartition de l'indice de couleur BP − RP pour le même échantillon. Les étoiles rouges de faible masse dominent largement le voisinage solaire.",
-  "credit": "ESA/Gaia/DPAC",
+  "credit": "ESA, Gaia DPAC",
   "fetched": "2026-11-13"
  },
  "gaia/rvs": {
@@ -421,7 +421,7 @@
   ],
   "url": "https://gea.esac.esa.int/archive/",
   "caption": "Vitesse d'éloignement (positive) ou de rapprochement (négative) de chaque étoile de l'échantillon pour laquelle le spectromètre a obtenu une mesure.",
-  "credit": "ESA/Gaia/DPAC",
+  "credit": "ESA, Gaia DPAC",
   "fetched": "2026-11-13"
  },
  "hubble/wfc3": {
@@ -550,7 +550,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Le nombre de sources augmente vers les faibles éclats, puis chute là où le relevé cesse d'être complet : c'est la profondeur atteinte dans ce champ.",
-  "credit": "ESA/Euclid/Euclid Consortium",
+  "credit": "ESA Euclid, Euclid Consortium, NASA",
   "fetched": "2026-11-15"
  },
  "euclid/nisp": {
@@ -593,7 +593,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Pour chaque source, l'écart entre la magnitude VIS et la magnitude en bande H de NISP. Cette couleur est l'un des ingrédients des décalages vers le rouge photométriques.",
-  "credit": "ESA/Euclid/Euclid Consortium",
+  "credit": "ESA Euclid, Euclid Consortium, NASA",
   "fetched": "2026-11-15"
  },
  "euclid/vis:image": {
@@ -630,7 +630,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Découpe d'une mosaïque VIS, bande I_E, à 0,1″ par pixel avant réduction.",
-  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "credit": "ESA Euclid, Euclid Consortium, NASA",
   "fetched": "2026-11-15"
  },
  "euclid/nisp:image": {
@@ -667,7 +667,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Composition colorée des trois bandes de NISP : H en rouge, J en vert, Y en bleu. Chaque bande est étirée séparément, les couleurs sont donc indicatives.",
-  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "credit": "ESA Euclid, Euclid Consortium, NASA",
   "fetched": "2026-11-15"
  },
  "gaia/bprp:spectre": {
@@ -710,7 +710,7 @@
   ],
   "url": "https://gea.esac.esa.int/archive/",
   "caption": "Le spectre basse résolution des deux photomètres, raccordés en une seule courbe de 336 à 1 020 nm. C'est de cette forme que sont tirées la température et l'extinction de l'étoile.",
-  "credit": "ESA/Gaia/DPAC",
+  "credit": "ESA, Gaia DPAC",
   "fetched": "2026-11-13"
  },
  "gaia/rvs:spectre": {
@@ -757,7 +757,7 @@
   ],
   "url": "https://gea.esac.esa.int/archive/",
   "caption": "Les trois creux profonds sont le triplet du calcium ionisé. Leur décalage par rapport à leur position au repos donne la vitesse radiale de l'étoile.",
-  "credit": "ESA/Gaia/DPAC",
+  "credit": "ESA, Gaia DPAC",
   "fetched": "2026-11-13"
  },
  "euclid/nisp:spectre": {
@@ -808,7 +808,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/Missions/euclid.html",
   "caption": "Spectre sans fente, extrait et combiné par la chaîne de traitement (pixels marqués comme douteux retirés).",
-  "credit": "ESA/Euclid/Euclid Consortium/NASA",
+  "credit": "ESA Euclid, Euclid Consortium, NASA",
   "fetched": "2026-11-15"
  },
  "hubble/fgs": {
@@ -1433,7 +1433,7 @@
   ],
   "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0510780601",
   "caption": "La couronne de Capella, à plusieurs millions de degrés, émet des raies X : chaque pic est un élément chimique ionisé (fer, oxygène, néon…). Le RGS les sépare finement, entre 6 et 38 Å.",
-  "credit": "ESA, XMM-Newton",
+  "credit": "ESA, F. Jansen (PI de l'observation 0510780601)",
   "fetched": "2026-11-19"
  },
  "xmm/om": {
@@ -1486,7 +1486,7 @@
   ],
   "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0104260101",
   "caption": "Une seule pose de l'OM, dont le champ forme le carré incliné, découpée autour du centre de M101. Dans l'ultraviolet proche (filtre UVW1), les taches claires sont des régions où naissent des étoiles jeunes et chaudes, le long des bras.",
-  "credit": "ESA, XMM-Newton",
+  "credit": "ESA, M. Watson (PI de l'observation 0104260101)",
   "fetched": "2026-11-19"
  },
  "xmm/epic": {
@@ -1539,7 +1539,7 @@
   ],
   "url": "https://nxsa.esac.esa.int/nxsa-web/#obsid=0412180101",
   "caption": "Cassiopée A vue par les trois caméras EPIC. Les couleurs codent l'énergie des photons X : en rouge les plus faibles, en bleu les plus énergétiques. Les pixels de 4″ rendent l'image moins nette que celle de Chandra, mais XMM-Newton collecte beaucoup plus de photons. Les lignes sombres sont les espaces entre les CCD des caméras.",
-  "credit": "ESA, XMM-Newton",
+  "credit": "ESA, A. Parmar (PI de l'observation 0412180101)",
   "fetched": "2026-11-19"
  },
  "wmap/rad": {
@@ -1605,7 +1605,7 @@
   ],
   "url": "https://irsa.ipac.caltech.edu/data/Planck/release_3/all-sky-maps/maps/component-maps/cmb/COM_CMB_IQU-smica_2048_R3.00_full.fits",
   "caption": "Les mêmes variations de température que sur la carte de WMAP, mais avec une résolution trois fois meilleure, grâce aux bolomètres de HFI. Le long du plan de la Galaxie, où son émission ne peut être retirée parfaitement, il en reste quelques traces au milieu de la carte.",
-  "credit": "ESA, collaboration Planck",
+  "credit": "ESA, Planck Collaboration",
   "fetched": "2026-11-20"
  },
  "swift/bat": {
@@ -1758,7 +1758,7 @@
   ],
   "url": "https://archives.esac.esa.int/hsa/whsa/",
   "caption": "À 160 µm, PACS voit la poussière froide qui trace le gaz des bras spiraux, là où se forment les étoiles. L'image est plus floue que celles de Spitzer : la tache de diffraction grandit avec la longueur d'onde, malgré le miroir de 3,5 m.",
-  "credit": "ESA, Herschel, consortium PACS",
+  "credit": "ESA, C. Wilson (PI du programme KPGT_cwilso01_1)",
   "fetched": "2026-11-23"
  }
 }

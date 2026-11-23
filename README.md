@@ -1,6 +1,6 @@
 # Observatoires en orbite
 
-**Version 1.0 (23 novembre 2026, tag `v1.0`).**
+**Version 1.0 (23 novembre 2026, tag `v1.0`).** Licences et crédits : [LICENSES.md](LICENSES.md). Guide de lecture du code : [docs/CODE.md](docs/CODE.md).
 
 *Observatories in orbit: an interactive 3D guide to eighteen space observatories, from Hubble, Compton and Chandra to Webb, Euclid and Roman, in English (default) and French.*
 
@@ -62,26 +62,8 @@ Pour lancer les tests en local : `npm install --no-save playwright@1.56.0 axe-co
 
 Une entrée dans le registre `TELESCOPES` (`src/data-tele.js`), une maquette dans `models/`, puis ses textes et leur traduction ; `src/app.js` n'a pas à changer. La procédure complète est dans [`tools/models/README.md`](tools/models/README.md). Le test `tools/smoke.js` liste ce qui manque à une entrée.
 
-## Crédits des maquettes 3D
+## Licences et crédits
 
-| Observatoire | Source |
-|---|---|
-| Hubble | NASA Visualization Technology Applications and Development (VTAD), jeu de données Gaia Sky |
-| JWST | NASA 3D Resources |
-| Euclid | ESA SciFleet (https://scifleet.esa.int/model/euclid), jeu de données Gaia Sky |
-| Gaia | Toni Sagristà, Gaia Sky |
-| Chandra | NASA 3D Resources, « Chandra X-ray Observatory » |
-| Spitzer | NASA 3D Resources, « Spitzer Space Telescope » |
-| Fermi | NASA 3D Resources, « Fermi Gamma-ray Large Area Space Telescope » |
-| XMM-Newton | ESA, service SPICE (maquette pour Cosmographia, `misc/cosmo/xmm.obj`) ; aucune licence indiquée, créditée à l'ESA |
-| Kepler | NASA 3D Resources, « Kepler (A) » |
-| TESS | NASA 3D Resources, « Transiting Exoplanet Survey Satellite (TESS) (B) » |
-| Roman | NASA 3D Resources, « Nancy Grace Roman Space Telescope (A) » (conception de 2015) |
-
-Les maquettes ont été converties en glTF binaire, allégées et redécoupées en pièces physiques. Leurs droits restent ceux de leurs auteurs :
-
-- Gaia : jeu de données créé par le projet Gaia Sky, sous licence CC BY 4.0 (https://gaiasky.space/licenses/).
-- Hubble, Chandra, Spitzer, Fermi, Kepler, TESS, JWST et Roman : contenus NASA, non soumis au droit d'auteur aux États-Unis ; voir les consignes d'utilisation des médias de la NASA.
-- Euclid : © ESA. Aucune licence explicite n'est affichée par SciFleet pour ce modèle ; il est repris ici à des fins éducatives et non commerciales, avec crédit.
+Tout est détaillé et sourcé dans [LICENSES.md](LICENSES.md) : maquettes 3D, données, bibliothèques, polices. En bref : les maquettes de la NASA sont sans droit d'auteur, celle de Gaia est sous CC BY (Gaia Sky) ; les six maquettes de l'ESA (INTEGRAL, Herschel, Planck, CHEOPS, Euclid, XMM-Newton) sont utilisées en attendant l'autorisation écrite de l'ESA ; les données des archives de l'ESA sont sous CC BY-NC 3.0 IGO, avec les lignes de crédit exigées.
 
 Les intérieurs de la vue en coupe sont reconstruits à partir de sources publiées (citées dans le site) ; leurs emplacements sont indicatifs.
