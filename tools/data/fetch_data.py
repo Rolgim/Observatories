@@ -906,6 +906,74 @@ def spitzer_mips(key):
                 caption="À 24 µm, MIPS voit la poussière tiède des régions où naissent les étoiles, en grumeaux le long des bras, et le noyau de la galaxie. Les images sont moins nettes qu'à 8 µm : la tache de diffraction grandit avec la longueur d'onde.",
                 credit="NASA, JPL-Caltech, IRSA", fetched=TODAY)
 
+# ---------- Herschel : carte PACS de l'archive HSA de l'ESA (TAP pour choisir l'observation, astroquery pour la télécharger) ----------
+HSA_TAP = "https://archives.esac.esa.int/hsa/whsa-tap-server/tap"
+def herschel_map(key, instrument, band_keys, target="M51", ra=202.4696, dec=47.1952, size_arcmin=12, title="", caption="", bands=""):
+    import pyvo, tarfile, glob
+    from astropy.io import fits
+    from astropy.wcs import WCS
+    from astropy.nddata import Cutout2D
+    from astropy.coordinates import SkyCoord
+    import astropy.units as u
+    from astroquery.esa.hsa import HSA
+    t = pyvo.dal.TAPService(HSA_TAP).run_sync(
+        "SELECT observation_id, aor, target_name, duration, od_number FROM hsa.v_active_observation "
+        f"WHERE target_name LIKE '%{target}%' AND is_public = 'true' AND obsstate LIKE 'LEVEL2%' ORDER BY duration DESC", maxrec=200).to_table()
+    cands = [r for r in t]
+    print("  ", len(cands), "observations publiques de", target)
+    # d'abord les cartes photométriques (AOR « Phot », « scan », « map »), puis les autres
+    pref = lambda r: (0 if any(k in str(r["aor"]).lower() for k in ("phot", "scan", "map", "spire")) else 1, -float(r["duration"]))
+    d = os.path.join(TMP, "hsa"); os.makedirs(d, exist_ok=True)
+    for r in sorted(cands, key=pref)[:12]:
+        oid = str(r["observation_id"])
+        for level in ("LEVEL2_5", "LEVEL2"):
+            try:
+                path = HSA.download_data(observation_id=oid, retrieval_type="OBSERVATION", instrument_name=instrument, product_level=level, download_dir=d, cache=False)
+            except Exception as e:
+                print("   ", oid, level, "indisponible :", repr(e)[:120]); continue
+            files = []
+            if path and str(path).endswith((".tar", ".tar.gz", ".tgz")) and os.path.exists(path):
+                with tarfile.open(path) as tf:
+                    for m in tf.getmembers():
+                        if m.isfile() and m.name.endswith((".fits", ".fits.gz")) and ".." not in m.name and not m.name.startswith("/"):
+                            tf.extract(m, d); files.append(os.path.join(d, m.name))
+            elif path and os.path.exists(path):
+                files = [path]
+            maps = [f for f in files if any(k in os.path.basename(f).upper() for k in band_keys)]
+            print("   ", oid, level, str(r["aor"])[:50], len(files), "fichiers,", len(maps), "cartes")
+            for f in sorted(maps):
+                try:
+                    hd = fits.open(f)
+                    ext = next(i for i, x in enumerate(hd) if x.data is not None and getattr(x.data, "ndim", 0) == 2 and min(x.data.shape) > 100)
+                    data, h = np.asarray(hd[ext].data, dtype=float), hd[ext].header
+                    cut = Cutout2D(data, SkyCoord(ra, dec, unit="deg"), size_arcmin * u.arcmin, wcs=WCS(h).celestial, mode="partial", fill_value=np.nan)
+                    if np.mean(np.isfinite(cut.data)) < 0.7: print("     carte mal centrée :", os.path.basename(f)); continue
+                except StopIteration:
+                    continue
+                except Exception as e:
+                    print("     carte illisible :", os.path.basename(f), repr(e)[:120]); continue
+                from PIL import Image
+                im = Image.fromarray((np.flipud(asinh_stretch(cut.data, 1, 99.8, 0.04)) * 255).astype(np.uint8), "L")
+                if max(im.size) < 500: im = im.resize((im.size[0] * 2, im.size[1] * 2), Image.LANCZOS)
+                fname = key.replace("/", "-") + ".jpg"; im.save(os.path.join(OUT, fname), "JPEG", quality=86, optimize=True)
+                pix = abs(float(h.get("CDELT1", h.get("CD1_1", 0)))) * 3600
+                meta = [["Archive", "Herschel Science Archive (ESA), observation " + oid], ["Instrument", instrument + ", " + bands],
+                        ["Cible", target], ["Produit", os.path.basename(f) + " (" + level.replace("_", ".").replace("LEVEL", "niveau ") + ")"],
+                        ["Échelle", fr(pix, 1) + "″ par pixel"], ["Champ", fr(size_arcmin) + "′ de côté"], ["Traitement", "découpe, étirement asinh pour le site"]]
+                return dict(type="image", file=fname, width=im.size[0], height=im.size[1], title=title, meta=meta,
+                            url="https://archives.esac.esa.int/hsa/whsa/", caption=caption, credit="ESA, Herschel, consortium " + instrument, fetched=TODAY)
+    raise RuntimeError("aucune carte " + instrument + " exploitable pour " + target)
+
+def herschel_pacs(key):
+    return herschel_map(key, "PACS", ("HPPJSMAPR", "HPPUNIMAPR", "HPPHPFMAPR", "HPPPMAPR", "JSMAPR", "MAPR"),
+                        title="La galaxie du Tourbillon (M51), PACS 160 µm", bands="160 µm",
+                        caption="À 160 µm, PACS voit la poussière froide qui trace le gaz des bras spiraux, là où se forment les étoiles. L'image est plus floue que celles de Spitzer : la tache de diffraction grandit avec la longueur d'onde, malgré le miroir de 3,5 m.")
+
+def herschel_spire(key):
+    return herschel_map(key, "SPIRE", ("PSWMAP", "PSW", "SPIRE_PSW", "EXTDPSW"),
+                        title="La galaxie du Tourbillon (M51), SPIRE 250 µm", bands="250 µm",
+                        caption="À 250 µm, SPIRE voit la poussière la plus froide de la galaxie. La tache de diffraction, plus grande encore qu'à 160 µm, fond les détails des bras.")
+
 # ---------- Fermi : catalogues du HEASARC (4FGL-DR4, sursauts du GBM) ----------
 def heasarc_tap(adql):
     import pyvo
@@ -1233,6 +1301,7 @@ RECIPES = {
     "xmm/om": xmm_om,
     "wmap/rad": wmap_rad, "planck/hfi": planck_hfi,
     "swift/bat": swift_bat, "swift/xrt": swift_xrt, "integral/ibis": integral_ibis, "cgro/batse": cgro_batse,
+    "herschel/pacs": herschel_pacs, "herschel/spire": herschel_spire,
     "spitzer/irac": spitzer_irac, "spitzer/mips": spitzer_mips, "fermi/lat": fermi_lat, "fermi/gbm": fermi_gbm,
     "chandra/acis": lambda k: chandra_image(k, [114], "Cassiopée A", CAS_A),
     "chandra/hrc": chandra_hrc,
