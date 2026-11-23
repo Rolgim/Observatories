@@ -6131,7 +6131,7 @@ var HomeUI = (function(){
     }
     if (D){
       h += '<h3>' + esc(T('Sources')) + '</h3><ol class="refs">';
-      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.source) + '</a>' : esc(b.source)) + ' <span>' + esc(t.short) + '</span></li>'; });
+      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(T(b.source)) + '</a>' : esc(T(b.source))) + ' <span>' + esc(t.short) + '</span></li>'; });
       h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>';
     }
     return h;
@@ -7545,6 +7545,8 @@ var EN_UI = {
   "Trajectoires réelles (JPL Horizons) dans le repère qui tourne avec la Terre autour du Soleil ; le cercle en pointillé est l'orbite de la Lune. Chaque observatoire apparaît à sa date d'arrivée ; Gaia a quitté L2 en mars 2025. Hubble n'y figure pas : à cette échelle, son orbite à 480 km d'altitude se confond avec le point qui représente la Terre.":"Real trajectories (JPL Horizons) in the frame that rotates with the Earth around the Sun; the dashed circle is the Moon's orbit. Each observatory appears on its arrival date; Gaia left L2 in March 2025. Hubble is not shown: at this scale its orbit, 480 km up, merges with the dot that stands for the Earth."
 };
 var EN_RULES = [
+  [/^JPL Horizons, objet (\S+), récupéré le (\d{4}-\d\d-\d\d)$/, "JPL Horizons, object $1, retrieved $2"],
+  [/^(.+) \(observations VIS de DR1\)$/, '$1 (VIS observations in DR1)'], [/^(.+) \(observations scientifiques\)$/, '$1 (science observations)'],
   [/^(.+) : (\d\d)\/(\d\d)\/(\d{4}) – (\d\d)\/(\d\d)\/(\d{4})$/, '$1: $4-$3-$2 – $7-$6-$5'],
   [/^HEALPix nside (\d+), dégradée à 256 pour le site$/, 'HEALPix nside $1, degraded to 256 for the site'], [/^bleu : plus froid, rouge : plus chaud ; échelle ± ([\d  ,.]+) µK$/, function(m, v){ return 'blue: colder, red: warmer; scale ± ' + v.replace(/[  ]/g, ',') + ' µK'; }], [/^(\d[\d  ]*) avec une durée mesurée par BAT$/, function(m, n){ return n.replace(/[  ]/g, ',') + ' with a duration measured by BAT'; }],
   [/^Position occupée de (\d{4}) à (\d{4})\. Terre, Lune et L2 à l'échelle\.$/, 'Position held from $1 to $2. Earth, Moon and L2 to scale.'],
@@ -7654,7 +7656,8 @@ Object.assign(EN_UI, {
 "Comme tout le ciel, ce point a aussi été couvert par les relevés :":"Like the whole sky, this point was also covered by the surveys:",
 "Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1.":"Mollweide equal-area projection in Galactic coordinates; longitude increases to the left, as the sky is seen. Dotted: the celestial equator. Cells are 1° in right ascension and declination, start-of-observation positions only, without the real shape of the fields. For Euclid: the VIS observations published in DR1.",
 "Les observations n'ont pas pu être chargées.":"The observations could not be loaded.",
-"Dans le champ de Kepler,":"In the Kepler field,","fixé pendant quatre ans.":"held for four years."
+"Dans le champ de Kepler,":"In the Kepler field,","fixé pendant quatre ans.":"held for four years.",
+"Une barre par observatoire, du lancement à la fin des observations ; pleine et fléchée s'il est en service. Cliquer une barre ouvre l'observatoire en 3D.":"One bar per observatory, from launch to the end of observations; solid with an arrow if still in service. Click a bar to open the observatory in 3D.","Champs de vue":"Fields of view"
 });
 
 /* =================================================================

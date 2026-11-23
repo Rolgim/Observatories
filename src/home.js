@@ -122,7 +122,7 @@ var HomeUI = (function(){
     }
     if (D){
       h += '<h3>' + esc(T('Sources')) + '</h3><ol class="refs">';
-      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.source) + '</a>' : esc(b.source)) + ' <span>' + esc(t.short) + '</span></li>'; });
+      TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(T(b.source)) + '</a>' : esc(T(b.source))) + ' <span>' + esc(t.short) + '</span></li>'; });
       h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>';
     }
     return h;

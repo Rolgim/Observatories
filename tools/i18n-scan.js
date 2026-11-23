@@ -18,7 +18,7 @@ const FRENCH = /[àâçéèêëîïôùûœ«»]|\b(le|la|les|des|du|de|et|un|un
   const miss = {};
   const grab = async () => Object.assign(miss, await pg.evaluate(() => window.__i18nMiss));
   const go = async h => { await pg.goto('http://localhost:' + PORT + '/index.html#' + h); await pg.waitForTimeout(400); };
-  for (const t of (process.env.TELES || 'hubble jwst euclid gaia').split(' ')){
+  for (const t of (process.env.TELES || 'hubble jwst euclid gaia').trim().split(/\s+/)){
     await go(t); await pg.waitForFunction(() => document.getElementById('loader').hidden, null, { timeout: 120000 }).catch(() => {});
     await pg.click('[data-ptab="parts"]'); await pg.waitForTimeout(200);
     const np = await pg.locator('.part > button').count();
@@ -34,6 +34,8 @@ const FRENCH = /[àâçéèêëîïôùûœ«»]|\b(le|la|les|des|du|de|et|un|un
   }
   await go('comparer'); await pg.waitForFunction(() => document.getElementById('loader').hidden, null, { timeout: 120000 }).catch(() => {}); await pg.waitForTimeout(500); await grab();
   await go('comparer-instruments'); await pg.waitForTimeout(2500); await grab();
+  await go('accueil'); await pg.waitForTimeout(2500); { const bx = await pg.locator('#home-cv').boundingBox(); if (bx) await pg.mouse.click(bx.x + bx.width/2, bx.y + bx.height/2); } await pg.waitForTimeout(300); await grab();
+  await go('flotte'); await pg.waitForTimeout(400); await grab(); await pg.click('[data-fleet-sec="who"]'); await pg.waitForTimeout(300); await grab();
   await b.close(); srv.close();
   const out = Object.keys(miss).filter(k => (process.env.ALL ? k.length <= 34 && !/\d/.test(k) : FRENCH.test(k)) && /[a-zA-Zà-ÿ]{3}/.test(k)).sort();
   out.forEach(k => console.log(JSON.stringify(k)));
