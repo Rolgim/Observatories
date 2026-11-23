@@ -4,7 +4,7 @@
           (dates AAAA-MM-JJ ; la source du lancement est celle de la ligne « Lancement » de la fiche)
    who  : [agence, rôle, texte FR, texte EN, clés de source] ; rôle parmi ROLES ci-dessous.
           Les clés renvoient à refs ci-dessous, sinon à celles de la fiche (TELESCOPES[…].refs).
-   Agences filtrables : NASA, ESA, CNES ; les autres partenaires sont nommés dans le texte.
+   Première colonne : toujours une agence spatiale (filtrable) ; « Partenaires » regroupe pays et instituts, nommés dans le texte.
 ================================================================= */
 var FLEET_ROLES = { lead:['Responsable de la mission','Mission lead'], partner:['Partenaire','Partner'], instrument:['Instrument','Instrument'], data:['Données et opérations','Data and operations'], launch:['Lancement','Launch'] };
 var FLEET = {
@@ -22,14 +22,14 @@ var FLEET = {
     ['NASA','lead',"Mission de la NASA (Goddard), avec l'université de Princeton.","A NASA mission (Goddard), with Princeton University.",'nasa'] ] },
   integral:{ life:['2002-10-17', '2025-02-28', 'end'], who:[
     ['ESA','lead',"Mission de l'ESA ; données traitées à l'ISDC (Genève).","An ESA mission; data processed at the ISDC (Geneva).",'fs'],
-    ['Russie','launch',"Lancement par une fusée Proton.","Launch on a Proton rocket.",'fs'],
+    ['Agence spatiale russe','launch',"Mise en orbite par une fusée Proton, fournie gratuitement en échange de temps d'observation.","Put into orbit by a Proton rocket, provided free of charge in exchange for observing time.",'esaL'],
     ['NASA','partner',"Coopération des États-Unis.","Cooperation from the United States.",'fs'],
     ['CNES','instrument',"Maîtrise d'œuvre du spectromètre SPI, l'un des deux instruments principaux.","Prime contractor for the SPI spectrometer, one of the two main instruments.",'cnesI'] ] },
   spitzer:{ life:['2003-08-25', '2020-01-30', 'mo'], who:[
     ['NASA','lead',"Mission de la NASA, gérée par le JPL ; centre scientifique à Caltech (IPAC).","A NASA mission, managed by JPL; science centre at Caltech (IPAC).",['qf','mo']] ] },
   swift:{ life:['2004-11-20', '2026-10-20', 'end'], who:[
     ['NASA','lead',"Mission de la NASA (Goddard) ; opérations à Penn State.","A NASA mission (Goddard); operations at Penn State.",'g04'],
-    ['Italie et Royaume-Uni','partner',"Partenaires pour le XRT, l'UVOT et les centres de données.","Partners for the XRT, the UVOT and the data centres.",'g04'] ] },
+    ['Partenaires','partner',"Italie et Royaume-Uni : partenaires pour le XRT, l'UVOT et les centres de données.","Italy and the United Kingdom: partners for the XRT, the UVOT and the data centres.",'g04'] ] },
   fermi:{ life:['2008-06-11', null], who:[
     ['NASA','lead',"Mission de la NASA, avec le département de l'Énergie des États-Unis.","A NASA mission, with the U.S. Department of Energy.",'fs'],
     ['Partenaires','partner',"France, Allemagne, Italie, Japon et Suède.","France, Germany, Italy, Japan and Sweden.",'fs'] ] },
@@ -42,7 +42,7 @@ var FLEET = {
   planck:{ life:['2009-05-14', '2013-10-23', 'fs'], who:[
     ['ESA','lead',"Mission de l'ESA.","An ESA mission.",'fs'],
     ['CNES','instrument',"Partenaire du CNRS et de l'IAS pour l'instrument HFI ; responsable du contrat du système de dilution à 0,1 K ; financement des participations françaises et du traitement des données associé.","Partner of CNRS and IAS for the HFI instrument; responsible for the contract for the 0.1 K dilution system; funding of the French contributions and of the associated data processing.",'cnesP'],
-    ['Italie','instrument',"Instrument LFI, dirigé depuis Bologne.","LFI instrument, led from Bologna.",'fs'] ] },
+    ['Partenaires','instrument',"Italie : instrument LFI, dirigé depuis Bologne.","Italy: LFI instrument, led from Bologna.",'fs'] ] },
   gaia:{ life:['2013-12-19', '2025-01-15', 'end'], who:[
     ['ESA','lead',"Mission de l'ESA ; données traitées par le consortium européen DPAC.","An ESA mission; data processed by the European DPAC consortium.",'fs'],
     ['CNES','data',"Architecture du système de traitement (CU1), traitement des unités CU4, CU6 et CU8, outils de simulation (CU2). 80 % des nouveaux objets du troisième catalogue viennent de son centre de traitement.","Architecture of the processing system (CU1), processing for units CU4, CU6 and CU8, simulation tools (CU2). 80% of the new objects in the third catalogue come from its processing centre.",'cnesG'] ] },
@@ -65,6 +65,7 @@ var FLEET = {
     ['CNES','instrument',"Miroirs du coronographe, développés par le LAM ; participation à la préparation des observations et de l'analyse des données.","Coronagraph mirrors, developed by LAM; participation in planning the observations and the data analysis.",'cnesR'] ] }
 };
 var FLEET_REFS = {
+  esaL:{ t:'Integral : the launcher', p:'ESA', u:'https://www.esa.int/Science_Exploration/Space_Science/Integral/The_launcher' },
   cnesI:{ t:'INTEGRAL en détails', p:'CNES', u:'https://cnes.fr/projets/integral/en-details' },
   cnesH:{ t:'Herschel en détails', p:'CNES', u:'https://cnes.fr/projets/herschel/en-details' },
   cnesP:{ t:'Planck en détails', p:'CNES', u:'https://cnes.fr/projets/planck/en-details' },

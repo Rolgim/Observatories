@@ -158,7 +158,7 @@ var Orbits = (function(){
   var SATJS = 'https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js', satLoading = null, landLoading = null, tleLoading = null;
   function loadSat(){ return satLoading || (satLoading = new Promise(function(ok, ko){ if (window.satellite) return ok(window.satellite); var e = document.createElement('script'); e.src = SATJS; e.onload = function(){ ok(window.satellite); }; e.onerror = ko; document.head.appendChild(e); })); }
   function loadJSON(u){ return fetch(u).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }); }
-  function drawTrack(c, st, land){
+  function drawTrack(c, st, land, name){
     var g = prep(c), W = c._w, H = c._h, S = window.satellite, now = new Date(), D = 180/Math.PI;
     function X(lon){ return 8 + (lon + 180)/360*(W - 16); } function Y(lat){ return 8 + (90 - lat)/180*(H - 16); }
     g.clearRect(0, 0, W, H);
@@ -184,7 +184,7 @@ var Orbits = (function(){
     });
     var p = pos(now); if (!p) return null;
     g.fillStyle = css('--mark'); g.strokeStyle = css('--ink'); g.lineWidth = 1.5; g.beginPath(); g.arc(X(p.lon), Y(p.lat), 6, 0, 6.2832); g.fill(); g.stroke();
-    g.fillStyle = css('--ink'); label(g, 'Hubble', X(p.lon) + (p.lon > 140 ? -10 : 10), Y(p.lat) - 9, true, p.lon > 140 ? 'right' : 'left');
+    g.fillStyle = css('--ink'); label(g, name, X(p.lon) + (p.lon > 140 ? -10 : 10), Y(p.lat) - 9, true, p.lon > 140 ? 'right' : 'left');
     p.night = Math.sin(p.lat/D)*Math.sin(sdec/D) + Math.cos(p.lat/D)*Math.cos(sdec/D)*Math.cos((p.lon - slon)/D) < 0;
     return p;
   }
@@ -380,7 +380,7 @@ var Orbits = (function(){
       var tle = r[2], st = { rec:r[0].twoline2satrec(tle.line1, tle.line2) }, age = (Date.now() - Date.parse(tle.epoch))/86400000, fmt = function(x, d){ return x.toFixed(d).replace('.', OBS_LANG === 'en' ? '.' : ','); };
       (function tick(){
         if (my !== run || !track.isConnected) return;
-        var p = drawTrack(track, st, r[1]);
+        var p = drawTrack(track, st, r[1], name);
         if (p){
           var v = Math.hypot(p.v.x, p.v.y, p.v.z);
           rd.textContent = new Date().toLocaleTimeString(OBS_LANG === 'en' ? 'en-GB' : 'fr-FR') + ' · ' + OBS_T(p.night ? 'au-dessus de la face nocturne' : 'au-dessus de la face éclairée');

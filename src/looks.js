@@ -80,5 +80,7 @@ var LOOKS = {
   },
   euclid: function(m, n, THREE){
     m.metalness = Math.min(m.metalness, 0.5); m.roughness = Math.max(0.5, Math.min(m.roughness, 0.75)); m.color.multiplyScalar(0.78);
-  }
+  },
+  /* WMAP : le pare-soleil et les panneaux sont des surfaces à une seule face, invisibles vues de dessous : rendus des deux côtés */
+  wmap: function(m, n, THREE){ m.side = THREE.DoubleSide; }
 };

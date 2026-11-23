@@ -44,6 +44,8 @@ $GT copy $DL/spitzer/spitzer.glb $W/tmp/spitzer_dec.glb >/dev/null
 $GT weld $W/tmp/spitzer_dec.glb $W/tmp/spitzer_w.glb >/dev/null
 node -e "require('$W/seg_lib.js').segment('$W/tmp/spitzer_w.glb','$W/tmp/spitzer_seg.glb',require('$W/spitzer_cls.js')).then(s=>console.log('spitzer',JSON.stringify(s)))"
 $GT quantize $W/tmp/spitzer_seg.glb $OUT/spitzer.glb --quantize-position 14 --quantize-normal 10 >/dev/null 2>&1
+# deux parois du bus (maillages bus_0 et bus_42) sont confondues : la seconde est grossie de 0,3 % pour supprimer le scintillement (repéré par zfind.mjs)
+( cd $W && node zfix.mjs $OUT/spitzer.glb $OUT/spitzer.glb bus_42:1.003 )
 # ---------- Fermi : maquette NASA (Draco), unités de la maquette (mise à l'échelle par le site), redécoupée et allégée
 # attendu dans $DL : fermi/fermi.glb (« Fermi Gamma-ray Large Area Space Telescope.glb » du dépôt nasa/NASA-3D-Resources)
 $GT copy $DL/fermi/fermi.glb $W/tmp/fermi_dec.glb >/dev/null

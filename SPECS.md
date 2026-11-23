@@ -34,6 +34,25 @@ Public visé : **de l'étudiant à l'expert**. Règles pour tout le contenu :
 
 Classé par priorité. Entre crochets : le lot concerné (section 5).
 
+### Priorité 0 : retours du 23 novembre [R]
+
+Liste de l'utilisatrice, à traiter avant le reste ; entre crochets, ce qui a été fait.
+
+1. **Navigation.** Un bouton pour revenir aux télescopes ; « Retour à la vue 3D » devient un bouton de l'en-tête, à côté de Ciel, Comparer et Flotte. [Bouton « Télescopes » en tête de la rangée de vues, présent sur toutes les pages ; le bouton de la page instruments est retiré.]
+2. **En-tête.** Les noms des télescopes sont collés au bas de la barre de choix : même respiration que les autres boutons. [Onglets centrés verticalement, marge au-dessus.]
+3. **3D.** Spitzer scintille sur le bas ; WMAP est transparent vu de dessous. [Spitzer : deux parois du bus confondues, l'une grossie de 0,3 % (`tools/models/zfind.mjs` pour les repérer, `zfix.mjs` pour corriger, ajouté à `build_models.sh`). WMAP : pare-soleil rendu des deux côtés.]
+4. **Soleil réel activé par défaut.** [Fait.]
+5. **Orbites animées** aussi pour l'orbite basse, l'orbite très elliptique et l'orbite autour du Soleil (schémas des fiches). [Point en mouvement ; vitesse de Kepler sur l'ellipse ; rien ne bouge si l'utilisateur a demandé moins d'animations, ni pour une mission rentrée dans l'atmosphère.]
+6. **Encombrement** : toujours deux dimensions (hauteur × longueur ou envergure), avec leur nature écrite. [Fiches et étiquettes de « Comparer » ; Hubble, CHEOPS et Euclid complétés depuis l'ESA et la NASA ; Gaia : seul le diamètre du pare-soleil est publié par l'ESA.]
+7. **Trajet de la lumière de Fermi** : flèche sans objet en haut. [Flèche placée sur le rayon, dans le sens de propagation.]
+8. **« Où est Fermi / CHEOPS en ce moment »** affichait « Hubble ». [Corrigé.]
+9. **Filtres et catégories de filtres** se ressemblaient. [Catégories en onglets soulignés, filtres en boutons.]
+10. **Flotte** : tous les « Tous » alignés ; des noms d'agences, pas de pays. [Colonne d'étiquettes fixe ; « Agence spatiale russe » (source ESA), partenaires nationaux regroupés sous « Partenaires » quand l'agence n'est pas sourcée.]
+11. **Anglais** : « Champs de vue » non traduit dans « Comparer ». [Traduit ; `i18n-scan.js` couvre Comparer, l'accueil et la Flotte.]
+12. **Herschel sans image.** [Recettes `herschel/pacs` et `herschel/spire` : cartes de M51 de l'archive HSA de l'ESA.]
+13. **Ciel** : le texte n'utilise pas toute la largeur ; les onglets de télescopes y restent. [Texte pleine largeur ; onglets masqués.]
+14. **Ciel** : fond Gaia (ou Aladin Lite), zoom et déplacement. [Fond : carte de flux en couleurs de Gaia DR3 (HiPS du CDS), reprojetée en Mollweide galactique par l'intégration continue (`tools/data/fetch_skybg.py`), car un artifact ne peut pas charger les tuiles d'Aladin ; zoom à la molette, au double clic et aux boutons, déplacement au glisser ; lien « voir ce coin du ciel dans Aladin Lite » au clic.]
+
 ### Priorité 1 : intérieurs, seulement ce qui est documenté [D4] — fait le 19 novembre
 
 Constat (19 novembre) : les intérieurs reconstruits mêlent des éléments cotés (miroirs, coques de Chandra) et des blocs posés à des emplacements indicatifs (réservoirs, batteries, roues de réaction, boîtiers électroniques). Rendu peu crédible (empilements de boîtes et de sphères sur Euclid ; anneaux de Hubble qui sortent du tube) ; sur Webb, la coupe ne montre presque rien.

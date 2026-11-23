@@ -136,7 +136,9 @@ var Optics = (function(){
       var yc = yt + 8 + 18*9.5 + 10;
       for (var j=0;j<8;j++) for (var k=0;k<12;k++){ var cw = (x1-x0)/12; s += '<rect x="'+f(x0 + k*cw + 0.6)+'" y="'+f(yc + j*11)+'" width="'+f(cw - 1.2)+'" height="9.5" fill="#C9A100" fill-opacity="'+(j%2 ? 0.55 : 0.8)+'"/>'; }
       var xg = 182, yconv = py[3] - 2.5;
-      s += P([[xg - 40, 6], [xg, yconv]], RAY, 1.6) + '<path d="M'+(xg - 40)+' 6 l2 9 l6 -6 z" fill="'+RAY+'"/>';
+      /* flèche au milieu du rayon, dans le sens de propagation */
+      var dx = 40, dy = yconv - 6, dl = Math.sqrt(dx*dx + dy*dy), ux = dx/dl, uy = dy/dl, mx = xg - 40 + dx*0.55, my = 6 + dy*0.55;
+      s += P([[xg - 40, 6], [xg, yconv]], RAY, 1.6) + '<path d="M'+f(mx + ux*6)+' '+f(my + uy*6)+' L'+f(mx - ux*4 - uy*4)+' '+f(my - uy*4 + ux*4)+' L'+f(mx - ux*4 + uy*4)+' '+f(my - uy*4 - ux*4)+' z" fill="'+RAY+'"/>';
       s += P([[xg, yconv], [xg - 36, yc + 30]], '#2F6FDB', 1.3) + P([[xg, yconv], [xg + 46, yc + 30]], '#D6457A', 1.3);
       for (var m=0;m<6;m++){ var a = -0.9 + m*0.36; s += L(xg + (m - 2.5)*10, yc + 34, xg + (m - 2.5)*10 + Math.sin(a)*22, yc + 70, '#C9A100', 1); }
       s += '<circle cx="'+xg+'" cy="'+f(yconv)+'" r="3" fill="'+INK+'"/>';

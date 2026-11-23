@@ -15,7 +15,7 @@ function banner(msg){
 window.addEventListener('error', function(e){ if (e && e.message && !/ResizeObserver/.test(e.message)) banner('Erreur : ' + e.message); });
 
 var REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-var S = { mode:'tele', id:TELESCOPES[0].id, ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:false, cut:false, spin:!REDUCED,
+var S = { mode:'tele', id:TELESCOPES[0].id, ptab:'fiche', part:null, hover:null, explode:0, explodeGoal:0, sunReal:true, cut:false, spin:!REDUCED,
           inst:false, instSel:null, filterIdx:0 };
 
 var stage = $('stage'), hasGL = !!(window.THREE && THREE.GLTFLoader);
@@ -28,6 +28,17 @@ if (hasGL){
 /* =================================================================
    PANNEAU (fonctionne même sans WebGL)
 ================================================================= */
+/* point qui parcourt une ellipse à la vitesse de Kepler (foyer à gauche, en cxo - c) : temps égaux entre anomalies moyennes égales */
+function keplerDot(cx, cy, a, b, e){
+  var N = 48, pts = [], len = [0];
+  for (var i = 0; i <= N; i++){
+    var M = 2*Math.PI*i/N + Math.PI, E = M; for (var k = 0; k < 20; k++) E = E - (E - e*Math.sin(E) - M)/(1 - e*Math.cos(E));
+    pts.push([cx + a*Math.cos(E), cy - b*Math.sin(E)]);
+    if (i) len.push(len[i-1] + Math.hypot(pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]));
+  }
+  var L = len[N];
+  return '<circle r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"><animateMotion dur="9s" repeatCount="indefinite" calcMode="linear" path="M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + '" keyPoints="' + len.map(function(l){ return (l/L).toFixed(4); }).join(';') + '" keyTimes="' + len.map(function(l, i){ return (i/N).toFixed(4); }).join(';') + '"/></circle>';
+}
 function orbitSvg(t){
   var F = 'font-family="Archivo, Arial, sans-serif"';
   if (t.orbit === 'leo'){
@@ -35,8 +46,8 @@ function orbitSvg(t){
     return '<svg viewBox="0 0 340 150" role="img" aria-label="Orbite basse terrestre, à l\'échelle">' +
       '<circle cx="92" cy="75" r="60" fill="#2C5E9E"/>' +
       '<circle cx="92" cy="75" r="' + ro + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (t.ended ? ' stroke-dasharray="3 3"' : '') + '/>' +
-      '<circle cx="138" cy="29" r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"/>' +
-      '<path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>' +
+      (t.ended || REDUCED ? '<circle cx="138" cy="29" r="4.5" fill="' + (t.ended ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/><path d="M143 27 L186 20" stroke="#14171A" stroke-width="1"/>'
+        : '<circle r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"><animateMotion dur="8s" repeatCount="indefinite" path="M' + (92 + +ro) + ' 75 a' + ro + ' ' + ro + ' 0 1 0 ' + (-2*ro) + ' 0 a' + ro + ' ' + ro + ' 0 1 0 ' + (2*ro) + ' 0"/></circle>') +
       '<text x="190" y="19" fill="#14171A" font-size="13" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
       '<text x="190" y="36" fill="#3A4147" font-size="12" ' + F + '>≈ ' + t.leo.alt + ' km d\'altitude</text>' +
       '<text x="190" y="76" fill="#3A4147" font-size="12" ' + F + '>Un tour toutes les ' + String(t.leo.per).replace('.', ',') + ' min.</text>' +
@@ -51,11 +62,12 @@ function orbitSvg(t){
     return '<svg viewBox="0 0 340 136" role="img" aria-label="Orbite autour du Soleil, dans le sillage de la Terre">' +
       '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="#98A1A7" stroke-dasharray="3 3"/>' +
       '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#FFD21F"/><text x="' + cx + '" y="' + (cy + 22) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Soleil</text>' +
-      '<path d="M' + pt(ae + 0.05) + ' A' + r + ' ' + r + ' 0 0 1 ' + pt(ao - 0.05) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
-      '<circle cx="' + (cx + r*Math.cos(ae)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ae)).toFixed(1) + '" r="5" fill="#2C5E9E"/><text x="' + (cx + r*Math.cos(ae)).toFixed(1) + '" y="' + (cy + r*Math.sin(ae) - 10).toFixed(1) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
+      (REDUCED ? '' : '<g>') + '<path d="M' + pt(ae + 0.05) + ' A' + r + ' ' + r + ' 0 0 1 ' + pt(ao - 0.05) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
+      '<circle cx="' + (cx + r*Math.cos(ae)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ae)).toFixed(1) + '" r="5" fill="#2C5E9E"/>' +
       '<circle cx="' + (cx + r*Math.cos(ao)).toFixed(1) + '" cy="' + (cy + r*Math.sin(ao)).toFixed(1) + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      (REDUCED ? '<text x="' + (cx + r*Math.cos(ae)).toFixed(1) + '" y="' + (cy + r*Math.sin(ae) - 10).toFixed(1) + '" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' : '<animateTransform attributeName="transform" type="rotate" from="0 ' + cx + ' ' + cy + '" to="-360 ' + cx + ' ' + cy + '" dur="14s" repeatCount="indefinite"/></g>') +
       '<text x="150" y="44" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
-      '<text x="150" y="60" fill="#3A4147" font-size="11" ' + F + '>tourne autour du Soleil</text>' +
+      '<text x="150" y="60" fill="#3A4147" font-size="11" ' + F + '>tourne autour du Soleil</text>' + (REDUCED ? '' : '<circle cx="300" cy="40" r="5" fill="#2C5E9E"/><text x="309" y="44" fill="#14171A" font-size="11" ' + F + '>Terre</text>') +
       '<text x="150" y="74" fill="#3A4147" font-size="11" ' + F + '>dans le sillage de la Terre,</text>' +
       '<text x="150" y="88" fill="#3A4147" font-size="11" ' + F + '>' + esc((t.helio && t.helio.drift) || '') + '.</text>' +
       '<text x="150" y="110" fill="#667077" font-size="11" ' + F + '>Schéma de principe, vu du nord</text><text x="150" y="124" fill="#667077" font-size="11" ' + F + '>de l\'écliptique.</text></svg>';
@@ -69,7 +81,7 @@ function orbitSvg(t){
       '<text x="' + (ex + rm*Math.cos(-0.5) + 6).toFixed(1) + '" y="' + (ey + rm*Math.sin(-0.5) + 2).toFixed(1) + '" fill="#3A4147" font-size="11" ' + F + '>orbite de la Lune</text>' +
       '<ellipse cx="' + cxo.toFixed(1) + '" cy="' + ey + '" rx="' + (a2*k).toFixed(1) + '" ry="' + (b2*k).toFixed(1) + '" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
       '<circle cx="' + ex + '" cy="' + ey + '" r="' + Math.max(2.2, R*k).toFixed(1) + '" fill="#2C5E9E"/><text x="' + (ex - 8) + '" y="' + (ey + 4) + '" text-anchor="end" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
-      '<circle cx="' + xs.toFixed(1) + '" cy="' + ey + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+      (gone || REDUCED ? '<circle cx="' + xs.toFixed(1) + '" cy="' + ey + '" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' : keplerDot(cxo, ey, a2*k, b2*k, e2)) +
       '<text x="' + (xs + 10).toFixed(1) + '" y="' + (ey - 8) + '" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + '</text>' +
       '<text x="' + (xs + 10).toFixed(1) + '" y="' + (ey + 8) + '" fill="#3A4147" font-size="11" ' + F + '>apogée ' + H0.apo + '</text>' +
       '<text x="' + (xs + 10).toFixed(1) + '" y="' + (ey + 22) + '" fill="#3A4147" font-size="11" ' + F + '>un tour en ' + H0.per + '</text>' +
@@ -84,7 +96,8 @@ function orbitSvg(t){
     '<circle cx="62" cy="62" r="7" fill="#2C5E9E"/><text x="62" y="87" text-anchor="middle" fill="#14171A" font-size="11.5" font-weight="700" ' + F + '>Terre</text>' +
     '<circle cx="106" cy="18" r="2.6" fill="#667077"/><text x="113" y="17" fill="#3A4147" font-size="11" ' + F + '>Lune, 384 000 km</text>' +
     '<ellipse cx="306" cy="62" rx="9" ry="30" fill="none" stroke="#14171A" stroke-width="1.5"' + (gone ? ' stroke-dasharray="3 3"' : '') + '/>' +
-    '<circle cx="306" cy="62" r="1.8" fill="#14171A"/><circle cx="313" cy="43" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>' +
+    '<circle cx="306" cy="62" r="1.8" fill="#14171A"/>' + (gone || REDUCED ? '<circle cx="313" cy="43" r="4.5" fill="' + (gone ? '#ECEEEF' : '#FFD21F') + '" stroke="#14171A" stroke-width="1.5"/>'
+      : '<circle r="4.5" fill="#FFD21F" stroke="#14171A" stroke-width="1.5"><animateMotion dur="10s" repeatCount="indefinite" path="M306 32 a9 30 0 1 1 0 60 a9 30 0 1 1 0 -60"/></circle>') +
     '<text x="290" y="59" text-anchor="end" fill="#14171A" font-size="12.5" font-weight="700" ' + F + '>' + esc(t.short) + ' à L2</text>' +
     '<text x="290" y="75" text-anchor="end" fill="#3A4147" font-size="11" ' + F + '>1,5 million de km</text>' +
     '<text x="170" y="116" text-anchor="middle" fill="#667077" font-size="11" ' + F + '>' +
@@ -165,8 +178,8 @@ function edgeScroll(el){
   marks();
 }
 function viewsHtml(top){
-  var c = S.mode === 'compare' && !S.fleet && !S.home, f = !!S.fleet;
-  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="accueil" aria-pressed="' + !!S.home + '">' + OBS_T('Ciel') + '</button><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
+  var c = S.mode === 'compare' && !S.fleet && !S.home, f = !!S.fleet, v = S.mode === 'tele' && !S.fleet && !S.home;
+  return '<div class="views' + (top ? '' : ' in') + '"><button class="vbtn" data-go="' + S.id + '" aria-pressed="' + v + '">' + OBS_T('Télescopes') + '</button><button class="vbtn" data-go="accueil" aria-pressed="' + !!S.home + '">' + OBS_T('Ciel') + '</button><button class="vbtn" data-go="comparer-instruments" aria-pressed="' + c + '">' + OBS_T('Comparer') + '</button><button class="vbtn" data-go="flotte" aria-pressed="' + f + '">' + OBS_T('Flotte') + '</button></div>';
 }
 function renderTabs(){
   /* deux rangées : domaines spectraux (data-dom, filtrent), puis observatoires du domaine choisi (domRow, domList dans data-tele.js) */
@@ -176,7 +189,7 @@ function renderTabs(){
     h += '<button class="tab" role="tab" data-go="' + t.id + '" aria-selected="' + (S.mode==='tele' && S.id===t.id && !S.home) + '">' + esc(t.short) + '<small>' + t.year + '</small></button>';
   });
   h += '</div>';
-  $('tabs').innerHTML = (S.mode === 'compare' || S.fleet) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
+  $('tabs').innerHTML = (S.mode === 'compare' || S.fleet || S.home) ? '' : h;   /* en vue d'ensemble, pas d'onglets d'observatoires */
   /* vues d'ensemble, à part des onglets d'observatoires */
   $('views').innerHTML = viewsHtml(true);
   edgeScroll($('tabs').querySelector('.trow')); edgeScroll($('tabs').querySelector('.drow'));
@@ -300,7 +313,7 @@ $('inst-page').addEventListener('click', function(e){
 
 /* accueil : carte du ciel (home.js) */
 $('home-page').addEventListener('click', function(e){
-  var el = e.target.closest ? e.target.closest('[data-hob],[data-hall],[data-hmode],#home-play,#home-cv') : null;
+  var el = e.target.closest ? e.target.closest('[data-hob],[data-hall],[data-hmode],[data-hzoom],[data-hbg],#home-play,#home-cv') : null;
   if (el) HomeUI.click(el, e);
 });
 $('home-page').addEventListener('input', function(e){ HomeUI.input(e.target); });
@@ -324,7 +337,7 @@ document.addEventListener('click', function(e){
   if (cmpClick(el)){ renderPanel(); renderHud(); if (S.mode === 'compare') show3D(true); return; }
   if (el.hasAttribute('data-dom')){ window.OBS_DOM = el.getAttribute('data-dom'); window.OBS_DOM_LOCK = true; renderTabs(); window.OBS_DOM_LOCK = false; var f = $('tabs').querySelector('.trow .tab'); if (f) f.focus(); return; }
   if (el.id === 'b-theme'){ var nt = isDark() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', nt); try { localStorage.setItem('obs-theme', nt); } catch(x){} renderTabs(); return; }
-  if (el.hasAttribute('data-go')){ var g = el.getAttribute('data-go'); location.hash = (S.inst && !S.fleet && S.mode === 'tele' && tele(g)) ? g + '-instruments' : g; return; }   /* onglets d'en-tête : sur la page « Mission et données », on reste sur cette page */
+  if (el.hasAttribute('data-go')){ var g = el.getAttribute('data-go'); location.hash = (S.inst && !S.fleet && S.mode === 'tele' && tele(g) && !el.classList.contains('vbtn')) ? g + '-instruments' : g; return; }   /* onglets d'en-tête : sur la page « Mission et données », on reste sur cette page */
   if (el.hasAttribute('data-open-optique')){ S.pendingInst = 'optique'; window.OBS_OPT = S.part; location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-inst-open')){ location.hash = S.id + '-instruments'; return; }
   if (el.hasAttribute('data-ptab')){ S.ptab = el.getAttribute('data-ptab'); renderPanel(); return; }

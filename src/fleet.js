@@ -24,8 +24,8 @@ var FleetUI = (function(){
   }
   function chips(key, label, opts){
     return '<div class="fl-f" role="group" aria-label="' + esc(T(label)) + '"><span>' + esc(T(label)) + '</span>' +
-      '<button class="chip" data-fleet="' + key + ':" aria-pressed="' + (!F[key]) + '">' + esc(T('Tous')) + '</button>' +
-      opts.map(function(o){ return '<button class="chip" data-fleet="' + key + ':' + o[0] + '" aria-pressed="' + (F[key] === o[0]) + '">' + esc(T(o[1])) + '</button>'; }).join('') + '</div>';
+      '<div class="fl-opts"><button class="chip" data-fleet="' + key + ':" aria-pressed="' + (!F[key]) + '">' + esc(T('Tous')) + '</button>' +
+      opts.map(function(o){ return '<button class="chip" data-fleet="' + key + ':' + o[0] + '" aria-pressed="' + (F[key] === o[0]) + '">' + esc(T(o[1])) + '</button>'; }).join('') + '</div></div>';
   }
   /* agences et partenaires nommés, du plus au moins présent */
   function agencies(){

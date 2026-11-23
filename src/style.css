@@ -44,7 +44,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 #tabs .fade-r, .pills .fade-r{ -webkit-mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, #000 calc(100% - 36px), transparent); }
 #tabs .fade-l, .pills .fade-l{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px); mask-image:linear-gradient(90deg, transparent, #000 36px); }
 #tabs .fade-l.fade-r, .pills .fade-l.fade-r{ -webkit-mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); mask-image:linear-gradient(90deg, transparent, #000 36px, #000 calc(100% - 36px), transparent); }
-.tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:0 16px; font-size:14px; font-weight:600; display:flex; align-items:baseline; gap:7px; padding-top:14px; }
+.tab{ flex:none; position:relative; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--ink-2); cursor:pointer; padding:6px 16px 8px; font-size:14px; font-weight:600; display:flex; align-items:center; gap:7px; margin-top:4px; }
 /* groupes par domaine spectral : un trait plein entre les groupes, pointillé à l'intérieur, le nom du groupe au-dessus de son premier onglet */
 .tab small{ font-size:11.5px; font-weight:400; color:var(--mute); font-variant-numeric:tabular-nums; }
 .tab:hover{ background:var(--sheet); color:var(--ink); }
@@ -182,7 +182,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
   .dsel .dl{ display:none; } .dsel .ds{ display:inline; }
   .dsel .dn{ display:none; }
   .trow{ justify-content:flex-start; border-top:1px solid var(--rule); }
-  .tab{ padding:9px 13px; font-size:13.5px; }
+  .tab{ padding:9px 13px; font-size:13.5px; margin-top:0; }
   #tabs .tab{ flex:1 1 auto; padding:9px 6px; justify-content:center; }   /* quatre observatoires et « Comparer » tiennent sur 400 px */
   .tab:first-child{ border-left:0; }
   .tab small{ display:none; }

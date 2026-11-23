@@ -32,7 +32,7 @@ var HomeUI = (function(){
   function unit(id){ return UNIT[id] ? UNIT[id][en() ? 1 : 0] : T('observations'); }
   var INSN = { NIRSPEC:'NIRSpec', NIRCAM:'NIRCam', NIRISS:'NIRISS', '*':'' };
 
-  var D = null, loading = null, P = null, st = { off:{}, year:null, mode:'cov', pick:null, play:false };
+  var D = null, loading = null, P = null, st = { off:{}, year:null, mode:'cov', pick:null, play:false, bg:true };
 
   /* équatorial J2000 -> galactique */
   var M = [[-0.0548755604, -0.8734370902, -0.4838350155], [0.4941094279, -0.4448296300, 0.7469822445], [-0.8676661490, -0.1980763734, 0.4559837762]];
@@ -91,7 +91,8 @@ var HomeUI = (function(){
       '<div class="home-map">' +
         '<div class="home-head"><h2>' + esc(T('Le ciel observé')) + '</h2>' +
         '<p>' + esc(T('Chaque point coloré est une case du ciel d\'un degré de côté où un observatoire a commencé au moins une observation. Le ciel entier est déplié en ovale : la Voie lactée en travers, son centre au milieu.')) + '</p></div>' +
-        '<div class="home-sky"><canvas id="home-cv" role="img" aria-label="' + esc(T('Carte du ciel entier des observations')) + '"></canvas><div class="home-tip" id="home-tip" hidden></div></div>' +
+        '<div class="home-sky"><canvas id="home-cv" role="img" aria-label="' + esc(T('Carte du ciel entier des observations')) + '"></canvas><div class="home-tip" id="home-tip" hidden></div>' +
+          '<div class="home-zoom" role="group" aria-label="' + esc(T('Zoom')) + '"><button data-hzoom="in" aria-label="' + esc(T('Zoomer')) + '">+</button><button data-hzoom="out" aria-label="' + esc(T('Dézoomer')) + '">−</button><button data-hzoom="all">' + esc(T('Ciel entier')) + '</button><button data-hbg aria-pressed="' + st.bg + '">' + esc(T('Fond Gaia')) + '</button></div></div>' +
         '<div class="home-ctl">' +
           '<button class="dep-b" id="home-play" aria-label="' + esc(T('Rejouer les années')) + '">▶</button>' +
           '<input type="range" id="home-year" min="1990" max="2026" step="1" aria-label="' + esc(T('Année')) + '">' +
@@ -127,6 +128,7 @@ var HomeUI = (function(){
     if (D){
       h += '<h3>' + esc(T('Sources')) + '</h3><ol class="refs">';
       TELESCOPES.forEach(function(t){ var b = D.bodies[t.id]; if (b) h += '<li>' + (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(T(b.source)) + '</a>' : esc(T(b.source))) + ' <span>' + esc(t.short) + '</span></li>'; });
+      if (BGM) h += '<li><a href="' + esc(BGM.url) + '" target="_blank" rel="noopener">' + esc(T(BGM.what)) + '</a> <span>' + esc(T(BGM.credit)) + '</span></li>';
       h += '</ol><p class="cap">' + esc(T('Cartes calculées le')) + ' ' + esc(D.fetched || '') + '.</p>';
     }
     return h;
@@ -138,13 +140,27 @@ var HomeUI = (function(){
     cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); cv.style.width = w + 'px'; cv.style.height = h + 'px';
     cv._w = w; cv._h = h; cv._d = dpr;
   }
-  function X(x){ return cv._w/2 + x/(2*Math.SQRT2)*(cv._w/2 - 6); }
-  function Y(y){ return cv._h/2 - y/Math.SQRT2*(cv._h/2 - 6); }
+  /* vue : zoom (1 = ciel entier) et centre (cx, cy) en unités de Mollweide */
+  var V = { z:1, cx:0, cy:0 };
+  function K(){ return (cv._w/2 - 6)/(2*Math.SQRT2)*V.z; }
+  function X(x){ return cv._w/2 + (x - V.cx)*K(); }
+  function Y(y){ return cv._h/2 - (y - V.cy)*K(); }
+  function clampV(){ V.z = Math.max(1, Math.min(24, V.z)); var mx = 2*Math.SQRT2*(1 - 1/V.z), my = Math.SQRT2*(1 - 1/V.z); V.cx = Math.max(-mx, Math.min(mx, V.cx)); V.cy = Math.max(-my, Math.min(my, V.cy)); }
+  function zoomAt(f, px, py){   /* zoom de facteur f autour du point (px, py) du canevas */
+    var mx = V.cx + (px - cv._w/2)/K(), my = V.cy - (py - cv._h/2)/K();
+    V.z *= f; clampV(); var k = K(); V.cx = mx - (px - cv._w/2)/k; V.cy = my + (py - cv._h/2)/k; clampV(); draw();
+  }
+  /* fond : le ciel de Gaia, image Mollweide galactique précalculée (tools/data/fetch_skybg.py) */
+  var BG = null, BGM = null;
+  function loadBg(){ if (BG !== null) return; BG = false;
+    fetch('data/sky-gaia.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(j){ if (!j) return; BGM = j; var im = new Image(); im.onload = function(){ BG = im; draw(); var c = document.getElementById('home-cap'); if (c) c.textContent = caption(); var lg = document.getElementById('home-legend'); if (lg && D) lg.innerHTML = legend(); }; im.src = 'data/sky-gaia.jpg'; }).catch(function(){}); }
   function draw(){
     if (!cv || !cv.isConnected) return;
     var g = cv.getContext('2d'), W = cv._w, H = cv._h, s = (W/2 - 6)/(2*Math.SQRT2)*2*Math.SQRT2/180;   /* pixels par degré, à l'équateur */
     g.setTransform(cv._d, 0, 0, cv._d, 0, 0); g.clearRect(0, 0, W, H);
-    g.save(); g.beginPath(); g.ellipse(W/2, H/2, W/2 - 6, H/2 - 6, 0, 0, 2*Math.PI); g.fillStyle = '#05070A'; g.fill(); g.clip();
+    var k0 = K(), ex = 2*Math.SQRT2*k0, ey = Math.SQRT2*k0, ecx = X(0), ecy = Y(0);
+    g.save(); g.beginPath(); g.ellipse(ecx, ecy, ex, ey, 0, 0, 2*Math.PI); g.fillStyle = '#05070A'; g.fill(); g.clip();
+    if (BG && st.bg){ g.globalAlpha = 0.85; g.drawImage(BG, ecx - ex, ecy - ey, 2*ex, 2*ey); g.globalAlpha = 1; }
     /* grille galactique */
     g.strokeStyle = 'rgba(255,255,255,0.14)'; g.lineWidth = 1;
     [-60, -30, 0, 30, 60].forEach(function(b){ g.beginPath(); for (var l = -180; l <= 180; l += 3){ var m = moll(l, b); l === -180 ? g.moveTo(X(m[0]), Y(m[1])) : g.lineTo(X(m[0]), Y(m[1])); } g.stroke(); });
@@ -156,13 +172,13 @@ var HomeUI = (function(){
     if (!st.off.kepler){ var kt = tele('kepler'); g.strokeStyle = kt.color; g.lineWidth = 2; g.beginPath(); for (var a = 0; a <= 360; a += 6){ var dd = KEPLER.dec + KEPLER.r*Math.sin(a*R), rr = KEPLER.ra + KEPLER.r*Math.cos(a*R)/Math.cos(dd*R), q2 = eq2gal(rr, dd), m2 = moll(q2[0], q2[1]); a ? g.lineTo(X(m2[0]), Y(m2[1])) : g.moveTo(X(m2[0]), Y(m2[1])); } g.closePath(); g.stroke(); }
     /* cases observées */
     if (P){
-      var px = Math.max(1.6, s*1.05), seen = new Uint8Array(360*180);
+      var px = Math.max(1.6, s*V.z*(BG && st.bg ? 0.8 : 1.05)), seen = new Uint8Array(360*180);
       P.layers.slice().sort(function(a, b){ return (a.id === st.solo) - (b.id === st.solo); }).forEach(function(L){
         if (st.off[L.id]) return;
         g.fillStyle = L.color; var dim = st.solo && st.solo !== L.id;
         for (var k = 0, n = L.y.length; k < n; k++){
           if (L.y[k] > st.year) continue;
-          g.globalAlpha = (st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : 0.9) * (dim ? 0.12 : 1);
+          g.globalAlpha = (st.mode === 'n' ? Math.min(1, 0.18 + 0.2*Math.log10(1 + L.c[k])) : (BG && st.bg ? 0.5 : 0.9)) * (dim ? 0.08 : 1);
           g.fillRect(X(L.xy[2*k]) - px/2, Y(L.xy[2*k+1]) - px/2, px, px);
           seen[L.key[k]] = 1;
         }
@@ -172,10 +188,11 @@ var HomeUI = (function(){
     /* repère du clic */
     if (st.pick){ var mp = moll.apply(null, eq2gal(st.pick[0] + 0.5, st.pick[1] - 90 + 0.5)); g.strokeStyle = '#FFD21F'; g.lineWidth = 2; g.beginPath(); g.arc(X(mp[0]), Y(mp[1]), 9, 0, 2*Math.PI); g.stroke(); }
     g.restore();
-    g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 1; g.beginPath(); g.ellipse(W/2, H/2, W/2 - 6, H/2 - 6, 0, 0, 2*Math.PI); g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,0.45)'; g.lineWidth = 1; g.beginPath(); g.ellipse(ecx, ecy, ex, ey, 0, 0, 2*Math.PI); g.stroke();
     /* repères */
     g.fillStyle = 'rgba(255,255,255,0.7)'; g.font = '11px Archivo, Arial, sans-serif'; g.textAlign = 'center';
-    g.fillText(T('centre de la Galaxie'), W/2, H/2 + 16);
+    if (V.z < 3) g.fillText(T('centre de la Galaxie'), ecx, ecy + 16);
+    if (V.z > 1){ g.textAlign = 'left'; g.fillText('× ' + (Math.round(V.z*10)/10).toString().replace('.', en() ? '.' : ','), 10, H - 10); }
     var yr = document.getElementById('home-yr'); if (yr && P) yr.textContent = (en() ? 'Up to ' : 'Jusqu\'à ') + st.year + (en() ? ': ' : ' : ') + fr(st.shown || 0) + ' ' + T('cases de 1° observées');
   }
   function tick(now){
@@ -186,7 +203,7 @@ var HomeUI = (function(){
   function playBtn(){ var b = document.getElementById('home-play'); if (b){ b.textContent = st.play ? '❚❚' : '▶'; b.setAttribute('aria-label', T(st.play ? 'Pause' : 'Rejouer les années')); } }
 
   function pickAt(ev){
-    var r = cv.getBoundingClientRect(), x = (ev.clientX - r.left - cv._w/2)/(cv._w/2 - 6)*2*Math.SQRT2, y = -(ev.clientY - r.top - cv._h/2)/(cv._h/2 - 6)*Math.SQRT2;
+    var r = cv.getBoundingClientRect(), x = V.cx + (ev.clientX - r.left - cv._w/2)/K(), y = V.cy - (ev.clientY - r.top - cv._h/2)/K();
     var lb = unmoll(x, y); if (!lb) return null;
     var e = gal2eq(lb[0], lb[1]); return [e[0], e[1], lb[0], lb[1]];
   }
@@ -199,6 +216,7 @@ var HomeUI = (function(){
     }
     var pos = 'RA ' + p[0].toFixed(1) + '°, Dec ' + (p[1] >= 0 ? '+' : '−') + Math.abs(p[1]).toFixed(1) + '° · l ' + ((p[2] + 360) % 360).toFixed(1) + '°, b ' + (p[3] >= 0 ? '+' : '−') + Math.abs(p[3]).toFixed(1) + '°';
     var h = '<h3>' + esc(T('Autour de ce point')) + '</h3><p class="home-pos">' + esc(en() ? pos : pos.replace(/\./g, ',').replace(/ · /, ' ; ')) + '</p>';
+    h += '<p class="home-al"><a href="https://aladin.cds.unistra.fr/AladinLite/?target=' + encodeURIComponent(p[0].toFixed(4) + ' ' + p[1].toFixed(4)) + '&fov=3&survey=' + encodeURIComponent('CDS/P/DSS2/color') + '" target="_blank" rel="noopener">' + esc(T('Voir ce coin du ciel dans Aladin Lite (CDS)')) + '</a></p>';
     var ids = Object.keys(by).sort(function(a, b){ return by[b].n - by[a].n; });
     if (!ids.length) h += '<p class="cap">' + esc(T('Aucune observation pointée dans ce carré de 3° de côté, avec les filtres choisis.')) + '</p>';
     else h += '<ul class="home-who">' + ids.map(function(id){ var t = tele(id), b = by[id];
@@ -213,12 +231,22 @@ var HomeUI = (function(){
   }
 
   function caption(){
-    return T('Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l\'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d\'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1.');
+    return (BGM && st.bg ? T('Fond : le ciel vu par Gaia') + ' (' + T(BGM.what) + (en() ? '; ' : ' ; ') + T(BGM.credit) + (en() ? '; ' : ' ; ') + T('reprojeté en Mollweide pour ce site') + '). ' : '') + T('Projection de Mollweide, à aires égales, en coordonnées galactiques ; la longitude croît vers la gauche, comme on voit le ciel. En pointillés : l\'équateur céleste. Les cases font 1° en ascension droite et en déclinaison, positions de début d\'observation seulement, sans la forme réelle des champs. Pour Euclid : les observations VIS publiées dans DR1. Molette, double clic ou boutons pour zoomer ; glisser pour se déplacer.');
   }
 
   function render(root){
     root.innerHTML = shell();
-    cv = root.querySelector('#home-cv'); size();
+    cv = root.querySelector('#home-cv'); size(); loadBg();
+    /* molette : zoom autour du curseur ; glisser : déplacer la vue (un glisser ne compte pas comme un clic) */
+    cv.addEventListener('wheel', function(e){ e.preventDefault(); var r = cv.getBoundingClientRect(); zoomAt(e.deltaY < 0 ? 1.25 : 0.8, e.clientX - r.left, e.clientY - r.top); }, { passive:false });
+    var drag = null;
+    cv.addEventListener('pointerdown', function(e){ drag = { x:e.clientX, y:e.clientY, cx:V.cx, cy:V.cy, moved:false }; st.dragged = false; });
+    cv.addEventListener('pointermove', function(e){ if (!drag || V.z <= 1) return; var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      if (!drag.moved && Math.hypot(dx, dy) < 4) return; drag.moved = st.dragged = true; if (cv.setPointerCapture) try { cv.setPointerCapture(e.pointerId); } catch(x){}
+      V.cx = drag.cx - dx/K(); V.cy = drag.cy + dy/K(); clampV(); draw(); });
+    if (!window.__homeUp) window.__homeUp = window.addEventListener('pointerup', function(){ HomeUI.__up && HomeUI.__up(); }) || 1;
+    HomeUI.__up = function(){ drag = null; setTimeout(function(){ st.dragged = false; }, 0); };
+    cv.addEventListener('dblclick', function(e){ var r = cv.getBoundingClientRect(); zoomAt(2, e.clientX - r.left, e.clientY - r.top); });
     var cap = root.querySelector('#home-cap'); cap.textContent = caption();
     [].forEach.call(root.querySelectorAll('[data-hmode]'), function(b){ b.classList.toggle('on', b.getAttribute('data-hmode') === st.mode); b.setAttribute('aria-pressed', b.getAttribute('data-hmode') === st.mode); });
     draw();
@@ -236,7 +264,9 @@ var HomeUI = (function(){
     if (el.hasAttribute('data-hall')){ var on = el.getAttribute('data-hall') === '1'; TELESCOPES.forEach(function(t){ st.off[t.id] = !on; }); var l = document.getElementById('home-legend'); if (l) l.innerHTML = legend(); draw(); refreshPick(); return true; }
     if (el.hasAttribute('data-hmode')){ st.mode = el.getAttribute('data-hmode'); [].forEach.call(document.querySelectorAll('[data-hmode]'), function(b){ var o = b.getAttribute('data-hmode') === st.mode; b.classList.toggle('on', o); b.setAttribute('aria-pressed', o); }); draw(); return true; }
     if (el.id === 'home-play'){ if (!P) return true; st.play = !st.play; if (st.play && st.year >= P.y1){ st.year = P.y0; } playBtn(); if (st.play && !raf){ last = 0; raf = requestAnimationFrame(tick); } return true; }
-    if (el.id === 'home-cv'){ if (!P) return true; var p = pickAt(ev); if (!p) return true; st.pick = [Math.floor(p[0]), Math.floor(p[1] + 90)]; st.pickP = p; draw(); refreshPick(); return true; }
+    if (el.hasAttribute('data-hzoom')){ var zz = el.getAttribute('data-hzoom'); if (zz === 'all'){ V.z = 1; V.cx = V.cy = 0; draw(); } else zoomAt(zz === 'in' ? 2 : 0.5, cv._w/2, cv._h/2); return true; }
+    if (el.hasAttribute('data-hbg')){ st.bg = !st.bg; el.setAttribute('aria-pressed', st.bg); draw(); var cc = document.getElementById('home-cap'); if (cc) cc.textContent = caption(); return true; }
+    if (el.id === 'home-cv'){ if (!P || st.dragged) return true; var p = pickAt(ev); if (!p) return true; st.pick = [Math.floor(p[0]), Math.floor(p[1] + 90)]; st.pickP = p; draw(); refreshPick(); return true; }
     return false;
   }
   function refreshPick(){ var b = document.getElementById('home-pick'); if (b && st.pickP && P) b.innerHTML = pickInfo(st.pickP); }
