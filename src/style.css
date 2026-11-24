@@ -209,7 +209,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .tab.util{ border-left:0; align-items:center; padding:0 9px; color:var(--mute); gap:4px; }
 .tab.util:hover{ background:transparent; color:var(--ink); }
 #utils{ display:flex; flex:none; margin-left:14px; }
-#top{ position:relative; }
+#top{ position:relative; border-bottom:2px solid var(--ink); }   /* trait sous l'en-tête, le même sur toutes les vues */
 .tab.util svg{ width:18px; height:18px; display:block; }
 .tab.util span{ font-size:11.5px; font-weight:700; letter-spacing:.4px; }
 
