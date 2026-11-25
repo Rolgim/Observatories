@@ -3,14 +3,9 @@
    Usage : node tools/a11y.js   (VENDOR=… hors ligne, comme tools/smoke.js)
    Sortie : liste des violations par page ; code de sortie 1 s'il en reste. */
 const { chromium } = require('playwright');
-const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.join(__dirname, '..'), V = process.env.VENDOR, PORT = 8125;
+const fs = require('fs'), path = require('path'), serve = require('./serve');
+const ROOT = serve.ROOT, PORT = 8125, srv = serve(PORT);
 const AXE = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
-const TYPES = { '.html':'text/html', '.glb':'model/gltf-binary', '.json':'application/json', '.jpg':'image/jpeg', '.js':'text/javascript' };
-const srv = http.createServer((q, s) => {
-  const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]));
-  fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream' }); s.end(d); });
-}).listen(PORT);
 // [hash, clic éventuel une fois la page chargée]
 const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid-instruments', '#inst-nav [data-inst="mission"]'], ['comparer'], ['jwst-instruments'], ['euclid-instruments', '#inst-nav [data-inst="nisp"]'],
   ['gaia-instruments', '#inst-nav [data-inst="optique"]'], ['roman-instruments', '#inst-nav [data-inst="wfi"]'], ['euclid-instruments', '#inst-nav [data-inst="orbite"]'], ['comparer-instruments'], ['comparer-instruments', '[data-cmpsec="spectre"]'], ['comparer-instruments', '[data-cmpsec="champs"]'], ['comparer-instruments', '[data-cmpsec="orbites"]'], ['accueil'], ['flotte'], ['flotte', '[data-fleet-sec="who"]'], ['swift-instruments', '#inst-nav [data-inst="mission"]']];
@@ -19,16 +14,7 @@ const PAGES = [['hubble'], ['hubble', '[data-ptab="parts"]'], ['euclid-instrumen
   let total = 0; const seen = {};
   for (const lang of ['fr', 'en']) for (const scheme of ['light', 'dark']) {
     const pg = await b.newPage({ viewport: { width: 1360, height: 860 }, colorScheme: scheme, locale: lang === 'en' ? 'en-GB' : 'fr-FR' });
-    /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
-    await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, lang === 'en' ? 'en' : 'fr');
-
-    if (V) await pg.route('**/*', r => {
-      const u = r.request().url();
-      if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
-      if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
-    if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
-      return u.startsWith('http://localhost') ? r.continue() : r.abort();
-    });
+    await serve.lang(pg, lang); await serve.offline(pg, PORT);
     for (const [hash, click] of PAGES) {
       await pg.goto('http://localhost:' + PORT + '/index.html#' + (lang === 'en' ? 'en-' : '') + hash); await pg.waitForTimeout(1500);
       if (click) { await pg.click(click); await pg.waitForTimeout(700); }
