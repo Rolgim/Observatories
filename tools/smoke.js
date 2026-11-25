@@ -4,10 +4,8 @@
    toutes les pages d'instruments, trajet de la lumière, orbites, thème sombre, absence d'erreur JavaScript
    et de défilement horizontal sur téléphone. */
 const { chromium } = require('playwright');
-const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.join(__dirname, '..'), V = process.env.VENDOR, PORT = 8124;
-const TYPES = { '.html':'text/html', '.glb':'model/gltf-binary', '.json':'application/json', '.jpg':'image/jpeg', '.txt':'text/plain' };
-const srv = http.createServer((q, s) => { const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0])); fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'content-length': d.length }); s.end(d); }); }).listen(PORT);
+const fs = require('fs'), path = require('path'), serve = require('./serve');
+const ROOT = serve.ROOT, PORT = 8124, srv = serve(PORT);
 /* observatoires : registre de src/data-tele.js */
 const TELE_IDS = [...fs.readFileSync(path.join(ROOT, 'src', 'data-tele.js'), 'utf8').matchAll(/^    id:'(\w+)'/gm)].map(m => m[1]);
 const errors = [], notes = [];
@@ -15,16 +13,11 @@ const fail = m => { errors.push(m); console.log('ÉCHEC', m); };
 
 async function open(b, vp, dark, lang){
   const pg = await b.newPage({ viewport: vp, colorScheme: dark ? 'dark' : 'light', locale: lang === 'en' ? 'en-GB' : 'fr-FR' });
-  /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
-  await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, lang === 'en' ? 'en' : 'fr');
+  await serve.lang(pg, lang);
 
   pg.on('pageerror', e => fail('erreur JavaScript : ' + e.message));
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_|Failed to load resource/.test(m.text())) fail('console : ' + m.text().slice(0, 200)); });
-  if (V) await pg.route('**/*', r => { const u = r.request().url();
-    if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
-    if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
-    if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
-    return u.startsWith('http://localhost') ? r.continue() : r.abort(); });
+  await serve.offline(pg, PORT);
   return pg;
 }
 const go = async (pg, h) => { await pg.goto('http://localhost:' + PORT + '/index.html#' + h); await pg.waitForTimeout(250); };

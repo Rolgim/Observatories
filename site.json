@@ -1,0 +1,45 @@
+{
+  "name": "Observatories",
+  "langKey": "obs-lang",
+  "mark": "#FFD21F",
+  "mark3d": "0xFFD21F",
+  "title": "Observatories in orbit",
+  "artifactTitle": "Observatoires en orbite",
+  "description": "Hubble, Gaia, JWST, Euclid and Roman in 3D: clickable parts, exploded views, deployments, true-scale comparison, instruments and archives. In English and French.",
+  "fonts": "<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap\">",
+  "headExtra": "<link rel=\"apple-touch-icon\" href=\"apple-touch-icon.png\">\n",
+  "css": [
+    "style.css",
+    "inst.css"
+  ],
+  "scripts": [
+    "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js",
+    "https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"
+  ],
+  "registry": {
+    "file": "data-tele.js",
+    "check": "var TELESCOPES = \\["
+  },
+  "js": [
+    "lang.js",
+    "@registry",
+    "data-fleet.js",
+    "data-inst.js",
+    "data-mission.js",
+    "optics.js",
+    "orbits.js",
+    "inst-render.js",
+    "fleet.js",
+    "home.js",
+    "en/tele.js",
+    "en/inst.js",
+    "en/more.js",
+    "en/ui.js",
+    "i18n.js",
+    "glossary.js",
+    "interior.js",
+    "deploy.js",
+    "looks.js",
+    "app.js"
+  ]
+}

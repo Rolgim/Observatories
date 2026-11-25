@@ -7,32 +7,21 @@
    Hors ligne : VENDOR=/chemin fournit three.min.js, GLTFLoader.js et archivo.woff2 à la place des CDN.
    window.__obs expose l'état de l'application (S, models, pick(x,y), current) pour les tests. */
 const { chromium } = require('playwright');
-const http = require('http'), fs = require('fs'), path = require('path');
-const ROOT = path.join(__dirname, '..'), V = process.env.VENDOR, PORT = 8123;
-const TYPES = { '.html':'text/html', '.glb':'model/gltf-binary', '.txt':'text/plain', '.js':'text/javascript', '.css':'text/css' };
-const srv = http.createServer((q, s) => {
-  const f = path.join(ROOT, decodeURIComponent(q.url.split('?')[0]));
-  fs.readFile(f, (e, d) => { if (e) { s.writeHead(404); return s.end(); } s.writeHead(200, { 'content-type': TYPES[path.extname(f)] || 'application/octet-stream', 'content-length': d.length }); s.end(d); });
-}).listen(PORT);
+const fs = require('fs'), path = require('path'), serve = require('./serve');
+const ROOT = serve.ROOT, V = process.env.VENDOR, PORT = 8123, srv = serve(PORT);
 
 (async () => {
   const b = await chromium.launch({ args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const steps = JSON.parse(process.argv[2]);
   const pg = await b.newPage({ viewport: process.argv[3] === 'phone' ? { width: 400, height: 800 } : { width: 1360, height: 820 }, deviceScaleFactor: 1, locale: process.env.LANG_SITE === 'en' ? 'en-GB' : 'fr-FR' });
-  /* langue du site imposée une fois par onglet (le site est en anglais par défaut ; le bouton de langue reste libre ensuite) */
-  await pg.addInitScript(l => { try { if (!sessionStorage.getItem('obs-test-lang')){ localStorage.setItem('obs-lang', l); sessionStorage.setItem('obs-test-lang', '1'); } } catch(e){} }, process.env.LANG_SITE === 'en' ? 'en' : 'fr');
+  await serve.lang(pg, process.env.LANG_SITE === 'en' ? 'en' : 'fr'); await serve.offline(pg, PORT);
 
   pg.on('console', m => { if (m.type() === 'error' && !/GL Driver|ERR_/.test(m.text())) console.log('[error]', m.text().slice(0, 300)); });
   pg.on('pageerror', e => console.log('PAGEERR', e.message));
-  if (V) await pg.route('**/*', r => {
-    const u = r.request().url();
-    if (u.includes('three.min.js')) return r.fulfill({ path: path.join(V, 'three.min.js'), contentType: 'text/javascript' });
-    if (u.includes('satellite.min.js')) return r.fulfill({ path: path.join(V, 'satellite.min.js'), contentType: 'text/javascript' });
-    if (u.includes('GLTFLoader.js')) return r.fulfill({ path: path.join(V, 'GLTFLoader.js'), contentType: 'text/javascript' });
-    if (u.includes('fonts.googleapis')) return r.fulfill({ contentType: 'text/css', body: "@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;src:url(http://localhost:" + PORT + "/__font.woff2) format('woff2')}" });
-    if (u.includes('__font.woff2')) return r.fulfill({ path: path.join(V, 'archivo.woff2'), contentType: 'font/woff2' });
-    return u.startsWith('http://localhost') ? r.continue() : r.abort();
-  });
+  /* police Archivo servie depuis VENDOR/archivo.woff2 pour des captures fidèles (prioritaire sur serve.offline, qui la coupe) */
+  if (V && fs.existsSync(path.join(V, 'archivo.woff2'))) await pg.route(u => /fonts\.googleapis|__font\.woff2/.test(String(u)), r => r.request().url().includes('__font.woff2')
+    ? r.fulfill({ path: path.join(V, 'archivo.woff2'), contentType: 'font/woff2' })
+    : r.fulfill({ contentType: 'text/css', body: "@font-face{font-family:'Archivo';font-weight:100 900;font-stretch:62% 125%;src:url(http://localhost:" + PORT + "/__font.woff2) format('woff2')}" }));
   fs.mkdirSync(path.join(ROOT, 'shots'), { recursive: true });
   for (const st of steps) {
     if (st.go) { await pg.goto('http://localhost:' + PORT + '/index.html#' + st.go); await pg.waitForTimeout(300); }
