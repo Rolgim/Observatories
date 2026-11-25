@@ -28,7 +28,8 @@ Pour le lancer en local : `python3 -m http.server` puis ouvrir http://localhost:
 | Chemin | Rôle |
 |---|---|
 | `index.html`, `models/*.glb` | le site tel qu'il est servi par GitHub Pages |
-| `build.js` | `node build.js` assemble `src/` en `index.html` (aucune dépendance) ; `node build.js artifact` produit une variante dans `dist/` (maquettes encodées en base64) |
+| `build.js` | `node build.js` assemble `src/` en `index.html` avec la construction du socle commun (aucune dépendance) ; `node build.js artifact` produit une variante dans `dist/` (maquettes encodées en base64) |
+| `socle/`, `socle.lock.json`, `site.json` | **socle commun** aux sites de la série, copié depuis [Rolgim/rolgim.github.io](https://github.com/Rolgim/rolgim.github.io/tree/main/socle) par `node socle/sync.js` et à ne pas modifier ici (`node socle/check.js` le vérifie). Observatories n'en utilise pour l'instant que la construction ; `site.json` la règle (titre, ordre des sources) |
 | `src/data-tele.js` | **registre des observatoires** (`TELESCOPES`) : fiche, pièces, réglages de la maquette, place dans les comparaisons |
 | `src/data-inst.js`, `src/data-mission.js` | instruments ; déroulé des missions et chaînes de traitement |
 | `src/optics.js`, `src/orbits.js` | trajet de la lumière et plans focaux ; orbites, ciel observable, pointés |
