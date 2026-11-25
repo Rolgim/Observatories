@@ -1,0 +1,39 @@
+name: Fins de mission
+# Chaque lundi soir : relit les données téléchargées (TLE, JPL Horizons, catalogues) et signale les missions que le registre
+# dit actives mais qui semblent arrêtées (socle/data/watch_missions.js). Seuls les indices nouveaux sont signalés, dans
+# l'issue « Indices de fin de mission ». Le registre n'est jamais modifié automatiquement : une fin de mission s'écrit
+# à la main, avec sa source.
+on:
+  schedule:
+    - cron: '45 17 * * 1'   # 18 h 45 ou 19 h 45 à Paris, hors des heures sans commit
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+concurrency: { group: missions, cancel-in-progress: false }
+jobs:
+  watch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Chercher les indices de fin de mission
+        id: watch
+        run: node socle/data/watch_missions.js --report rapport.md --state tools/missions-etat.json
+        continue-on-error: true
+      - name: Garder la liste des indices déjà signalés
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/missions-etat.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Fins de mission : relevé hebdomadaire"
+          git pull --rebase origin main && git push
+      - name: Issue à relire
+        if: steps.watch.outcome == 'failure'
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          n=$(gh issue list --state open --search 'in:title "Indices de fin de mission"' --json number --jq '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body-file rapport.md; else gh issue create --title "Indices de fin de mission" --body-file rapport.md; fi
