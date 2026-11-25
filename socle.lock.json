@@ -1,9 +1,9 @@
 {
   "source": "https://github.com/Rolgim/rolgim.github.io",
   "path": "socle",
-  "commit": "eb3e1e1f19c07c12c1b87ab6b7736ab626d29e68",
+  "commit": "a64d3ec934156ba32d73725077c360a981bda7e8",
   "files": {
-    "README.md": "784a7930499ffd59c73273b70021db9311da1a501a34efd3ec44b06dbffec8ef",
+    "README.md": "b89f0460f3fe36a957d9764b2d9f7ce418e60a1b5f75d6e85dbafb5660c4e175",
     "build.js": "1941d124e6deeca695e0b5aa75dc2aa3a907f218c0fa240fc95de9114c2162a3",
     "check.js": "8cfe7bf723a1e86ec5b4cd9b568bf4e93e68ec35d00c15b542ae2acedaee8921",
     "data/check_links.py": "fa661d565a04a067c5cc33903eafb2abd581ae3e34e296e16f8ff6e6481a0d18",
@@ -23,6 +23,7 @@
     "page/i18n.js": "b56aebb21d3f3cad005b56196db373bae38fdcd33aa8a203dd50dd155e4612dc",
     "page/inst.css": "71d82507bf040f9e56565d45852073211fc5d9c97b7ae70b7df91b1e3f755941",
     "page/lang.js": "852311150ff11aff1b2e720e9a909d0d9332ba3a2525f9b4785ad1d864eb5bfc",
+    "page/live.js": "62ea3e035d1ab8d4a9261641fb5d4619052e719010523e2b35e7c285e8816606",
     "page/style.css": "7cf3436e17dfab253e93f57abbda3326cd2ffa36bd29bc6083a9ce6a1fc225f9",
     "page/viewer.js": "90a00f56947d99d24878fb083922161a9e9f633fefc2a6edddce52034b1f4bf1",
     "sync.js": "4fdae6cb24a3684270251478293e8bdfdaf462b4a9d8deda90b69a955e6e6b0c",
