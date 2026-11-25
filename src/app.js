@@ -5,6 +5,8 @@
 'use strict';
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+/* titre et maison de l'en-tête : page d'accueil commune des trois sites (https://rolgim.github.io/), dans la même langue */
+document.querySelectorAll('.hub-link, .home-link').forEach(function(a){ a.href = 'https://rolgim.github.io/#' + OBS_LANG; });
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
 function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 

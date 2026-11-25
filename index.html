@@ -41,6 +41,8 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 /* ---------- en-tête ---------- */
 #top{ flex:none; display:flex; min-height:55px; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
 .brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
+.hub-link{ display:flex; align-items:center; color:inherit; margin-right:10px; padding:4px; margin-left:-4px; border-radius:4px; }
+.hub-link:hover{ background:var(--sheet); }
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
 /* navigation en deux rangées : domaines spectraux (filtres), puis observatoires du domaine choisi */
 #tabs{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
@@ -556,7 +558,8 @@ svg.optic g.hl{ filter:drop-shadow(0 0 2px var(--mark)) drop-shadow(0 0 4px var(
 <div id="app">
   <header id="top">
     <div class="brand">
-      <h1><a href="#accueil" class="home-link">Observatoires en orbite</a></h1>
+      <a href="https://rolgim.github.io/" class="hub-link" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M3 11.5 12 4l9 7.5M5.5 9.5V20h5v-6h3v6h5V9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg></a>
+      <h1><a href="https://rolgim.github.io/" class="home-link" title="Page d'accueil des trois sites">Observatoires en orbite</a></h1>
     </div>
     <nav id="tabs" aria-label="Observatoire"></nav>
     <nav id="views" aria-label="Vues d'ensemble"></nav>
@@ -7478,6 +7481,7 @@ var EN_REAL = {
    EN_RULES: [pattern, replacement] applied in order to any string not found in EN_UI (fragments and strings with variable parts).
    tools/i18n-scan.js lists what is still missing. */
 var EN_UI = {
+  "Page d'accueil des trois sites":"Home page of the three sites",
   /* header, 3D view, panel */
   "Observatoires en orbite":"Observatories in orbit", "Comparer":"Compare", "FGS (FGS2), mode photométrique":"FGS (FGS2), photometric mode", "Durée":"Duration", "13,5 h sans interruption":"13.5 h without a break", "somme des quatre photomultiplicateurs, mesurée 40 fois par seconde, moyennée par tranches de 2 min":"sum of the four photomultipliers, measured 40 times per second, averaged over 2 min bins", "division par un modèle des oscillations liées à l'orbite de Hubble (96 min)":"divided by a model of the oscillations due to Hubble's orbit (96 min)", "Dispersion restante":"Remaining scatter", "temps depuis le début de la pose (h)":"time since start of exposure (h)", "flux relatif":"relative flux", "Coupe":"Cutaway", "80 à 180 (prisme) · ≈ 460 à 890 (grisme)":"80 to 180 (prism) · ≈ 460 to 890 (grism)", "Données":"Data", "Euclid DR1 content, mémo EUCL-EST-ME-8-020 (projet, version 1.1)":"Euclid DR1 content, memo EUCL-EST-ME-8-020 (draft, issue 1.1)", "Webb Blog, December 2021 (déploiements)":"Webb Blog, December 2021 (deployments)", "Miroir primaire, 2,4 m":"Primary mirror, 2.4 m", "secondaire":"secondary", "optique arrière : tertiaire":"aft optics: tertiary", "coronographe":"coronagraph", "faisceau collimaté":"collimated beam", "Schéma optique de Roman":"Roman optical diagram", "Déploiement":"Deployment", "Rejouer le déploiement de Webb, du lancement à l'arrivée autour de L2":"Replay Webb's deployment, from launch to arrival around L2", "Rejouer":"Replay", "Pause":"Pause", "Étape précédente":"Previous step", "Étape suivante":"Next step", "Étape du déploiement":"Deployment step", "Dates : NASA. Formes repliées schématiques.":"Dates: NASA. Folded shapes are schematic.", "Coupe : seuls les éléments dont la taille et la position sont publiées sont montrés. Survolez un élément pour le nommer et voir sa source ; les autres équipements sont décrits dans « Mission et traitements ».":"Section view: only parts whose size and position are published are shown. Hover over a part to name it and see its source; the other equipment is described in “Mission and processing”.", "Retirer la moitié de la maquette tournée vers vous, pour voir l'intérieur":"Remove the half of the model facing you, to see inside", "Tous":"All", "+ autres instruments, en gris":"+ other instruments, in grey", "Les pointés n'ont pas pu être chargés.":"The pointings could not be loaded.", "Domaine couvert":"Range covered", "Temps de pose cumulé":"Total exposure time", "Fichier":"File", "Grisme":"Grism", "rouge (RG)":"red (RG)", "bleu (BG)":"blue (BG)", "Où est Hubble en ce moment":"Where Hubble is right now", "Position de Hubble au-dessus de la Terre et trace de son orbite":"Hubble's position over the Earth and its ground track", "Chargement des éléments orbitaux…":"Loading orbital elements…", "Éléments orbitaux indisponibles pour le moment.":"Orbital elements unavailable for now.", "au-dessus de la face nocturne":"over the night side", "au-dessus de la face éclairée":"over the day side", "Éléments orbitaux":"Orbital elements", "Latitude":"Latitude", "Longitude":"Longitude", "Altitude":"Altitude", "Vitesse":"Speed",
   "Position calculée dans votre navigateur à partir des derniers éléments orbitaux publiés (TLE de CelesTrak, modèle SGP4). Trait plein : l'orbite à venir ; pointillé : celle qui vient de s'achever. La zone grisée est la nuit. Contour des terres : Natural Earth.":"Position computed in your browser from the latest published orbital elements (CelesTrak TLE, SGP4 model). Solid line: the coming orbit; dotted: the one just completed. The shaded area is night. Land outline: Natural Earth.",
@@ -8448,6 +8452,8 @@ var LOOKS = {
 'use strict';
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+/* titre et maison de l'en-tête : page d'accueil commune des trois sites (https://rolgim.github.io/), dans la même langue */
+document.querySelectorAll('.hub-link, .home-link').forEach(function(a){ a.href = 'https://rolgim.github.io/#' + OBS_LANG; });
 function tele(id){ for (var i=0;i<TELESCOPES.length;i++) if (TELESCOPES[i].id===id) return TELESCOPES[i]; return null; }
 function fr(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, OBS_LANG === 'en' ? ',' : ' '); }
 

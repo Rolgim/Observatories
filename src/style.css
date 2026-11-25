@@ -28,6 +28,8 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 /* ---------- en-tête ---------- */
 #top{ flex:none; display:flex; min-height:55px; align-items:stretch; gap:24px; padding-left:var(--gl); padding-right:var(--gr); background:var(--paper); }
 .brand{ display:flex; align-items:center; min-width:0; padding-block:11px; }
+.hub-link{ display:flex; align-items:center; color:inherit; margin-right:10px; padding:4px; margin-left:-4px; border-radius:4px; }
+.hub-link:hover{ background:var(--sheet); }
 .brand h1{ font-weight:800; font-stretch:75%; font-size:21px; letter-spacing:.1px; margin:0; white-space:nowrap; }
 /* navigation en deux rangées : domaines spectraux (filtres), puis observatoires du domaine choisi */
 #tabs{ display:flex; flex-direction:column; margin-left:auto; min-width:0; }
