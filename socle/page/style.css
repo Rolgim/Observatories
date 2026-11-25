@@ -147,7 +147,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 @media (max-width: 860px){
   #top{ flex-direction:column; gap:0; padding:0; }
   .brand{ padding:9px var(--gr) 8px var(--gl); }
-  .brand h1{ font-size:18px; }
+  .brand h1{ font-size:18px; min-width:0; overflow:hidden; text-overflow:ellipsis; }   /* un titre long ne passe jamais sous les boutons de langue et de thème */
   #tabs{ margin-left:0; border-top:1px solid var(--rule); }
   .drow{ justify-content:flex-start; padding:4px var(--gr) 0 var(--gl); gap:0; }
   .dsel{ padding:3px 7px 4px; font-size:12px; }
@@ -167,6 +167,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
   #pbody{ padding-left:var(--gl); padding-right:var(--gr); }
   #hud-title{ top:10px; }
   #t-src, #hint{ display:none; }
+  .tool span.lbl, .explode .lbl{ display:none; }
   .tool{ padding:0 11px; }
   .explode input{ width:84px; }
   #toolbar{ bottom:8px; }
@@ -177,7 +178,7 @@ button:focus-visible, a:focus-visible, input:focus-visible{ outline:2px solid va
 .tab.util{ border-left:0; align-items:center; padding:0 9px; color:var(--mute); gap:4px; }
 .tab.util:hover{ background:transparent; color:var(--ink); }
 #utils{ display:flex; flex:none; margin-left:14px; }
-#top{ position:relative; }
+#top{ position:relative; border-bottom:2px solid var(--ink); }   /* trait sous l'en-tête, le même sur toutes les vues */
 .tab.util svg{ width:18px; height:18px; display:block; }
 .tab.util span{ font-size:11.5px; font-weight:700; letter-spacing:.4px; }
 
@@ -225,7 +226,9 @@ ol.refs.pref li{ margin:0 0 2px; }
 .vbtn:hover{ background:var(--sheet); }
 .vbtn[aria-pressed="true"]{ background:var(--mark); border-color:var(--mark); color:var(--on-mark); }
 @media (max-width: 860px){
-  #views{ margin:0; gap:6px; padding:5px var(--gr) 5px var(--gl); border-top:1px solid var(--rule); }
-  .vbtn{ font-size:12.5px; padding:3px 10px; }
+  #views{ order:1; margin:0; gap:6px; padding:6px var(--gr) 6px var(--gl); border-top:1px solid var(--rule); }   /* téléphone : les vues d'abord, puis le choix de l'engin (comme Observatories) */
+  #tabs{ order:2; }
+  #views .views{ width:100%; }
+  .vbtn{ flex:1 1 0; text-align:center; padding:5px 4px; font-size:12.5px; }
 }
 #tabs:empty{ border:0; }

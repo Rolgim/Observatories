@@ -5346,7 +5346,7 @@ var Orbits = (function(){
           var v = Math.hypot(p.v.x, p.v.y, p.v.z);
           rd.textContent = new Date().toLocaleTimeString(OBS_LANG === 'en' ? 'en-GB' : 'fr-FR') + ' · ' + OBS_T(p.night ? 'au-dessus de la face nocturne' : 'au-dessus de la face éclairée');
           stats.innerHTML = rows([['Latitude', fmt(Math.abs(p.lat), 1) + '° ' + (p.lat >= 0 ? 'N' : 'S')], ['Longitude', fmt(Math.abs(p.lon), 1) + '° ' + (p.lon >= 0 ? 'E' : (OBS_LANG === 'en' ? 'W' : 'O'))], ['Altitude', fr(p.h) + ' km'], ['Vitesse', fmt(v, 2) + ' km/s'],
-            ['Éléments orbitaux', OBS_LANG === 'en' ? 'epoch ' + tle.epoch.slice(0, 10) + ' (' + (age < 1 ? 'less than a day old' : Math.floor(age) + ' d old') + '), CelesTrak' : 'époque ' + tle.epoch.slice(0, 10).split('-').reverse().join('/') + ' (' + (age < 1 ? 'moins d\'un jour' : 'il y a ' + Math.floor(age) + ' j') + '), CelesTrak']]);
+            ['Éléments orbitaux', OBS_LANG === 'en' ? 'epoch ' + tle.epoch.slice(0, 10) + ' (' + (age < 1 ? 'less than a day old' : Math.floor(age) + ' d old') + '), CelesTrak' + (age > 7 ? '. Automatic update overdue: the position drifts further off with each day' : '') : 'époque ' + tle.epoch.slice(0, 10).split('-').reverse().join('/') + ' (' + (age < 1 ? 'moins d\'un jour' : 'il y a ' + Math.floor(age) + ' j') + '), CelesTrak' + (age > 7 ? '. Mise à jour automatique en retard : la position s\'écarte un peu plus chaque jour' : '')]]);
         }
         setTimeout(tick, 1000);
       })();
