@@ -8445,6 +8445,36 @@ var LOOKS = {
   wmap: function(m, n, THREE){ m.side = THREE.DoubleSide; }
 };
 
+/* Liens vers le site des lanceurs (https://rolgim.github.io/Launchers/) : dans un texte déjà échappé (fiche, déroulé de mission),
+   le nom d'un lanceur présent sur ce site devient un lien vers sa page, dans la langue de la page.
+   LaunchLinks.html(texteÉchappé) -> HTML ; un lien par lanceur et par texte au plus.
+   Prudence : « Soyouz-Fregat » n'est relié à Soyouz-2 que depuis Kourou (Soyouz ST, de la famille Soyouz-2) ; les Soyouz-FG/Fregat
+   de Baïkonour (Mars Express, Venus Express) n'en sont pas. Vega (sans « -C ») n'a pas de page. */
+var LaunchLinks = (function(){
+  var L = [
+    [/Falcon Heavy/, 'falconheavy'],
+    [/Falcon 9/, 'falcon9'],
+    [/Ariane 6(?:2|4)?\b/, 'ariane6'],
+    [/Ariane 5(?: ECA| ES| GS| G\+?)?/, 'ariane5'],
+    [/Vega-C/, 'vegac'],
+    [/\bSLS\b/, 'sls'],
+    [/Soyouz-2(?:\.1[ab])?|Soyuz-2(?:\.1[ab])?|(?:Soyouz|Soyuz)[- ]Fr[ée]gat[e]?(?=,? (?:depuis |from )?Kourou)/, 'soyuz2'],
+    [/Longue Marche 5B?|Long March 5B?/, 'cz5'],
+    [/\bVega\b(?![- ]?C\b)/, 'vega'], [/Saturn V\b/, 'saturnv'],
+    [/[Nn]avette(?: spatiale)?(?: (?:Atlantis|Discovery|Columbia|Endeavour|Challenger))?|Space Shuttle(?: (?:Atlantis|Discovery|Columbia|Endeavour|Challenger))?/, 'shuttle'],
+    [/Delta II\b(?: Heavy| \d{4}H?(?:-\d+L)?)?/, 'delta2'], [/Atlas V\b(?: \d{3})?/, 'atlas5'], [/Titan IVB?(?:\/Centaur)?/, 'titan4'],
+    [/Proton-M(?:\/(?:Briz|Breeze)-M)?/, 'protonm'], [/\bH-IIA\b/, 'h2a'], [/\bPSLV(?:-C\d+|-XL)?\b/, 'pslv']
+  ];
+  function html(h){
+    var en = typeof OBS_LANG !== 'undefined' && OBS_LANG === 'en', title = en ? 'Launcher page, on the Launchers site' : 'Page du lanceur, sur le site Lanceurs';
+    L.forEach(function(p){
+      h = h.replace(p[0], function(m){ return '<a class="ln-link" href="https://rolgim.github.io/Launchers/#' + (en ? 'en' : 'fr') + '-' + p[1] + '" title="' + title + '">' + m + '</a>'; });
+    });
+    return h;
+  }
+  return { html:html };
+})();
+
 /* =================================================================
    APPLICATION — vue 3D, pièces cliquables, comparaison, routage
 ================================================================= */
@@ -8597,7 +8627,7 @@ function missionHtml(t){
     return '<sup class="ref">' + ks.map(function(x){ if (!nums[x]) nums[x] = ++n; return nums[x]; }).join(',') + '</sup>'; }
   var h = '<h2>' + (en ? 'Mission and processing' : 'Mission et traitements') + '</h2><p class="desc">' + esc(L(m.intro)) + '</p>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Timeline' : 'Déroulé') + '</div><ol class="ms-tl">' +
-    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
+    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + LaunchLinks.html(esc(en ? p[5] : p[4])) + '</p></div></li>'; }).join('') + '</ol></div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
     m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
   if (window.FLEET && FLEET[t.id]){ for (k in FLEET_REFS) refs[k] = FLEET_REFS[k];
@@ -8685,7 +8715,7 @@ function renderPanel(){
         '<button class="cta" data-inst-open="1">Voir la mission et les données<small>Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments (' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '), exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
-            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + LaunchLinks.html(lines(r[1])) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';

@@ -1,9 +1,9 @@
 {
   "source": "https://github.com/Rolgim/rolgim.github.io",
   "path": "socle",
-  "commit": "5530832bc5a969aa418e09db1c97e3d08b01b1d7",
+  "commit": "0907686430b55a34a5eec8065cf3a723e31a199e",
   "files": {
-    "README.md": "85392dfc6e00f77c82c72b9f7529b78e4782070c912381f2db9f35d0305b314c",
+    "README.md": "9cde5386c1fcfcd966c72e2d18fce709550195794b259c1d81265020bb10e3e5",
     "build.js": "1941d124e6deeca695e0b5aa75dc2aa3a907f218c0fa240fc95de9114c2162a3",
     "check.js": "8cfe7bf723a1e86ec5b4cd9b568bf4e93e68ec35d00c15b542ae2acedaee8921",
     "data/check_links.py": "fa661d565a04a067c5cc33903eafb2abd581ae3e34e296e16f8ff6e6481a0d18",
@@ -24,6 +24,7 @@
     "page/i18n.js": "b56aebb21d3f3cad005b56196db373bae38fdcd33aa8a203dd50dd155e4612dc",
     "page/inst.css": "71d82507bf040f9e56565d45852073211fc5d9c97b7ae70b7df91b1e3f755941",
     "page/lang.js": "852311150ff11aff1b2e720e9a909d0d9332ba3a2525f9b4785ad1d864eb5bfc",
+    "page/launchlinks.js": "533213d7140016439931d2102c8096c55008a84dffb3e9c0cc933313a23e5ccd",
     "page/live.js": "62ea3e035d1ab8d4a9261641fb5d4619052e719010523e2b35e7c285e8816606",
     "page/missionkit.js": "79f98893916ec1f77d66e5c99fbd264b0a78b05c4e7c6edabca8be145e6948ed",
     "page/optics.js": "8a84253b6440a2dfb11aff1591d39ee9dddf8d825bd0a01acfd0216a65335ac7",

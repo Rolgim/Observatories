@@ -150,7 +150,7 @@ function missionHtml(t){
     return '<sup class="ref">' + ks.map(function(x){ if (!nums[x]) nums[x] = ++n; return nums[x]; }).join(',') + '</sup>'; }
   var h = '<h2>' + (en ? 'Mission and processing' : 'Mission et traitements') + '</h2><p class="desc">' + esc(L(m.intro)) + '</p>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Timeline' : 'Déroulé') + '</div><ol class="ms-tl">' +
-    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + esc(en ? p[5] : p[4]) + '</p></div></li>'; }).join('') + '</ol></div>';
+    m.phases.map(function(p){ return '<li><span class="ms-d">' + esc(en ? p[1] : p[0]) + '</span><div><strong>' + esc(en ? p[3] : p[2]) + '</strong>' + mark(p[6]) + '<p>' + LaunchLinks.html(esc(en ? p[5] : p[4])) + '</p></div></li>'; }).join('') + '</ol></div>';
   h += '<div class="spec-section"><div class="spec-section-title">' + (en ? 'Operations' : 'Exploitation') + '</div>' +
     m.ops.map(function(o){ return '<div class="spec-row"><div class="k">' + esc(en ? o[1] : o[0]) + '</div><div class="v">' + esc(en ? o[3] : o[2]) + mark(o[4]) + '</div></div>'; }).join('') + '</div>';
   if (window.FLEET && FLEET[t.id]){ for (k in FLEET_REFS) refs[k] = FLEET_REFS[k];
@@ -238,7 +238,7 @@ function renderPanel(){
         '<button class="cta" data-inst-open="1">Voir la mission et les données<small>Déroulé et chaîne de traitement, orbite, trajet de la lumière, instruments (' + INST_DATA[t.id].instruments.map(function(i){ return i.name; }).join(', ') + '), exemples de données, accès aux archives.</small></button>' +
         t.sections.map(function(sec){
           return '<div class="spec-section"><div class="spec-section-title">' + esc(sec.title) + '</div>' +
-            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + lines(r[1]) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
+            sec.rows.map(function(r){ return '<div class="spec-row"><div class="k">' + esc(r[0]) + '</div><div class="v">' + LaunchLinks.html(lines(r[1])) + refMark(r, nums) + '</div></div>'; }).join('') + '</div>';
         }).join('') +
         refList(t, nums) +
         '<p class="source-note">' + esc(t.sourceNote) + '</p>';

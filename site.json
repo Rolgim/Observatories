@@ -40,6 +40,7 @@
     "interior.js",
     "deploy.js",
     "looks.js",
+    "socle:launchlinks.js",
     "app.js"
   ]
 }
